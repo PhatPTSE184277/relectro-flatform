@@ -1,5 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import { Eye } from 'lucide-react';
+import { formatTime } from '@/utils/FormatTime';
 
 interface CollectionRouteListProps {
     routes: any[];
@@ -47,7 +49,7 @@ const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
                                 {route.sender?.name}
                             </p>
                             <p className='text-xs text-gray-500'>
-                                {route.estimatedTime}
+                                {formatTime(route.estimatedTime)}
                             </p>
                         </div>
                         <button

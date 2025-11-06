@@ -1,7 +1,7 @@
-import Header from '@/components/colector/Header';
-import Sidebar from '@/components/colector/Sidebar';
-import { CollectionRouteProvider } from '@/contexts/colector/CollectionRouteContext';
-import { PostProvider } from '@/contexts/colector/PostContext';
+import Header from '@/components/collector/Header';
+import Sidebar from '@/components/collector/Sidebar';
+import { CollectionRouteProvider } from '@/contexts/collector/CollectionRouteContext';
+import { PostProvider } from '@/contexts/collector/PostContext';
 
 export default function ColectorLayout({
     children

@@ -35,8 +35,8 @@ const LoginForm = () => {
             let redirectUrl = '';
             if (formData.username === 'admin') {
                 redirectUrl = '/admin/dashboard';
-            } else if (formData.username === 'colector') {
-                redirectUrl = '/colector/dashboard';
+            } else if (formData.username === 'collector') {
+                redirectUrl = '/collector/dashboard';
             } else {
                 throw new Error('Sai tên đăng nhập hoặc mật khẩu!');
                 toast.error('Sai tên đăng nhập hoặc mật khẩu!');
@@ -122,7 +122,7 @@ const LoginForm = () => {
                 <button
                     type='submit'
                     disabled={loading}
-                    className={`w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold py-2 rounded-lg shadow hover:from-purple-600 hover:to-blue-600 transition-all flex items-center cursor-pointer justify-center gap-2 ${
+                    className={`w-full bg-linear-to-r from-blue-500 to-blue-400 text-white font-semibold py-2 rounded-lg shadow hover:from-blue-600 hover:to-blue-600 transition-all flex items-center cursor-pointer justify-center gap-2 ${
                         loading ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                 >

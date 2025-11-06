@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useCollectionRouteContext } from '@/contexts/colector/CollectionRouteContext';
-import CollectionRouteSidebar from '@/components/colector/collection-route/CollectionRouteSidebar';
-import CollectionRouteMap from '@/components/colector/collection-route/CollectionRouteMap';
-import CollectorRouteDetail from '@/components/colector/collection-route/modal/CollectorRouteDetail';
-import { CollectionRouteStatus } from '@/components/colector/collection-route/CollectionRouteFilter';
+import { useCollectionRouteContext } from '@/contexts/collector/CollectionRouteContext';
+import CollectionRouteSidebar from '@/components/collector/collection-route/CollectionRouteSidebar';
+import CollectionRouteMap from '@/components/collector/collection-route/CollectionRouteMap';
+import CollectorRouteDetail from '@/components/collector/collection-route/modal/CollectorRouteDetail';
+import { CollectionRouteStatus } from '@/components/collector/collection-route/CollectionRouteFilter';
 
 const CollectionRoutePage: React.FC = () => {
     const {

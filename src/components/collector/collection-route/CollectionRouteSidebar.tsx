@@ -50,7 +50,7 @@ const CollectionRouteSidebar: React.FC<SidebarProps> = ({
                             <Route className='text-white' size={20} />
                         </div>
                         <h1 className='text-xl font-bold text-gray-900'>
-                            TUYẾN THU GOM
+                            Tuyến thu gom
                         </h1>
                     </div>
                 </div>

@@ -2,12 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import type { Post } from '@/types/post';
 
-import PostList from '@/components/colector/post/PostList';
-import PostFilter from '@/components/colector/post/PostFilter';
-import PostModalDetail from '@/components/colector/post/PostModalDetail';
+import PostList from '@/components/collector/post/PostList';
+import PostFilter from '@/components/collector/post/PostFilter';
+import PostDetail from '@/components/collector/post/modal/PostDetail';
 import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
-import { usePostContext } from '@/contexts/colector/PostContext';
+import { usePostContext } from '@/contexts/collector/PostContext';
 import { PostStatus } from '@/enums/PostStatus';
 import { ClipboardList } from 'lucide-react';
 
@@ -133,7 +133,7 @@ const PostPage: React.FC = () => {
             />
 
             {isShowModalOpen && selectedPost && (
-                <PostModalDetail
+                <PostDetail
                     post={selectedPost}
                     onClose={handleCloseShow}
                     onApprove={handleApprove}

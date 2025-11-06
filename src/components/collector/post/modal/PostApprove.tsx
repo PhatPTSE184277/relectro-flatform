@@ -1,12 +1,12 @@
 import React from "react";
 
-interface PostApproveModalProps {
+interface PostApproveProps {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }
 
-const PostApproveModal: React.FC<PostApproveModalProps> = ({
+const PostApprove: React.FC<PostApproveProps> = ({
   open,
   onClose,
   onConfirm,
@@ -22,7 +22,7 @@ const PostApproveModal: React.FC<PostApproveModalProps> = ({
 
 
       <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-fadeIn">
-        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-green-50 to-blue-50">
+        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-green-50 to-blue-50">
           <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
             Xác nhận duyệt bài đăng
           </h2>
@@ -78,4 +78,4 @@ const PostApproveModal: React.FC<PostApproveModalProps> = ({
   );
 };
 
-export default PostApproveModal;
+export default PostApprove;

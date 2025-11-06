@@ -1,26 +1,27 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import { PostStatus } from '@/enums/PostStatus';
-import PostApproveModal from './PostApproveModal';
-import PostRejectModal from './PostRejectModal';
+import PostApprove from './PostApprove';
+import PostReject from './PostReject';
+import { formatTimeTo24h } from '@/utils/FormatTime';
 
-interface PostModalDetailProps {
+interface PostDetailProps {
     post: any;
     onClose: () => void;
     onApprove: (postId: string) => void;
     onReject: (postId: string, reason: string) => void;
 }
 
-// Chuẩn hóa status về enum
-function normalizeStatus(status: string = ""): PostStatus {
+function normalizeStatus(status: string = ''): PostStatus {
     const s = status.trim().toLowerCase();
-    if (s === "đã duyệt" || s === "approved") return PostStatus.Approved;
-    if (s === "đã từ chối" || s === "rejected") return PostStatus.Rejected;
-    if (s === "chờ duyệt" || s === "pending" || s === "") return PostStatus.Pending;
+    if (s === 'đã duyệt' || s === 'approved') return PostStatus.Approved;
+    if (s === 'đã từ chối' || s === 'rejected') return PostStatus.Rejected;
+    if (s === 'chờ duyệt' || s === 'pending' || s === '')
+        return PostStatus.Pending;
     return PostStatus.Pending;
 }
 
-const PostModalDetail: React.FC<PostModalDetailProps> = ({
+const PostDetail: React.FC<PostDetailProps> = ({
     post,
     onClose,
     onApprove,
@@ -29,23 +30,19 @@ const PostModalDetail: React.FC<PostModalDetailProps> = ({
     const [selectedImg, setSelectedImg] = useState(0);
     const [zoomImg, setZoomImg] = useState<string | null>(null);
 
-    // Modal xác nhận duyệt
     const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
-    // Modal từ chối
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
 
-    // Xác nhận duyệt
     const handleApproveConfirm = () => {
         onApprove(post.id);
         setIsApproveModalOpen(false);
-         onClose();
+        onClose();
     };
 
-    // Xác nhận từ chối
     const handleRejectConfirm = (reason: string) => {
         onReject(post.id, reason);
         setIsRejectModalOpen(false);
-         onClose();
+        onClose();
     };
 
     return (
@@ -59,7 +56,7 @@ const PostModalDetail: React.FC<PostModalDetailProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-5xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50'>
+                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-blue-50 to-purple-50'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             {post.name}
@@ -67,9 +64,11 @@ const PostModalDetail: React.FC<PostModalDetailProps> = ({
                         <span
                             className={`inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full
                                 ${
-                                    normalizeStatus(post.status) === PostStatus.Approved
+                                    normalizeStatus(post.status) ===
+                                    PostStatus.Approved
                                         ? 'bg-green-100 text-green-700'
-                                        : normalizeStatus(post.status) === PostStatus.Rejected
+                                        : normalizeStatus(post.status) ===
+                                          PostStatus.Rejected
                                         ? 'bg-red-100 text-red-700'
                                         : 'bg-yellow-100 text-yellow-700'
                                 }`}
@@ -120,6 +119,31 @@ const PostModalDetail: React.FC<PostModalDetailProps> = ({
 
                     {/* Right: Details section */}
                     <div className='md:w-2/3 p-6 space-y-4 overflow-y-auto max-h-[85vh]'>
+                        {/* --- AI Tags --- */}
+                        {Array.isArray(post.aggregatedAiLabels) &&
+                            post.aggregatedAiLabels.length > 0 && (
+                                <section className='space-y-3'>
+                                    <h3 className='font-semibold text-gray-900 text-lg border-b pb-2'>
+                                        Nhãn AI nhận diện
+                                    </h3>
+                                    <div className='flex gap-2 flex-wrap'>
+                                        {post.aggregatedAiLabels.map(
+                                            (label: any, idx: number) => (
+                                                <span
+                                                    key={idx}
+                                                    className='inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-sm font-medium border border-blue-200'
+                                                >
+                                                    {label.tag}{' '}
+                                                    <span className='ml-2 text-xs text-gray-500'>
+                                                        ({label.confidence}%)
+                                                    </span>
+                                                </span>
+                                            )
+                                        )}
+                                    </div>
+                                </section>
+                            )}
+
                         {/* --- Product info --- */}
                         <section className='space-y-3'>
                             <h3 className='font-semibold text-gray-900 text-lg border-b pb-2'>
@@ -221,11 +245,19 @@ const PostModalDetail: React.FC<PostModalDetailProps> = ({
                                                   slotStr = sch.slots
                                                       .map(
                                                           (slot: any) =>
-                                                              `${slot.startTime} - ${slot.endTime}`
+                                                              `${formatTimeTo24h(
+                                                                  slot.startTime
+                                                              )} - ${formatTimeTo24h(
+                                                                  slot.endTime
+                                                              )}`
                                                       )
                                                       .join(', ');
                                               } else if (sch.slots) {
-                                                  slotStr = `${sch.slots.startTime} - ${sch.slots.endTime}`;
+                                                  slotStr = `${formatTimeTo24h(
+                                                      sch.slots.startTime
+                                                  )} - ${formatTimeTo24h(
+                                                      sch.slots.endTime
+                                                  )}`;
                                               } else {
                                                   slotStr =
                                                       'Không có thông tin';
@@ -242,7 +274,7 @@ const PostModalDetail: React.FC<PostModalDetailProps> = ({
                                                       {pickUpDate && (
                                                           <>
                                                               ,{' '}
-                                                              <span className='text-blue-600'>
+                                                              <span className='text-gray-700'>
                                                                   {pickUpDate}
                                                               </span>
                                                           </>
@@ -250,7 +282,7 @@ const PostModalDetail: React.FC<PostModalDetailProps> = ({
                                                       {slotStr && (
                                                           <>
                                                               :{' '}
-                                                              <span className='text-purple-700'>
+                                                              <span className='text-gray-700'>
                                                                   {slotStr}
                                                               </span>
                                                           </>
@@ -295,13 +327,13 @@ const PostModalDetail: React.FC<PostModalDetailProps> = ({
                 )}
             </div>
 
-            <PostApproveModal
+            <PostApprove
                 open={isApproveModalOpen}
                 onClose={() => setIsApproveModalOpen(false)}
                 onConfirm={handleApproveConfirm}
             />
 
-            <PostRejectModal
+            <PostReject
                 open={isRejectModalOpen}
                 onClose={() => setIsRejectModalOpen(false)}
                 onConfirm={handleRejectConfirm}
@@ -309,7 +341,7 @@ const PostModalDetail: React.FC<PostModalDetailProps> = ({
 
             {zoomImg && (
                 <div
-                    className='fixed inset-0 z-[999] flex items-center justify-center bg-black/70'
+                    className='fixed inset-0 z-999 flex items-center justify-center bg-black/70'
                     onClick={() => setZoomImg(null)}
                 >
                     <img
@@ -323,4 +355,4 @@ const PostModalDetail: React.FC<PostModalDetailProps> = ({
     );
 };
 
-export default PostModalDetail;
+export default PostDetail;

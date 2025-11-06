@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
+import { formatTime } from '@/utils/FormatTime';
 
 interface CollectorRouteDetailProps {
     route: any;
@@ -30,7 +31,7 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({ route, onCl
             {/* Modal container */}
             <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50'>
+                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-blue-50 to-purple-50'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             {route.itemName}
@@ -102,7 +103,7 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({ route, onCl
                             </div>
                             <div className='bg-gray-50 rounded-lg p-4'>
                                 <p className='font-medium text-gray-700'>Thời gian dự kiến:</p>
-                                <p className='text-gray-600'>{route.estimatedTime || 'Không có thông tin'}</p>
+                                <p className='text-gray-600'>{formatTime(route.estimatedTime) || 'Không có thông tin'}</p>
                             </div>
                             <div className='bg-gray-50 rounded-lg p-4'>
                                 <p className='font-medium text-gray-700'>Ngày thu gom:</p>
@@ -197,7 +198,7 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({ route, onCl
                 {/* Zoom image modal */}
                 {zoomImg && (
                     <div
-                        className='fixed inset-0 z-[999] flex items-center justify-center bg-black/70'
+                        className='fixed inset-0 z-999 flex items-center justify-center bg-black/70'
                         onClick={() => setZoomImg(null)}
                     >
                         <img

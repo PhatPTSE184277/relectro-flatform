@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { formatTime } from '@/utils/FormatTime';
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || '';
 
@@ -88,7 +89,7 @@ const CollectionRouteMap: React.FC<CollectionRouteMapProps> = ({
                                 ${route.address}
                             </p>
                             <p style="margin: 0 0 8px 0; font-size: 12px; color: #9ca3af;">
-                                ${route.estimatedTime}
+                                ${formatTime(route.estimatedTime)}
                             </p>
                             <button 
                                 id="view-detail-${route.collectionRouteId}" 

@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { X } from "lucide-react";
 
-interface PostRejectModalProps {
+interface PostRejectProps {
   open: boolean;
   onClose: () => void;
   onConfirm: (reason: string) => void;
 }
 
-const PostRejectModal: React.FC<PostRejectModalProps> = ({
+const PostReject: React.FC<PostRejectProps> = ({
   open,
   onClose,
   onConfirm,
@@ -23,16 +22,14 @@ const PostRejectModal: React.FC<PostRejectModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/30 backdrop-blur-sm"
         onClick={handleClose}
       ></div>
 
-      {/* Modal container */}
       <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-fadeIn">
-        {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-red-50 to-pink-50">
+        
+        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-red-50 to-pink-50">
           <h2 className="text-2xl font-bold text-gray-800">Từ chối bài đăng</h2>
           <button
             onClick={handleClose}
@@ -42,7 +39,6 @@ const PostRejectModal: React.FC<PostRejectModalProps> = ({
           </button>
         </div>
 
-        {/* Body */}
         <div className="p-6 flex-1 overflow-y-auto bg-gray-50 space-y-5">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
@@ -115,4 +111,4 @@ const PostRejectModal: React.FC<PostRejectModalProps> = ({
   );
 };
 
-export default PostRejectModal;
+export default PostReject;

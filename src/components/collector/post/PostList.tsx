@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import type { Post } from "@/types/post";
 import PostShow from "./PostShow";
 import PostRowSkeleton from "./PostTableSkeleton";
-import PostRejectModal from "./PostRejectModal";
-import PostApproveModal from "./PostApproveModal";
+import PostReject from "./modal/PostReject";
+import PostApprove from "./modal/PostApprove";
 
 interface PostListProps {
   posts: Post[];
@@ -93,13 +93,13 @@ const PostList: React.FC<PostListProps> = ({
         </table>
       </div>
 
-      <PostRejectModal
+      <PostReject
         open={isRejectModalOpen}
         onClose={() => setIsRejectModalOpen(false)}
         onConfirm={handleConfirmReject}
       />
 
-      <PostApproveModal
+      <PostApprove
         open={isApproveModalOpen}
         onClose={() => setIsApproveModalOpen(false)}
         onConfirm={handleConfirmApprove}

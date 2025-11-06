@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {  IoSparklesOutline } from "react-icons/io5";
+import { IoSparklesOutline } from "react-icons/io5";
 
 const Header = () => {
   const pathname = usePathname();
@@ -21,10 +21,10 @@ const Header = () => {
           <div className="flex items-center space-x-8">
             <Link
               href="/"
-              className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent flex items-center gap-2"
+              className="text-2xl font-bold bg-linear-to-r from-blue-500 to-blue-400 bg-clip-text text-transparent flex items-center gap-2"
               onClick={handleReloadIfHome}
             >
-              <IoSparklesOutline className="text-purple-400 text-2xl" />
+              <IoSparklesOutline className="text-blue-400 text-2xl" />
               Thu gom
             </Link>
           </div>

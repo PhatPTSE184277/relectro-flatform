@@ -10,7 +10,6 @@ type User = {
 };
 
 const getMe = async (): Promise<User | null> => {
-    // Lấy user từ localStorage (hoặc gọi API nếu cần)
     if (typeof window !== 'undefined') {
         const authData = localStorage.getItem('authData');
         if (authData) {
@@ -44,27 +43,27 @@ const Header = () => {
         router.push('/');
     };
 
-    const handleReloadIfEmployeeHome = (
+    const handleReload = (
         e: React.MouseEvent<HTMLAnchorElement>
     ) => {
-        if (pathname === '/employee/tasks') {
+        if (pathname === '/collector/dashboard') {
             e.preventDefault();
             window.location.reload();
         }
     };
 
     return (
-        <nav className='bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50'>
+        <nav className='bg-white shadow-sm sticky top-0 z-50'>
             <div className='max-w-full px-6 lg:px-8'>
                 <div className='flex justify-between items-center h-16'>
                     <div className='flex items-center space-x-8'>
                         <Link
-                            href='/employee/tasks'
-                            className='text-2xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent flex items-center gap-2 cursor-pointer'
-                            onClick={handleReloadIfEmployeeHome}
+                            href='/collector/dashboard'
+                            className='text-2xl font-bold bg-linear-to-r from-blue-500 to-blue-400 bg-clip-text text-transparent flex items-center gap-2 cursor-pointer'
+                            onClick={handleReload}
                         >
-                            <IoSparklesOutline className='text-purple-400 text-2xl' />
-                            Collector Panel
+                            <IoSparklesOutline className='text-blue-400 text-2xl' />
+                            Bảng điều khiển thu gom
                         </Link>
                     </div>
 
@@ -77,7 +76,7 @@ const Header = () => {
                                         router.push('/employee/profile')
                                     }
                                 >
-                                    <div className='w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 text-white flex items-center justify-center font-bold text-sm ring-2 ring-blue-200'>
+                                    <div className='w-8 h-8 rounded-full bg-linear-to-br from-blue-400 to-blue-500 text-white flex items-center justify-center font-bold text-sm ring-2 ring-blue-200'>
                                         {user.name?.charAt(0).toUpperCase()}
                                     </div>
                                     <span className='hidden sm:block text-sm font-medium text-gray-700'>

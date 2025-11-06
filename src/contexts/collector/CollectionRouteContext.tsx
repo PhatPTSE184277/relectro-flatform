@@ -11,7 +11,7 @@ import React, {
 import {
     getCollectionRoutesByDate,
     getCollectionRouteDetail
-} from '@/services/colector/CollectionRouteService';
+} from '@/services/collector/CollectionRouteService';
 import { toast } from 'react-toastify';
 import type { CollectionRoute } from '@/types/CollectionRoute';
 
