@@ -1,6 +1,8 @@
 import React from 'react';
 import { Route, Search } from 'lucide-react';
-import CollectionRouteFilter, { CollectionRouteStatus } from './CollectionRouteFilter';
+import CollectionRouteFilter, {
+    CollectionRouteStatus
+} from './CollectionRouteFilter';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import CollectionRouteList from './CollectionRouteList';
 
@@ -16,6 +18,7 @@ interface SidebarProps {
         notStarted: number;
         collecting: number;
         completed: number;
+        cancelled: number;
     };
     filteredRoutes: any[];
     loading: boolean;
@@ -36,7 +39,7 @@ const CollectionRouteSidebar: React.FC<SidebarProps> = ({
     loading,
     selectedRoute,
     setSelectedRoute,
-    handleViewDetail,
+    handleViewDetail
 }) => {
     return (
         <div className='w-[420px] bg-white overflow-y-auto shadow-xl flex flex-col'>
@@ -55,11 +58,14 @@ const CollectionRouteSidebar: React.FC<SidebarProps> = ({
                     <CustomDatePicker
                         value={selectedDate}
                         onChange={setSelectedDate}
-                        placeholder="Chọn ngày thu gom"
+                        placeholder='Chọn ngày thu gom'
                     />
                 </div>
                 <div className='relative mb-4'>
-                    <Search className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400' size={18} />
+                    <Search
+                        className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
+                        size={18}
+                    />
                     <input
                         type='text'
                         value={search}

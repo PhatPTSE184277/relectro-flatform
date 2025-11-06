@@ -10,7 +10,6 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({ route, onCl
     const [selectedImg, setSelectedImg] = useState(0);
     const [zoomImg, setZoomImg] = useState<string | null>(null);
 
-    // Chuẩn hóa status
     function normalizeStatus(status: string = "") {
         const s = status.trim().toLowerCase();
         if (s === "hoàn thành" || s === "đã hoàn thành" || s === "completed") return "Hoàn thành";

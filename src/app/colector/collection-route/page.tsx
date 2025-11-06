@@ -38,14 +38,13 @@ const CollectionRoutePage: React.FC = () => {
         return matchStatus && matchSearch;
     });
 
-    const stats = {
-        total: routes.length,
-        notStarted: routes.filter(r => r.status === 'Chưa bắt đầu').length,
-        inProgress: routes.filter(r => r.status === 'Đang tiến hành').length,
-        completed: routes.filter(r => r.status === 'Hoàn thành').length,
-        cancelled: routes.filter(r => r.status === 'Hủy bỏ').length,
-    };
-
+   const stats = {
+    total: routes.length,
+    notStarted: routes.filter(r => r.status === 'Chưa bắt đầu').length,
+    collecting: routes.filter(r => r.status === 'Đang tiến hành').length, 
+    completed: routes.filter(r => r.status === 'Hoàn thành').length,
+    cancelled: routes.filter(r => r.status === 'Hủy bỏ').length,
+};
     const handleViewDetail = (id: string) => {
         setDetailRouteId(id);
         setShowDetail(true);
