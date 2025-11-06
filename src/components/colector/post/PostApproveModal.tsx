@@ -15,22 +15,15 @@ const PostApproveModal: React.FC<PostApproveModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/30 backdrop-blur-sm"
         onClick={onClose}
       ></div>
 
-      {/* Modal container */}
+
       <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-fadeIn">
-        {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-green-50 to-blue-50">
           <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <span className="inline-block w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
-              </svg>
-            </span>
             Xác nhận duyệt bài đăng
           </h2>
           <button

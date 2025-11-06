@@ -9,6 +9,7 @@ import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
 import { usePostContext } from '@/contexts/colector/PostContext';
 import { PostStatus } from '@/enums/PostStatus';
+import { ClipboardList } from 'lucide-react';
 
 type Stats = {
     total: number;
@@ -90,9 +91,14 @@ const PostPage: React.FC = () => {
     };
 
     return (
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
             <div className='flex justify-between items-center mb-6'>
-                <h1 className='text-3xl font-bold text-gray-900'>Bài đăng</h1>
+                <div className='flex items-center gap-3'>
+                    <div className='w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center'>
+                        <ClipboardList className='text-white' size={20} />
+                    </div>
+                    <h1 className='text-3xl font-bold text-gray-900'>Bài đăng</h1>
+                </div>
             </div>
 
             <div className="mb-4 max-w-md">

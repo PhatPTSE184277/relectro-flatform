@@ -4,8 +4,7 @@ import {
   Truck,
   MapPin,
   ClipboardList,
-  Bell,
-  Settings,
+  Route,
 } from 'lucide-react';
 
 export const colectorMenuItems = [
@@ -14,6 +13,7 @@ export const colectorMenuItems = [
   { id: 'shipping', label: 'Vận chuyển', path: '/colector/shipping', icon: <Truck size={20} /> },
   { id: 'collection-point', label: 'Điểm thu gom', path: '/colector/collection-point', icon: <MapPin size={20} /> },
   { id: 'post', label: 'Bài đăng', path: '/colector/post', icon: <ClipboardList size={20} /> },
+  { id: 'collection-route', label: 'Tuyến thu gom', path: '/colector/collection-route', icon: <Route size={20} /> },
   // { id: 'notifications', label: 'Thông báo', path: '/colector/notifications', icon: <Bell size={20} /> },
   // { id: 'settings', label: 'Cài đặt', path: '/colector/settings', icon: <Settings size={20} /> },
 ];
