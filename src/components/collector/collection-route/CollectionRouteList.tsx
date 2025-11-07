@@ -2,6 +2,7 @@
 import React from 'react';
 import { Eye } from 'lucide-react';
 import { formatTime } from '@/utils/FormatTime';
+import CollectionRouteListSkeleton from './CollectionRouteListSkeleton';
 
 interface CollectionRouteListProps {
     routes: any[];
@@ -23,7 +24,7 @@ const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
             Danh sách tuyến ({routes.length})
         </h2>
         {loading ? (
-            <div className='text-center py-8 text-gray-400'>Đang tải...</div>
+            <CollectionRouteListSkeleton />
         ) : routes.length > 0 ? (
             <div className='space-y-3'>
                 {routes.map((route) => (
@@ -32,20 +33,20 @@ const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
                         className={`p-4 border-2 rounded-xl flex gap-3 items-center transition cursor-pointer ${
                             selectedRoute === route.collectionRouteId
                                 ? 'border-blue-500 bg-blue-50'
-                                : 'border-gray-200 hover:border-gray-300'
+                                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                         }`}
                         onClick={() => onSelectRoute(route.collectionRouteId)}
                     >
                         <img
                             src={route.pickUpItemImages?.[0] || '/placeholder.png'}
                             alt={route.itemName}
-                            className='w-20 h-20 rounded-lg object-cover'
+                            className='w-20 h-20 rounded-lg object-cover flex-shrink-0'
                         />
-                        <div className='flex-1'>
-                            <h3 className='font-semibold text-gray-900 mb-1'>
+                        <div className='flex-1 min-w-0'>
+                            <h3 className='font-semibold text-gray-900 mb-1 truncate'>
                                 {route.itemName}
                             </h3>
-                            <p className='text-sm text-gray-600 mb-1'>
+                            <p className='text-sm text-gray-600 mb-1 truncate'>
                                 {route.sender?.name}
                             </p>
                             <p className='text-xs text-gray-500'>
@@ -57,7 +58,7 @@ const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
                                 e.stopPropagation();
                                 onViewDetail(route.collectionRouteId);
                             }}
-                            className='text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition cursor-pointer'
+                            className='text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition cursor-pointer flex-shrink-0'
                             title='Xem chi tiết'
                         >
                             <Eye size={20} />
