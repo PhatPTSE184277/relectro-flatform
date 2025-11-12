@@ -1,8 +1,27 @@
 import axios from '@/lib/axios';
 
-export const getCollectionRoutesByDate = async (pickUpDate: string) => {
-    // pickUpDate dạng "YYYY-MM-DD"
-    const response = await axios.get(`/routes/${pickUpDate}`);
+export const getCollectionRoutesByDate = async ({
+    page = 1,
+    limit = 10,
+    collectionPointId,
+    pickUpDate,
+    status
+}: {
+    page?: number;
+    limit?: number;
+    collectionPointId?: number;
+    pickUpDate: { year: number; month: number; day: number; dayOfWeek?: number };
+    status?: string;
+}) => {
+    const response = await axios.get('/routes/collection-point/date/filter', {
+        params: {
+            Page: page,
+            Limit: limit,
+            CollectionPointId: collectionPointId,
+            PickUpDate: pickUpDate,
+            Status: status
+        }
+    });
     return response.data;
 };
 

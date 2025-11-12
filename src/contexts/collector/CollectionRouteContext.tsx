@@ -18,11 +18,24 @@ import type { CollectionRoute } from '@/types/CollectionRoute';
 interface CollectionRouteContextType {
     routes: CollectionRoute[];
     loading: boolean;
-    fetchRoutes: (date: string) => Promise<void>;
+    fetchRoutes: (pickUpDate?: { year: number; month: number; day: number; dayOfWeek?: number }) => Promise<void>;
     selectedDate: string;
     setSelectedDate: (date: string) => void;
     routeDetail: CollectionRoute | null;
     fetchRouteDetail: (id: string) => Promise<void>;
+    totalPages: number;
+    totalItems: number;
+    currentPage: number;
+    setCurrentPage: (page: number) => void;
+    filterStatus: string;
+    setFilterStatus: (status: string) => void;
+    allStats: {
+        total: number;
+        notStarted: number;
+        inProgress: number;
+        completed: number;
+        cancelled: number;
+    };
 }
 
 const CollectionRouteContext = createContext<CollectionRouteContextType | undefined>(undefined);
@@ -47,23 +60,82 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
         return today.toISOString().slice(0, 10);
     });
     const [routeDetail, setRouteDetail] = useState<CollectionRoute | null>(null);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [filterStatus, setFilterStatus] = useState<string>('Chưa bắt đầu');
+    const [allStats, setAllStats] = useState({
+        total: 0,
+        notStarted: 0,
+        inProgress: 0,
+        completed: 0,
+        cancelled: 0
+    });
 
-    const fetchRoutes = useCallback(async (date: string) => {
+    // Hàm lấy params ngày từ selectedDate dạng "YYYY-MM-DD"
+    const getPickUpDateObj = (dateStr: string) => {
+        const date = new Date(dateStr);
+        return {
+            year: date.getFullYear(),
+            month: date.getMonth() + 1,
+            day: date.getDate(),
+            dayOfWeek: date.getDay()
+        };
+    };
+
+    const fetchRoutes = useCallback(async (pickUpDate?: { year: number; month: number; day: number; dayOfWeek?: number }) => {
         setLoading(true);
         try {
-            const data = await getCollectionRoutesByDate(date);
+            const dateToUse = pickUpDate || getPickUpDateObj(selectedDate);
+            const response = await getCollectionRoutesByDate({
+                page: currentPage,
+                limit: 10,
+                pickUpDate: dateToUse,
+                status: filterStatus || undefined
+            });
+            
             // Chuẩn hóa status
-            const normalized = Array.isArray(data) 
-                ? data.map(route => ({ ...route, status: normalizeStatus(route.status) }))
+            const normalized = Array.isArray(response.data)
+                ? response.data.map((route: CollectionRoute) => ({ ...route, status: normalizeStatus(route.status) }))
                 : [];
             setRoutes(normalized);
+            setTotalPages(response.totalPages || 1);
+            setTotalItems(response.totalItems || 0);
+
+            // Fetch stats cho tất cả status
+            const fetchAllStats = async () => {
+                try {
+                    const [allRes, notStartedRes, inProgressRes, completedRes, cancelledRes] = await Promise.all([
+                        getCollectionRoutesByDate({ page: 1, limit: 1, pickUpDate: dateToUse }),
+                        getCollectionRoutesByDate({ page: 1, limit: 1, pickUpDate: dateToUse, status: 'Chưa bắt đầu' }),
+                        getCollectionRoutesByDate({ page: 1, limit: 1, pickUpDate: dateToUse, status: 'Đang tiến hành' }),
+                        getCollectionRoutesByDate({ page: 1, limit: 1, pickUpDate: dateToUse, status: 'Hoàn thành' }),
+                        getCollectionRoutesByDate({ page: 1, limit: 1, pickUpDate: dateToUse, status: 'Hủy bỏ' })
+                    ]);
+
+                    setAllStats({
+                        total: allRes.totalItems || 0,
+                        notStarted: notStartedRes.totalItems || 0,
+                        inProgress: inProgressRes.totalItems || 0,
+                        completed: completedRes.totalItems || 0,
+                        cancelled: cancelledRes.totalItems || 0
+                    });
+                } catch {
+                    // Ignore errors
+                }
+            };
+
+            void fetchAllStats();
         } catch (err) {
+            console.error('fetchRoutes error', err);
             toast.error('Lỗi khi tải tuyến thu gom');
             setRoutes([]);
+            setTotalPages(1);
+            setTotalItems(0);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [selectedDate, currentPage, filterStatus]);
 
     const fetchRouteDetail = useCallback(async (id: string) => {
         setLoading(true);
@@ -73,7 +145,7 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
                 data.status = normalizeStatus(data.status);
             }
             setRouteDetail(data || null);
-        } catch (err) {
+        } catch {
             toast.error('Lỗi khi tải chi tiết tuyến thu gom');
             setRouteDetail(null);
         } finally {
@@ -82,8 +154,8 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        void fetchRoutes(selectedDate);
-    }, [selectedDate, fetchRoutes]);
+        void fetchRoutes();
+    }, [selectedDate, currentPage, filterStatus, fetchRoutes]);
 
     const value: CollectionRouteContextType = {
         routes,
@@ -93,6 +165,13 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
         setSelectedDate,
         routeDetail,
         fetchRouteDetail,
+        totalPages,
+        totalItems,
+        currentPage,
+        setCurrentPage,
+        filterStatus,
+        setFilterStatus,
+        allStats,
     };
 
     return (

@@ -1,77 +1,59 @@
-/* eslint-disable @next/next/no-img-element */
 import React from 'react';
-import { Eye } from 'lucide-react';
-import { formatTime } from '@/utils/FormatTime';
-import CollectionRouteListSkeleton from './CollectionRouteListSkeleton';
+import CollectionRouteShow from './CollectionRouteShow';
+import CollectionRouteTableSkeleton from './CollectionRouteTableSkeleton';
+import type { CollectionRoute } from '@/types/CollectionRoute';
 
 interface CollectionRouteListProps {
-    routes: any[];
+    routes: CollectionRoute[];
     loading: boolean;
-    selectedRoute: string | null;
-    onSelectRoute: (id: string) => void;
     onViewDetail: (id: string) => void;
 }
 
 const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
     routes,
     loading,
-    selectedRoute,
-    onSelectRoute,
     onViewDetail,
-}) => (
-    <div>
-        <h2 className='text-lg font-bold text-gray-900 mb-4'>
-            Danh sách tuyến ({routes.length})
-        </h2>
-        {loading ? (
-            <CollectionRouteListSkeleton />
-        ) : routes.length > 0 ? (
-            <div className='space-y-3'>
-                {routes.map((route) => (
-                    <div
-                        key={route.collectionRouteId}
-                        className={`p-4 border-2 rounded-xl flex gap-3 items-center transition cursor-pointer ${
-                            selectedRoute === route.collectionRouteId
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                        }`}
-                        onClick={() => onSelectRoute(route.collectionRouteId)}
-                    >
-                        <img
-                            src={route.pickUpItemImages?.[0] || '/placeholder.png'}
-                            alt={route.itemName}
-                            className='w-20 h-20 rounded-lg object-cover flex-shrink-0'
-                        />
-                        <div className='flex-1 min-w-0'>
-                            <h3 className='font-semibold text-gray-900 mb-1 truncate'>
-                                {route.itemName}
-                            </h3>
-                            <p className='text-sm text-gray-600 mb-1 truncate'>
-                                {route.sender?.name}
-                            </p>
-                            <p className='text-xs text-gray-500'>
-                                {formatTime(route.estimatedTime)}
-                            </p>
-                        </div>
-                        <button
-                            onClick={e => {
-                                e.stopPropagation();
-                                onViewDetail(route.collectionRouteId);
-                            }}
-                            className='text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition cursor-pointer flex-shrink-0'
-                            title='Xem chi tiết'
-                        >
-                            <Eye size={20} />
-                        </button>
-                    </div>
-                ))}
+}) => {
+    return (
+        <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
+            <div className='overflow-x-auto'>
+                <table className='w-full text-sm text-gray-800'>
+                    <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
+                        <tr>
+                            <th className='py-3 px-4 text-left'>Ảnh</th>
+                            <th className='py-3 px-4 text-left'>Tên vật phẩm</th>
+                            <th className='py-3 px-4 text-left'>Người gửi</th>
+                            <th className='py-3 px-4 text-left'>Địa chỉ</th>
+                            <th className='py-3 px-4 text-left'>Thời gian dự kiến</th>
+                            <th className='py-3 px-4 text-center'>Hành động</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {loading ? (
+                            Array.from({ length: 6 }).map((_, idx) => (
+                                <CollectionRouteTableSkeleton key={idx} />
+                            ))
+                        ) : routes.length > 0 ? (
+                            routes.map((route) => (
+                                <CollectionRouteShow
+                                    key={route.collectionRouteId}
+                                    route={route}
+                                    onView={() => onViewDetail(route.collectionRouteId)}
+                                />
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={7} className='text-center py-8 text-gray-400'>
+                                    Không có tuyến thu gom nào.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </div>
-        ) : (
-            <div className='text-center py-8 text-gray-400'>
-                Không có tuyến thu gom nào.
-            </div>
-        )}
-    </div>
-);
+        </div>
+    );
+};
 
 export default CollectionRouteList;

@@ -5,6 +5,7 @@ import {
   MapPin,
   ClipboardList,
   Route,
+  Warehouse,
 } from 'lucide-react';
 
 export const collectorMenuItems = [
@@ -13,5 +14,6 @@ export const collectorMenuItems = [
   { id: 'shipping', label: 'Vận chuyển', path: '/collector/shipping', icon: <Truck size={20} /> },
   { id: 'collection-point', label: 'Điểm thu gom', path: '/collector/collection-point', icon: <MapPin size={20} /> },
   { id: 'post', label: 'Bài đăng', path: '/collector/post', icon: <ClipboardList size={20} /> },
-  { id: 'collection-route', label: 'Tuyến thu gom', path: '/collector/collection-route', icon: <Route size={20} /> }
+  { id: 'collection-route', label: 'Tuyến thu gom', path: '/collector/collection-route', icon: <Route size={20} /> },
+  { id: 'incoming-warehouse', label: 'Nhận hàng về kho', path: '/collector/incoming-warehouse', icon: <Warehouse size={20} /> }
 ];

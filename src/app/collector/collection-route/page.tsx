@@ -2,23 +2,29 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCollectionRouteContext } from '@/contexts/collector/CollectionRouteContext';
-import CollectionRouteMap from '@/components/collector/collection-route/CollectionRouteMap';
 import CollectorRouteDetail from '@/components/collector/collection-route/modal/CollectorRouteDetail';
-import { CollectionRouteStatus } from '@/components/collector/collection-route/CollectionRouteFilter';
 import CollectionRouteFilter from '@/components/collector/collection-route/CollectionRouteFilter';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import SearchBox from '@/components/ui/SearchBox';
 import { Route } from 'lucide-react';
 import CollectionRouteList from '@/components/collector/collection-route/CollectionRouteList';
+import Pagination from '@/components/ui/Pagination';
 
 const CollectionRoutePage: React.FC = () => {
-    const { routes, loading, selectedDate, setSelectedDate } =
-        useCollectionRouteContext();
+    const { 
+        routes, 
+        loading, 
+        selectedDate, 
+        setSelectedDate,
+        filterStatus: contextFilterStatus,
+        setFilterStatus: setContextFilterStatus,
+        totalPages,
+        currentPage,
+        setCurrentPage,
+        allStats
+    } = useCollectionRouteContext();
 
-    const [filterStatus, setFilterStatus] =
-        useState<CollectionRouteStatus>('Chưa bắt đầu');
     const [search, setSearch] = useState('');
-    const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
     const [showDetail, setShowDetail] = useState(false);
     const [detailRouteId, setDetailRouteId] = useState<string | null>(null);
 
@@ -31,20 +37,20 @@ const CollectionRoutePage: React.FC = () => {
     }, [setSelectedDate]);
 
     const filteredRoutes = routes.filter((route) => {
-        const matchStatus = route.status === filterStatus;
         const matchSearch =
             route.itemName.toLowerCase().includes(search.toLowerCase()) ||
             route.address.toLowerCase().includes(search.toLowerCase()) ||
             route.sender?.name.toLowerCase().includes(search.toLowerCase());
-        return matchStatus && matchSearch;
+        return matchSearch;
     });
 
-    const stats = {
-        total: routes.length,
-        notStarted: routes.filter((r) => r.status === 'Chưa bắt đầu').length,
-        inProgress: routes.filter((r) => r.status === 'Đang tiến hành').length,
-        completed: routes.filter((r) => r.status === 'Hoàn thành').length,
-        cancelled: routes.filter((r) => r.status === 'Hủy bỏ').length
+    const handleFilterChange = (status: string) => {
+        setContextFilterStatus(status);
+        setCurrentPage(1); // Reset về trang 1 khi đổi filter
+    };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
     };
 
     const handleViewDetail = (id: string) => {
@@ -92,38 +98,28 @@ const CollectionRoutePage: React.FC = () => {
 
                 {/* Status Filter */}
                 <CollectionRouteFilter
-                    status={filterStatus}
-                    stats={stats}
-                    onFilterChange={setFilterStatus}
+                    status={contextFilterStatus as any}
+                    stats={allStats}
+                    onFilterChange={handleFilterChange}
                 />
             </div>
 
-            {/* Main Content: List + Map */}
-            <div className='flex gap-6 h-[calc(100vh-180px)]'>
-                {/* Left Sidebar - List */}
-                <div className='w-[420px] bg-white rounded-2xl shadow-lg border border-gray-100 overflow-y-auto h-full'>
-                    <div className='p-4'>
-                        <CollectionRouteList
-                            routes={filteredRoutes}
-                            loading={loading}
-                            selectedRoute={selectedRoute}
-                            onSelectRoute={setSelectedRoute}
-                            onViewDetail={handleViewDetail}
-                        />
-                    </div>
-                </div>
-
-                {/* Right - Map */}
-                <div className='flex-1 bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden h-full'>
-                    <CollectionRouteMap
-                        routes={routes}
-                        filteredRoutes={filteredRoutes}
-                        selectedRoute={selectedRoute}
-                        setSelectedRoute={setSelectedRoute}
-                        onViewDetail={handleViewDetail}
-                    />
-                </div>
+            {/* Main Content: List Only */}
+            <div className='mb-6'>
+                <CollectionRouteList
+                    routes={filteredRoutes}
+                    loading={loading}
+                    onViewDetail={handleViewDetail}
+                />
             </div>
+
+            {/* Pagination */}
+            <Pagination
+                page={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
+
             {/* Detail Modal */}
             {showDetail && detailRoute && (
                 <CollectorRouteDetail

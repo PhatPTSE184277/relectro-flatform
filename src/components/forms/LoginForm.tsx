@@ -7,6 +7,7 @@ import {
     IoEyeOutline
 } from 'react-icons/io5';
 import { toast } from 'react-toastify';
+import { login } from '@/services/AuthService'; // Thêm import này
 
 const LoginForm = () => {
     const [formData, setFormData] = useState({ username: '', password: '' });
@@ -32,25 +33,16 @@ const LoginForm = () => {
 
         setLoading(true);
         try {
-            let redirectUrl = '';
-            if (formData.username === 'admin') {
-                redirectUrl = '/admin/dashboard';
-            } else if (formData.username === 'collector') {
-                redirectUrl = '/collector/dashboard';
-            } else {
-                throw new Error('Sai tên đăng nhập hoặc mật khẩu!');
-                toast.error('Sai tên đăng nhập hoặc mật khẩu!');
-            }
+            const res = await login(formData.username);
 
-            localStorage.setItem(
-                'authData',
-                JSON.stringify({
-                    token: 'fake-token',
-                    user: { username: formData.username }
-                })
-            );
+            localStorage.setItem('token', res.token);
+
             toast.success('Đăng nhập thành công!');
-            router.push(redirectUrl);
+            if (formData.username === 'adminthugomnho@gmail.com') {
+                router.push('/collector/dashboard');
+            } else {
+                router.push('/admin/dashboard');
+            }
         } catch (error: any) {
             toast.error(error?.message || 'Đăng nhập thất bại!');
         } finally {
@@ -98,7 +90,6 @@ const LoginForm = () => {
                             name='password'
                             type={isPasswordVisible ? 'text' : 'password'}
                             autoComplete='current-password'
-                            required
                             className='block w-full rounded-lg border border-gray-200 py-2 pl-10 pr-10 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition'
                             placeholder='Nhập mật khẩu'
                             value={formData.password}

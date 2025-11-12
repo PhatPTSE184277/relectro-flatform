@@ -1,0 +1,31 @@
+import React from 'react';
+
+const IWProductTableSkeleton: React.FC = () => (
+    <tr className='border-b border-gray-100 hover:bg-gray-50'>
+        <td className='py-3 px-4'>
+            <div className='w-12 h-12 bg-gray-200 rounded animate-pulse' />
+        </td>
+        <td className='py-3 px-4 font-medium max-w-[220px]'>
+            <div className='h-4 bg-gray-200 rounded w-40 mb-2 animate-pulse' />
+        </td>
+        <td className='py-3 px-4'>
+            <div className='h-4 bg-gray-200 rounded w-24 animate-pulse' />
+        </td>
+        <td className='py-3 px-4'>
+            <div className='h-4 bg-gray-200 rounded w-32 animate-pulse' />
+        </td>
+        <td className='py-3 px-4'>
+            <div className='h-4 bg-gray-200 rounded w-20 animate-pulse' />
+        </td>
+        <td className='py-3 px-4'>
+            <div className='h-6 bg-gray-200 rounded-full w-20 animate-pulse' />
+        </td>
+        <td className='py-3 px-4'>
+            <div className='flex justify-center gap-2'>
+                <div className='h-8 w-8 bg-gray-200 rounded animate-pulse' />
+            </div>
+        </td>
+    </tr>
+);
+
+export default IWProductTableSkeleton;
