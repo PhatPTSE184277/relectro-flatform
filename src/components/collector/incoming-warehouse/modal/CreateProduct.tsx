@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { useCategoryContext } from '@/contexts/collector/CategoryContext';
 import CustomSelect from '@/components/ui/CustomSelect';
 import { uploadToCloudinary } from '@/utils/Cloudinary';
+import SearchableSelect from '@/components/ui/SearchableSelect';
 
 interface CreateProductProps {
     open: boolean;
@@ -352,7 +353,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                 <span className='text-red-500'>*</span>
                             </label>
                             {parentCategoryId ? (
-                                <CustomSelect
+                                <SearchableSelect
                                     options={subCategories}
                                     value={subCategoryId}
                                     onChange={setSubCategoryId}
