@@ -27,38 +27,54 @@ const CustomSelect = <T,>({
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+            if (
+                selectRef.current &&
+                !selectRef.current.contains(event.target as Node)
+            ) {
                 setIsOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+        return () =>
+            document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const selectedOption = options.find(opt => getValue(opt) === value);
+    const selectedOption = options.find((opt) => getValue(opt) === value);
 
     return (
-        <div className="relative" ref={selectRef}>
+        <div className='relative' ref={selectRef}>
             <div
                 onClick={() => !disabled && setIsOpen(!isOpen)}
-                className={`h-12 cursor-pointer flex items-center justify-between transition-all duration-300 bg-white border border-blue-200 rounded-xl px-4 shadow-sm ${isOpen ? 'ring-2 ring-blue-400 border-blue-400' : ''} ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                className={`h-12 cursor-pointer flex items-center justify-between transition-all duration-300 bg-white border border-blue-200 rounded-xl px-4 shadow-sm ${
+                    isOpen ? 'ring-2 ring-blue-400 border-blue-400' : ''
+                } ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
             >
-                <span className={selectedOption ? 'text-gray-900' : 'text-gray-400'}>
+                <span
+                    className={
+                        selectedOption ? 'text-gray-900' : 'text-gray-400'
+                    }
+                >
                     {selectedOption ? getLabel(selectedOption) : placeholder}
                 </span>
                 {showIcon && (
-                    <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
-                        <IoChevronDown size={20} className="text-blue-400" />
+                    <div
+                        className={`transition-transform duration-300 ${
+                            isOpen ? 'rotate-180' : ''
+                        }`}
+                    >
+                        <IoChevronDown size={20} className='text-blue-400' />
                     </div>
                 )}
             </div>
 
             {isOpen && !disabled && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-blue-100 rounded-xl overflow-hidden z-50 animate-slide-up shadow-2xl w-full max-h-64 overflow-y-auto">
+                <div className='absolute top-full left-0 right-0 mt-2 bg-white border border-blue-100 rounded-xl overflow-hidden z-50 animate-slide-up shadow-2xl w-full max-h-64 overflow-y-auto'>
                     {options.length === 0 ? (
-                        <div className="p-4 text-gray-400 text-center">Không có lựa chọn</div>
+                        <div className='p-4 text-gray-400 text-center'>
+                            Không có lựa chọn
+                        </div>
                     ) : (
-                        options.map(opt => (
+                        options.map((opt) => (
                             <button
                                 key={getValue(opt)}
                                 onClick={() => {

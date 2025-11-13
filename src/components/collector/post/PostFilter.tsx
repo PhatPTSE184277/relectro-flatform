@@ -27,6 +27,17 @@ const PostFilter: React.FC<PostFilterProps> = ({
 
             <div className='flex flex-wrap gap-2'>
                 <button
+                    onClick={() => onFilterChange(PostStatus.Pending)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                        status === PostStatus.Pending
+                            ? 'bg-yellow-100 text-yellow-700 shadow'
+                            : 'bg-gray-100 text-gray-600'
+                    }`}
+                >
+                    Chờ Duyệt ({stats.pending})
+                </button>
+
+                <button
                     onClick={() => onFilterChange(PostStatus.Approved)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                         status === PostStatus.Approved
@@ -46,17 +57,6 @@ const PostFilter: React.FC<PostFilterProps> = ({
                     }`}
                 >
                     Đã Từ Chối ({stats.rejected})
-                </button>
-
-                <button
-                    onClick={() => onFilterChange(PostStatus.Pending)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                        status === PostStatus.Pending
-                            ? 'bg-orange-100 text-orange-700 shadow'
-                            : 'bg-gray-100 text-gray-600'
-                    }`}
-                >
-                    Chờ Duyệt ({stats.pending})
                 </button>
             </div>
         </div>

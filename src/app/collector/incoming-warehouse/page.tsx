@@ -1,18 +1,18 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useIWProductContext } from '@/contexts/collector/IWProductContext';
 import IWProductFilter from '@/components/collector/incoming-warehouse/IWProductFilter';
 import IWProductList from '@/components/collector/incoming-warehouse/IWProductList';
 import ProductDetail from '@/components/collector/incoming-warehouse/modal/ProductDetail';
 import CreateProduct from '@/components/collector/incoming-warehouse/modal/CreateProduct';
+import ReceiveProduct from '@/components/collector/incoming-warehouse/modal/ReceiveProduct';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import SearchBox from '@/components/ui/SearchBox';
 import Pagination from '@/components/ui/Pagination';
 import { Warehouse, ScanLine, Plus } from 'lucide-react';
 
 const IncomingWarehousePage: React.FC = () => {
-    const inputRef = useRef<HTMLInputElement>(null);
     const {
         products,
         loading,
@@ -29,7 +29,7 @@ const IncomingWarehousePage: React.FC = () => {
     const [search, setSearch] = useState('');
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
-    const [qrCodeInput, setQrCodeInput] = useState('');
+    const [showReceiveModal, setShowReceiveModal] = useState(false);
 
     const [selectedDate, setSelectedDate] = useState(() => {
         const today = new Date();
@@ -51,8 +51,6 @@ const IncomingWarehousePage: React.FC = () => {
             },
             page: 1
         });
-        // Tự động focus vào input QR khi vào trang
-        inputRef.current?.focus();
     }, []);
 
     const filteredProducts = products.filter((product) => {
@@ -101,16 +99,8 @@ const IncomingWarehousePage: React.FC = () => {
         setSelectedProduct(null);
     };
 
-    const handleReceive = async (qrCode: string) => {
-        await receiveProduct(qrCode);
-    };
-
-    const handleQuickReceive = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (qrCodeInput.trim()) {
-            await receiveProduct(qrCodeInput.trim());
-            setQrCodeInput('');
-        }
+    const handleReceive = async (data: { qrCode: string; productId: string; description: string; point: number }) => {
+        await receiveProduct(data.qrCode, data.productId, data.description, data.point);
     };
 
     return (
@@ -126,36 +116,13 @@ const IncomingWarehousePage: React.FC = () => {
                     </h1>
                 </div>
 
-                <div className='flex items-center gap-3'>
-                    {/* Quick Scan QR */}
-                    <form
-                        onSubmit={handleQuickReceive}
-                        className='flex items-center gap-2'
-                    >
-                        <div className='relative'>
-                            <input
-                                ref={inputRef}
-                                type='text'
-                                value={qrCodeInput}
-                                onChange={(e) => setQrCodeInput(e.target.value)}
-                                placeholder='Quét hoặc nhập mã QR...'
-                                className='pl-10 pr-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64 text-gray-900 placeholder-gray-400'
-                                autoComplete='off'
-                            />
-                            <ScanLine
-                                className='absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400'
-                                size={18}
-                            />
-                        </div>
-                        <button
-                            type='submit'
-                            disabled={!qrCodeInput.trim()}
-                            className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-medium'
-                        >
-                            Nhận hàng
-                        </button>
-                    </form>
-                </div>
+                <button
+                    onClick={() => setShowReceiveModal(true)}
+                    className='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium flex items-center gap-2 cursor-pointer'
+                >
+                    <ScanLine size={18} />
+                    Nhận Hàng Nhập Kho
+                </button>
             </div>
 
             {/* Filter Section */}
@@ -199,7 +166,6 @@ const IncomingWarehousePage: React.FC = () => {
                     products={filteredProducts}
                     loading={loading}
                     onViewDetail={handleViewDetail}
-                    onReceive={handleReceive}
                 />
             </div>
 
@@ -226,6 +192,18 @@ const IncomingWarehousePage: React.FC = () => {
                     onConfirm={async (productData) => {
                         await createProduct(productData);
                         setShowCreateModal(false);
+                    }}
+                />
+            )}
+
+            {/* Receive Product Modal */}
+            {showReceiveModal && (
+                <ReceiveProduct
+                    open={showReceiveModal}
+                    onClose={() => setShowReceiveModal(false)}
+                    onConfirm={async (data) => {
+                        await handleReceive(data);
+                        setShowReceiveModal(false);
                     }}
                 />
             )}

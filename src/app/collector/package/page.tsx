@@ -55,12 +55,13 @@ const PackagePage: React.FC = () => {
     };
 
     const handleCreatePackage = async (packageData: {
+        packageId: string;
         packageName: string;
         productsQrCode: string[];
     }) => {
         try {
             const payload = {
-                packageId: `PKG-${Date.now()}`,
+                packageId: packageData.packageId,
                 packageName: packageData.packageName,
                 smallCollectionPointsId: filter.smallCollectionPointId || 1,
                 productsQrCode: packageData.productsQrCode

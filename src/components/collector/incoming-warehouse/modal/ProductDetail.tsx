@@ -143,15 +143,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
 
                         {/* Details Grid */}
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                            <div className='flex items-start gap-3 p-4 bg-gray-50 rounded-lg'>
-                                <Tag className='text-blue-600 mt-1' size={20} />
-                                <div>
-                                    <p className='text-sm font-medium text-gray-700'>Mã sản phẩm</p>
-                                    <p className='text-gray-900 font-mono text-xs mt-1 break-all'>
-                                        {product.productId}
-                                    </p>
-                                </div>
-                            </div>
 
                             <div className='flex items-start gap-3 p-4 bg-gray-50 rounded-lg'>
                                 <Package className='text-green-600 mt-1' size={20} />

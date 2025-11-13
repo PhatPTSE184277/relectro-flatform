@@ -23,6 +23,7 @@ const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
                             <th className='py-3 px-4 text-left'>Ảnh</th>
                             <th className='py-3 px-4 text-left'>Tên vật phẩm</th>
                             <th className='py-3 px-4 text-left'>Người gửi</th>
+                            <th className='py-3 px-4 text-left'>Người thu gom</th>
                             <th className='py-3 px-4 text-left'>Địa chỉ</th>
                             <th className='py-3 px-4 text-left'>Thời gian dự kiến</th>
                             <th className='py-3 px-4 text-center'>Hành động</th>
@@ -44,7 +45,7 @@ const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={7} className='text-center py-8 text-gray-400'>
+                                <td colSpan={8} className='text-center py-8 text-gray-400'>
                                     Không có tuyến thu gom nào.
                                 </td>
                             </tr>

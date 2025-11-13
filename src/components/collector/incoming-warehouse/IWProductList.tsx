@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import IWProductShow from './IWProductShow';
 import IWProductTableSkeleton from './IWProductTableSkeleton';
 
@@ -6,30 +6,13 @@ interface IWProductListProps {
     products: any[];
     loading: boolean;
     onViewDetail: (product: any) => void;
-    onReceive: (qrCode: string) => void;
 }
 
 const IWProductList: React.FC<IWProductListProps> = ({
     products,
     loading,
-    onViewDetail,
-    onReceive
+    onViewDetail
 }) => {
-    const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false);
-    const [receivingQrCode, setReceivingQrCode] = useState<string | null>(null);
-
-    const handleReceive = (qrCode: string) => {
-        setReceivingQrCode(qrCode);
-        setIsReceiveModalOpen(true);
-    };
-
-    const handleConfirmReceive = () => {
-        if (onReceive && receivingQrCode) {
-            onReceive(receivingQrCode);
-        }
-        setIsReceiveModalOpen(false);
-        setReceivingQrCode(null);
-    };
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>

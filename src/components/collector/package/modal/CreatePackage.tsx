@@ -10,6 +10,7 @@ interface CreatePackageProps {
     open: boolean;
     onClose: () => void;
     onConfirm: (packageData: {
+        packageId: string;
         packageName: string;
         productsQrCode: string[];
     }) => void;
@@ -28,6 +29,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     onClose,
     onConfirm
 }) => {
+    const [packageId, setPackageId] = useState('');
     const [packageName, setPackageName] = useState('');
     const [qrCodeInput, setQrCodeInput] = useState('');
     const [scannedProducts, setScannedProducts] = useState<ScannedProduct[]>(
@@ -41,6 +43,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     useEffect(() => {
         if (open) {
             // Reset form when modal opens
+            setPackageId('');
             setPackageName('');
             setQrCodeInput('');
             setScannedProducts([]);
@@ -130,6 +133,11 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     };
 
     const handleSubmit = () => {
+        if (!packageId.trim()) {
+            toast.warning('Vui lòng nhập mã package');
+            return;
+        }
+
         if (!packageName.trim()) {
             toast.warning('Vui lòng nhập tên package');
             return;
@@ -141,6 +149,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
         }
 
         onConfirm({
+            packageId: packageId.trim(),
             packageName: packageName.trim(),
             productsQrCode: scannedProducts.map((p) => p.qrCode)
         });
@@ -155,6 +164,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     }, [scannedProducts]);
 
     const handleClose = () => {
+        setPackageId('');
         setPackageName('');
         setQrCodeInput('');
         setScannedProducts([]);
@@ -195,6 +205,26 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
 
                 {/* Body */}
                 <div className='flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50'>
+                    {/* Package ID */}
+                    <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                        <label className='block text-sm font-medium text-gray-700 mb-2'>
+                            Mã Package <span className='text-red-500'>*</span>
+                        </label>
+                        <div className='relative'>
+                            <input
+                                type='text'
+                                value={packageId}
+                                onChange={(e) => setPackageId(e.target.value)}
+                                placeholder='Quét hoặc nhập mã package...'
+                                className='w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900'
+                            />
+                            <ScanLine
+                                className='absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400'
+                                size={18}
+                            />
+                        </div>
+                    </div>
+
                     {/* Package Name */}
                     <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>

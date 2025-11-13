@@ -37,7 +37,7 @@ interface IWProductContextType {
     selectedProduct: Product | null;
     setSelectedProduct: (product: Product | null) => void;
     fetchProducts: (customFilter?: Partial<ProductFilter>) => Promise<void>;
-    receiveProduct: (qrCode: string) => Promise<void>;
+    receiveProduct: (qrCode: string, productId?: string, description?: string, point?: number) => Promise<void>;
     getProductByQRCode: (qrCode: string) => Promise<Product | null>;
     createProduct: (payload: CreateProductPayload) => Promise<void>;
     filter: ProductFilter;
@@ -136,10 +136,10 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
     );
 
     const receiveProduct = useCallback(
-        async (qrCode: string) => {
+        async (qrCode: string, productId?: string, description?: string, point?: number) => {
             setLoading(true);
             try {
-                await receiveProductAtWarehouse(qrCode);
+                await receiveProductAtWarehouse(qrCode, productId, description, point);
                 toast.success('Nhận sản phẩm tại kho thành công');
                 await fetchProducts();
             } catch (err: any) {

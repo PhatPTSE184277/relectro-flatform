@@ -1,7 +1,7 @@
 import axios from '@/lib/axios';
 
 export interface Brand {
-    id: string;
+    brandId: string;
     name: string;
 }
 

@@ -27,6 +27,7 @@ export interface FilterProductsResponse {
 export interface CreateProductPayload {
     senderId: string;
     description: string;
+    smallCollectionPointId: number;
     images: string[];
     parentCategoryId: string;
     subCategoryId: string;
@@ -80,10 +81,19 @@ export const filterIncomingWarehouseProducts = async ({
 };
 
 export const receiveProductAtWarehouse = async (
-    qrCode: string
+    qrCode: string,
+    productId?: string,
+    description?: string,
+    point?: number
 ): Promise<any> => {
+    const body: Record<string, any> = {
+        description: description || '',
+        point: point || 0
+    };
+    if (productId) body.productId = productId;
     const response = await axios.put(
-        `/products/receive-at-warehouse/${qrCode}`
+        `/products/receive-at-warehouse/${qrCode}`,
+        body
     );
     return response.data;
 };

@@ -32,7 +32,7 @@ const PostPage: React.FC = () => {
         totalPages,
     } = usePostContext();
 
-    const [filterStatus, setFilterStatus] = useState<PostStatus>(PostStatus.Approved);
+    const [filterStatus, setFilterStatus] = useState<PostStatus>(PostStatus.Pending);
     const [stats, setStats] = useState<Stats>({
         total: 0,
         approved: 0,

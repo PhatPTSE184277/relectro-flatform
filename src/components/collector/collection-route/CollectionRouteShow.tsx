@@ -34,6 +34,10 @@ const CollectionRouteShow: React.FC<CollectionRouteShowProps> = ({
                 {route.sender?.name || 'Không rõ'}
             </td>
 
+            <td className='py-3 px-4 text-gray-700'>
+                {route.collector?.name || 'Không rõ'}
+            </td>
+
             <td className='py-3 px-4 text-gray-700 max-w-[250px]'>
                 <div className='line-clamp-2'>{route.address}</div>
             </td>

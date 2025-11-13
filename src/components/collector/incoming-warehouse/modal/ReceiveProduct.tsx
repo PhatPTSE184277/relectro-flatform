@@ -1,0 +1,369 @@
+/* eslint-disable @next/next/no-img-element */
+'use client';
+import React, { useState, useRef, useEffect } from 'react';
+import { X, ScanLine, Package as PackageIcon } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { getProductByQRCode } from '@/services/collector/IWProductService';
+
+interface ReceiveProductProps {
+    open: boolean;
+    onClose: () => void;
+    onConfirm: (data: {
+        qrCode: string;
+        productId: string;
+        description: string;
+        point: number;
+    }) => void;
+}
+
+interface ScannedProduct {
+    productId: string;
+    categoryName: string;
+    brandName: string;
+    description: string;
+    qrCode: string;
+    status: string;
+    estimatePoint?: number;
+    productImages?: string[];
+}
+
+const ReceiveProduct: React.FC<ReceiveProductProps> = ({
+    open,
+    onClose,
+    onConfirm
+}) => {
+    const [qrCode, setQrCode] = useState('');
+    const [scannedProduct, setScannedProduct] = useState<ScannedProduct | null>(
+        null
+    );
+    const [loading, setLoading] = useState(false);
+    const [description, setDescription] = useState('');
+    const [point, setPoint] = useState(0);
+    const [zoomImg, setZoomImg] = useState<string | null>(null);
+
+    const qrInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (open) {
+            // Reset form when modal opens
+            setQrCode('');
+            setScannedProduct(null);
+            setDescription('');
+            setPoint(0);
+            // Auto focus on QR input
+            setTimeout(() => qrInputRef.current?.focus(), 100);
+        }
+    }, [open]);
+
+    const handleScanQR = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const code = qrCode.trim();
+
+        if (!code) {
+            toast.warning('Vui lòng nhập mã QR sản phẩm');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const product = await getProductByQRCode(code);
+
+            // Check if product status is valid for receiving
+            const normalizedStatus = product.status?.toLowerCase() || '';
+            if (
+                !normalizedStatus.includes('đã thu') &&
+                normalizedStatus !== 'collected'
+            ) {
+                toast.error('Sản phẩm này chưa được thu gom hoặc không hợp lệ');
+                setQrCode('');
+                qrInputRef.current?.focus();
+                return;
+            }
+
+            setScannedProduct({
+                productId: product.productId,
+                categoryName: product.categoryName,
+                brandName: product.brandName,
+                description: product.description,
+                qrCode: product.qrCode,
+                status: product.status,
+                estimatePoint: product.estimatePoint,
+                productImages: product.productImages
+            });
+
+            setDescription(product.description || '');
+            setPoint(product.estimatePoint || 0);
+            toast.success('Đã quét sản phẩm thành công');
+        } catch (err: any) {
+            console.error('Scan QR error', err);
+            toast.error(
+                err?.response?.data?.message ||
+                    'Không tìm thấy sản phẩm với mã QR này'
+            );
+            setQrCode('');
+            qrInputRef.current?.focus();
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSubmit = () => {
+        if (!scannedProduct) {
+            toast.warning('Vui lòng quét mã QR sản phẩm trước');
+            return;
+        }
+
+        onConfirm({
+            qrCode: scannedProduct.qrCode,
+            productId: scannedProduct.productId,
+            description: description.trim(),
+            point
+        });
+
+        handleClose();
+    };
+
+    const handleClose = () => {
+        setQrCode('');
+        setScannedProduct(null);
+        setDescription('');
+        setPoint(0);
+        onClose();
+    };
+
+    if (!open) return null;
+
+    return (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
+            {/* Overlay */}
+            <div
+                className='absolute inset-0 bg-black/30 backdrop-blur-sm'
+                onClick={handleClose}
+            ></div>
+
+            {/* Modal container */}
+            <div className='relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
+                {/* Header */}
+                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-green-50 to-blue-50'>
+                    <div>
+                        <h2 className='text-2xl font-bold text-gray-900'>
+                            Nhận Sản Phẩm Nhập Kho
+                        </h2>
+                        <p className='text-sm text-gray-500 mt-1'>
+                            Quét mã QR để nhận sản phẩm đã thu gom vào kho
+                        </p>
+                    </div>
+                    <button
+                        onClick={handleClose}
+                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
+                        style={{ cursor: 'pointer' }}
+                    >
+                        <X size={28} />
+                    </button>
+                </div>
+
+                {/* Body */}
+                <div className='flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50'>
+                    {/* QR Scanner */}
+                    <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                        <label className='block text-sm font-medium text-gray-700 mb-2'>
+                            Quét QR Code Sản Phẩm{' '}
+                            <span className='text-red-500'>*</span>
+                        </label>
+                        <form onSubmit={handleScanQR} className='flex gap-2'>
+                            <div className='relative flex-1'>
+                                <input
+                                    ref={qrInputRef}
+                                    type='text'
+                                    value={qrCode}
+                                    onChange={(e) => setQrCode(e.target.value)}
+                                    placeholder='Quét hoặc nhập mã QR sản phẩm...'
+                                    disabled={loading || !!scannedProduct}
+                                    className='w-full pl-10 pr-4 py-2 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
+                                    autoComplete='off'
+                                />
+                                <ScanLine
+                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400'
+                                    size={18}
+                                />
+                            </div>
+                            <button
+                                type='submit'
+                                disabled={loading || !!scannedProduct}
+                                className='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
+                            >
+                                {loading ? 'Đang quét...' : 'Quét'}
+                            </button>
+                        </form>
+                    </div>
+
+                    {/* Scanned Product Info */}
+                    {scannedProduct && (
+                        <div className='bg-white rounded-xl p-4 shadow-sm border border-green-200'>
+                            <div className='flex items-center gap-2 mb-4'>
+                                <PackageIcon
+                                    className='text-green-600'
+                                    size={20}
+                                />
+                                <h3 className='text-lg font-semibold text-gray-900'>
+                                    Thông tin sản phẩm
+                                </h3>
+                            </div>
+
+                            <div className='flex gap-4'>
+                                {/* Product Image */}
+                                {scannedProduct.productImages &&
+                                    scannedProduct.productImages.length > 0 && (
+                                        <div
+                                            className='w-24 h-24 bg-gray-100 rounded-lg overflow-hidden shadow-sm shrink-0 cursor-pointer'
+                                            onClick={() =>
+                                                setZoomImg(
+                                                    scannedProduct.productImages![0]
+                                                )
+                                            }
+                                        >
+                                            <img
+                                                src={
+                                                    scannedProduct
+                                                        .productImages[0]
+                                                }
+                                                alt={
+                                                    scannedProduct.categoryName
+                                                }
+                                                className='w-full h-full object-cover'
+                                            />
+                                        </div>
+                                    )}
+                                {/* Zoom Image Modal */}
+                                {zoomImg && (
+                                    <div
+                                        className='fixed inset-0 z-999 flex items-center justify-center bg-black/70 cursor-pointer'
+                                        onClick={() => setZoomImg(null)}
+                                    >
+                                        <img
+                                            src={zoomImg}
+                                            alt='Zoom'
+                                            className='max-w-[90vw] max-h-[90vh] rounded-xl shadow-2xl border-4 border-white object-contain'
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Product Details */}
+                                <div className='flex-1 space-y-2'>
+                                    <div>
+                                        <p className='text-sm text-gray-500'>Mã QR</p>
+                                        <p className='text-base font-mono text-gray-900'>{scannedProduct.qrCode}</p>
+                                    </div>
+                                    <div>
+                                        <p className='text-sm text-gray-500'>Danh mục</p>
+                                        <p className='text-base font-semibold text-gray-900'>{scannedProduct.categoryName}</p>
+                                    </div>
+                                    <div>
+                                        <p className='text-sm text-gray-500'>Thương hiệu</p>
+                                        <p className='text-base font-medium text-gray-900'>{scannedProduct.brandName}</p>
+                                    </div>
+                                    <div>
+                                        <p className='text-sm text-gray-500'>Trạng thái</p>
+                                        <span className='px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700'>{scannedProduct.status}</span>
+                                    </div>
+                                    {scannedProduct.estimatePoint !== undefined && (
+                                        <div>
+                                            <p className='text-sm text-gray-500'>Điểm ước tính</p>
+                                            <p className='text-base font-semibold text-green-600'>{scannedProduct.estimatePoint} điểm</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Remove Button */}
+                            <button
+                                onClick={() => {
+                                    setScannedProduct(null);
+                                    setQrCode('');
+                                    setTimeout(
+                                        () => qrInputRef.current?.focus(),
+                                        100
+                                    );
+                                }}
+                                className='mt-4 w-full px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition font-medium cursor-pointer'
+                            >
+                                Hủy và quét lại
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Description */}
+                    {scannedProduct && (
+                        <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                Ghi chú (tùy chọn)
+                            </label>
+                            <textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder='Nhập ghi chú về sản phẩm...'
+                                rows={3}
+                                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 resize-none'
+                            />
+                        </div>
+                    )}
+
+                    {/* Point */}
+                    {scannedProduct && (
+                        <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                Điểm thưởng
+                            </label>
+                            <input
+                                type='number'
+                                value={point}
+                                onChange={(e) =>
+                                    setPoint(Number(e.target.value))
+                                }
+                                placeholder='Nhập số điểm...'
+                                min={0}
+                                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900'
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {/* Footer */}
+                <div className='flex justify-between items-center gap-3 p-5 border-t border-gray-100 bg-white'>
+                    <button
+                        onClick={handleClose}
+                        className='px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium cursor-pointer'
+                    >
+                        Hủy
+                    </button>
+                    <button
+                        onClick={handleSubmit}
+                        disabled={!scannedProduct || loading}
+                        className='px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
+                    >
+                        Xác nhận nhận hàng
+                    </button>
+                </div>
+            </div>
+
+            {/* Animation */}
+            <style jsx>{`
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: scale(0.95);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                }
+                .animate-fadeIn {
+                    animation: fadeIn 0.2s ease-out;
+                }
+            `}</style>
+        </div>
+    );
+};
+
+export default ReceiveProduct;
