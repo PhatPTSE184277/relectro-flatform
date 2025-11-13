@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { toast } from 'react-toastify';
-import { useProductContext } from '@/contexts/collector/IWProductContext';
+import { useIWProductContext } from '@/contexts/collector/IWProductContext';
 import IWProductFilter from '@/components/collector/incoming-warehouse/IWProductFilter';
 import IWProductList from '@/components/collector/incoming-warehouse/IWProductList';
 import ProductDetail from '@/components/collector/incoming-warehouse/modal/ProductDetail';
+import CreateProduct from '@/components/collector/incoming-warehouse/modal/CreateProduct';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import SearchBox from '@/components/ui/SearchBox';
 import Pagination from '@/components/ui/Pagination';
-import { Warehouse, ScanLine } from 'lucide-react';
+import { Warehouse, ScanLine, Plus } from 'lucide-react';
 
 const IncomingWarehousePage: React.FC = () => {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -22,11 +22,13 @@ const IncomingWarehousePage: React.FC = () => {
         allStats,
         receiveProduct,
         selectedProduct,
-        setSelectedProduct
-    } = useProductContext();
+        setSelectedProduct,
+        createProduct
+    } = useIWProductContext();
 
     const [search, setSearch] = useState('');
     const [showDetailModal, setShowDetailModal] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
     const [qrCodeInput, setQrCodeInput] = useState('');
 
     const [selectedDate, setSelectedDate] = useState(() => {
@@ -124,34 +126,45 @@ const IncomingWarehousePage: React.FC = () => {
                     </h1>
                 </div>
 
-                {/* Quick Scan QR */}
-                <form
-                    onSubmit={handleQuickReceive}
-                    className='flex items-center gap-2'
-                >
-                    <div className='relative'>
-                        <input
-                            ref={inputRef}
-                            type='text'
-                            value={qrCodeInput}
-                            onChange={(e) => setQrCodeInput(e.target.value)}
-                            placeholder='Quét hoặc nhập mã QR...'
-                            className='pl-10 pr-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64 text-gray-900 placeholder-gray-400'
-                            autoComplete='off'
-                        />
-                        <ScanLine
-                            className='absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400'
-                            size={18}
-                        />
-                    </div>
+                <div className='flex items-center gap-3'>
+                    {/* Button Tạo Sản Phẩm Mới */}
                     <button
-                        type='submit'
-                        disabled={!qrCodeInput.trim()}
-                        className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-medium'
+                        onClick={() => setShowCreateModal(true)}
+                        className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium flex items-center gap-2 cursor-pointer'
                     >
-                        Nhận hàng
+                        <Plus size={18} />
+                        Tạo Sản Phẩm Mới
                     </button>
-                </form>
+
+                    {/* Quick Scan QR */}
+                    <form
+                        onSubmit={handleQuickReceive}
+                        className='flex items-center gap-2'
+                    >
+                        <div className='relative'>
+                            <input
+                                ref={inputRef}
+                                type='text'
+                                value={qrCodeInput}
+                                onChange={(e) => setQrCodeInput(e.target.value)}
+                                placeholder='Quét hoặc nhập mã QR...'
+                                className='pl-10 pr-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64 text-gray-900 placeholder-gray-400'
+                                autoComplete='off'
+                            />
+                            <ScanLine
+                                className='absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400'
+                                size={18}
+                            />
+                        </div>
+                        <button
+                            type='submit'
+                            disabled={!qrCodeInput.trim()}
+                            className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-medium'
+                        >
+                            Nhận hàng
+                        </button>
+                    </form>
+                </div>
             </div>
 
             {/* Filter Section */}
@@ -204,6 +217,18 @@ const IncomingWarehousePage: React.FC = () => {
                 <ProductDetail
                     product={selectedProduct}
                     onClose={handleCloseModal}
+                />
+            )}
+
+            {/* Create Product Modal */}
+            {showCreateModal && (
+                <CreateProduct
+                    open={showCreateModal}
+                    onClose={() => setShowCreateModal(false)}
+                    onConfirm={async (productData) => {
+                        await createProduct(productData);
+                        setShowCreateModal(false);
+                    }}
                 />
             )}
         </div>

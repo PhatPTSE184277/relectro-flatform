@@ -1,0 +1,148 @@
+'use client';
+
+import React, { useState } from 'react';
+import { usePackageContext } from '@/contexts/collector/PackageContext';
+import PackageList from '@/components/collector/package/PackageList';
+import PackageDetail from '@/components/collector/package/modal/PackageDetail';
+import CreatePackage from '@/components/collector/package/modal/CreatePackage';
+import PackageFilter from '@/components/collector/package/PackageFilter';
+import SearchBox from '@/components/ui/SearchBox';
+import Pagination from '@/components/ui/Pagination';
+import { Package, Plus } from 'lucide-react';
+import type { Package as PackageType } from '@/services/collector/PackageService';
+
+const PackagePage: React.FC = () => {
+    const {
+        packages,
+        loading,
+        selectedPackage,
+        setSelectedPackage,
+        filter,
+        setFilter,
+        totalPages,
+        allStats,
+        createNewPackage
+    } = usePackageContext();
+
+    const [search, setSearch] = useState('');
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+
+    const filteredPackages = packages.filter((pkg) => {
+        const matchSearch =
+            pkg.packageId.toLowerCase().includes(search.toLowerCase()) ||
+            pkg.packageName.toLowerCase().includes(search.toLowerCase()) ||
+            pkg.products.some(
+                (p) =>
+                    p.categoryName.toLowerCase().includes(search.toLowerCase()) ||
+                    p.brandName.toLowerCase().includes(search.toLowerCase())
+            );
+        return matchSearch;
+    });
+
+    const handleViewDetail = (pkg: PackageType) => {
+        setSelectedPackage(pkg);
+        setShowDetailModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowDetailModal(false);
+        setSelectedPackage(null);
+    };
+
+    const handlePageChange = (page: number) => {
+        setFilter({ page });
+    };
+
+    const handleCreatePackage = async (packageData: {
+        packageName: string;
+        productsQrCode: string[];
+    }) => {
+        try {
+            const payload = {
+                packageId: `PKG-${Date.now()}`,
+                packageName: packageData.packageName,
+                smallCollectionPointsId: filter.smallCollectionPointId || 1,
+                productsQrCode: packageData.productsQrCode
+            };
+            
+            await createNewPackage(payload);
+            setShowCreateModal(false);
+        } catch (error) {
+            console.error('Error creating package:', error);
+        }
+    };
+
+    return (
+        <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+            {/* Header */}
+            <div className='flex justify-between items-center mb-6'>
+                <div className='flex items-center gap-3'>
+                    <div className='w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center'>
+                        <Package className='text-white' size={20} />
+                    </div>
+                    <h1 className='text-3xl font-bold text-gray-900'>
+                        Quản lý Package
+                    </h1>
+                </div>
+                
+                <button
+                    onClick={() => setShowCreateModal(true)}
+                    className='flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-md'
+                >
+                    <Plus size={20} />
+                    Tạo Package Mới
+                </button>
+            </div>
+
+            {/* Filter Section */}
+            <div className='mb-6 space-y-4'>
+                <PackageFilter
+                    status={(filter.status as any) || 'Đã đóng thùng'}
+                    stats={allStats}
+                    onFilterChange={(status: string) => setFilter({ status, page: 1 })}
+                />
+                <div className='max-w-md'>
+                    <SearchBox
+                        value={search}
+                        onChange={setSearch}
+                        placeholder='Tìm kiếm package...'
+                    />
+                </div>
+            </div>
+
+            {/* Main Content: List */}
+            <div className='mb-6'>
+                <PackageList
+                    packages={filteredPackages}
+                    loading={loading}
+                    onViewDetail={handleViewDetail}
+                />
+            </div>
+
+            {/* Pagination */}
+            <Pagination
+                page={filter.page || 1}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
+
+            {/* Detail Modal */}
+            {showDetailModal && selectedPackage && (
+                <PackageDetail
+                    package={selectedPackage}
+                    onClose={handleCloseModal}
+                />
+            )}
+
+            {/* Create Package Modal */}
+            <CreatePackage
+                open={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onConfirm={handleCreatePackage}
+            />
+        </div>
+    );
+};
+
+export default PackagePage;

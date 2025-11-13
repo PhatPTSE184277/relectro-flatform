@@ -15,9 +15,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
 
     if (!product) return null;
 
+    // Badge cho status
     const getStatusBadge = (status: string) => {
         const normalizedStatus = status?.toLowerCase() || '';
-        
         if (normalizedStatus.includes('chờ') || normalizedStatus === 'pending') {
             return (
                 <span className='px-4 py-2 rounded-full text-sm font-medium bg-yellow-100 text-yellow-700'>
@@ -46,6 +46,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                 </span>
             );
         }
+        if (normalizedStatus.includes('đóng gói') || normalizedStatus === 'packed') {
+            return (
+                <span className='px-4 py-2 rounded-full text-sm font-medium bg-purple-100 text-purple-700'>
+                    Đã đóng gói
+                </span>
+            );
+        }
         return (
             <span className='px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700'>
                 {status}
@@ -62,9 +69,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-5xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]'>
+            <div className='relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-blue-50 to-purple-50'>
+                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-900'>Chi tiết sản phẩm</h2>
                         {getStatusBadge(product.status)}
@@ -139,9 +146,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                             <div className='flex items-start gap-3 p-4 bg-gray-50 rounded-lg'>
                                 <Tag className='text-blue-600 mt-1' size={20} />
                                 <div>
-                                    <p className='text-sm font-medium text-gray-700'>Mã QR</p>
-                                    <p className='text-gray-900 font-mono text-sm mt-1'>
-                                        {product.qrCode || <span className='text-gray-400'>Chưa có mã</span>}
+                                    <p className='text-sm font-medium text-gray-700'>Mã sản phẩm</p>
+                                    <p className='text-gray-900 font-mono text-xs mt-1 break-all'>
+                                        {product.productId}
                                     </p>
                                 </div>
                             </div>
@@ -149,36 +156,31 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                             <div className='flex items-start gap-3 p-4 bg-gray-50 rounded-lg'>
                                 <Package className='text-green-600 mt-1' size={20} />
                                 <div>
-                                    <p className='text-sm font-medium text-gray-700'>Kích thước</p>
-                                    <p className='text-gray-900 text-sm mt-1'>
-                                        {product.sizeTierName || <span className='text-gray-400'>Chưa xác định</span>}
+                                    <p className='text-sm font-medium text-gray-700'>Mã QR</p>
+                                    <p className='text-gray-900 font-mono text-sm mt-1'>
+                                        {product.qrCode || <span className='text-gray-400'>Chưa có mã</span>}
                                     </p>
                                 </div>
                             </div>
 
-                            <div className='flex items-start gap-3 p-4 bg-gray-50 rounded-lg'>
-                                <MapPin className='text-red-600 mt-1' size={20} />
-                                <div>
-                                    <p className='text-sm font-medium text-gray-700'>Điểm thu gom</p>
-                                    <p className='text-gray-900 text-sm mt-1'>
-                                        {product.smallCollectionPointName || <span className='text-gray-400'>Không rõ</span>}
-                                    </p>
+                            {product.sizeTierName && (
+                                <div className='flex items-start gap-3 p-4 bg-gray-50 rounded-lg'>
+                                    <MapPin className='text-red-600 mt-1' size={20} />
+                                    <div>
+                                        <p className='text-sm font-medium text-gray-700'>Kích thước</p>
+                                        <p className='text-gray-900 text-sm mt-1'>
+                                            {product.sizeTierName}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             <div className='flex items-start gap-3 p-4 bg-gray-50 rounded-lg'>
                                 <Calendar className='text-purple-600 mt-1' size={20} />
                                 <div>
-                                    <p className='text-sm font-medium text-gray-700'>Ngày thu gom</p>
+                                    <p className='text-sm font-medium text-gray-700'>Danh mục</p>
                                     <p className='text-gray-900 text-sm mt-1'>
-                                        {product.pickUpDate 
-                                            ? new Date(product.pickUpDate).toLocaleDateString('vi-VN', {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric'
-                                            })
-                                            : <span className='text-gray-400'>Chưa xác định</span>
-                                        }
+                                        {product.categoryName}
                                     </p>
                                 </div>
                             </div>
@@ -191,20 +193,18 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                                 <div className='grid grid-cols-2 gap-2'>
                                     {product.attributes.map((attr: any, idx: number) => (
                                         <div key={idx} className='text-sm bg-gray-50 rounded px-3 py-2'>
-                                            <span className='text-gray-600'>{attr.name}:</span>{' '}
-                                            <span className='text-gray-900 font-medium'>{attr.value}</span>
+                                            <span className='text-gray-600'>
+                                                {attr.attributeName || attr.name}:
+                                            </span>{' '}
+                                            <span className='text-gray-900 font-medium'>
+                                                {attr.value}
+                                                {attr.unit ? ` ${attr.unit}` : ''}
+                                            </span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         )}
-
-                        {/* IDs Info */}
-                        <div className='border-t pt-4 text-xs text-gray-500 space-y-1'>
-                            <p><strong>Product ID:</strong> {product.productId}</p>
-                            <p><strong>Category ID:</strong> {product.categoryId}</p>
-                            <p><strong>Brand ID:</strong> {product.brandId}</p>
-                        </div>
                     </div>
                 </div>
             </div>

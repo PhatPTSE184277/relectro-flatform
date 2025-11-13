@@ -24,6 +24,17 @@ export interface FilterProductsResponse {
     data: Product[];
 }
 
+export interface CreateProductPayload {
+    senderId: string;
+    description: string;
+    images: string[];
+    parentCategoryId: string;
+    subCategoryId: string;
+    brandId: string;
+    qrCode: string;
+    point: number;
+}
+
 export const filterIncomingWarehouseProducts = async ({
     page = 1,
     limit = 10,
@@ -81,5 +92,12 @@ export const getProductByQRCode = async (
     qrCode: string
 ): Promise<any> => {
     const response = await axios.get(`/products/qrcode/${qrCode}`);
+    return response.data;
+};
+
+export const createIncomingWarehouseProduct = async (
+    payload: CreateProductPayload
+): Promise<any> => {
+    const response = await axios.post('/products/warehouse', payload);
     return response.data;
 };

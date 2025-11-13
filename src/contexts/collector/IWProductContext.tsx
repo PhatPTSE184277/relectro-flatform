@@ -11,30 +11,12 @@ import React, {
 import {
     filterIncomingWarehouseProducts,
     receiveProductAtWarehouse,
-    getProductByQRCode
+    getProductByQRCode,
+    createIncomingWarehouseProduct,
+    Product,
+    CreateProductPayload
 } from '@/services/collector/IWProductService';
 import { toast } from 'react-toastify';
-
-interface ProductContextType {
-    products: any[];
-    loading: boolean;
-    selectedProduct: any;
-    setSelectedProduct: (product: any) => void;
-    fetchProducts: (customFilter?: Partial<ProductFilter>) => Promise<void>;
-    receiveProduct: (qrCode: string) => Promise<void>;
-    getProductByQRCode: (qrCode: string) => Promise<any>;
-    filter: ProductFilter;
-    setFilter: (filter: Partial<ProductFilter>) => void;
-    totalPages: number;
-    totalItems: number;
-    allStats: {
-        total: number;
-        pending: number;
-        collected: number;
-        cancelled: number;
-        received: number;
-    };
-}
 
 interface ProductFilter {
     page: number;
@@ -49,14 +31,36 @@ interface ProductFilter {
     status?: string;
 }
 
-const ProductContext = createContext<ProductContextType | undefined>(undefined);
+interface IWProductContextType {
+    products: Product[];
+    loading: boolean;
+    selectedProduct: Product | null;
+    setSelectedProduct: (product: Product | null) => void;
+    fetchProducts: (customFilter?: Partial<ProductFilter>) => Promise<void>;
+    receiveProduct: (qrCode: string) => Promise<void>;
+    getProductByQRCode: (qrCode: string) => Promise<Product | null>;
+    createProduct: (payload: CreateProductPayload) => Promise<void>;
+    filter: ProductFilter;
+    setFilter: (filter: Partial<ProductFilter>) => void;
+    totalPages: number;
+    totalItems: number;
+    allStats: {
+        total: number;
+        pending: number;
+        collected: number;
+        cancelled: number;
+        received: number;
+    };
+}
+
+const IWProductContext = createContext<IWProductContextType | undefined>(undefined);
 
 type Props = { children: ReactNode };
 
-export const ProductProvider: React.FC<Props> = ({ children }) => {
-    const [products, setProducts] = useState<any[]>([]);
+export const IWProductProvider: React.FC<Props> = ({ children }) => {
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [selectedProduct, setSelectedProduct] = useState<any>(null);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [allStats, setAllStats] = useState({
@@ -75,12 +79,10 @@ export const ProductProvider: React.FC<Props> = ({ children }) => {
         status: 'Chờ thu gom'
     });
 
-    // Chỉ cập nhật filter khi thực sự muốn thay đổi filter gốc
     const setFilter = (newFilter: Partial<ProductFilter>) => {
         setFilterState((prev) => ({ ...prev, ...newFilter }));
     };
 
-    // Nếu truyền customFilter thì chỉ filter tạm thời, không set lại filter gốc
     const fetchProducts = useCallback(
         async (customFilter?: Partial<ProductFilter>) => {
             setLoading(true);
@@ -109,16 +111,16 @@ export const ProductProvider: React.FC<Props> = ({ children }) => {
                 const allProducts = allProductsResponse.data || [];
                 setAllStats({
                     total: allProducts.length,
-                    pending: allProducts.filter((p: any) => 
+                    pending: allProducts.filter((p: any) =>
                         p.status?.toLowerCase().includes('chờ') || p.status?.toLowerCase() === 'pending'
                     ).length,
-                    collected: allProducts.filter((p: any) => 
+                    collected: allProducts.filter((p: any) =>
                         p.status?.toLowerCase().includes('đã thu') || p.status?.toLowerCase() === 'collected'
                     ).length,
-                    cancelled: allProducts.filter((p: any) => 
+                    cancelled: allProducts.filter((p: any) =>
                         p.status?.toLowerCase().includes('hủy') || p.status?.toLowerCase() === 'cancelled'
                     ).length,
-                    received: allProducts.filter((p: any) => 
+                    received: allProducts.filter((p: any) =>
                         p.status?.toLowerCase().includes('nhập') || p.status?.toLowerCase() === 'received'
                     ).length
                 });
@@ -153,7 +155,6 @@ export const ProductProvider: React.FC<Props> = ({ children }) => {
         [fetchProducts]
     );
 
-    // Thêm hàm lấy sản phẩm theo QR code
     const getProductByQRCodeHandler = useCallback(
         async (qrCode: string) => {
             setLoading(true);
@@ -172,12 +173,32 @@ export const ProductProvider: React.FC<Props> = ({ children }) => {
         []
     );
 
+    const createProduct = useCallback(
+        async (payload: CreateProductPayload) => {
+            setLoading(true);
+            try {
+                await createIncomingWarehouseProduct(payload);
+                toast.success('Tạo sản phẩm nhập kho thành công');
+                await fetchProducts();
+            } catch (err: any) {
+                console.error('createProduct error', err);
+                toast.error(
+                    err?.response?.data?.message ||
+                        'Lỗi khi tạo sản phẩm nhập kho'
+                );
+            } finally {
+                setLoading(false);
+            }
+        },
+        [fetchProducts]
+    );
+
     useEffect(() => {
         void fetchProducts();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filter]);
 
-    const value: ProductContextType = {
+    const value: IWProductContextType = {
         products,
         loading,
         selectedProduct,
@@ -185,6 +206,7 @@ export const ProductProvider: React.FC<Props> = ({ children }) => {
         fetchProducts,
         receiveProduct,
         getProductByQRCode: getProductByQRCodeHandler,
+        createProduct,
         filter,
         setFilter,
         totalPages,
@@ -193,19 +215,19 @@ export const ProductProvider: React.FC<Props> = ({ children }) => {
     };
 
     return (
-        <ProductContext.Provider value={value}>
+        <IWProductContext.Provider value={value}>
             {children}
-        </ProductContext.Provider>
+        </IWProductContext.Provider>
     );
 };
 
-export const useProductContext = (): ProductContextType => {
-    const ctx = useContext(ProductContext);
+export const useIWProductContext = (): IWProductContextType => {
+    const ctx = useContext(IWProductContext);
     if (!ctx)
         throw new Error(
-            'useProductContext must be used within ProductProvider'
+            'useIWProductContext must be used within IWProductProvider'
         );
     return ctx;
 };
 
-export default ProductContext;
+export default IWProductContext;
