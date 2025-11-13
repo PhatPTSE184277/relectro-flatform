@@ -10,7 +10,8 @@ import React, {
 } from 'react';
 import {
     filterIncomingWarehouseProducts,
-    receiveProductAtWarehouse
+    receiveProductAtWarehouse,
+    getProductByQRCode
 } from '@/services/collector/IWProductService';
 import { toast } from 'react-toastify';
 
@@ -21,6 +22,7 @@ interface ProductContextType {
     setSelectedProduct: (product: any) => void;
     fetchProducts: (customFilter?: Partial<ProductFilter>) => Promise<void>;
     receiveProduct: (qrCode: string) => Promise<void>;
+    getProductByQRCode: (qrCode: string) => Promise<any>;
     filter: ProductFilter;
     setFilter: (filter: Partial<ProductFilter>) => void;
     totalPages: number;
@@ -151,6 +153,25 @@ export const ProductProvider: React.FC<Props> = ({ children }) => {
         [fetchProducts]
     );
 
+    // Thêm hàm lấy sản phẩm theo QR code
+    const getProductByQRCodeHandler = useCallback(
+        async (qrCode: string) => {
+            setLoading(true);
+            try {
+                const product = await getProductByQRCode(qrCode);
+                setSelectedProduct(product);
+                return product;
+            } catch (err) {
+                console.error('getProductByQRCode error', err);
+                toast.error('Không tìm thấy sản phẩm với mã QR này');
+                return null;
+            } finally {
+                setLoading(false);
+            }
+        },
+        []
+    );
+
     useEffect(() => {
         void fetchProducts();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -163,6 +184,7 @@ export const ProductProvider: React.FC<Props> = ({ children }) => {
         setSelectedProduct,
         fetchProducts,
         receiveProduct,
+        getProductByQRCode: getProductByQRCodeHandler,
         filter,
         setFilter,
         totalPages,

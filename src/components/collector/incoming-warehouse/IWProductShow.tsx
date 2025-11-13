@@ -52,33 +52,40 @@ const IWProductShow: React.FC<IWProductShowProps> = ({
     };
 
     const canReceive = product.status?.toLowerCase().includes('đã thu') || product.status?.toLowerCase() === 'collected';
+    
+    // Lấy ảnh đầu tiên từ mảng productImages
+    const productImage = product.productImages?.[0] || '/placeholder.png';
 
     return (
         <tr className='border-b border-gray-100 hover:bg-blue-50/40 transition-colors'>
             <td className='py-3 px-4'>
                 <div className='w-12 h-12 bg-gray-100 rounded-lg overflow-hidden shadow-sm'>
                     <img
-                        src={product.image || '/placeholder.png'}
-                        alt={product.name || 'Sản phẩm'}
+                        src={productImage}
+                        alt={product.categoryName || 'Sản phẩm'}
                         className='w-full h-full object-cover'
                     />
                 </div>
             </td>
 
             <td className='py-3 px-4 font-medium max-w-[220px]'>
-                <div className='text-gray-900 line-clamp-2'>{product.name || 'Không rõ'}</div>
+                <div className='text-gray-900 font-semibold'>{product.categoryName || 'Không rõ'}</div>
+                <div className='text-xs text-gray-500 mt-1'>{product.brandName || 'Không rõ'}</div>
+                {product.description && (
+                    <div className='text-xs text-gray-400 mt-1 line-clamp-1'>{product.description}</div>
+                )}
             </td>
 
             <td className='py-3 px-4 text-gray-700 font-mono text-xs'>
-                {product.qrCode || 'N/A'}
+                {product.qrCode ? product.qrCode : <span className='text-gray-400'>Chưa có</span>}
             </td>
 
             <td className='py-3 px-4 text-gray-700'>
-                {product.smallCollectionPointName || 'Không rõ'}
+                {'smallCollectionPointName' in product ? (product.smallCollectionPointName || 'Không rõ') : 'Không rõ'}
             </td>
 
             <td className='py-3 px-4 text-sm text-gray-600'>
-                {product.pickUpDate ? new Date(product.pickUpDate).toLocaleDateString('vi-VN') : 'N/A'}
+                {product.pickUpDate ? new Date(product.pickUpDate).toLocaleDateString('vi-VN') : 'Chưa xác định'}
             </td>
 
             <td className='py-3 px-4'>
@@ -94,15 +101,6 @@ const IWProductShow: React.FC<IWProductShowProps> = ({
                     >
                         <Eye size={16} />
                     </button>
-                    {canReceive && (
-                        <button
-                            onClick={onReceive}
-                            className='text-green-600 hover:text-green-800 flex items-center gap-1 font-medium transition cursor-pointer'
-                            title='Nhận hàng vào kho'
-                        >
-                            <Package size={16} />
-                        </button>
-                    )}
                 </div>
             </td>
         </tr>

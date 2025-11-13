@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import IWProductShow from './IWProductShow';
 import IWProductTableSkeleton from './IWProductTableSkeleton';
 
@@ -15,6 +15,21 @@ const IWProductList: React.FC<IWProductListProps> = ({
     onViewDetail,
     onReceive
 }) => {
+    const [isReceiveModalOpen, setIsReceiveModalOpen] = useState(false);
+    const [receivingQrCode, setReceivingQrCode] = useState<string | null>(null);
+
+    const handleReceive = (qrCode: string) => {
+        setReceivingQrCode(qrCode);
+        setIsReceiveModalOpen(true);
+    };
+
+    const handleConfirmReceive = () => {
+        if (onReceive && receivingQrCode) {
+            onReceive(receivingQrCode);
+        }
+        setIsReceiveModalOpen(false);
+        setReceivingQrCode(null);
+    };
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>
@@ -37,12 +52,12 @@ const IWProductList: React.FC<IWProductListProps> = ({
                                 <IWProductTableSkeleton key={idx} />
                             ))
                         ) : products.length > 0 ? (
-                            products.map((product, idx) => (
+                            products.map((product) => (
                                 <IWProductShow
-                                    key={product.id || idx}
+                                    key={product.productId}
                                     product={product}
                                     onView={() => onViewDetail(product)}
-                                    onReceive={() => onReceive(product.qrCode)}
+                                    onReceive={() => handleReceive(product.qrCode)}
                                 />
                             ))
                         ) : (
