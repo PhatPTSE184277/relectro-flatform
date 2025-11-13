@@ -2,8 +2,12 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { getBrandsBySubCategory, Brand } from '@/services/collector/BranchService';
 import { X, ScanLine, Plus, Upload, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { useCategoryContext } from '@/contexts/collector/CategoryContext';
+import CustomSelect from '@/components/ui/CustomSelect';
+import { uploadToCloudinary } from '@/utils/Cloudinary';
 
 interface CreateProductProps {
     open: boolean;
@@ -28,23 +32,33 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     const [senderId, setSenderId] = useState('');
     const [description, setDescription] = useState('');
     const [images, setImages] = useState<string[]>([]);
+    const [imageFiles, setImageFiles] = useState<File[]>([]);
+    const [uploading, setUploading] = useState(false);
     const [parentCategoryId, setParentCategoryId] = useState('');
     const [subCategoryId, setSubCategoryId] = useState('');
     const [brandId, setBrandId] = useState('');
+    const [brands, setBrands] = useState<Brand[]>([]);
+    const [brandLoading, setBrandLoading] = useState(false);
     const [qrCode, setQrCode] = useState('');
     const [point, setPoint] = useState(0);
-    
+
     const senderInputRef = useRef<HTMLInputElement>(null);
     const qrInputRef = useRef<HTMLInputElement>(null);
 
+    // Category context
+    const {
+        parentCategories,
+        subCategories,
+        setSelectedParentId,
+        loading: categoryLoading
+    } = useCategoryContext();
+
     useEffect(() => {
         if (open) {
-            // Auto focus on sender QR input when modal opens
             setTimeout(() => senderInputRef.current?.focus(), 100);
         }
     }, [open]);
 
-    // Auto focus lại sau khi quét sender ID
     useEffect(() => {
         if (senderId && qrInputRef.current) {
             qrInputRef.current.focus();
@@ -54,14 +68,13 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     const handleScanSender = (e: React.FormEvent) => {
         e.preventDefault();
         const scannedSenderId = senderId.trim();
-        
+
         if (!scannedSenderId) {
             toast.warning('Vui lòng quét mã QR người gửi');
             return;
         }
 
         toast.success('Đã quét mã người gửi');
-        // Auto focus to product QR input
         setTimeout(() => qrInputRef.current?.focus(), 100);
     };
 
@@ -69,11 +82,31 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         const files = e.target.files;
         if (!files) return;
 
-        // Convert files to base64 or URLs
+        // Validate số lượng ảnh
+        if (images.length + files.length > 5) {
+            toast.warning('Tối đa 5 ảnh/video cho sản phẩm!');
+            return;
+        }
+
+        const validFiles: File[] = [];
+        const previews: string[] = [];
+
         Array.from(files).forEach((file) => {
+            // Validate dung lượng từng file
+            if (file.size > 10 * 1024 * 1024) {
+                toast.warning(`File ${file.name} quá lớn! Tối đa 10MB.`);
+                return;
+            }
+            
+            validFiles.push(file);
+            
             const reader = new FileReader();
             reader.onloadend = () => {
-                setImages((prev) => [...prev, reader.result as string]);
+                previews.push(reader.result as string);
+                if (previews.length === validFiles.length) {
+                    setImages((prev) => [...prev, ...previews]);
+                    setImageFiles((prev) => [...prev, ...validFiles]);
+                }
             };
             reader.readAsDataURL(file);
         });
@@ -81,12 +114,12 @@ const CreateProduct: React.FC<CreateProductProps> = ({
 
     const handleRemoveImage = (index: number) => {
         setImages((prev) => prev.filter((_, i) => i !== index));
+        setImageFiles((prev) => prev.filter((_, i) => i !== index));
     };
 
-    const handleSubmit = () => {
-        // Validation
+    const handleSubmit = async () => {
         if (!senderId.trim()) {
-            toast.warning('Vui lòng quét mã người gửi');
+            toast.warning('Vui lòng quét mã QR người gửi');
             senderInputRef.current?.focus();
             return;
         }
@@ -98,43 +131,63 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         }
 
         if (!parentCategoryId.trim()) {
-            toast.warning('Vui lòng nhập danh mục cha');
+            toast.warning('Vui lòng chọn danh mục cha');
             return;
         }
 
         if (!subCategoryId.trim()) {
-            toast.warning('Vui lòng nhập danh mục con');
+            toast.warning('Vui lòng chọn danh mục con');
             return;
         }
 
         if (!brandId.trim()) {
-            toast.warning('Vui lòng nhập thương hiệu');
+            toast.warning('Vui lòng chọn thương hiệu');
             return;
         }
 
-        if (images.length === 0) {
+        if (imageFiles.length === 0) {
             toast.warning('Vui lòng thêm ít nhất một ảnh sản phẩm');
             return;
         }
 
-        onConfirm({
-            senderId: senderId.trim(),
-            description: description.trim(),
-            images,
-            parentCategoryId: parentCategoryId.trim(),
-            subCategoryId: subCategoryId.trim(),
-            brandId: brandId.trim(),
-            qrCode: qrCode.trim(),
-            point
-        });
-        
-        handleClose();
+        if (imageFiles.length > 5) {
+            toast.warning('Tối đa 5 ảnh/video cho sản phẩm!');
+            return;
+        }
+
+        setUploading(true);
+        try {
+            // Upload all images to Cloudinary
+            const uploadPromises = imageFiles.map(file => uploadToCloudinary(file));
+            const uploadedUrls = await Promise.all(uploadPromises);
+
+            toast.success('Upload ảnh thành công!');
+
+            onConfirm({
+                senderId: senderId.trim(),
+                description: description.trim(),
+                images: uploadedUrls,
+                parentCategoryId: parentCategoryId.trim(),
+                subCategoryId: subCategoryId.trim(),
+                brandId: brandId.trim(),
+                qrCode: qrCode.trim(),
+                point
+            });
+
+            handleClose();
+        } catch (error) {
+            toast.error('Lỗi khi upload ảnh lên Cloudinary');
+            console.error('Upload error:', error);
+        } finally {
+            setUploading(false);
+        }
     };
 
     const handleClose = () => {
         setSenderId('');
         setDescription('');
         setImages([]);
+        setImageFiles([]);
         setParentCategoryId('');
         setSubCategoryId('');
         setBrandId('');
@@ -142,6 +195,37 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         setPoint(0);
         onClose();
     };
+
+    useEffect(() => {
+        if (parentCategoryId) {
+            setSelectedParentId(parentCategoryId);
+        }
+    }, [parentCategoryId, setSelectedParentId]);
+
+    useEffect(() => {
+        let isMounted = true;
+        const fetchBrands = async () => {
+            if (subCategoryId) {
+                setBrandLoading(true);
+                try {
+                    const data = await getBrandsBySubCategory(subCategoryId);
+                    if (isMounted) setBrands(data);
+                } catch {
+                    if (isMounted) setBrands([]);
+                } finally {
+                    if (isMounted) setBrandLoading(false);
+                }
+                setBrandId('');
+            } else {
+                setBrands([]);
+                setBrandId('');
+            }
+        };
+        fetchBrands();
+        return () => {
+            isMounted = false;
+        };
+    }, [subCategoryId]);
 
     if (!open) return null;
 
@@ -159,8 +243,12 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                 <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-blue-50 to-blue-100'>
                     <div className='flex items-center gap-3'>
                         <div>
-                            <h2 className='text-2xl font-bold text-gray-900'>Tạo Sản Phẩm Mới</h2>
-                            <p className='text-sm text-gray-500 mt-1'>Nhận hàng từ người gửi tại kho</p>
+                            <h2 className='text-2xl font-bold text-gray-900'>
+                                Tạo Sản Phẩm Mới
+                            </h2>
+                            <p className='text-sm text-gray-500 mt-1'>
+                                Nhận hàng từ người gửi tại kho
+                            </p>
                         </div>
                     </div>
                     <button
@@ -227,17 +315,22 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                     </div>
 
                     {/* Category & Brand Info */}
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                    <div className='space-y-4'>
                         <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
                             <label className='block text-sm font-medium text-gray-700 mb-2'>
                                 Danh Mục Cha <span className='text-red-500'>*</span>
                             </label>
-                            <input
-                                type='text'
+                            <CustomSelect
+                                options={parentCategories}
                                 value={parentCategoryId}
-                                onChange={(e) => setParentCategoryId(e.target.value)}
-                                placeholder='Nhập ID danh mục cha...'
-                                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900'
+                                onChange={(val) => {
+                                    setParentCategoryId(val);
+                                    setSubCategoryId('');
+                                }}
+                                getLabel={(cat) => cat.name}
+                                getValue={(cat) => cat.id}
+                                placeholder='Chọn danh mục cha...'
+                                disabled={categoryLoading}
                             />
                         </div>
 
@@ -245,39 +338,63 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                             <label className='block text-sm font-medium text-gray-700 mb-2'>
                                 Danh Mục Con <span className='text-red-500'>*</span>
                             </label>
-                            <input
-                                type='text'
-                                value={subCategoryId}
-                                onChange={(e) => setSubCategoryId(e.target.value)}
-                                placeholder='Nhập ID danh mục con...'
-                                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900'
-                            />
+                            {parentCategoryId ? (
+                                <CustomSelect
+                                    options={subCategories}
+                                    value={subCategoryId}
+                                    onChange={setSubCategoryId}
+                                    getLabel={(cat) => cat.name}
+                                    getValue={(cat) => cat.id}
+                                    placeholder='Chọn danh mục con...'
+                                    disabled={categoryLoading}
+                                />
+                            ) : (
+                                <div className='px-4 py-2 text-gray-400 bg-gray-50 rounded-lg border border-gray-200'>
+                                    Chọn danh mục cha trước
+                                </div>
+                            )}
                         </div>
 
-                        <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                Thương Hiệu <span className='text-red-500'>*</span>
-                            </label>
-                            <input
-                                type='text'
-                                value={brandId}
-                                onChange={(e) => setBrandId(e.target.value)}
-                                placeholder='Nhập ID thương hiệu...'
-                                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900'
-                            />
-                        </div>
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                            <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                    Thương Hiệu <span className='text-red-500'>*</span>
+                                </label>
+                                {subCategoryId ? (
+                                    <CustomSelect
+                                        options={brands}
+                                        value={brandId}
+                                        onChange={setBrandId}
+                                        getLabel={(brand) => brand.name}
+                                        getValue={(brand) => brand.id}
+                                        placeholder={
+                                            brandLoading
+                                                ? 'Đang tải...'
+                                                : 'Chọn thương hiệu...'
+                                        }
+                                        disabled={brandLoading}
+                                    />
+                                ) : (
+                                    <div className='px-4 py-2 text-gray-400 bg-gray-50 rounded-lg border border-gray-200'>
+                                        Chọn danh mục con trước
+                                    </div>
+                                )}
+                            </div>
 
-                        <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                Điểm
-                            </label>
-                            <input
-                                type='number'
-                                value={point}
-                                onChange={(e) => setPoint(parseInt(e.target.value) || 0)}
-                                placeholder='Nhập điểm...'
-                                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900'
-                            />
+                            <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                    Điểm
+                                </label>
+                                <input
+                                    type='number'
+                                    value={point}
+                                    onChange={(e) =>
+                                        setPoint(parseInt(e.target.value) || 0)
+                                    }
+                                    placeholder='Nhập điểm...'
+                                    className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900'
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -298,19 +415,25 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                     {/* Image Upload */}
                     <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>
-                            Hình Ảnh Sản Phẩm <span className='text-red-500'>*</span>
+                            Hình ảnh / Video về sản phẩm{' '}
+                            <span className='text-red-500'>*</span>
                         </label>
-                        
+                        <p className='text-xs text-gray-500 mb-3'>
+                            Tối đa 5 ảnh/video, mỗi file không quá 10MB
+                        </p>
                         <div className='flex gap-4 items-start'>
                             <label className='cursor-pointer flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition'>
                                 <Upload className='text-gray-400' size={32} />
-                                <span className='text-xs text-gray-500 mt-2'>Thêm ảnh</span>
+                                <span className='text-xs text-gray-500 mt-2'>
+                                    Thêm ảnh
+                                </span>
                                 <input
                                     type='file'
                                     accept='image/*'
                                     multiple
                                     onChange={handleImageUpload}
                                     className='hidden'
+                                    disabled={uploading}
                                 />
                             </label>
 
@@ -325,6 +448,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                         <button
                                             onClick={() => handleRemoveImage(index)}
                                             className='absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition cursor-pointer'
+                                            disabled={uploading}
                                         >
                                             <Trash2 size={14} />
                                         </button>
@@ -338,20 +462,30 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                 {/* Footer */}
                 <div className='flex justify-between items-center gap-3 p-5 border-t border-gray-100 bg-white'>
                     <div className='text-sm text-gray-600'>
-                        <span className='font-semibold'>{images.length}</span> ảnh đã thêm
+                        <span className='font-semibold'>{images.length}</span> ảnh đã
+                        thêm
                     </div>
                     <div className='flex gap-3'>
                         <button
                             onClick={handleClose}
-                            className='px-5 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium transition cursor-pointer'
+                            disabled={uploading}
+                            className='px-5 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
                         >
                             Hủy
                         </button>
                         <button
                             onClick={handleSubmit}
+                            disabled={uploading}
                             className='px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2'
                         >
-                            Tạo Sản Phẩm
+                            {uploading ? (
+                                <>
+                                    <div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
+                                    Đang upload...
+                                </>
+                            ) : (
+                                'Tạo Sản Phẩm'
+                            )}
                         </button>
                     </div>
                 </div>

@@ -1,5 +1,6 @@
 import Header from '@/components/collector/Header';
 import Sidebar from '@/components/collector/Sidebar';
+import { CategoryProvider } from '@/contexts/collector/CategoryContext';
 import { CollectionRouteProvider } from '@/contexts/collector/CollectionRouteContext';
 import { IWProductProvider } from '@/contexts/collector/IWProductContext';
 import { PackageProvider } from '@/contexts/collector/PackageContext';
@@ -15,15 +16,17 @@ export default function ColectorLayout({
             <CollectionRouteProvider>
                 <IWProductProvider>
                     <PackageProvider>
-                        <div className='h-screen flex flex-col bg-gray-50'>
-                            <Header />
-                            <div className='flex flex-1 overflow-hidden'>
-                                <Sidebar />
-                                <main className='flex-1 overflow-y-auto'>
-                                    {children}
-                                </main>
+                        <CategoryProvider>
+                            <div className='h-screen flex flex-col bg-gray-50'>
+                                <Header />
+                                <div className='flex flex-1 overflow-hidden'>
+                                    <Sidebar />
+                                    <main className='flex-1 overflow-y-auto'>
+                                        {children}
+                                    </main>
+                                </div>
                             </div>
-                        </div>
+                        </CategoryProvider>
                     </PackageProvider>
                 </IWProductProvider>
             </CollectionRouteProvider>
