@@ -38,8 +38,8 @@ const CollectionRoutePage: React.FC = () => {
 
     const filteredRoutes = routes.filter((route) => {
         const matchSearch =
-            route.itemName.toLowerCase().includes(search.toLowerCase()) ||
-            route.address.toLowerCase().includes(search.toLowerCase()) ||
+            route.itemName?.toLowerCase().includes(search.toLowerCase()) ||
+            route.address?.toLowerCase().includes(search.toLowerCase()) ||
             route.sender?.name.toLowerCase().includes(search.toLowerCase());
         return matchSearch;
     });

@@ -21,14 +21,10 @@ import { toast } from 'react-toastify';
 interface ProductFilter {
     page: number;
     limit: number;
-    pickUpDate?: {
-        year?: number;
-        month?: number;
-        day?: number;
-        dayOfWeek?: number;
-    };
-    smallCollectionPointId?: number;
+    fromDate?: string;
+    toDate?: string;
     status?: string;
+    search?: string;
 }
 
 interface IWProductContextType {
@@ -37,7 +33,12 @@ interface IWProductContextType {
     selectedProduct: Product | null;
     setSelectedProduct: (product: Product | null) => void;
     fetchProducts: (customFilter?: Partial<ProductFilter>) => Promise<void>;
-    receiveProduct: (qrCode: string, productId?: string, description?: string, point?: number) => Promise<void>;
+    receiveProduct: (
+        qrCode: string,
+        productId?: string,
+        description?: string,
+        point?: number
+    ) => Promise<void>;
     getProductByQRCode: (qrCode: string) => Promise<Product | null>;
     createProduct: (payload: CreateProductPayload) => Promise<void>;
     filter: ProductFilter;
@@ -53,14 +54,18 @@ interface IWProductContextType {
     };
 }
 
-const IWProductContext = createContext<IWProductContextType | undefined>(undefined);
+const IWProductContext = createContext<IWProductContextType | undefined>(
+    undefined
+);
 
 type Props = { children: ReactNode };
 
 export const IWProductProvider: React.FC<Props> = ({ children }) => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(
+        null
+    );
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
     const [allStats, setAllStats] = useState({
@@ -71,12 +76,14 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
         received: 0
     });
 
+    const [allProductsData, setAllProductsData] = useState<Product[]>([]);
     const [filter, setFilterState] = useState<ProductFilter>({
         page: 1,
         limit: 10,
-        pickUpDate: undefined,
-        smallCollectionPointId: undefined,
-        status: 'Chờ thu gom'
+        fromDate: undefined,
+        toDate: undefined,
+        status: 'Chờ thu gom',
+        search: ''
     });
 
     const setFilter = (newFilter: Partial<ProductFilter>) => {
@@ -87,43 +94,110 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
         async (customFilter?: Partial<ProductFilter>) => {
             setLoading(true);
             try {
-                const params: Record<string, any> = {
-                    ...filter,
-                    ...customFilter
-                };
-                Object.keys(params).forEach(
-                    (key) => params[key] === undefined && delete params[key]
-                );
-                const response = await filterIncomingWarehouseProducts(params);
+                // Merge filter
+                const mergedFilter = { ...filter, ...customFilter };
 
-                setProducts(response.data || []);
-                setTotalPages(response.totalPages);
-                setTotalItems(response.totalItems);
-
-                // Tính toán stats từ dữ liệu
-                const allProductsResponse = await filterIncomingWarehouseProducts({
-                    page: 1,
-                    limit: 1000,
-                    pickUpDate: params.pickUpDate,
-                    smallCollectionPointId: params.smallCollectionPointId
+                // Fetch toàn bộ data từ API với fromDate, toDate, smallCollectionPointId
+                const response = await filterIncomingWarehouseProducts({
+                    fromDate: mergedFilter.fromDate,
+                    toDate: mergedFilter.toDate,
+                    smallCollectionPointId: 1
                 });
 
-                const allProducts = allProductsResponse.data || [];
-                setAllStats({
-                    total: allProducts.length,
-                    pending: allProducts.filter((p: any) =>
-                        p.status?.toLowerCase().includes('chờ') || p.status?.toLowerCase() === 'pending'
+                // Nếu API trả về mảng, dùng trực tiếp:
+                const allData = Array.isArray(response) ? response : [];
+                setAllProductsData(allData);
+
+                // Filter trên FE theo fromDate, toDate, status
+                let filtered: Product[] = allData;
+
+                // Filter theo status
+                if (mergedFilter.status) {
+                    const statusLower = mergedFilter.status.toLowerCase();
+                    filtered = filtered.filter((p) => {
+                        const pStatus = p.status?.toLowerCase() || '';
+                        if (statusLower.includes('chờ')) {
+                            return (
+                                pStatus.includes('chờ') || pStatus === 'pending'
+                            );
+                        }
+                        if (statusLower.includes('đã thu')) {
+                            return (
+                                pStatus.includes('đã thu') ||
+                                pStatus === 'collected'
+                            );
+                        }
+                        if (statusLower.includes('hủy')) {
+                            return (
+                                pStatus.includes('hủy') ||
+                                pStatus === 'cancelled'
+                            );
+                        }
+                        if (statusLower.includes('nhập')) {
+                            return (
+                                pStatus.includes('nhập') ||
+                                pStatus === 'received'
+                            );
+                        }
+                        return false;
+                    });
+                }
+
+                // Filter theo search (TRƯỚC KHI PHÂN TRANG)
+                if (mergedFilter.search && mergedFilter.search.trim()) {
+                    const searchLower = mergedFilter.search.toLowerCase();
+                    filtered = filtered.filter((p) => {
+                        return (
+                            p.categoryName
+                                ?.toLowerCase()
+                                .includes(searchLower) ||
+                            p.brandName?.toLowerCase().includes(searchLower) ||
+                            p.description
+                                ?.toLowerCase()
+                                .includes(searchLower) ||
+                            p.qrCode?.toLowerCase().includes(searchLower)
+                        );
+                    });
+                }
+
+                // Tính stats từ ALL data (không phải filtered)
+                const stats = {
+                    total: allData.length,
+                    pending: allData.filter(
+                        (p) =>
+                            p.status?.toLowerCase().includes('chờ') ||
+                            p.status === 'pending'
                     ).length,
-                    collected: allProducts.filter((p: any) =>
-                        p.status?.toLowerCase().includes('đã thu') || p.status?.toLowerCase() === 'collected'
+                    collected: allData.filter(
+                        (p) =>
+                            p.status?.toLowerCase().includes('đã thu') ||
+                            p.status === 'collected'
                     ).length,
-                    cancelled: allProducts.filter((p: any) =>
-                        p.status?.toLowerCase().includes('hủy') || p.status?.toLowerCase() === 'cancelled'
+                    cancelled: allData.filter(
+                        (p) =>
+                            p.status?.toLowerCase().includes('hủy') ||
+                            p.status === 'cancelled'
                     ).length,
-                    received: allProducts.filter((p: any) =>
-                        p.status?.toLowerCase().includes('nhập') || p.status?.toLowerCase() === 'received'
+                    received: allData.filter(
+                        (p) =>
+                            p.status?.toLowerCase().includes('nhập') ||
+                            p.status === 'received'
                     ).length
-                });
+                };
+                setAllStats(stats);
+
+                // Phân trang trên FE
+                const totalItems = filtered.length;
+                const totalPages = Math.ceil(totalItems / mergedFilter.limit);
+                const startIndex = (mergedFilter.page - 1) * mergedFilter.limit;
+                const endIndex = startIndex + mergedFilter.limit;
+                const paginatedProducts = filtered.slice(startIndex, endIndex);
+
+                console.log(paginatedProducts);
+
+                setProducts(paginatedProducts);
+                setTotalPages(totalPages);
+                setTotalItems(totalItems);
             } catch (err) {
                 console.error('fetchProducts error', err);
                 toast.error('Lỗi khi tải danh sách sản phẩm');
@@ -132,14 +206,24 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
                 setLoading(false);
             }
         },
-        [filter]
+        []
     );
 
     const receiveProduct = useCallback(
-        async (qrCode: string, productId?: string, description?: string, point?: number) => {
+        async (
+            qrCode: string,
+            productId?: string,
+            description?: string,
+            point?: number
+        ) => {
             setLoading(true);
             try {
-                await receiveProductAtWarehouse(qrCode, productId, description, point);
+                await receiveProductAtWarehouse(
+                    qrCode,
+                    productId,
+                    description,
+                    point
+                );
                 toast.success('Nhận sản phẩm tại kho thành công');
                 await fetchProducts();
             } catch (err: any) {
@@ -155,23 +239,20 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
         [fetchProducts]
     );
 
-    const getProductByQRCodeHandler = useCallback(
-        async (qrCode: string) => {
-            setLoading(true);
-            try {
-                const product = await getProductByQRCode(qrCode);
-                setSelectedProduct(product);
-                return product;
-            } catch (err) {
-                console.error('getProductByQRCode error', err);
-                toast.error('Không tìm thấy sản phẩm với mã QR này');
-                return null;
-            } finally {
-                setLoading(false);
-            }
-        },
-        []
-    );
+    const getProductByQRCodeHandler = useCallback(async (qrCode: string) => {
+        setLoading(true);
+        try {
+            const product = await getProductByQRCode(qrCode);
+            setSelectedProduct(product);
+            return product;
+        } catch (err) {
+            console.error('getProductByQRCode error', err);
+            toast.error('Không tìm thấy sản phẩm với mã QR này');
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     const createProduct = useCallback(
         async (payload: CreateProductPayload) => {
@@ -194,9 +275,15 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
     );
 
     useEffect(() => {
-        void fetchProducts();
+        void fetchProducts(filter);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filter]);
+    }, [
+        filter.page,
+        filter.status,
+        filter.search,
+        filter.fromDate,
+        filter.toDate
+    ]);
 
     const value: IWProductContextType = {
         products,

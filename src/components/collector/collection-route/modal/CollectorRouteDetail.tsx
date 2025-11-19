@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
+import { Package as PackageIcon } from 'lucide-react';
 import { formatTime } from '@/utils/FormatTime';
 
 interface CollectorRouteDetailProps {
@@ -94,28 +95,31 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({ route, onCl
                     <div className='md:w-2/3 p-6 space-y-4 overflow-y-auto max-h-[85vh]'>
                         {/* --- Route info --- */}
                         <section className='space-y-3'>
-                            <h3 className='font-semibold text-gray-900 text-lg border-b pb-2'>
+                            <h3 className='font-semibold text-gray-900 text-lg border-b pb-2 flex items-center gap-2'>
+                                <PackageIcon className='text-blue-500' size={20} />
                                 Thông tin thu gom
                             </h3>
-                            <div className='bg-gray-50 rounded-lg p-4'>
-                                <p className='font-medium text-gray-700'>Biển số xe:</p>
-                                <p className='text-gray-600'>{route.licensePlate || 'Không có thông tin'}</p>
-                            </div>
-                            <div className='bg-gray-50 rounded-lg p-4'>
-                                <p className='font-medium text-gray-700'>Thời gian dự kiến:</p>
-                                <p className='text-gray-600'>{formatTime(route.estimatedTime) || 'Không có thông tin'}</p>
-                            </div>
-                            <div className='bg-gray-50 rounded-lg p-4'>
-                                <p className='font-medium text-gray-700'>Ngày thu gom:</p>
-                                <p className='text-gray-600'>
-                                    {route.collectionDate
-                                        ? new Date(route.collectionDate).toLocaleDateString('vi-VN', {
-                                              day: '2-digit',
-                                              month: '2-digit',
-                                              year: 'numeric'
-                                          })
-                                        : 'Không có thông tin'}
-                                </p>
+                            <div className='space-y-3'>
+                                <div className='bg-gray-50 rounded-lg p-4 flex items-center gap-2'>
+                                    <span className='font-medium text-gray-700 min-w-[120px]'>Biển số xe:</span>
+                                    <span className='text-gray-600'>{route.licensePlate || 'Không có thông tin'}</span>
+                                </div>
+                                <div className='bg-gray-50 rounded-lg p-4 flex items-center gap-2'>
+                                    <span className='font-medium text-gray-700 min-w-[120px]'>Thời gian dự kiến:</span>
+                                    <span className='text-gray-600'>{formatTime(route.estimatedTime) || 'Không có thông tin'}</span>
+                                </div>
+                                <div className='bg-gray-50 rounded-lg p-4 flex items-center gap-2'>
+                                    <span className='font-medium text-gray-700 min-w-[120px]'>Ngày thu gom:</span>
+                                    <span className='text-gray-600'>
+                                        {route.collectionDate
+                                            ? new Date(route.collectionDate).toLocaleDateString('vi-VN', {
+                                                  day: '2-digit',
+                                                  month: '2-digit',
+                                                  year: 'numeric'
+                                              })
+                                            : 'Không có thông tin'}
+                                    </span>
+                                </div>
                             </div>
                         </section>
 
@@ -142,9 +146,9 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({ route, onCl
                                     </p>
                                 </div>
                             </div>
-                            <div className='bg-gray-50 rounded-lg p-4'>
-                                <p className='font-medium text-gray-700'>Địa chỉ:</p>
-                                <p className='text-gray-600'>{route.sender?.address || route.address}</p>
+                            <div className='bg-gray-50 rounded-lg p-4 flex flex-wrap gap-2 items-start'>
+                                <span className='font-medium text-gray-700 min-w-[80px]'>Địa chỉ:</span>
+                                <span className='text-gray-600 break-words whitespace-pre-line flex-1'>{route.sender?.address || route.address}</span>
                             </div>
                         </section>
 

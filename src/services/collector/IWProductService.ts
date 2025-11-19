@@ -37,45 +37,24 @@ export interface CreateProductPayload {
 }
 
 export const filterIncomingWarehouseProducts = async ({
-    page = 1,
-    limit = 10,
-    pickUpDate,
-    smallCollectionPointId = 1,
-    status
+    fromDate,
+    toDate,
+    smallCollectionPointId = 1
 }: {
-    page?: number;
-    limit?: number;
-    pickUpDate?: {
-        year?: number;
-        month?: number;
-        day?: number;
-        dayOfWeek?: number;
-    };
+    fromDate?: string;
+    toDate?: string;
     smallCollectionPointId?: number;
-    status?: string;
 }): Promise<FilterProductsResponse> => {
-    const params: Record<string, any> = { page, limit };
+    const params: Record<string, any> = {};
 
-    if (pickUpDate) {
-        if (typeof pickUpDate === 'string') {
-            params.pickUpDate = pickUpDate;
-        } else if (typeof pickUpDate === 'object') {
-            // Chuyển object sang YYYY-MM-DD
-            const { year, month, day } = pickUpDate;
-            if (year && month && day) {
-                params.pickUpDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            }
-        }
-    }
+    if (fromDate) params.fromDate = fromDate;
+    if (toDate) params.toDate = toDate;
     if (smallCollectionPointId)
         params.smallCollectionPointId = smallCollectionPointId;
-    if (status && status.trim()) params.status = status.trim();
 
     const response = await axios.get<FilterProductsResponse>(
-        '/products/incoming-warehouse',
-        {
-            params
-        }
+        '/products/from-data-to-date',
+        { params }
     );
     return response.data;
 };
@@ -98,9 +77,7 @@ export const receiveProductAtWarehouse = async (
     return response.data;
 };
 
-export const getProductByQRCode = async (
-    qrCode: string
-): Promise<any> => {
+export const getProductByQRCode = async (qrCode: string): Promise<any> => {
     const response = await axios.get(`/products/qrcode/${qrCode}`);
     return response.data;
 };
