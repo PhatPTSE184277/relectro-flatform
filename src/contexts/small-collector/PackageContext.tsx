@@ -191,6 +191,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 await updatePackageStatus(packageId);
                 toast.success('Cập nhật trạng thái thành công');
                 await fetchPackages();
+                await fetchAllStats();
             } catch (err) {
                 console.error('updateStatus error', err);
                 toast.error('Lỗi khi cập nhật trạng thái package');
@@ -198,7 +199,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 setLoading(false);
             }
         },
-        [fetchPackages]
+        [fetchPackages, fetchAllStats]
     );
 
     useEffect(() => {

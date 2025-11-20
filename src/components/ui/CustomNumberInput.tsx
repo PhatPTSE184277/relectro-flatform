@@ -19,8 +19,8 @@ const CustomNumberInput: React.FC<CustomNumberInputProps> = ({
 }) => {
   // Chỉ cho nhập số, loại bỏ ký tự không phải số và số 0 đầu
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let raw = e.target.value.replace(/[^0-9]/g, '');
-    let val = raw.replace(/^0+/, '');
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    const val = raw.replace(/^0+/, '');
     let num = val === '' ? 0 : Number(val);
     if (min !== undefined && num < min) num = min;
     if (max !== undefined && num > max) num = max;
@@ -35,7 +35,7 @@ const CustomNumberInput: React.FC<CustomNumberInputProps> = ({
       value={value === 0 ? '' : String(value)}
       onChange={handleChange}
       placeholder={placeholder}
-      className={`px-2 py-1 border border-green-300 rounded-lg text-green-700 font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent ${className}`}
+      className={`placeholder-gray-400 placeholder:font-medium ${className}`}
     />
   );
 };

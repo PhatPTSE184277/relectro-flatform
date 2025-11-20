@@ -13,6 +13,7 @@ import { useUserContext } from '@/contexts/UserContext';
 import CustomSelect from '@/components/ui/CustomSelect';
 import { uploadToCloudinary } from '@/utils/Cloudinary';
 import SearchableSelect from '@/components/ui/SearchableSelect';
+import CustomNumberInput from '@/components/ui/CustomNumberInput';
 
 interface CreateProductProps {
     open: boolean;
@@ -453,14 +454,12 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                 <label className='block text-sm font-medium text-gray-700 mb-2'>
                                     Điểm
                                 </label>
-                                <input
-                                    type='number'
+                                <CustomNumberInput
                                     value={point}
-                                    onChange={(e) =>
-                                        setPoint(parseInt(e.target.value) || 0)
-                                    }
+                                    onChange={setPoint}
                                     placeholder='Nhập điểm...'
-                                    className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900'
+                                    min={0}
+                                    className='w-full px-4 py-2 border border-blue-300 rounded-lg text-gray-900 placeholder-gray-400 placeholder-font-medium font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
                                 />
                             </div>
                         </div>

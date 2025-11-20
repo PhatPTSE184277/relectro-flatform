@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
-import { Users, Truck, Calendar } from 'lucide-react';
+import { Users, Calendar, GitBranch } from 'lucide-react';
 import PreAssignStep from '@/components/small-collector/grouping/PreAssignStep';
 import AssignDayStep from '@/components/small-collector/grouping/AssignDayStep';
 import { useRouter } from 'next/navigation';
@@ -52,7 +52,7 @@ const GroupingPage: React.FC = () => {
             {/* Header */}
             <div className='flex items-center gap-3 mb-6'>
                 <div className='w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center'>
-                    <Truck className='text-white' size={20} />
+                    <GitBranch className='text-white' size={20} />
                 </div>
                 <h1 className='text-3xl font-bold text-gray-900'>
                     Gom nhóm thu gom

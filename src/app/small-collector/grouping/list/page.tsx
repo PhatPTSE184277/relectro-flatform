@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Truck, Plus } from 'lucide-react';
+import { Plus, GitBranch } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import GroupingListComponent from '@/components/small-collector/grouping/list/GroupingList';
 import GroupingFilter from '@/components/small-collector/grouping/list/GroupingFilter';
@@ -53,7 +53,7 @@ const GroupingListPage: React.FC = () => {
             <div className='flex items-center justify-between mb-6'>
                 <div className='flex items-center gap-3'>
                     <div className='w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center'>
-                        <Truck className='text-white' size={20} />
+                      <GitBranch className='text-white' size={20} />
                     </div>
                     <h1 className='text-3xl font-bold text-gray-900'>
                         Danh sách nhóm thu gom

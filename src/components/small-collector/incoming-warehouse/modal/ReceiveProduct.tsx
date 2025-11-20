@@ -250,7 +250,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                             value={point}
                                             onChange={setPoint}
                                             min={0}
-                                            className='w-24'
+                                            className='w-24 px-2 py-1 border border-green-300 rounded-lg text-green-700 font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent'
                                         />
                                         <span className='text-green-600 text-sm'>điểm</span>
                                     </div>
