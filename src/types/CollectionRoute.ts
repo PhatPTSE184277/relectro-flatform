@@ -1,7 +1,7 @@
 export interface CollectionRoute {
     collectionRouteId: string;
     postId: string;
-    itemName: string;
+    brandName: string;
     collector: {
         collectorId: string;
         name: string;
