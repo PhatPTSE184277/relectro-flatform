@@ -106,9 +106,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                                             <th className='py-3 px-4 text-left'>
                                                 QR Code
                                             </th>
-                                            <th className='py-3 px-4 text-left'>
-                                                Thuộc tính
-                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -142,36 +139,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                                                 </td>
                                                 <td className='py-3 px-4 text-gray-400 font-mono text-xs'>
                                                     {product.qrCode || '-'}
-                                                </td>
-                                                <td className='py-3 px-4'>
-                                                    {product.attributes &&
-                                                    product.attributes.length >
-                                                        0 ? (
-                                                        <div className='flex flex-wrap gap-1'>
-                                                            {product.attributes.map(
-                                                                (attr, idx) => (
-                                                                    <span
-                                                                        key={
-                                                                            idx
-                                                                        }
-                                                                        className='px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-md'
-                                                                    >
-                                                                        {
-                                                                            attr.attributeName
-                                                                        }
-                                                                        :{' '}
-                                                                        {
-                                                                            attr.value
-                                                                        }
-                                                                        {attr.unit &&
-                                                                            ` ${attr.unit}`}
-                                                                    </span>
-                                                                )
-                                                            )}
-                                                        </div>
-                                                    ) : (
-                                                        '-'
-                                                    )}
                                                 </td>
                                             </tr>
                                         ))}

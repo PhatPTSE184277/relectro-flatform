@@ -54,7 +54,7 @@ export const PostProvider: React.FC<Props> = ({ children }) => {
         limit: 10,
         search: '',
         order: '',
-        status: 'Đã Duyệt'
+        status: 'Chờ duyệt'
     });
 
     const fetchPosts = useCallback(
@@ -62,7 +62,13 @@ export const PostProvider: React.FC<Props> = ({ children }) => {
             setLoading(true);
             try {
                 const params = { ...filter, ...customFilter };
-                const response = await filterPosts(params);
+                const response = await filterPosts({
+                    page: params.page,
+                    limit: params.limit,
+                    search: params.search,
+                    order: params.order,
+                    status: params.status
+                });
                 
                 setPosts(response.data || []);
                 setTotalPages(response.totalPages);

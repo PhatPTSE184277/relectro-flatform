@@ -98,7 +98,7 @@ const IncomingWarehousePage: React.FC = () => {
     const handleReceive = async (data: {
         qrCode: string;
         productId: string;
-        description: string;
+        description: string | null;
         point: number;
     }) => {
         await receiveProduct(

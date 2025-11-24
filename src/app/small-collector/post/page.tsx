@@ -42,29 +42,29 @@ const PostPage: React.FC = () => {
     const [isShowModalOpen, setIsShowModalOpen] = useState(false);
     const [search, setSearch] = useState<string>("");
 
-    useEffect(() => {
-        const loadStats = async () => {
-            try {
-                const approvedRes = await fetch('/api/posts/filter?status=Đã Duyệt&limit=1');
-                const rejectedRes = await fetch('/api/posts/filter?status=Đã Từ Chối&limit=1');
-                const pendingRes = await fetch('/api/posts/filter?status=Chờ Duyệt&limit=1');
-                
-                const approved = await approvedRes.json();
-                const rejected = await rejectedRes.json();
-                const pending = await pendingRes.json();
+  useEffect(() => {
+    const loadStats = async () => {
+        try {
+            const approvedRes = await fetch(`/api/posts/filter?status=${encodeURIComponent(PostStatus.Approved)}&limit=1`);
+            const rejectedRes = await fetch(`/api/posts/filter?status=${encodeURIComponent(PostStatus.Rejected)}&limit=1`);
+            const pendingRes = await fetch(`/api/posts/filter?status=${encodeURIComponent(PostStatus.Pending)}&limit=1`);
+            
+            const approved = await approvedRes.json();
+            const rejected = await rejectedRes.json();
+            const pending = await pendingRes.json();
 
-                setStats({
-                    total: approved.totalItems + rejected.totalItems + pending.totalItems,
-                    approved: approved.totalItems,
-                    rejected: rejected.totalItems,
-                    pending: pending.totalItems,
-                });
-            } catch (err) {
-                console.error('Error loading stats', err);
-            }
-        };
-        loadStats();
-    }, [posts]);
+            setStats({
+                total: approved.totalItems + rejected.totalItems + pending.totalItems,
+                approved: approved.totalItems,
+                rejected: rejected.totalItems,
+                pending: pending.totalItems,
+            });
+        } catch (err) {
+            console.error('Error loading stats', err);
+        }
+    };
+    loadStats();
+}, [posts]);
 
     // Debounce search: mỗi lần search thay đổi thì fetch lại
     useEffect(() => {

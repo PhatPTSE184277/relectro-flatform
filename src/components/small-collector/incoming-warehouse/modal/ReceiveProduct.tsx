@@ -12,7 +12,7 @@ interface ReceiveProductProps {
     onConfirm: (data: {
         qrCode: string;
         productId: string;
-        description: string;
+        description: string | null;
         point: number;
     }) => void;
 }
@@ -38,7 +38,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
         null
     );
     const [loading, setLoading] = useState(false);
-    const [description, setDescription] = useState('');
+    const [reasonForChange, setReasonForChange] = useState(''); // Lý do đổi điểm
     const [point, setPoint] = useState(0);
     const [zoomImg, setZoomImg] = useState<string | null>(null);
 
@@ -49,7 +49,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
             // Reset form when modal opens
             setQrCode('');
             setScannedProduct(null);
-            setDescription('');
+            setReasonForChange('');
             setPoint(0);
             // Auto focus on QR input
             setTimeout(() => qrInputRef.current?.focus(), 100);
@@ -92,8 +92,8 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                 productImages: product.productImages
             });
 
-            setDescription(product.description || '');
             setPoint(product.estimatePoint || 0);
+            setReasonForChange('');
             toast.success('Đã quét sản phẩm thành công');
         } catch (err: any) {
             console.error('Scan QR error', err);
@@ -114,10 +114,19 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
             return;
         }
 
+        const isPointChanged = point !== (scannedProduct.estimatePoint || 0);
+        
+        // Nếu admin sửa điểm thì phải nhập lý do
+        if (isPointChanged && !reasonForChange.trim()) {
+            toast.warning('Vui lòng nhập lý do đổi điểm');
+            return;
+        }
+
         onConfirm({
             qrCode: scannedProduct.qrCode,
             productId: scannedProduct.productId,
-            description: description.trim(),
+            // Nếu có sửa điểm thì dùng reasonForChange, không thì truyền null
+            description: isPointChanged ? reasonForChange.trim() : null,
             point
         });
 
@@ -127,7 +136,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
     const handleClose = () => {
         setQrCode('');
         setScannedProduct(null);
-        setDescription('');
+        setReasonForChange('');
         setPoint(0);
         onClose();
     };
@@ -256,13 +265,29 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                     </div>
                                 </div>
                             </div>
-                            {/* Ghi chú xuống dưới */}
+                            {/* Ghi chú sản phẩm */}
                             {scannedProduct.description && (
                                 <div className='mt-4'>
-                                    <span className='text-sm text-gray-500'>Ghi chú:</span>
+                                    <span className='text-sm text-gray-500'>Ghi chú sản phẩm:</span>
                                     <span className='ml-2 text-gray-700 text-sm'>{scannedProduct.description}</span>
                                 </div>
                             )}
+                        </div>
+                    )}
+
+                    {/* Textarea lý do đổi điểm - chỉ hiện khi admin sửa điểm */}
+                    {scannedProduct && point !== (scannedProduct.estimatePoint || 0) && (
+                        <div className='bg-white rounded-xl p-4 shadow-sm border border-green-200'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                Lý do đổi điểm <span className='text-red-500'>*</span>
+                            </label>
+                            <textarea
+                                value={reasonForChange}
+                                onChange={(e) => setReasonForChange(e.target.value)}
+                                placeholder='Nhập lý do tại sao thay đổi điểm...'
+                                rows={3}
+                                className='w-full px-3 py-2 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-400 resize-none'
+                            />
                         </div>
                     )}
                 </div>

@@ -61,11 +61,11 @@ export const filterIncomingWarehouseProducts = async ({
 export const receiveProductAtWarehouse = async (
     qrCode: string,
     productId?: string,
-    description?: string,
+    description?: string | null,
     point?: number
 ): Promise<any> => {
     const body: Record<string, any> = {
-        description: description || '',
+        description: description === null ? null : (description || ''),
         point: point || 0
     };
     if (productId) body.productId = productId;

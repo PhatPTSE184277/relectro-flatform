@@ -36,7 +36,7 @@ interface IWProductContextType {
     receiveProduct: (
         qrCode: string,
         productId?: string,
-        description?: string,
+        description?: string | null,
         point?: number
     ) => Promise<void>;
     getProductByQRCode: (qrCode: string) => Promise<Product | null>;
@@ -213,7 +213,7 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
         async (
             qrCode: string,
             productId?: string,
-            description?: string,
+            description?: string | null,
             point?: number
         ) => {
             setLoading(true);

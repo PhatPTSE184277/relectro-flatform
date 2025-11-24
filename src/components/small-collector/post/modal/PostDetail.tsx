@@ -152,32 +152,41 @@ const PostDetail: React.FC<PostDetailProps> = ({
 
                             <div className='bg-gray-50 rounded-lg p-4'>
                                 <div className='flex flex-wrap gap-x-6 gap-y-2 items-center'>
-                                    <span className='font-medium text-gray-700'>Danh mục:</span>
+                                    <span className='font-medium text-gray-700'>
+                                        Danh mục:
+                                    </span>
                                     <span className='text-gray-600'>
                                         {post.parentCategory}
-                                        {post.subCategory && ` - ${post.subCategory}`}
+                                        {post.subCategory &&
+                                            ` - ${post.subCategory}`}
                                     </span>
                                 </div>
                             </div>
 
                             <div className='bg-gray-50 rounded-lg p-4'>
                                 <div className='flex flex-wrap gap-x-6 gap-y-2 items-center'>
-                                    <span className='font-medium text-gray-700'>Mô tả:</span>
+                                    <span className='font-medium text-gray-700'>
+                                        Mô tả:
+                                    </span>
                                     <span className='text-gray-600'>
-                                        {post.product?.description || 'Không có thông tin'}
+                                        {post.product?.description ||
+                                            'Không có thông tin'}
                                     </span>
                                 </div>
                             </div>
 
                             <div className='bg-gray-50 rounded-lg p-4'>
                                 <div className='flex flex-wrap gap-x-6 gap-y-2 items-center'>
-                                    <span className='font-medium text-gray-700'>Kết quả kiểm tra:</span>
+                                    <span className='font-medium text-gray-700'>
+                                        Lý do từ chối:
+                                    </span>
                                     <span className='text-gray-600'>
-                                        {post.checkMessage || 'Không có thông tin'}
+                                        {post.checkMessage ||
+                                            'Không có thông tin'}
                                     </span>
                                     {post.rejectMessage && (
                                         <span className='text-red-500'>
-                                            Lý do từ chối: {post.rejectMessage}
+                                            {post.rejectMessage}
                                         </span>
                                     )}
                                 </div>
@@ -210,8 +219,12 @@ const PostDetail: React.FC<PostDetailProps> = ({
 
                             <div className='bg-gray-50 rounded-lg p-4'>
                                 <div className='flex gap-x-3 items-start'>
-                                    <span className='font-medium text-gray-700 whitespace-nowrap'>Địa chỉ:</span>
-                                    <span className='text-gray-600 break-words'>{post.address}</span>
+                                    <span className='font-medium text-gray-700 whitespace-nowrap'>
+                                        Địa chỉ:
+                                    </span>
+                                    <span className='text-gray-600 break-words'>
+                                        {post.address}
+                                    </span>
                                 </div>
                             </div>
                         </section>

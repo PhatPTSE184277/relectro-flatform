@@ -34,7 +34,7 @@ const PostFilter: React.FC<PostFilterProps> = ({
                             : 'bg-gray-100 text-gray-600'
                     }`}
                 >
-                    Chờ Duyệt ({stats.pending})
+                    Chờ duyệt ({stats.pending})
                 </button>
 
                 <button
@@ -56,7 +56,7 @@ const PostFilter: React.FC<PostFilterProps> = ({
                             : 'bg-gray-100 text-gray-600'
                     }`}
                 >
-                    Đã Từ Chối ({stats.rejected})
+                    Đã từ chối ({stats.rejected})
                 </button>
             </div>
         </div>
