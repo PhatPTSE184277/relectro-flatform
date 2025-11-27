@@ -1,6 +1,6 @@
 import React from 'react';
 import { Eye } from 'lucide-react';
-import type { PackageType } from '@/services/small-collector/PackageService';
+import type { PackageType } from '@/types/Package';
 
 interface PackageShowProps {
     package: PackageType;
@@ -29,10 +29,6 @@ const PackageShow: React.FC<PackageShowProps> = ({
                 <span className='px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700'>
                     {pkg.products.length} sản phẩm
                 </span>
-            </td>
-
-            <td className='py-3 px-4 text-gray-700'>
-                Điểm thu gom {pkg.smallCollectionPointsId}
             </td>
 
             <td className='py-3 px-4'>

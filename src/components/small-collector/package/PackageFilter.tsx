@@ -1,7 +1,6 @@
 import { IoFilterOutline } from 'react-icons/io5';
 import React from 'react';
-
-export type PackageStatus = 'Đang đóng gói' | 'Đang vận chuyển' | 'Đã đóng thùng';
+import { PackageStatus } from '@/enums/PackageStatus';
 
 interface PackageFilterProps {
     status: PackageStatus;
@@ -28,9 +27,9 @@ const PackageFilter: React.FC<PackageFilterProps> = ({
 
             <div className='flex flex-wrap gap-2'>
                 <button
-                    onClick={() => onFilterChange('Đang đóng gói')}
+                    onClick={() => onFilterChange(PackageStatus.Packing)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                        status === 'Đang đóng gói'
+                        status === PackageStatus.Packing
                             ? 'bg-yellow-100 text-yellow-700 shadow'
                             : 'bg-gray-100 text-gray-600'
                     }`}
@@ -39,9 +38,9 @@ const PackageFilter: React.FC<PackageFilterProps> = ({
                 </button>
 
                 <button
-                    onClick={() => onFilterChange('Đã đóng thùng')}
+                    onClick={() => onFilterChange(PackageStatus.Closed)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                        status === 'Đã đóng thùng'
+                        status === PackageStatus.Closed
                             ? 'bg-green-100 text-green-700 shadow'
                             : 'bg-gray-100 text-gray-600'
                     }`}
@@ -50,9 +49,9 @@ const PackageFilter: React.FC<PackageFilterProps> = ({
                 </button>
 
                 <button
-                    onClick={() => onFilterChange('Đang vận chuyển')}
+                    onClick={() => onFilterChange(PackageStatus.Shipping)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                        status === 'Đang vận chuyển'
+                        status === PackageStatus.Shipping
                             ? 'bg-blue-100 text-blue-700 shadow'
                             : 'bg-gray-100 text-gray-600'
                     }`}

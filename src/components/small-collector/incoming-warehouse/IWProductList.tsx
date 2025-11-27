@@ -23,7 +23,7 @@ const IWProductList: React.FC<IWProductListProps> = ({
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                         <tr>
                             <th className='py-3 px-4 text-left'>Ảnh</th>
-                            <th className='py-3 px-4 text-left'>Tên sản phẩm</th>
+                            <th className='py-3 px-4 text-left'>Loại sản phẩm</th>
                             <th className='py-3 px-4 text-left'>Mã QR</th>
                             <th className='py-3 px-4 text-left'>Thương hiệu</th>
                             <th className='py-3 px-4 text-left'>Mô tả</th>

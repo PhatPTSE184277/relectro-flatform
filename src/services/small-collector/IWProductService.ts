@@ -1,39 +1,7 @@
 import axios from '@/lib/axios';
+import type { Product, FilterProductsResponse, CreateProductPayload } from '@/types/Product';
 
-export interface Product {
-    productId: string;
-    categoryId: string;
-    categoryName: string;
-    description: string;
-    brandId: string;
-    brandName: string;
-    productImages: string[];
-    qrCode: string | null;
-    status: string;
-    attributes: any[];
-    smallCollectionPointName?: string;
-    pickUpDate?: string;
-}
-
-export interface FilterProductsResponse {
-    page: number;
-    limit: number;
-    totalItems: number;
-    totalPages: number;
-    data: Product[];
-}
-
-export interface CreateProductPayload {
-    senderId: string;
-    description: string;
-    smallCollectionPointId: number;
-    images: string[];
-    parentCategoryId: string;
-    subCategoryId: string;
-    brandId: string;
-    qrCode: string;
-    point: number;
-}
+export type { Product, FilterProductsResponse, CreateProductPayload };
 
 export const filterIncomingWarehouseProducts = async ({
     fromDate,
@@ -85,5 +53,11 @@ export const createIncomingWarehouseProduct = async (
     payload: CreateProductPayload
 ): Promise<any> => {
     const response = await axios.post('/products/warehouse', payload);
+    return response.data;
+};
+
+// Get product by ID
+export const getProductById = async (id: string): Promise<Product> => {
+    const response = await axios.get(`/products/${id}`);
     return response.data;
 };

@@ -1,7 +1,8 @@
 'use client';
 import React from 'react';
-import type { PackageType } from '@/services/small-collector/PackageService';
-import { Package } from 'lucide-react';
+import type { PackageType } from '@/types/Package';
+import {  Info, List } from 'lucide-react';
+import { PackageStatus } from '@/enums/PackageStatus';
 
 interface PackageDetailProps {
     package: PackageType;
@@ -25,18 +26,19 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50'>
+                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-blue-50 to-purple-50'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-900'>
                             Chi tiết Package
                         </h2>
                         <p className='text-sm text-gray-500 mt-1'>
-                            {pkg.packageId}
+                            Thông tin chi tiết về package và danh sách sản phẩm
                         </p>
                     </div>
                     <button
                         onClick={onClose}
                         className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer'
+                        aria-label='Đóng'
                     >
                         &times;
                     </button>
@@ -44,43 +46,71 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
 
                 {/* Main content */}
                 <div className='flex-1 overflow-y-auto p-6'>
-                    {/* Package Info */}
-                    <div className='bg-gray-50 rounded-lg p-4 mb-6'>
-                        <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-                            <Package size={20} className='text-blue-600' />
-                            Thông tin Package
-                        </h3>
-                        <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-                            <div className='flex flex-col bg-white rounded-lg p-3 shadow-sm'>
-                                <span className='text-sm text-gray-500 mb-1 flex items-center gap-1'>
-                                    Tên
-                                </span>
-                                <span className='text-base font-semibold text-gray-900 break-words'>
+                    {/* Package Info Title */}
+                    <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
+                        <Info className='w-5 h-5 text-blue-600' />
+                        Thông tin package
+                    </h3>
+                    {/* Package Info Card */}
+                    <div className='bg-white rounded-xl p-6 mb-6 shadow-sm border border-gray-100'>
+                        <div className='grid grid-cols-4'>
+                            {/* Mã package */}
+                            <div className='flex flex-col'>
+                                <div className='text-xs font-semibold uppercase text-gray-700 bg-white py-3 px-4'>
+                                    Mã package
+                                </div>
+                                <div className='text-sm font-medium text-gray-900 bg-white py-3 px-4 break-all'>
+                                    {pkg.packageId}
+                                </div>
+                            </div>
+                            {/* Tên package */}
+                            <div className='flex flex-col'>
+                                <div className='text-xs font-semibold uppercase text-gray-700 bg-white py-3 px-4'>
+                                    Tên package
+                                </div>
+                                <div className='text-sm font-medium text-gray-900 bg-white py-3 px-4'>
                                     {pkg.packageName}
-                                </span>
+                                </div>
                             </div>
-                            <div className='flex flex-col bg-white rounded-lg p-3 shadow-sm'>
-                                <span className='text-sm text-gray-500 mb-1 flex items-center gap-1'>
-                                    Điểm thu gom
-                                </span>
-                                <span className='text-base font-semibold text-gray-900'>
-                                    Điểm thu gom {pkg.smallCollectionPointsId}
-                                </span>
-                            </div>
-                            <div className='flex flex-col bg-white rounded-lg p-3 shadow-sm'>
-                                <span className='text-sm text-gray-500 mb-1 flex items-center gap-1'>
-                                    Sản phẩm
-                                </span>
-                                <span className='text-base font-semibold text-gray-900'>
+                            {/* Số sản phẩm */}
+                            <div className='flex flex-col'>
+                                <div className='text-xs font-semibold uppercase text-gray-700 bg-white py-3 px-4'>
+                                    Số sản phẩm
+                                </div>
+                                <div className='text-sm font-medium text-gray-900 bg-white py-3 px-4'>
                                     {pkg.products.length}
-                                </span>
+                                </div>
+                            </div>
+                            {/* Trạng thái */}
+                            <div className='flex flex-col'>
+                                <div className='text-xs font-semibold uppercase text-gray-700 bg-white py-3 px-4'>
+                                    Trạng thái
+                                </div>
+                                <div className='py-3 px-4'>
+                                    <span
+                                        className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-2 ${
+                                            pkg.status === PackageStatus.Packing
+                                                ? 'bg-yellow-100 text-yellow-700'
+                                                : pkg.status === PackageStatus.Closed
+                                                ? 'bg-green-100 text-green-700'
+                                                : pkg.status === PackageStatus.Shipping
+                                                ? 'bg-blue-100 text-blue-700'
+                                                : pkg.status === PackageStatus.Recycling
+                                                ? 'bg-purple-100 text-purple-700'
+                                                : 'bg-gray-100 text-gray-600'
+                                        }`}
+                                    >
+                                        {pkg.status}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Products List */}
                     <div>
-                        <h3 className='text-lg font-semibold text-gray-900 mb-4'>
+                        <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
+                            <List className='w-5 h-5 text-blue-600' />
                             Danh sách sản phẩm
                         </h3>
                         <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
@@ -96,9 +126,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                                             </th>
                                             <th className='py-3 px-4 text-left'>
                                                 Thương hiệu
-                                            </th>
-                                            <th className='py-3 px-4 text-left'>
-                                                Trạng thái
                                             </th>
                                             <th className='py-3 px-4 text-left'>
                                                 Ghi chú
@@ -126,13 +153,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                                                 </td>
                                                 <td className='py-3 px-4 text-gray-700'>
                                                     {product.brandName}
-                                                </td>
-                                                <td className='py-3 px-4'>
-                                                    {product.status && (
-                                                        <span className='px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700'>
-                                                            {product.status}
-                                                        </span>
-                                                    )}
                                                 </td>
                                                 <td className='py-3 px-4 text-gray-600 text-xs max-w-xs truncate'>
                                                     {product.description || '-'}

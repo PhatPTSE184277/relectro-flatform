@@ -2,7 +2,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
-import { X, ScanLine, Package as PackageIcon } from 'lucide-react';
+import { X, Package as PackageIcon } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { getProductByQRCode } from '@/services/small-collector/IWProductService';
 
@@ -173,44 +173,46 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                 </div>
 
                 {/* Body */}
-                <div className='flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50'>
-                    {/* QR Scanner */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
-                        <label className='block text-sm font-medium text-gray-700 mb-2'>
-                            Quét QR Code Sản Phẩm{' '}
-                            <span className='text-red-500'>*</span>
-                        </label>
-                        <form onSubmit={handleScanQR} className='flex gap-2'>
-                            <div className='relative flex-1'>
-                                <input
-                                    ref={qrInputRef}
-                                    type='text'
-                                    value={qrCode}
-                                    onChange={(e) => setQrCode(e.target.value)}
-                                    placeholder='Quét hoặc nhập mã QR sản phẩm...'
-                                    disabled={loading || !!scannedProduct}
-                                    className='w-full pl-10 pr-4 py-2 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
-                                    autoComplete='off'
-                                />
-                                <ScanLine
-                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400'
-                                    size={18}
-                                />
-                            </div>
-                            <button
-                                type='submit'
-                                disabled={loading || !!scannedProduct}
-                                className='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
-                            >
-                                {loading ? 'Đang quét...' : 'Quét'}
-                            </button>
-                        </form>
-                    </div>
+                <div className='flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50'>
+                    {/* Mã sản phẩm - chỉ hiện khi chưa quét */}
+                    {!scannedProduct && (
+                        <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                Mã sản phẩm{' '}
+                                <span className='text-red-500'>*</span>
+                            </label>
+                            <form onSubmit={handleScanQR} className='flex gap-2'>
+                                <div className='relative flex-1'>
+                                    <input
+                                        ref={qrInputRef}
+                                        type='text'
+                                        value={qrCode}
+                                        onChange={(e) => setQrCode(e.target.value)}
+                                        placeholder='Nhập mã sản phẩm...'
+                                        disabled={loading}
+                                        className='w-full pl-10 pr-4 py-2 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
+                                        autoComplete='off'
+                                    />
+                                    <PackageIcon
+                                        className='absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400'
+                                        size={18}
+                                    />
+                                </div>
+                                <button
+                                    type='submit'
+                                    disabled={loading}
+                                    className='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
+                                >
+                                    {loading ? 'Đang tìm...' : 'Ok'}
+                                </button>
+                            </form>
+                        </div>
+                    )}
 
-                    {/* Scanned Product Info - compact grid, no remove button */}
+                    {/* Scanned Product Info */}
                     {scannedProduct && (
                         <div className='bg-white rounded-xl p-4 shadow-sm border border-green-200'>
-                            <div className='flex items-center gap-2 mb-4'>
+                            <div className='flex items-center gap-2 mb-3'>
                                 <PackageIcon className='text-green-600' size={20} />
                                 <h3 className='text-lg font-semibold text-gray-900'>Thông tin sản phẩm</h3>
                             </div>
@@ -239,36 +241,38 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                         />
                                     </div>
                                 )}
-                                <div className='flex-1 grid grid-cols-2 gap-x-6 gap-y-2'>
-                                    {/* Ẩn dòng Mã QR */}
-                                    <div className='flex items-center gap-2'>
-                                        <span className='text-sm text-gray-500'>Danh mục:</span>
-                                        <span className='text-base font-semibold text-gray-900'>{scannedProduct.categoryName}</span>
+                                <div className='flex-1 space-y-2'>
+                                    <div className='flex items-center gap-8'>
+                                        <div className='flex items-center w-1/2'>
+                                            <span className='text-sm text-gray-500 w-28 block'>Mã sản phẩm:</span>
+                                            <span className='text-base font-semibold text-gray-900 flex-1 break-all'>{scannedProduct.qrCode}</span>
+                                        </div>
+                                        <div className='flex items-center w-1/2'>
+                                            <span className='text-sm text-gray-500 w-24 block'>Danh mục:</span>
+                                            <span className='text-base font-semibold text-gray-900 flex-1 break-all'>{scannedProduct.categoryName}</span>
+                                        </div>
                                     </div>
-                                    <div className='flex items-center gap-2'>
-                                        <span className='text-sm text-gray-500'>Thương hiệu:</span>
-                                        <span className='text-base font-medium text-gray-900'>{scannedProduct.brandName}</span>
-                                    </div>
-                                    <div className='flex items-center gap-2'>
-                                        <span className='text-sm text-gray-500'>Trạng thái:</span>
-                                        <span className='px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700'>{scannedProduct.status}</span>
-                                    </div>
-                                    <div className='flex items-center gap-2'>
-                                        <span className='text-sm text-gray-500'>Điểm ước tính:</span>
-                                        <CustomNumberInput
-                                            value={point}
-                                            onChange={setPoint}
-                                            min={0}
-                                            className='w-24 px-2 py-1 border border-green-300 rounded-lg text-green-700 font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent'
-                                        />
-                                        <span className='text-green-600 text-sm'>điểm</span>
+                                    <div className='flex items-center gap-8'>
+                                        <div className='flex items-center w-1/2'>
+                                            <span className='text-sm text-gray-500 w-28 block'>Thương hiệu:</span>
+                                            <span className='text-base font-medium text-gray-900 flex-1 break-all'>{scannedProduct.brandName}</span>
+                                        </div>
+                                        <div className='flex items-center w-1/2'>
+                                            <span className='text-sm text-gray-500 w-24 block'>Điểm ước tính:</span>
+                                            <CustomNumberInput
+                                                value={point}
+                                                onChange={setPoint}
+                                                min={0}
+                                                className='w-24 px-2 py-1 border border-green-300 rounded-lg text-green-700 font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent'
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             {/* Ghi chú sản phẩm */}
                             {scannedProduct.description && (
-                                <div className='mt-4'>
-                                    <span className='text-sm text-gray-500'>Ghi chú sản phẩm:</span>
+                                <div className='mt-3 pt-3 border-t border-gray-100'>
+                                    <span className='text-sm text-gray-500'>Ghi chú:</span>
                                     <span className='ml-2 text-gray-700 text-sm'>{scannedProduct.description}</span>
                                 </div>
                             )}

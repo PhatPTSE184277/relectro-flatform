@@ -34,14 +34,13 @@ const PostShow: React.FC<PostShowProps> = ({
                 <div className='w-12 h-12 bg-gray-100 rounded-lg overflow-hidden shadow-sm'>
                     <img
                         src={post.thumbnailUrl || '/placeholder.png'}
-                        alt={post.name}
+                        alt={post.category}
                         className='w-full h-full object-cover'
                     />
                 </div>
             </td>
 
             <td className='py-3 px-4 font-medium max-w-[220px]'>
-                <div className='text-gray-900 line-clamp-2'>{post.name}</div>
                 <div className='text-sm text-gray-500 mt-1 line-clamp-1'>
                     {post.senderName || 'Không rõ'}
                 </div>

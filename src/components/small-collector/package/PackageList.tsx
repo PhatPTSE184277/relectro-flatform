@@ -1,7 +1,7 @@
 import React from 'react';
 import PackageShow from './PackageShow';
 import PackageTableSkeleton from './PackageTableSkeleton';
-import type { PackageType } from '@/services/small-collector/PackageService';
+import type { PackageType } from '@/types/Package';
 
 interface PackageListProps {
     packages: PackageType[];
@@ -27,7 +27,6 @@ const PackageList: React.FC<PackageListProps> = ({
                             <th className='py-3 px-4 text-left'>Mã Package</th>
                             <th className='py-3 px-4 text-left'>Tên Package</th>
                             <th className='py-3 px-4 text-left'>Số sản phẩm</th>
-                            <th className='py-3 px-4 text-left'>Điểm thu gom</th>
                             <th className='py-3 px-4 text-center'>Hành động</th>
                         </tr>
                     </thead>

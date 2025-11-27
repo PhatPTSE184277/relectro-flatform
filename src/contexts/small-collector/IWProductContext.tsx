@@ -8,13 +8,13 @@ import React, {
     useEffect,
     ReactNode
 } from 'react';
+import type { Product, CreateProductPayload } from '@/types/Product';
 import {
     filterIncomingWarehouseProducts,
     receiveProductAtWarehouse,
     getProductByQRCode,
     createIncomingWarehouseProduct,
-    Product,
-    CreateProductPayload
+    getProductById
 } from '@/services/small-collector/IWProductService';
 import { toast } from 'react-toastify';
 
@@ -30,6 +30,7 @@ interface ProductFilter {
 interface IWProductContextType {
     products: Product[];
     loading: boolean;
+    detailLoading: boolean;
     selectedProduct: Product | null;
     setSelectedProduct: (product: Product | null) => void;
     fetchProducts: (customFilter?: Partial<ProductFilter>) => Promise<void>;
@@ -63,6 +64,7 @@ type Props = { children: ReactNode };
 export const IWProductProvider: React.FC<Props> = ({ children }) => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [detailLoading, setDetailLoading] = useState<boolean>(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(
         null
     );
@@ -240,7 +242,7 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
     );
 
     const getProductByQRCodeHandler = useCallback(async (qrCode: string) => {
-        setLoading(true);
+        setDetailLoading(true);
         try {
             const product = await getProductByQRCode(qrCode);
             setSelectedProduct(product);
@@ -250,7 +252,7 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
             toast.error('Không tìm thấy sản phẩm với mã QR này');
             return null;
         } finally {
-            setLoading(false);
+            setDetailLoading(false);
         }
     }, []);
 
@@ -274,6 +276,22 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
         [fetchProducts, filter]
     );
 
+    // Add getProductById handler
+    const getProductByIdHandler = useCallback(async (id: string) => {
+        setDetailLoading(true);
+        try {
+            const product = await getProductById(id);
+            setSelectedProduct(product);
+            return product;
+        } catch (err) {
+            console.error('getProductById error', err);
+            toast.error('Không tìm thấy sản phẩm với ID này');
+            return null;
+        } finally {
+            setDetailLoading(false);
+        }
+    }, []);
+
     useEffect(() => {
         void fetchProducts(filter);
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -285,9 +303,10 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
         filter.toDate
     ]);
 
-    const value: IWProductContextType = {
+    const value = {
         products,
         loading,
+        detailLoading,
         selectedProduct,
         setSelectedProduct,
         fetchProducts,
@@ -298,7 +317,8 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
         setFilter,
         totalPages,
         totalItems,
-        allStats
+        allStats,
+        getProductById: getProductByIdHandler
     };
 
     return (

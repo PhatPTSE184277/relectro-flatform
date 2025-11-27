@@ -4,8 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, GitBranch } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import GroupingListComponent from '@/components/small-collector/grouping/list/GroupingList';
-import GroupingFilter from '@/components/small-collector/grouping/list/GroupingFilter';
-import SearchBox from '@/components/ui/SearchBox';
+
 import Pagination from '@/components/ui/Pagination';
 import GroupingDetail from '@/components/small-collector/grouping/list/modal/GroupingDetail';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';

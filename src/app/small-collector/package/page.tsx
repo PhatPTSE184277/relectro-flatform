@@ -11,7 +11,8 @@ import PackageFilter from '@/components/small-collector/package/PackageFilter';
 import SearchBox from '@/components/ui/SearchBox';
 import Pagination from '@/components/ui/Pagination';
 import { Package, Plus } from 'lucide-react';
-import type { PackageType } from '@/services/small-collector/PackageService';
+import type { PackageType } from '@/types/Package';
+import { PackageStatus } from '@/enums/PackageStatus';
 
 const PackagePage: React.FC = () => {
     const {
@@ -150,9 +151,9 @@ const PackagePage: React.FC = () => {
             {/* Filter Section */}
             <div className='mb-6 space-y-4'>
                 <PackageFilter
-                    status={(filter.status as any) || 'Đang đóng gói'}
+                    status={filter.status as PackageStatus || PackageStatus.Packing}
                     stats={allStats}
-                    onFilterChange={(status: string) => setFilter({ status, page: 1 })}
+                    onFilterChange={(status: PackageStatus) => setFilter({ status, page: 1 })}
                 />
                 <div className='max-w-md'>
                     <SearchBox

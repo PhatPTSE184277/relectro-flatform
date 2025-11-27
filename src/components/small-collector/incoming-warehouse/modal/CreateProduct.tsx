@@ -14,21 +14,12 @@ import CustomSelect from '@/components/ui/CustomSelect';
 import { uploadToCloudinary } from '@/utils/Cloudinary';
 import SearchableSelect from '@/components/ui/SearchableSelect';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
+import type { CreateProductPayload } from '@/types/Product';
 
 interface CreateProductProps {
     open: boolean;
     onClose: () => void;
-    onConfirm: (productData: {
-        senderId: string;
-        description: string;
-        smallCollectionPointId: number;
-        images: string[];
-        parentCategoryId: string;
-        subCategoryId: string;
-        brandId: string;
-        qrCode: string;
-        point: number;
-    }) => void;
+    onConfirm: (productData: CreateProductPayload) => void;
 }
 
 const CreateProduct: React.FC<CreateProductProps> = ({
@@ -62,6 +53,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({
 
     // User context
     const { user, fetchUserByPhone, setUser } = useUserContext();
+
+    const playStoreUrl = process.env.NEXT_PUBLIC_PLAY_STORE_URL;
+    const appStoreUrl = process.env.NEXT_PUBLIC_APP_STORE_URL;
 
     useEffect(() => {
         if (open) {
@@ -336,6 +330,31 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                             {user.address}
                                         </p>
                                     )}
+                                </div>
+                            </div>
+                        )}
+                        {!user && phone.trim() && (
+                            <div className='mt-4 flex flex-col items-center gap-2'>
+                                <div className='text-sm text-gray-600 mb-2'>
+                                    Không tìm thấy người gửi? Tải app để đăng ký tài khoản:
+                                </div>
+                                <div className='flex gap-6'>
+                                    <div className='flex flex-col items-center'>
+                                        <img
+                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${playStoreUrl}`}
+                                            alt='QR tải app CH Play'
+                                            className='w-20 h-20 rounded border border-gray-200 bg-white mb-1'
+                                        />
+                                        <span className='text-xs text-gray-500'>Tải trên CH Play</span>
+                                    </div>
+                                    <div className='flex flex-col items-center'>
+                                        <img
+                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${appStoreUrl}`}
+                                            alt='QR tải app App Store'
+                                            className='w-20 h-20 rounded border border-gray-200 bg-white mb-1'
+                                        />
+                                        <span className='text-xs text-gray-500'>Tải trên App Store</span>
+                                    </div>
                                 </div>
                             </div>
                         )}

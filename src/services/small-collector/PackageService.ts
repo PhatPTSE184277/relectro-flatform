@@ -1,52 +1,10 @@
 import axios from '@/lib/axios';
-
-export interface PackageProductAttribute {
-    attributeName: string;
-    value: string;
-    unit: string | null;
-}
-
-export interface PackageProduct {
-    productId: string;
-    description: string;
-    categoryId: string;
-    categoryName: string;
-    brandId: string;
-    brandName: string;
-    qrCode: string | null;
-    status: string | null;
-    sizeTierName: string | null;
-    attributes: PackageProductAttribute[];
-}
-
-export interface PackageType {
-    packageId: string;
-    packageName: string;
-    smallCollectionPointsId: number;
-    status?: string;
-    products: PackageProduct[];
-}
-
-export interface FilterPackagesResponse {
-    page: number;
-    limit: number;
-    totalItems: number;
-    totalPages: number;
-    data: PackageType[];
-}
-
-export interface CreatePackagePayload {
-    packageId: string;
-    packageName: string;
-    smallCollectionPointsId: number;
-    productsQrCode: string[];
-}
-
-export interface UpdatePackagePayload {
-    packageName: string;
-    smallCollectionPointsId: number;
-    productsQrCode: string[];
-}
+import {
+    PackageType,
+    FilterPackagesResponse,
+    CreatePackagePayload,
+    UpdatePackagePayload
+} from '@/types/Package';
 
 export const filterPackages = async ({
     page = 1,
@@ -95,3 +53,12 @@ export const updatePackageStatus = async (
     return response.data;
 };
 
+export const deliverPackage = async (packageId: string): Promise<any> => {
+    const response = await axios.put(`/packages/${packageId}/delivery`);
+    return response.data;
+};
+
+export const sendPackageToRecycler = async (packageId: string): Promise<any> => {
+    const response = await axios.put(`/packages/${packageId}/recycler`);
+    return response.data;
+};

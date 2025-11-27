@@ -14,11 +14,15 @@ import {
     createPackage,
     updatePackage,
     updatePackageStatus,
+    deliverPackage,
+    sendPackageToRecycler,
+} from '@/services/small-collector/PackageService';
+import {
     PackageType,
     FilterPackagesResponse,
     CreatePackagePayload,
     UpdatePackagePayload
-} from '@/services/small-collector/PackageService';
+} from '@/types/Package';
 import { toast } from 'react-toastify';
 
 interface PackageFilter {
@@ -48,6 +52,8 @@ interface PackageContextType {
         shipping: number;
         closed: number;
     };
+    handleDeliverPackage: (packageId: string) => Promise<void>;
+    handleSendPackageToRecycler: (packageId: string) => Promise<void>;
 }
 
 const PackageContext = createContext<PackageContextType | undefined>(undefined);
@@ -154,6 +160,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 await createPackage(payload);
                 toast.success('Tạo package thành công');
                 await fetchPackages();
+                await fetchAllStats();
             } catch (err: any) {
                 console.error('createNewPackage error', err);
                 toast.error(err?.response?.data?.message || 'Lỗi khi tạo package');
@@ -162,7 +169,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 setLoading(false);
             }
         },
-        [fetchPackages]
+        [fetchPackages, fetchAllStats]
     );
 
     const updateExistingPackage = useCallback(
@@ -202,6 +209,44 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
         [fetchPackages, fetchAllStats]
     );
 
+    // Hàm cho Shipper: Lấy hàng từ kho để vận chuyển đến nơi tái chế
+    const handleDeliverPackage = useCallback(
+        async (packageId: string) => {
+            setLoading(true);
+            try {
+                await deliverPackage(packageId);
+                toast.success('Giao hàng thành công');
+                await fetchPackages();
+                await fetchAllStats();
+            } catch (err) {
+                console.error('handleDeliverPackage error', err);
+                toast.error('Lỗi khi giao hàng');
+            } finally {
+                setLoading(false);
+            }
+        },
+        [fetchPackages, fetchAllStats]
+    );
+
+    // Hàm cho Recycler: Xác nhận nhận hàng tại nơi tái chế
+    const handleSendPackageToRecycler = useCallback(
+        async (packageId: string) => {
+            setLoading(true);
+            try {
+                await sendPackageToRecycler(packageId);
+                toast.success('Xác nhận nhận hàng tại nơi tái chế thành công');
+                await fetchPackages();
+                await fetchAllStats();
+            } catch (err) {
+                console.error('handleSendPackageToRecycler error', err);
+                toast.error('Lỗi khi xác nhận nhận hàng tại nơi tái chế');
+            } finally {
+                setLoading(false);
+            }
+        },
+        [fetchPackages, fetchAllStats]
+    );
+
     useEffect(() => {
         void fetchPackages();
         void fetchAllStats();
@@ -222,7 +267,9 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
         setFilter,
         totalPages,
         totalItems,
-        allStats
+        allStats,
+        handleDeliverPackage,
+        handleSendPackageToRecycler
     };
 
     return (

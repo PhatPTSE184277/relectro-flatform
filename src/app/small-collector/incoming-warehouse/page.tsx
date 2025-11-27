@@ -23,8 +23,9 @@ const IncomingWarehousePage: React.FC = () => {
         receiveProduct,
         selectedProduct,
         setSelectedProduct,
-        createProduct
-    } = useIWProductContext();
+        createProduct,
+        getProductById
+    } = useIWProductContext() as any;
 
     const [search, setSearch] = useState('');
     const [showDetailModal, setShowDetailModal] = useState(false);
@@ -80,9 +81,13 @@ const IncomingWarehousePage: React.FC = () => {
         setFilter({ toDate: date, page: 1 });
     };
 
-    const handleViewDetail = (product: any) => {
-        setSelectedProduct(product);
+    const handleViewDetail = async (product: any) => {
         setShowDetailModal(true);
+        setSelectedProduct(null);
+        // Gọi API để lấy đầy đủ thông tin sản phẩm
+        if (getProductById) {
+            await getProductById(product.productId);
+        }
     };
 
     const handleSearchChange = (value: string) => {

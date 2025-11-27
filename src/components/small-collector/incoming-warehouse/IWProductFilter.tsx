@@ -1,10 +1,9 @@
 import { IoFilterOutline } from 'react-icons/io5';
 import React from 'react';
-
-export type ProductStatus = 'Chờ thu gom' | 'Đã thu gom' | 'Hủy bỏ' | 'Nhập kho';
+import { ProductStatus } from '@/enums/ProductStatus';
 
 interface IWProductFilterProps {
-    status: ProductStatus;
+    status: string;
     stats?: {
         total?: number;
         pending?: number;
@@ -12,7 +11,7 @@ interface IWProductFilterProps {
         cancelled?: number;
         received?: number;
     };
-    onFilterChange: (status: ProductStatus) => void;
+    onFilterChange: (status: string) => void;
 }
 
 const IWProductFilter: React.FC<IWProductFilterProps> = ({
@@ -29,9 +28,9 @@ const IWProductFilter: React.FC<IWProductFilterProps> = ({
 
             <div className='flex flex-wrap gap-2'>
                 <button
-                    onClick={() => onFilterChange('Chờ thu gom')}
+                    onClick={() => onFilterChange(ProductStatus.Pending)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                        status === 'Chờ thu gom'
+                        status === ProductStatus.Pending
                             ? 'bg-yellow-100 text-yellow-700 shadow'
                             : 'bg-gray-100 text-gray-600'
                     }`}
@@ -40,9 +39,9 @@ const IWProductFilter: React.FC<IWProductFilterProps> = ({
                 </button>
 
                 <button
-                    onClick={() => onFilterChange('Đã thu gom')}
+                    onClick={() => onFilterChange(ProductStatus.Collected)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                        status === 'Đã thu gom'
+                        status === ProductStatus.Collected
                             ? 'bg-blue-100 text-blue-700 shadow'
                             : 'bg-gray-100 text-gray-600'
                     }`}
@@ -51,9 +50,9 @@ const IWProductFilter: React.FC<IWProductFilterProps> = ({
                 </button>
 
                 <button
-                    onClick={() => onFilterChange('Hủy bỏ')}
+                    onClick={() => onFilterChange(ProductStatus.Cancelled)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                        status === 'Hủy bỏ'
+                        status === ProductStatus.Cancelled
                             ? 'bg-red-100 text-red-700 shadow'
                             : 'bg-gray-100 text-gray-600'
                     }`}
@@ -62,9 +61,9 @@ const IWProductFilter: React.FC<IWProductFilterProps> = ({
                 </button>
 
                 <button
-                    onClick={() => onFilterChange('Nhập kho')}
+                    onClick={() => onFilterChange(ProductStatus.Received)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                        status === 'Nhập kho'
+                        status === ProductStatus.Received
                             ? 'bg-green-100 text-green-700 shadow'
                             : 'bg-gray-100 text-gray-600'
                     }`}

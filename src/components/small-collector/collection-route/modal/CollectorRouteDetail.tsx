@@ -1,215 +1,383 @@
 /* eslint-disable @next/next/no-img-element */
+'use client';
 import React, { useState } from 'react';
-import { Package as PackageIcon } from 'lucide-react';
 import { formatTime } from '@/utils/FormatTime';
+import { formatDate } from '@/utils/FormateDate';
+import {
+    User,
+    Package,
+    MapPin,
+    Clock,
+    Calendar,
+    Truck,
+    Tag,
+    UserCheck
+} from 'lucide-react';
 
 interface CollectorRouteDetailProps {
     route: any;
     onClose: () => void;
 }
 
-const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({ route, onClose }) => {
+const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
+    route,
+    onClose
+}) => {
     const [selectedImg, setSelectedImg] = useState(0);
     const [zoomImg, setZoomImg] = useState<string | null>(null);
 
-    function normalizeStatus(status: string = "") {
+    function normalizeStatus(status: string = '') {
         const s = status.trim().toLowerCase();
-        if (s === "hoàn thành" || s === "đã hoàn thành" || s === "completed") return "Hoàn thành";
-        if (s === "đang tiến hành" || s === "đang thu gom" || s === "collecting" || s === "in progress") return "Đang tiến hành";
-        if (s === "chưa bắt đầu" || s === "not started") return "Chưa bắt đầu";
-        if (s === "hủy bỏ" || s === "cancelled" || s === "canceled") return "Hủy bỏ";
+        if (s === 'hoàn thành' || s === 'đã hoàn thành' || s === 'completed')
+            return 'Hoàn thành';
+        if (
+            s === 'đang tiến hành' ||
+            s === 'đang thu gom' ||
+            s === 'collecting' ||
+            s === 'in progress'
+        )
+            return 'Đang tiến hành';
+        if (s === 'chưa bắt đầu' || s === 'not started') return 'Chưa bắt đầu';
+        if (s === 'hủy bỏ' || s === 'cancelled' || s === 'canceled')
+            return 'Hủy bỏ';
         return status;
     }
 
+    const getStatusBadgeClass = (status: string) => {
+        const normalized = normalizeStatus(status);
+        const badge: Record<string, string> = {
+            'Hoàn thành': 'bg-green-100 text-green-700',
+            'Đang tiến hành': 'bg-blue-100 text-blue-700',
+            'Chưa bắt đầu': 'bg-yellow-100 text-yellow-700',
+            'Hủy bỏ': 'bg-red-100 text-red-700'
+        };
+        return badge[normalized] || 'bg-gray-100 text-gray-600';
+    };
+
     return (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
             {/* Overlay */}
             <div
-                className='absolute inset-0 bg-black/30 backdrop-blur-sm'
+                className='absolute inset-0 bg-black/60 backdrop-blur-sm'
                 onClick={onClose}
             ></div>
 
-            {/* Modal container */}
-            <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]'>
+            {/* Modal */}
+            <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-blue-50 to-purple-50'>
-                    <div>
-                        <h2 className='text-2xl font-bold text-gray-800'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-blue-50 to-purple-50'>
+                    <div className='flex-1'>
+                        <h2 className='text-2xl font-bold text-gray-900'>
                             Chi tiết tuyến thu gom
                         </h2>
-                        <span
-                            className={`inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full
-                                ${
-                                    normalizeStatus(route.status) === "Hoàn thành"
-                                        ? 'bg-green-100 text-green-700'
-                                        : normalizeStatus(route.status) === "Đang tiến hành"
-                                        ? 'bg-blue-100 text-blue-700'
-                                        : normalizeStatus(route.status) === "Hủy bỏ"
-                                        ? 'bg-red-100 text-red-700'
-                                        : 'bg-yellow-100 text-yellow-700'
-                                }`}
-                        >
-                            {normalizeStatus(route.status)}
-                        </span>
+                        <p className='text-sm text-gray-500 mt-1'>
+                            Thông tin chi tiết về tuyến thu gom và lịch sử
+                        </p>
                     </div>
                     <button
                         onClick={onClose}
-                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer'
+                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
+                        aria-label='Đóng'
                     >
                         &times;
                     </button>
                 </div>
 
-                {/* Main content */}
+                {/* Content */}
                 <div className='flex flex-col md:flex-row flex-1 overflow-hidden'>
-                    {/* Left: Image section */}
-                    <div className='md:w-1/3 bg-gray-50 flex flex-col items-center p-6 border-r border-gray-100 overflow-y-auto'>
-                        <div className='relative w-full flex flex-col items-center gap-4'>
+                    {/* LEFT - IMAGE */}
+                    <div className='md:w-1/3 p-6 bg-gray-50 flex flex-col items-center border-r overflow-y-auto'>
+                        <div className='w-full flex flex-col items-center gap-4'>
+                            {/* Badge Status */}
+                            <span
+                                className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-2 ${getStatusBadgeClass(
+                                    route.status
+                                )}`}
+                            >
+                                {normalizeStatus(route.status)}
+                            </span>
+
+                            {/* Main Image */}
                             <img
-                                src={route.pickUpItemImages?.[selectedImg] || '/placeholder.png'}
+                                src={
+                                    route.pickUpItemImages?.[selectedImg] ||
+                                    '/placeholder.png'
+                                }
                                 alt='Ảnh chính'
                                 className='w-full max-w-xs h-72 object-contain rounded-xl border border-gray-200 bg-white cursor-zoom-in shadow-sm'
-                                onClick={() => setZoomImg(route.pickUpItemImages?.[selectedImg])}
-                            />
-                            <div className='flex gap-2 flex-wrap justify-center'>
-                                {(route.pickUpItemImages ?? []).map(
-                                    (img: string, idx: number) => (
-                                        <img
-                                            key={idx}
-                                            src={img}
-                                            alt={`Ảnh ${idx + 1}`}
-                                            className={`w-14 h-14 object-cover rounded-lg border cursor-pointer transition-all duration-150 ${
-                                                selectedImg === idx
-                                                    ? 'border-blue-500 ring-2 ring-blue-300 scale-105'
-                                                    : 'border-gray-200 hover:border-blue-300'
-                                            }`}
-                                            onClick={() => setSelectedImg(idx)}
-                                        />
+                                onClick={() =>
+                                    setZoomImg(
+                                        route.pickUpItemImages?.[selectedImg]
                                     )
+                                }
+                            />
+
+                            {/* Thumbnails */}
+                            {Array.isArray(route.pickUpItemImages) &&
+                                route.pickUpItemImages.length > 1 && (
+                                    <div className='flex gap-2 flex-wrap justify-center'>
+                                        {route.pickUpItemImages.map(
+                                            (img: string, idx: number) => (
+                                                <img
+                                                    key={idx}
+                                                    src={img}
+                                                    alt={`Ảnh ${idx + 1}`}
+                                                    onClick={() =>
+                                                        setSelectedImg(idx)
+                                                    }
+                                                    className={`w-16 h-16 object-cover rounded-lg cursor-pointer transition-all ${
+                                                        idx === selectedImg
+                                                            ? 'border-2 border-blue-500 ring-2 ring-blue-300 scale-105'
+                                                            : 'border border-gray-200 hover:border-blue-300'
+                                                    }`}
+                                                />
+                                            )
+                                        )}
+                                    </div>
                                 )}
-                            </div>
                         </div>
                     </div>
 
-                    {/* Right: Details section */}
-                    <div className='md:w-2/3 p-6 space-y-4 overflow-y-auto max-h-[85vh]'>
-                        {/* --- Route info --- */}
-                        <section className='space-y-3'>
-                            <h3 className='font-semibold text-gray-900 text-lg border-b pb-2 flex items-center gap-2'>
-                                Thông tin thu gom
-                            </h3>
-                            <div className='space-y-3'>
-                                <div className='bg-gray-50 rounded-lg p-4 flex items-center gap-2'>
-                                    <span className='font-medium text-gray-700 min-w-[120px]'>Biển số xe:</span>
-                                    <span className='text-gray-600'>{route.licensePlate || 'Không có thông tin'}</span>
-                                </div>
-                                <div className='bg-gray-50 rounded-lg p-4 flex items-center gap-2'>
-                                    <span className='font-medium text-gray-700 min-w-[120px]'>Thời gian dự kiến:</span>
-                                    <span className='text-gray-600'>{formatTime(route.estimatedTime) || 'Không có thông tin'}</span>
-                                </div>
-                                <div className='bg-gray-50 rounded-lg p-4 flex items-center gap-2'>
-                                    <span className='font-medium text-gray-700 min-w-[120px]'>Ngày thu gom:</span>
-                                    <span className='text-gray-600'>
-                                        {route.collectionDate
-                                            ? new Date(route.collectionDate).toLocaleDateString('vi-VN', {
-                                                  day: '2-digit',
-                                                  month: '2-digit',
-                                                  year: 'numeric'
-                                              })
-                                            : 'Không có thông tin'}
+                    {/* RIGHT - INFO */}
+                    <div className='md:w-2/3 p-6 space-y-5 overflow-y-auto'>
+                        {/* Thông tin tuyến thu gom */}
+                        <div className='grid grid-cols-2 gap-4'>
+                            <InfoCard
+                                icon={
+                                    <Package
+                                        className='text-blue-600'
+                                        size={20}
+                                    />
+                                }
+                                label='Thương hiệu'
+                                value={route.brandName || 'Không rõ'}
+                            />
+                            <InfoCard
+                                icon={
+                                    <Tag
+                                        className='text-purple-600'
+                                        size={20}
+                                    />
+                                }
+                                label='Danh mục'
+                                value={route.subCategoryName || 'Không rõ'}
+                            />
+                            <InfoCard
+                                icon={
+                                    <Truck
+                                        className='text-green-600'
+                                        size={20}
+                                    />
+                                }
+                                label='Biển số xe'
+                                value={route.licensePlate || 'Không rõ'}
+                            />
+                            <InfoCard
+                                icon={
+                                    <Calendar
+                                        className='text-orange-600'
+                                        size={20}
+                                    />
+                                }
+                                label='Ngày thu gom'
+                                value={
+                                    route.collectionDate
+                                        ? new Date(
+                                              route.collectionDate
+                                          ).toLocaleDateString('vi-VN')
+                                        : 'Không rõ'
+                                }
+                            />
+                        </div>
+
+                        {/* Người gửi */}
+                        <Section
+                            title='Người gửi'
+                            icon={<User className='text-blue-600' size={18} />}
+                        >
+                            <UserInfo user={route.sender} />
+                        </Section>
+
+                        {/* Nhân viên thu gom */}
+                        <Section
+                            title='Nhân viên thu gom'
+                            icon={
+                                <UserCheck
+                                    className='text-green-600'
+                                    size={18}
+                                />
+                            }
+                        >
+                            <UserInfo user={route.collector} />
+                        </Section>
+
+                        {/* Lịch thu gom */}
+                        <Section
+                            title='Lịch thu gom'
+                            icon={
+                                <Clock className='text-orange-600' size={18} />
+                            }
+                        >
+                            <div className='space-y-2 text-sm text-gray-700'>
+                                <div className='flex justify-between'>
+                                    <span className='font-medium'>Ngày:</span>
+                                    <span>
+                                        {formatDate(route.collectionDate) ||
+                                            'Chưa thu gom'}
                                     </span>
                                 </div>
-                            </div>
-                        </section>
-
-                        {/* --- Sender info --- */}
-                        <section className='space-y-3'>
-                            <h3 className='font-semibold text-gray-900 text-lg border-b pb-2'>
-                                Thông tin người gửi
-                            </h3>
-                            <div className='bg-gray-50 rounded-lg p-4 flex items-center gap-3'>
-                                <img
-                                    src={route.sender?.avatar || '/avatar-default.png'}
-                                    alt='avatar'
-                                    className='w-10 h-10 rounded-full object-cover'
-                                />
-                                <div>
-                                    <p className='font-medium text-gray-800'>
-                                        {route.sender?.name}
-                                    </p>
-                                    <p className='text-gray-500 text-xs'>
-                                        {route.sender?.email}
-                                    </p>
-                                    <p className='text-gray-500 text-xs'>
-                                        {route.sender?.phone}
-                                    </p>
+                                <div className='flex justify-between'>
+                                    <span className='font-medium'>
+                                        Thời gian dự kiến:
+                                    </span>
+                                    <span>
+                                        {formatTime(route.estimatedTime)}
+                                    </span>
                                 </div>
-                            </div>
-                            <div className='bg-gray-50 rounded-lg p-4 flex flex-wrap gap-2 items-start'>
-                                <span className='font-medium text-gray-700 min-w-[80px]'>Địa chỉ:</span>
-                                <span className='text-gray-600 break-words whitespace-pre-line flex-1'>{route.sender?.address || route.address}</span>
-                            </div>
-                        </section>
 
-                        {/* --- Collector info --- */}
-                        <section className='space-y-3'>
-                            <h3 className='font-semibold text-gray-900 text-lg border-b pb-2'>
-                                Thông tin người thu gom
-                            </h3>
-                            <div className='bg-gray-50 rounded-lg p-4 flex items-center gap-3'>
-                                <img
-                                    src={route.collector?.avatar || '/avatar-default.png'}
-                                    alt='avatar'
-                                    className='w-10 h-10 rounded-full object-cover'
-                                />
-                                <div>
-                                    <p className='font-medium text-gray-800'>
-                                        {route.collector?.name}
-                                    </p>
-                                    <p className='text-gray-500 text-xs'>
-                                        {route.collector?.email}
-                                    </p>
-                                    <p className='text-gray-500 text-xs'>
-                                        {route.collector?.phone}
-                                    </p>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* --- Confirm images --- */}
-                        {Array.isArray(route.confirmImages) && route.confirmImages.length > 0 && (
-                            <section className='space-y-3'>
-                                <h3 className='font-semibold text-gray-900 text-lg border-b pb-2'>
-                                    Ảnh xác nhận thu gom
-                                </h3>
-                                <div className='flex gap-2 flex-wrap'>
-                                    {route.confirmImages.map((img: string, idx: number) => (
-                                        <img
-                                            key={idx}
-                                            src={img}
-                                            alt={`Xác nhận ${idx + 1}`}
-                                            className='w-24 h-24 object-cover rounded-lg border border-gray-200 cursor-pointer hover:scale-105 transition'
-                                            onClick={() => setZoomImg(img)}
+                                <div className='pt-2 border-t'>
+                                    <div className='flex items-start gap-2'>
+                                        <MapPin
+                                            size={16}
+                                            className='text-gray-600 mt-0.5'
                                         />
-                                    ))}
+                                        <span>{route.address}</span>
+                                    </div>
                                 </div>
-                            </section>
-                        )}
+                            </div>
+                        </Section>
+
+                        {/* Ảnh xác nhận */}
+                        {Array.isArray(route.confirmImages) &&
+                            route.confirmImages.length > 0 && (
+                                <Section
+                                    title='Ảnh xác nhận'
+                                    icon={
+                                        <Package
+                                            className='text-purple-600'
+                                            size={18}
+                                        />
+                                    }
+                                >
+                                    <div className='flex gap-2 flex-wrap'>
+                                        {route.confirmImages.map(
+                                            (img: string, idx: number) => (
+                                                <img
+                                                    key={idx}
+                                                    src={img}
+                                                    alt={`Ảnh xác nhận ${
+                                                        idx + 1
+                                                    }`}
+                                                    className='w-20 h-20 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-400 hover:shadow-lg transition-all'
+                                                    onClick={() =>
+                                                        setZoomImg(img)
+                                                    }
+                                                />
+                                            )
+                                        )}
+                                    </div>
+                                </Section>
+                            )}
                     </div>
                 </div>
+            </div>
 
-                {/* Zoom image modal */}
-                {zoomImg && (
-                    <div
-                        className='fixed inset-0 z-999 flex items-center justify-center bg-black/70'
-                        onClick={() => setZoomImg(null)}
-                    >
-                        <img
-                            src={zoomImg}
-                            alt='Zoom'
-                            className='max-w-[90vw] max-h-[90vh] rounded-xl shadow-2xl border-4 border-white object-contain'
-                        />
-                    </div>
+            {/* ZOOM IMAGE */}
+            {zoomImg && (
+                <div
+                    className='fixed inset-0 bg-black/70 flex items-center justify-center z-999'
+                    onClick={() => setZoomImg(null)}
+                >
+                    <img
+                        src={zoomImg}
+                        alt='Ảnh phóng to'
+                        className='max-w-[90vw] max-h-[90vh] shadow-2xl rounded-xl object-contain border-4 border-white'
+                    />
+                </div>
+            )}
+
+            {/* Animation */}
+            <style>{`
+                .animate-scaleIn { animation: scaleIn .2s ease-out; }
+                @keyframes scaleIn { from {transform: scale(.9); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+            `}</style>
+        </div>
+    );
+};
+
+// InfoCard Component
+interface InfoCardProps {
+    icon: React.ReactNode;
+    label: string;
+    value: React.ReactNode;
+}
+const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value }) => (
+    <div className='p-4 bg-gray-50 rounded-lg border flex gap-3'>
+        {icon}
+        <div>
+            <p className='text-sm text-gray-600'>{label}</p>
+            <p className='text-gray-900 text-sm font-medium'>{value}</p>
+        </div>
+    </div>
+);
+
+// Section Component
+interface SectionProps {
+    title: string;
+    icon: React.ReactNode;
+    children: React.ReactNode;
+}
+const Section: React.FC<SectionProps> = ({ title, icon, children }) => (
+    <div className='pt-4 border-t'>
+        <div className='flex items-center gap-2 mb-2 text-gray-800 font-semibold'>
+            {icon} <span>{title}</span>
+        </div>
+        <div className='p-4 bg-gray-50 rounded-lg border'>{children}</div>
+    </div>
+);
+
+// UserInfo Component
+interface UserInfoProps {
+    user?: {
+        name?: string;
+        phone?: string;
+        email?: string;
+        address?: string;
+        avatar?: string;
+        [key: string]: any;
+    };
+    address?: string;
+}
+const UserInfo: React.FC<UserInfoProps> = ({ user, address }) => {
+    const hasValidData =
+        user && (user.name || user.phone || user.email || user.avatar);
+    if (!hasValidData) {
+        return (
+            <p className='text-sm text-gray-500'>
+                Thông tin người dùng không khả dụng.
+            </p>
+        );
+    }
+
+    const displayAddress = user.address || address;
+
+    return (
+        <div className='flex gap-3 items-start'>
+            {user.avatar && (
+                <img
+                    src={user.avatar}
+                    className='w-14 h-14 rounded-xl object-cover'
+                    alt='Avatar người dùng'
+                />
+            )}
+            <div className='text-sm text-gray-700'>
+                <p>
+                    <b>{user.name || 'Không rõ'}</b>
+                </p>
+                <p>{user.phone || 'Không có số điện thoại'}</p>
+                <p>{user.email || 'Không có email'}</p>
+                {displayAddress && (
+                    <p className='mt-1 text-gray-600'>{displayAddress}</p>
                 )}
             </div>
         </div>

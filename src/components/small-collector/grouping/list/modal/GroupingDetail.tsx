@@ -64,7 +64,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50'>
+                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-blue-50 to-purple-50'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-900'>
                             Chi tiết nhóm thu gom
@@ -84,78 +84,68 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                 {/* Main content */}
                 <div className='flex-1 overflow-y-auto p-6'>
                     {/* Group Info */}
-                    <div className='bg-gray-50 rounded-lg p-4 mb-6'>
-                        <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-                            <Package size={20} className='text-blue-600' />
-                            Thông tin nhóm
-                        </h3>
-                        <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-                            <div className='flex flex-col bg-white rounded-lg p-3 shadow-sm'>
-                                <span className='text-sm text-gray-500 mb-1 flex items-center gap-1'>
+                    <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
+                        <Package className='w-5 h-5 text-blue-600' />
+                        Thông tin nhóm
+                    </h3>
+                    <div className='bg-white rounded-xl p-6 mb-6 shadow-sm border border-gray-100'>
+                        <div className='grid grid-cols-4 gap-6'>
+                            {/* Ngày thu gom */}
+                            <div className='flex flex-col'>
+                                <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
                                     <Calendar size={14} />
                                     Ngày thu gom
-                                </span>
-                                <span className='text-base font-semibold text-gray-900'>
-                                    {new Date(
-                                        grouping.groupDate
-                                    ).toLocaleDateString('vi-VN')}
-                                </span>
+                                </div>
+                                <div className='text-sm font-medium text-gray-900'>
+                                    {new Date(grouping.groupDate).toLocaleDateString('vi-VN')}
+                                </div>
                             </div>
-                            <div className='flex flex-col bg-white rounded-lg p-3 shadow-sm'>
-                                <span className='text-sm text-gray-500 mb-1 flex items-center gap-1'>
+                            {/* Phương tiện */}
+                            <div className='flex flex-col'>
+                                <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
                                     <Truck size={14} />
                                     Phương tiện
-                                </span>
-                                <span className='text-base font-semibold text-gray-900'>
+                                </div>
+                                <div className='text-sm font-medium text-gray-900'>
                                     {grouping.vehicle}
-                                </span>
+                                </div>
                             </div>
-                            <div className='flex flex-col bg-white rounded-lg p-3 shadow-sm'>
-                                <span className='text-sm text-gray-500 mb-1 flex items-center gap-1'>
+                            {/* Người thu gom */}
+                            <div className='flex flex-col'>
+                                <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
                                     <User size={14} />
                                     Người thu gom
-                                </span>
-                                <span className='text-base font-semibold text-gray-900'>
+                                </div>
+                                <div className='text-sm font-medium text-gray-900'>
                                     {grouping.collector}
-                                </span>
+                                </div>
                             </div>
-                            <div className='flex flex-col bg-white rounded-lg p-3 shadow-sm'>
-                                <span className='text-sm text-gray-500 mb-1 flex items-center gap-1'>
+                            {/* Điểm thu gom */}
+                            <div className='flex flex-col'>
+                                <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
                                     <MapPin size={14} />
                                     Điểm thu gom
-                                </span>
-                                <span className='text-base font-semibold text-gray-900'>
+                                </div>
+                                <div className='text-sm font-medium text-gray-900'>
                                     {grouping.collectionPoint}
-                                </span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Statistics */}
-                    <div className='flex gap-3 mb-6'>
-                        <div className='bg-gray-50 rounded-lg p-3 flex-1 border border-gray-100 flex items-center justify-between min-w-0'>
-                            <span className='text-sm text-blue-600 whitespace-nowrap'>
-                                Tổng bưu phẩm:
-                            </span>
-                            <span className='text-xl font-bold text-gray-900'>
-                                {grouping.totalPosts}
-                            </span>
+                    <div className='grid grid-cols-3 gap-4 mb-6'>
+                        <div className='bg-blue-50 rounded-xl p-4 border border-blue-100 shadow-sm flex items-center justify-between'>
+                            <span className='text-xs font-semibold uppercase text-blue-700'>Tổng bưu phẩm</span>
+                            <span className='text-2xl font-bold text-blue-900'>{grouping.totalPosts}</span>
                         </div>
-                        <div className='bg-gray-50 rounded-lg p-3 flex-1 border border-gray-100 flex items-center justify-between min-w-0'>
-                            <span className='text-sm text-purple-600 whitespace-nowrap'>
-                                Tổng khối lượng:
-                            </span>
-                            <span className='text-xl font-bold text-gray-900'>
-                                {grouping.totalWeightKg} kg
-                            </span>
+                        <div className='bg-purple-50 rounded-xl p-4 border border-purple-100 shadow-sm flex items-center justify-between'>
+                            <span className='text-xs font-semibold uppercase text-purple-700'>Tổng khối lượng</span>
+                            <span className='text-2xl font-bold text-purple-900'>{grouping.totalWeightKg} <span className='text-sm font-normal'>kg</span></span>
                         </div>
-                        <div className='bg-gray-50 rounded-lg p-3 flex-1 border border-gray-100 flex items-center justify-between min-w-0'>
-                            <span className='text-sm text-green-600 whitespace-nowrap'>
-                                Tổng thể tích:
-                            </span>
-                            <span className='text-xl font-bold text-gray-900'>
-                                {grouping.totalVolumeM3} m³
-                            </span>
+                        <div className='bg-green-50 rounded-xl p-4 border border-green-100 shadow-sm flex items-center justify-between'>
+                            <span className='text-xs font-semibold uppercase text-green-700'>Tổng thể tích</span>
+                            <span className='text-2xl font-bold text-green-900'>{grouping.totalVolumeM3} <span className='text-sm font-normal'>m³</span></span>
                         </div>
                     </div>
 

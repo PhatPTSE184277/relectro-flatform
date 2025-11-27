@@ -59,7 +59,7 @@ const PostList: React.FC<PostListProps> = ({
           <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold">
             <tr>
               <th className="py-3 px-4 text-left">Ảnh</th>
-              <th className="py-3 px-4 text-left">Tiêu đề</th>
+              <th className="py-3 px-4 text-left">Người gửi</th>
               <th className="py-3 px-4 text-left">Danh mục</th>
               <th className="py-3 px-4 text-left">Địa chỉ</th>
               <th className="py-3 px-4 text-left">Ngày đăng</th>
