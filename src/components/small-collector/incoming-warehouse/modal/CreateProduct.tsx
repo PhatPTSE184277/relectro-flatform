@@ -449,12 +449,12 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     <span className='text-red-500'>*</span>
                                 </label>
                                 {subCategoryId ? (
-                                    <CustomSelect
+                                    <SearchableSelect
                                         options={brands}
                                         value={brandId}
                                         onChange={setBrandId}
                                         getLabel={(brand) => brand.name}
-                                        getValue={(brand) => brand.brandId} // Đổi từ brand.id thành brand.brandId
+                                        getValue={(brand) => brand.brandId}
                                         placeholder={
                                             brandLoading
                                                 ? 'Đang tải...'
