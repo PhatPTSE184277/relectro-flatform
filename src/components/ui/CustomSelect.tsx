@@ -45,8 +45,8 @@ const CustomSelect = <T,>({
         <div className='relative' ref={selectRef}>
             <div
                 onClick={() => !disabled && setIsOpen(!isOpen)}
-                className={`h-12 cursor-pointer flex items-center justify-between transition-all duration-300 bg-white border border-blue-200 rounded-xl px-4 shadow-sm ${
-                    isOpen ? 'ring-2 ring-blue-400 border-blue-400' : ''
+                className={`h-12 cursor-pointer flex items-center justify-between transition-all duration-300 bg-white border border-primary-200 rounded-xl px-4 shadow-sm ${
+                    isOpen ? 'ring-2 ring-primary-400 border-primary-400' : ''
                 } ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
             >
                 <span
@@ -62,13 +62,13 @@ const CustomSelect = <T,>({
                             isOpen ? 'rotate-180' : ''
                         }`}
                     >
-                        <IoChevronDown size={20} className='text-blue-400' />
+                        <IoChevronDown size={20} className='text-primary-400' />
                     </div>
                 )}
             </div>
 
             {isOpen && !disabled && (
-                <div className='absolute top-full left-0 right-0 mt-2 bg-white border border-blue-100 rounded-xl overflow-hidden z-50 animate-slide-up shadow-2xl w-full max-h-64 overflow-y-auto'>
+                <div className='absolute top-full left-0 right-0 mt-2 bg-white border border-primary-100 rounded-xl overflow-hidden z-50 animate-slide-up shadow-2xl w-full max-h-64 overflow-y-auto'>
                     {options.length === 0 ? (
                         <div className='p-4 text-gray-400 text-center'>
                             Không có lựa chọn
@@ -83,8 +83,8 @@ const CustomSelect = <T,>({
                                 }}
                                 className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors ${
                                     value === getValue(opt)
-                                        ? 'bg-gradient-to-r from-blue-500 to-blue-400 text-white'
-                                        : 'text-gray-700 hover:bg-blue-50'
+                                        ? 'bg-gradient-to-r from-primary-500 to-primary-400 text-white'
+                                        : 'text-gray-700 hover:bg-primary-50'
                                 }`}
                             >
                                 {getLabel(opt)}

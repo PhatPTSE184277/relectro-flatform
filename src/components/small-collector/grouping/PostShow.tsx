@@ -1,13 +1,13 @@
 import React from 'react';
-import { Eye } from 'lucide-react';
+import { formatDimensionText } from '../../../utils/formatDimensionText';
 
-interface PendingPostShowProps {
+interface PostShowProps {
     post: any;
 }
 
-const PendingPostShow: React.FC<PendingPostShowProps> = ({ post }) => {
+const PostShow: React.FC<PostShowProps & { isLast?: boolean }> = ({ post, isLast = false }) => {
     return (
-        <tr className='border-b border-gray-100 hover:bg-blue-50/40 transition-colors'>
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
             <td className='py-3 px-4 text-gray-700'>
                 {post.userName || 'N/A'}
             </td>
@@ -18,7 +18,7 @@ const PendingPostShow: React.FC<PendingPostShowProps> = ({ post }) => {
                 {post.productName || 'N/A'}
             </td>
             <td className='py-3 px-4 text-gray-700'>
-                {post.dimensionText || `${post.length} x ${post.width} x ${post.height} cm`}
+                {formatDimensionText(post)}
             </td>
             <td className='py-3 px-4 text-gray-700'>
                 <div className='flex flex-col gap-1'>
@@ -34,4 +34,4 @@ const PendingPostShow: React.FC<PendingPostShowProps> = ({ post }) => {
     );
 };
 
-export default PendingPostShow;
+export default PostShow;

@@ -7,6 +7,7 @@ import { getPackageById } from '@/services/shipper/PackageService';
 import { PackageType } from '@/types/Package';
 import { PackageStatus } from '@/enums/PackageStatus';
 import PackageInfoCard from './PackageInfoCard';
+import ProductList from './ProductList';
 
 interface ScanPackageModalProps {
     open: boolean;
@@ -99,9 +100,9 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh] animate-fadeIn'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh] animate-fadeIn'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-blue-50 to-purple-50'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-900'>
                             {title}
@@ -137,18 +138,18 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                                         onChange={(e) => setPackageId(e.target.value)}
                                         placeholder='Nhập mã package...'
                                         disabled={loading}
-                                        className='w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
+                                        className='w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
                                         autoComplete='off'
                                     />
                                     <PackageIcon
-                                        className='absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-600'
+                                        className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-600'
                                         size={18}
                                     />
                                 </div>
                                 <button
                                     type='submit'
                                     disabled={loading}
-                                    className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
+                                    className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
                                 >
                                     {loading ? 'Đang tìm...' : 'Ok'}
                                 </button>
@@ -161,7 +162,9 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                         <>
                             {/* Package Info Title */}
                             <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-                                <Info className='w-5 h-5 text-blue-600' />
+                                <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                    <Info className='w-5 h-5 text-primary-500' />
+                                </span>
                                 Thông tin package
                             </h3>
                             <PackageInfoCard pkg={scannedPackage} />
@@ -169,62 +172,12 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                             {/* Products List */}
                             <div>
                                 <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-                                    <List className='w-5 h-5 text-blue-600' />
+                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                        <List className='w-5 h-5 text-primary-500' />
+                                    </span>
                                     Danh sách sản phẩm
                                 </h3>
-                                <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
-                                    <div className='overflow-x-auto'>
-                                        <table className='w-full text-sm text-gray-800'>
-                                            <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
-                                                <tr>
-                                                    <th className='py-3 px-4 text-left'>
-                                                        STT
-                                                    </th>
-                                                    <th className='py-3 px-4 text-left'>
-                                                        Danh mục
-                                                    </th>
-                                                    <th className='py-3 px-4 text-left'>
-                                                        Thương hiệu
-                                                    </th>
-                                                    <th className='py-3 px-4 text-left'>
-                                                        Ghi chú
-                                                    </th>
-                                                    <th className='py-3 px-4 text-left'>
-                                                        QR Code
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {scannedPackage.products.map((product, index) => (
-                                                    <tr
-                                                        key={product.productId}
-                                                        className='border-b border-gray-100 hover:bg-blue-50/40 transition-colors'
-                                                    >
-                                                        <td className='py-3 px-4 font-medium'>
-                                                            <span className='w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center font-semibold'>
-                                                                {index + 1}
-                                                            </span>
-                                                        </td>
-                                                        <td className='py-3 px-4 font-medium'>
-                                                            <div className='text-gray-900'>
-                                                                {product.categoryName}
-                                                            </div>
-                                                        </td>
-                                                        <td className='py-3 px-4 text-gray-700'>
-                                                            {product.brandName}
-                                                        </td>
-                                                        <td className='py-3 px-4 text-gray-600 text-xs max-w-xs truncate'>
-                                                            {product.description || '-'}
-                                                        </td>
-                                                        <td className='py-3 px-4 text-gray-400 font-mono text-xs'>
-                                                            {product.qrCode || '-'}
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                                <ProductList products={scannedPackage.products} />
                             </div>
                         </>
                     )}
@@ -236,7 +189,7 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                         <button
                             onClick={handleSubmit}
                             disabled={!scannedPackage || loading}
-                            className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium cursor-pointer shadow-lg shadow-blue-500/30 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none'
+                            className='px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium cursor-pointer shadow-lg shadow-primary-500/30 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none'
                         >
                             {confirmText}
                         </button>

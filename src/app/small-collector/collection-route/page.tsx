@@ -66,26 +66,14 @@ const CollectionRoutePage: React.FC = () => {
             {/* Header */}
             <div className='flex justify-between items-center mb-6'>
                 <div className='flex items-center gap-3'>
-                    <div className='w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center'>
+                    <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
                         <Route className='text-white' size={20} />
                     </div>
                     <h1 className='text-3xl font-bold text-gray-900'>
                         Tuyến thu gom
                     </h1>
                 </div>
-            </div>
-
-            {/* Filter Section */}
-            <div className='mb-6 space-y-4'>
-                {/* Search (left) & Date Picker (right) */}
-                <div className='flex gap-4 items-center'>
-                    <div className='flex-1 max-w-md'>
-                        <SearchBox
-                            value={search}
-                            onChange={setSearch}
-                            placeholder='Tìm kiếm tuyến thu gom...'
-                        />
-                    </div>
+                <div className='flex gap-4 items-center flex-1 justify-end'>
                     <div className='w-64'>
                         <CustomDatePicker
                             value={selectedDate}
@@ -93,8 +81,18 @@ const CollectionRoutePage: React.FC = () => {
                             placeholder='Chọn ngày thu gom'
                         />
                     </div>
+                    <div className='flex-1 max-w-md'>
+                        <SearchBox
+                            value={search}
+                            onChange={setSearch}
+                            placeholder='Tìm kiếm tuyến thu gom...'
+                        />
+                    </div>
                 </div>
+            </div>
 
+            {/* Filter Section */}
+            <div className='mb-6 space-y-4'>
                 {/* Status Filter */}
                 <CollectionRouteFilter
                     status={contextFilterStatus as any}

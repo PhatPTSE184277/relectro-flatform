@@ -18,28 +18,21 @@ interface PostShowProps {
     onView?: () => void;
     onApprove?: (postId: string) => void;
     onReject?: (postId: string) => void;
+    hideImage?: boolean;
 }
 
-const PostShow: React.FC<PostShowProps> = ({
+const PostShow: React.FC<PostShowProps & { isLast?: boolean }> = ({
     post,
     onView,
     onApprove,
-    onReject
+    onReject,
+    isLast = false
 }) => {
     const isPending = normalizeStatus(post.status) === PostStatus.Pending;
 
     return (
-        <tr className='border-b border-gray-100 hover:bg-blue-50/40 transition-colors'>
-            <td className='py-3 px-4'>
-                <div className='w-12 h-12 bg-gray-100 rounded-lg overflow-hidden shadow-sm'>
-                    <img
-                        src={post.thumbnailUrl || '/placeholder.png'}
-                        alt={post.category}
-                        className='w-full h-full object-cover'
-                    />
-                </div>
-            </td>
-
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
+            {/* Ảnh đã bị ẩn */}
             <td className='py-3 px-4 font-medium max-w-[220px]'>
                 <div className='text-sm text-gray-500 mt-1 line-clamp-1'>
                     {post.senderName || 'Không rõ'}
@@ -56,7 +49,7 @@ const PostShow: React.FC<PostShowProps> = ({
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}
-                        className='text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition cursor-pointer'
+                        className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
                         title='Xem chi tiết'
                     >
                         <Eye size={16} />

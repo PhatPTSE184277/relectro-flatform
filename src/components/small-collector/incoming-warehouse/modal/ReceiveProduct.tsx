@@ -154,12 +154,12 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-green-50 to-blue-50'>
+                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100'>
                     <div>
-                        <h2 className='text-2xl font-bold text-gray-900'>
+                        <h2 className='text-2xl font-bold text-gray-800'>
                             Nhận Sản Phẩm Nhập Kho
                         </h2>
-                        <p className='text-sm text-gray-500 mt-1'>
+                        <p className='text-sm text-gray-600 mt-1'>
                             Quét mã QR để nhận sản phẩm đã thu gom vào kho
                         </p>
                     </div>
@@ -173,10 +173,10 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                 </div>
 
                 {/* Body */}
-                <div className='flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50'>
+                <div className='flex-1 overflow-y-auto p-6 space-y-4 bg-white'>
                     {/* Mã sản phẩm - chỉ hiện khi chưa quét */}
                     {!scannedProduct && (
-                        <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                        <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
                             <label className='block text-sm font-medium text-gray-700 mb-2'>
                                 Mã sản phẩm{' '}
                                 <span className='text-red-500'>*</span>
@@ -190,18 +190,18 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                         onChange={(e) => setQrCode(e.target.value)}
                                         placeholder='Nhập mã sản phẩm...'
                                         disabled={loading}
-                                        className='w-full pl-10 pr-4 py-2 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
+                                        className='w-full pl-10 pr-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
                                         autoComplete='off'
                                     />
                                     <PackageIcon
-                                        className='absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400'
+                                        className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
                                         size={18}
                                     />
                                 </div>
                                 <button
                                     type='submit'
                                     disabled={loading}
-                                    className='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
+                                    className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
                                 >
                                     {loading ? 'Đang tìm...' : 'Ok'}
                                 </button>
@@ -211,9 +211,9 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
 
                     {/* Scanned Product Info */}
                     {scannedProduct && (
-                        <div className='bg-white rounded-xl p-4 shadow-sm border border-green-200'>
+                        <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-200'>
                             <div className='flex items-center gap-2 mb-3'>
-                                <PackageIcon className='text-green-600' size={20} />
+                                <PackageIcon className='text-primary-600' size={20} />
                                 <h3 className='text-lg font-semibold text-gray-900'>Thông tin sản phẩm</h3>
                             </div>
                             <div className='flex gap-4 items-start'>
@@ -263,7 +263,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                                 value={point}
                                                 onChange={setPoint}
                                                 min={0}
-                                                className='w-24 px-2 py-1 border border-green-300 rounded-lg text-green-700 font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent'
+                                                className='w-24 px-2 py-1 border border-primary-300 rounded-lg text-primary-700 font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent'
                                             />
                                         </div>
                                     </div>
@@ -281,7 +281,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
 
                     {/* Textarea lý do đổi điểm - chỉ hiện khi admin sửa điểm */}
                     {scannedProduct && point !== (scannedProduct.estimatePoint || 0) && (
-                        <div className='bg-white rounded-xl p-4 shadow-sm border border-green-200'>
+                        <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-200'>
                             <label className='block text-sm font-medium text-gray-700 mb-2'>
                                 Lý do đổi điểm <span className='text-red-500'>*</span>
                             </label>
@@ -290,21 +290,21 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                 onChange={(e) => setReasonForChange(e.target.value)}
                                 placeholder='Nhập lý do tại sao thay đổi điểm...'
                                 rows={3}
-                                className='w-full px-3 py-2 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-900 placeholder-gray-400 resize-none'
+                                className='w-full px-3 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 resize-none'
                             />
                         </div>
                     )}
                 </div>
 
                 {/* Footer */}
-                <div className='flex justify-between items-center gap-3 p-5 border-t border-gray-100 bg-white'>
+                <div className='flex justify-between items-center gap-3 p-5 border-t border-primary-100 bg-white'>
                     <div className='flex justify-end w-full'>
                         <button
                             onClick={handleSubmit}
                             disabled={!scannedProduct || loading}
-                            className='px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
+                            className='px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
                         >
-                            Xác nhận nhận hàng
+                            Xác nhận nhập kho
                         </button>
                     </div>
                 </div>

@@ -117,55 +117,56 @@ const IncomingWarehousePage: React.FC = () => {
     return (
 
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-            {/* Header */}
-            <div className='flex items-center gap-3 mb-2'>
-                <div className='w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center'>
-                    <Warehouse className='text-white' size={20} />
-                </div>
-                <h1 className='text-3xl font-bold text-gray-900'>
-                    Nhận hàng về kho
-                </h1>
-            </div>
 
-            {/* Date Range Picker dưới tiêu đề, căn trái */}
-            <div className='mb-4 max-w-xl'>
-                <CustomDateRangePicker
-                    fromDate={fromDate}
-                    toDate={toDate}
-                    onFromDateChange={handleFromDateChange}
-                    onToDateChange={handleToDateChange}
-                />
-            </div>
-
-            {/* Filter Section */}
-            <div className='mb-6 space-y-4'>
-                {/* Search, Date Range Picker, Tạo mới */}
-                <div className='flex flex-col md:flex-row gap-4 items-center'>
-                    <div className='flex-1 max-w-md w-full'>
-                        <SearchBox
-                            value={search}
-                            onChange={handleSearchChange}
-                            placeholder='Tìm kiếm sản phẩm...'
-                        />
+            {/* Header + Search */}
+            <div className='flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:gap-6'>
+                <div className='flex items-center gap-3 flex-shrink-0'>
+                    <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
+                        <Warehouse className='text-white' size={20} />
                     </div>
+                    <h1 className='text-3xl font-bold text-gray-900'>
+                        Nhận hàng về kho
+                    </h1>
+                </div>
+                <div className='flex-1 max-w-md w-full sm:ml-auto'>
+                    <SearchBox
+                        value={search}
+                        onChange={handleSearchChange}
+                        placeholder='Tìm kiếm sản phẩm...'
+                    />
+                </div>
+            </div>
 
+            {/* Date Range Picker + Action Buttons */}
+            <div className='mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
+                <div className='max-w-xl w-full'>
+                    <CustomDateRangePicker
+                        fromDate={fromDate}
+                        toDate={toDate}
+                        onFromDateChange={handleFromDateChange}
+                        onToDateChange={handleToDateChange}
+                    />
+                </div>
+                <div className='flex gap-3 w-full sm:w-auto justify-end'>
                     <button
                         onClick={() => setShowReceiveModal(true)}
-                        className='px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium flex items-center gap-2 cursor-pointer'
+                        className='px-4 py-2 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition font-medium flex items-center gap-2 cursor-pointer whitespace-nowrap border border-primary-200'
                     >
                         <ScanLine size={18} />
                         Nhận Hàng Nhập Kho
                     </button>
-
                     <button
                         onClick={() => setShowCreateModal(true)}
-                        className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium flex items-center gap-2 cursor-pointer whitespace-nowrap'
+                        className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium flex items-center gap-2 cursor-pointer'
                     >
                         <Plus size={18} />
                         Tạo Sản Phẩm Mới
                     </button>
                 </div>
+            </div>
 
+            {/* Filter Section */}
+            <div className='mb-6'>
                 {/* Status Filter */}
                 <IWProductFilter
                     status={filter.status as any}

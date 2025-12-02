@@ -6,9 +6,9 @@ interface GroupingShowProps {
     onViewDetail: (grouping: any) => void;
 }
 
-const GroupingShow: React.FC<GroupingShowProps> = ({ grouping, onViewDetail }) => {
+const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean }> = ({ grouping, onViewDetail, isLast = false }) => {
     return (
-        <tr className='border-b border-gray-100 hover:bg-blue-50/40 transition-colors'>
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
             <td className='py-3 px-4 font-medium'>
                 <div className='text-gray-900'>{grouping.groupCode}</div>
             </td>
@@ -19,7 +19,7 @@ const GroupingShow: React.FC<GroupingShowProps> = ({ grouping, onViewDetail }) =
 
             <td className='py-3 px-4 text-gray-700'>
                 <div className='flex items-center gap-2'>
-                    <Truck size={16} className='text-blue-600' />
+                    <Truck size={16} className='text-primary-600' />
                     <span>{grouping.vehicle}</span>
                 </div>
             </td>
@@ -29,7 +29,7 @@ const GroupingShow: React.FC<GroupingShowProps> = ({ grouping, onViewDetail }) =
             </td>
 
             <td className='py-3 px-4 text-gray-700'>
-                <span className='px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700'>
+                <span className='px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700'>
                     {grouping.totalPosts} bưu phẩm
                 </span>
             </td>
@@ -49,7 +49,7 @@ const GroupingShow: React.FC<GroupingShowProps> = ({ grouping, onViewDetail }) =
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={() => onViewDetail(grouping)}
-                        className='text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition cursor-pointer'
+                        className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
                         title='Xem chi tiết'
                     >
                         <Eye size={16} />

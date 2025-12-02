@@ -92,21 +92,20 @@ const PostPage: React.FC = () => {
 
     return (
          <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-            <div className='flex justify-between items-center mb-6'>
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6'>
                 <div className='flex items-center gap-3'>
-                    <div className='w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center'>
+                    <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
                         <ClipboardList className='text-white' size={20} />
                     </div>
                     <h1 className='text-3xl font-bold text-gray-900'>Bài đăng</h1>
                 </div>
-            </div>
-
-            <div className="mb-4 max-w-md">
-                <SearchBox
-                    value={search}
-                    onChange={setSearch}
-                    placeholder="Tìm kiếm bài đăng..."
-                />
+                <div className='w-full sm:max-w-md'>
+                    <SearchBox
+                        value={search}
+                        onChange={setSearch}
+                        placeholder="Tìm kiếm bài đăng..."
+                    />
+                </div>
             </div>
 
             <PostFilter

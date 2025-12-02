@@ -1,10 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
-// import { PostStatus } from '@/enums/PostStatus';
 import PostApprove from './PostApprove';
 import PostReject from './PostReject';
-import { formatTimeTo24h } from '@/utils/FormatTime';
 import { formatDate } from '@/utils/FormateDate';
+import { groupScheduleByTimeRange } from '@/utils/groupScheduleByTimeRange';
 import {
     Package,
     Calendar,
@@ -84,9 +83,9 @@ const PostDetail: React.FC<PostDetailProps> = ({
             ></div>
 
             {/* Modal */}
-            <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-blue-50 to-purple-50'>
+                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Chi tiết bài đăng
@@ -107,7 +106,7 @@ const PostDetail: React.FC<PostDetailProps> = ({
                 {/* Body */}
                 <div className='flex flex-col md:flex-row flex-1 overflow-hidden'>
                     {/* LEFT - IMAGES + STATUS BADGE */}
-                    <div className='md:w-1/3 bg-gray-50 flex flex-col items-center p-6 border-r overflow-y-auto'>
+                    <div className='md:w-1/3 bg-gray-50 flex flex-col items-center p-6 border-r border-primary-100 overflow-y-auto'>
                         <div className='relative w-full flex flex-col items-center gap-4'>
                             {/* Status Badge - left, above image */}
                             <span
@@ -122,7 +121,7 @@ const PostDetail: React.FC<PostDetailProps> = ({
                                     '/placeholder.png'
                                 }
                                 alt='Ảnh sản phẩm'
-                                className='w-full max-w-xs h-72 object-contain rounded-xl border border-gray-200 bg-white cursor-zoom-in shadow-sm'
+                                className='w-full max-w-xs h-72 object-contain rounded-xl border border-primary-200 bg-white cursor-zoom-in shadow-sm'
                                 onClick={() =>
                                     setZoomImg(post.imageUrls?.[selectedImg])
                                 }
@@ -136,8 +135,8 @@ const PostDetail: React.FC<PostDetailProps> = ({
                                             alt={`Ảnh ${idx + 1}`}
                                             className={`w-14 h-14 object-cover rounded-lg border cursor-pointer transition-all ${
                                                 selectedImg === idx
-                                                    ? 'border-blue-500 ring-2 ring-blue-300 scale-105'
-                                                    : 'border-gray-200 hover:border-blue-300'
+                                                    ? 'border-primary-500 ring-2 ring-primary-200 scale-105'
+                                                    : 'border-primary-100 hover:border-primary-200'
                                             }`}
                                             onClick={() => setSelectedImg(idx)}
                                         />
@@ -154,13 +153,12 @@ const PostDetail: React.FC<PostDetailProps> = ({
                         {/* AI Labels */}
                         {Array.isArray(post.aggregatedAiLabels) &&
                             post.aggregatedAiLabels.length > 0 && (
-                                <div className='p-4 bg-blue-50 rounded-lg border border-blue-100'>
+                                <div className='p-4 bg-primary-50 rounded-lg border border-primary-100'>
                                     <div className='flex items-center gap-2 mb-2'>
-                                        <Tag
-                                            className='text-blue-600'
-                                            size={18}
-                                        />
-                                        <p className='text-sm font-semibold text-blue-900'>
+                                        <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                            <Tag className='text-primary-500' size={18} />
+                                        </span>
+                                        <p className='text-sm font-semibold text-primary-900'>
                                             Nhãn AI nhận diện
                                         </p>
                                     </div>
@@ -169,10 +167,10 @@ const PostDetail: React.FC<PostDetailProps> = ({
                                             (label: any, idx: number) => (
                                                 <span
                                                     key={idx}
-                                                    className='inline-flex items-center px-3 py-1 rounded-full bg-white text-blue-700 text-sm font-medium border border-blue-200'
+                                                    className='inline-flex items-center px-3 py-1 rounded-full bg-white text-primary-700 text-sm font-medium border border-primary-200'
                                                 >
                                                     {label.tag}{' '}
-                                                    <span className='ml-1 text-xs text-blue-500'>
+                                                    <span className='ml-1 text-xs text-primary-500'>
                                                         {label.confidence}%
                                                     </span>
                                                 </span>
@@ -186,37 +184,36 @@ const PostDetail: React.FC<PostDetailProps> = ({
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                             <InfoCard
                                 icon={
-                                    <List className='text-blue-600' size={20} />
+                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                        <List className='text-primary-500' size={20} />
+                                    </span>
                                 }
                                 label='Danh mục chính'
                                 value={post.parentCategory}
                             />
                             <InfoCard
                                 icon={
-                                    <List
-                                        className='text-purple-600'
-                                        size={20}
-                                    />
+                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-50 border border-purple-200">
+                                        <List className='text-purple-500' size={20} />
+                                    </span>
                                 }
                                 label='Danh mục phụ'
                                 value={post.subCategory}
                             />
                             <InfoCard
                                 icon={
-                                    <Star
-                                        className='text-yellow-500'
-                                        size={20}
-                                    />
+                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-yellow-50 border border-yellow-200">
+                                        <Star className='text-yellow-500' size={20} />
+                                    </span>
                                 }
                                 label='Điểm ước tính'
                                 value={post.estimatePoint || 0}
                             />
                             <InfoCard
                                 icon={
-                                    <Calendar
-                                        className='text-green-600'
-                                        size={20}
-                                    />
+                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-green-50 border border-green-200">
+                                        <Calendar className='text-green-600' size={20} />
+                                    </span>
                                 }
                                 label='Ngày đăng'
                                 value={formatDate(post.date)}
@@ -228,10 +225,9 @@ const PostDetail: React.FC<PostDetailProps> = ({
                             <Section
                                 title='Thông tin sản phẩm'
                                 icon={
-                                    <Package
-                                        className='text-blue-600'
-                                        size={18}
-                                    />
+                                    <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                        <Package className='text-primary-500' size={18} />
+                                    </span>
                                 }
                             >
                                 <div className='space-y-2 text-sm text-gray-700'>
@@ -260,7 +256,11 @@ const PostDetail: React.FC<PostDetailProps> = ({
                         {/* Sender Info */}
                         <Section
                             title='Người đăng'
-                            icon={<User className='text-blue-600' size={18} />}
+                            icon={
+                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                    <User className='text-primary-500' size={18} />
+                                </span>
+                            }
                         >
                             <UserInfo user={post.sender} />
                         </Section>
@@ -271,57 +271,28 @@ const PostDetail: React.FC<PostDetailProps> = ({
                                 <Section
                                     title='Lịch thu gom'
                                     icon={
-                                        <Clock
-                                            className='text-orange-600'
-                                            size={18}
-                                        />
+                                        <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                            <Clock className='text-primary-500' size={18} />
+                                        </span>
                                     }
                                 >
                                     <div className='text-sm text-gray-700 space-y-2'>
-                                        {post.schedule.map(
-                                            (item: any, idx: number) => (
-                                                <div
-                                                    key={idx}
-                                                    className='border-b last:border-b-0 pb-2 last:pb-0'
-                                                >
-                                                    <p>
-                                                        <b>Ngày:</b>{' '}
-                                                        {item?.pickUpDate
-                                                            ? formatDate(
-                                                                  item.pickUpDate
-                                                              )
-                                                            : 'Không có thông tin'}
-                                                    </p>
-                                                    <p>
-                                                        <b>Thời gian:</b>{' '}
-                                                        {item?.slots?.startTime
-                                                            ? formatTimeTo24h(
-                                                                  item.slots
-                                                                      .startTime
-                                                              )
-                                                            : '-'}{' '}
-                                                        -{' '}
-                                                        {item?.slots?.endTime
-                                                            ? formatTimeTo24h(
-                                                                  item.slots
-                                                                      .endTime
-                                                              )
-                                                            : '-'}
-                                                    </p>
-                                                </div>
-                                            )
-                                        )}
+                                        {groupScheduleByTimeRange(post.schedule).map(({ dateStr, range }) => (
+                                            <div key={range + dateStr} className='border-b last:border-b-0 pb-2 last:pb-0'>
+                                                <p><b>Ngày:</b> {dateStr}</p>
+                                                <p><b>Thời gian:</b> {range}</p>
+                                            </div>
+                                        ))}
                                     </div>
                                 </Section>
                             )}
 
                         {/* Address */}
                         {post.address && (
-                            <div className='p-4 bg-gray-50 rounded-lg border flex gap-3'>
-                                <MapPin
-                                    className='text-gray-600 mt-0.5'
-                                    size={20}
-                                />
+                            <div className='p-4 bg-gray-50 rounded-lg border border-primary-100 flex gap-3'>
+                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200 mt-0.5">
+                                    <MapPin className='text-primary-500' size={20} />
+                                </span>
                                 <div>
                                     <p className='text-sm text-gray-600'>
                                         Địa chỉ
@@ -337,7 +308,9 @@ const PostDetail: React.FC<PostDetailProps> = ({
                         {post.rejectMessage && (
                             <div className='p-4 bg-red-50 rounded-lg border border-red-200'>
                                 <div className='flex items-center gap-2 mb-2'>
-                                    <Info className='text-red-600' size={18} />
+                                    <span className="w-7 h-7 flex items-center justify-center rounded-full bg-red-50 border border-red-200">
+                                        <Info className='text-red-500' size={18} />
+                                    </span>
                                     <p className='text-sm font-semibold text-red-900'>
                                         Lý do từ chối
                                     </p>
@@ -352,10 +325,9 @@ const PostDetail: React.FC<PostDetailProps> = ({
                         {post.postNote && (
                             <div className='p-4 bg-yellow-50 rounded-lg border border-yellow-200'>
                                 <div className='flex items-center gap-2 mb-2'>
-                                    <Info
-                                        className='text-yellow-600'
-                                        size={18}
-                                    />
+                                    <span className="w-7 h-7 flex items-center justify-center rounded-full bg-yellow-50 border border-yellow-200">
+                                        <Info className='text-yellow-500' size={18} />
+                                    </span>
                                     <p className='text-sm font-semibold text-yellow-900'>
                                         Ghi chú
                                     </p>
@@ -431,7 +403,7 @@ interface InfoCardProps {
     value: React.ReactNode;
 }
 const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value }) => (
-    <div className='p-4 bg-gray-50 rounded-lg border flex gap-3'>
+    <div className='p-4 bg-gray-50 rounded-lg border border-primary-100 flex gap-3'>
         {icon}
         <div>
             <p className='text-sm text-gray-600'>{label}</p>
@@ -447,11 +419,11 @@ interface SectionProps {
     children: React.ReactNode;
 }
 const Section: React.FC<SectionProps> = ({ title, icon, children }) => (
-    <div className='pt-4 border-t'>
+    <div className='pt-4 border-t border-primary-100'>
         <div className='flex items-center gap-2 mb-2 text-gray-800 font-semibold'>
             {icon} <span>{title}</span>
         </div>
-        <div className='p-4 bg-gray-50 rounded-lg border'>{children}</div>
+        <div className='p-4 bg-gray-50 rounded-lg border border-primary-100'>{children}</div>
     </div>
 );
 

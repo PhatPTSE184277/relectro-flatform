@@ -59,10 +59,10 @@ const Header = () => {
                     <div className='flex items-center space-x-8'>
                         <Link
                             href='/collector/dashboard'
-                            className='text-2xl font-bold bg-linear-to-r from-blue-500 to-blue-400 bg-clip-text text-transparent flex items-center gap-2 cursor-pointer'
+                            className='text-2xl font-bold bg-gradient-to-r from-primary-500 to-primary-400 bg-clip-text text-transparent flex items-center gap-2 cursor-pointer'
                             onClick={handleReload}
                         >
-                            <IoSparklesOutline className='text-blue-400 text-2xl' />
+                            <IoSparklesOutline className='text-primary-400 text-2xl' />
                             Bảng điều khiển thu gom
                         </Link>
                     </div>
@@ -71,12 +71,12 @@ const Header = () => {
                         {user && (
                             <>
                                 <div
-                                    className='flex items-center space-x-3 bg-white border border-blue-100 rounded-xl px-4 py-2 shadow cursor-pointer hover:shadow-md transition'
+                                    className='flex items-center space-x-3 bg-white border border-primary-100 rounded-xl px-4 py-2 shadow cursor-pointer hover:shadow-md transition'
                                     onClick={() =>
                                         router.push('/employee/profile')
                                     }
                                 >
-                                    <div className='w-8 h-8 rounded-full bg-linear-to-br from-blue-400 to-blue-500 text-white flex items-center justify-center font-bold text-sm ring-2 ring-blue-200'>
+                                    <div className='w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-500 text-white flex items-center justify-center font-bold text-sm ring-2 ring-primary-200'>
                                         {user.name?.charAt(0).toUpperCase()}
                                     </div>
                                     <span className='hidden sm:block text-sm font-medium text-gray-700'>

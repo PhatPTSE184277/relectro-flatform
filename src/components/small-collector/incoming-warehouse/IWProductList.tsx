@@ -22,7 +22,6 @@ const IWProductList: React.FC<IWProductListProps> = ({
                 <table className='w-full text-sm text-gray-800'>
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                         <tr>
-                            <th className='py-3 px-4 text-left'>Ảnh</th>
                             <th className='py-3 px-4 text-left'>Loại sản phẩm</th>
                             <th className='py-3 px-4 text-left'>Mã QR</th>
                             <th className='py-3 px-4 text-left'>Thương hiệu</th>
@@ -38,12 +37,13 @@ const IWProductList: React.FC<IWProductListProps> = ({
                                 <IWProductTableSkeleton key={idx} />
                             ))
                         ) : products.length > 0 ? (
-                            products.map((product) => (
+                            products.map((product, idx) => (
                                 <IWProductShow
                                     key={product.productId}
                                     product={product}
                                     onView={() => onViewDetail(product)}
                                     status={status}
+                                    isLast={idx === products.length - 1}
                                 />
                             ))
                         ) : (

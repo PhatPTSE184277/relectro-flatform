@@ -68,7 +68,7 @@ const LoginForm = () => {
                             type='text'
                             autoComplete='username'
                             required
-                            className='block w-full rounded-lg border border-gray-200 py-2 pl-10 pr-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition'
+                            className='block w-full rounded-lg border border-gray-200 py-2 pl-10 pr-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition'
                             placeholder='Nhập tên đăng nhập'
                             value={formData.username}
                             onChange={handleChange}
@@ -90,7 +90,7 @@ const LoginForm = () => {
                             name='password'
                             type={isPasswordVisible ? 'text' : 'password'}
                             autoComplete='current-password'
-                            className='block w-full rounded-lg border border-gray-200 py-2 pl-10 pr-10 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition'
+                            className='block w-full rounded-lg border border-gray-200 py-2 pl-10 pr-10 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition'
                             placeholder='Nhập mật khẩu'
                             value={formData.password}
                             onChange={handleChange}
@@ -98,7 +98,7 @@ const LoginForm = () => {
                         <button
                             type='button'
                             onClick={togglePasswordVisibility}
-                            className='absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 transition-colors cursor-pointer'
+                            className='absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 hover:text-primary-500 transition-colors cursor-pointer'
                             tabIndex={-1}
                         >
                             {isPasswordVisible ? (
@@ -113,7 +113,7 @@ const LoginForm = () => {
                 <button
                     type='submit'
                     disabled={loading}
-                    className={`w-full bg-linear-to-r from-blue-500 to-blue-400 text-white font-semibold py-2 rounded-lg shadow hover:from-blue-600 hover:to-blue-600 transition-all flex items-center cursor-pointer justify-center gap-2 ${
+                    className={`w-full bg-gradient-to-r from-primary-500 to-primary-400 text-white font-semibold py-2 rounded-lg shadow hover:from-primary-600 hover:to-primary-600 transition-all flex items-center cursor-pointer justify-center gap-2 ${
                         loading ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                 >

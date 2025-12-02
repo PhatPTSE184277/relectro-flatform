@@ -36,6 +36,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     );
     const [loading, setLoading] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    const packageNameRef = useRef<HTMLInputElement>(null);
     const lastProductRef = useRef<HTMLTableRowElement>(null);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -181,18 +182,16 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-blue-50 to-purple-50'>
-                    <div className='flex items-center gap-3'>
-                        <div>
-                            <h2 className='text-2xl font-bold text-gray-900'>
-                                Tạo Package Mới
-                            </h2>
-                            <p className='text-sm text-gray-500 mt-1'>
-                                Quét QR code để thêm sản phẩm vào package
-                            </p>
-                        </div>
+                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100 border-primary-100'>
+                    <div>
+                        <h2 className='text-2xl font-bold text-gray-900'>
+                            Tạo Package Mới
+                        </h2>
+                        <p className='text-sm text-gray-500 mt-1'>
+                            Quét QR code để thêm sản phẩm vào package
+                        </p>
                     </div>
                     <button
                         onClick={handleClose}
@@ -215,14 +214,19 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                 <input
                                     type='text'
                                     value={packageId}
-                                    onChange={(e) =>
-                                        setPackageId(e.target.value)
-                                    }
+                                    onChange={(e) => setPackageId(e.target.value)}
                                     placeholder='Quét hoặc nhập mã package...'
-                                    className='w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900'
+                                    className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 bg-white'
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            packageNameRef.current?.focus();
+                                        }
+                                    }}
+                                    style={{ boxShadow: 'none' }}
                                 />
                                 <ScanLine
-                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400'
+                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
                                     size={18}
                                 />
                             </div>
@@ -233,11 +237,12 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                 <span className='text-red-500'>*</span>
                             </label>
                             <input
+                                ref={packageNameRef}
                                 type='text'
                                 value={packageName}
                                 onChange={(e) => setPackageName(e.target.value)}
                                 placeholder='Nhập tên package...'
-                                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900'
+                                className='w-full px-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900'
                             />
                         </div>
                     </div>
@@ -258,18 +263,18 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                     }
                                     placeholder='Quét hoặc nhập mã QR...'
                                     disabled={loading}
-                                    className='w-full pl-10 pr-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
+                                    className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
                                     autoComplete='off'
                                 />
                                 <ScanLine
-                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400'
+                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
                                     size={18}
                                 />
                             </div>
                             <button
                                 type='submit'
                                 disabled={!qrCodeInput.trim() || loading}
-                                className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-medium flex items-center gap-2'
+                                className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-medium flex items-center gap-2 border border-primary-200 shadow-md'
                             >
                                 <Plus size={18} />
                                 Thêm
@@ -301,7 +306,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                 <table className='w-full text-sm text-gray-800'>
                                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                                         <tr>
-                                            <th className='py-3 px-4 text-left'>STT</th>
+                                            <th className='py-3 px-4 text-center'>STT</th>
                                             <th className='py-3 px-4 text-left'>Danh mục</th>
                                             <th className='py-3 px-4 text-left'>Thương hiệu</th>
                                             <th className='py-3 px-4 text-left'>Ghi chú</th>
@@ -318,14 +323,10 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                                         ? lastProductRef
                                                         : undefined
                                                 }
-                                                className={`border-b border-gray-100 hover:bg-blue-50/40 transition-colors ${
-                                                    selectedIndex === index
-                                                        ? 'bg-blue-50'
-                                                        : ''
-                                                }`}
+                                                className={`border-b border-primary-100 hover:bg-primary-50/40 transition-colors`}
                                             >
-                                                <td className='py-3 px-4 font-medium'>
-                                                    <span className='w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center font-semibold'>
+                                                <td className='py-3 px-4 font-medium text-center'>
+                                                    <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold mx-auto'>
                                                         {index + 1}
                                                     </span>
                                                 </td>
@@ -367,11 +368,11 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
 
                 {/* Footer */}
                 <div className='flex justify-between items-center gap-3 p-5 border-t border-gray-100 bg-white'>
-                    <div className='text-sm text-gray-600'>
+                    <div className='text-sm text-gray-600 flex items-center'>
                         <span className='font-semibold'>
                             {scannedProducts.length}
-                        </span>{' '}
-                        sản phẩm đã thêm
+                        </span>
+                        <span className='ml-1'>sản phẩm đã thêm</span>
                     </div>
                     <div className='flex gap-3'>
                         <button
@@ -380,9 +381,8 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                 !packageName.trim() ||
                                 scannedProducts.length === 0
                             }
-                            className='px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2'
+                            className='px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 border border-primary-200'
                         >
-                            <Package size={18} />
                             Tạo Package
                         </button>
                     </div>

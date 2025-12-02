@@ -22,13 +22,13 @@ const PostApprove: React.FC<PostApproveProps> = ({
 
 
       <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-fadeIn">
-        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-green-50 to-blue-50">
+        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-green-50 to-primary-100">
           <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
             Xác nhận duyệt bài đăng
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-green-500 text-3xl font-light cursor-pointer"
+            className="text-gray-400 hover:text-primary-500 text-3xl font-light cursor-pointer"
           >
             &times;
           </button>
@@ -51,7 +51,7 @@ const PostApprove: React.FC<PostApproveProps> = ({
           </button>
           <button
             onClick={onConfirm}
-            className="px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-green-500 hover:bg-green-600"
+            className="px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-primary-500 hover:bg-primary-600"
           >
             Xác nhận duyệt
           </button>

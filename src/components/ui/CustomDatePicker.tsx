@@ -17,14 +17,12 @@ const monthNames = [
     'Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu',
     'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai'
 ];
-const monthShort = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
 const dayNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
 const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     value,
     onChange,
     placeholder,
-    showIcon = true
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState<string>(value || '');
@@ -151,20 +149,20 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
         <div className="relative" ref={datePickerRef}>
             <div
                 onClick={() => { setIsOpen(!isOpen); setMode('day'); }}
-                className={`h-12 cursor-pointer flex items-center justify-between transition-all duration-300 bg-white border border-blue-200 rounded-xl px-4 shadow-sm ${isOpen ? 'ring-2 ring-blue-400 border-blue-400' : ''}`}
+                className={`h-12 cursor-pointer flex items-center justify-between transition-all duration-300 bg-white border border-primary-200 rounded-xl px-4 shadow-sm ${isOpen ? 'ring-2 ring-primary-400 border-primary-400' : ''}`}
             >
                 <span className={selectedDate ? 'text-gray-900' : 'text-gray-400'}>
                     {selectedDate ? formatDisplayDate(selectedDate) : (placeholder || 'Chọn ngày')}
                 </span>
                 <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
-                    <IoChevronDown size={20} className="text-blue-400" />
+                    <IoChevronDown size={20} className="text-primary-600" />
                 </div>
             </div>
 
             {isOpen && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-blue-100 rounded-xl overflow-hidden z-50 animate-slide-up shadow-2xl w-80">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-primary-100 rounded-xl overflow-hidden z-50 animate-slide-up shadow-2xl w-80">
                     {/* Header: chọn tháng/năm */}
-                    <div className="p-3 border-b border-blue-100 bg-gray-50">
+                    <div className="p-3 border-b border-primary-100 bg-primary-50">
                         <div className="flex items-center justify-between">
                             <button
                                 onClick={() => {
@@ -172,15 +170,15 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                                     else if (mode === 'month') setCurrentMonth(prev => new Date(prev.getFullYear() - 1, prev.getMonth(), 1));
                                     else navigateMonth(-1);
                                 }}
-                                className="w-6 h-6 rounded-lg bg-blue-100 hover:bg-blue-200 flex items-center justify-center transition-colors"
+                                className="w-6 h-6 rounded-lg bg-primary-100 hover:bg-primary-200 flex items-center justify-center transition-colors"
                             >
-                                <IoChevronBack size={14} className="text-blue-500" />
+                                <IoChevronBack size={14} className="text-primary-600" />
                             </button>
 
                             <div className="text-center flex gap-2 items-center justify-center">
                                 {mode === 'day' && (
                                     <button
-                                        className="text-gray-900 font-semibold text-sm px-2 py-1 rounded hover:bg-blue-100"
+                                        className="text-gray-900 font-semibold text-sm px-2 py-1 rounded hover:bg-primary-100"
                                         onClick={() => setMode('month')}
                                     >
                                         {monthNames[currentMonth.getMonth()]}
@@ -188,14 +186,14 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                                 )}
                                 {mode !== 'year' && (
                                     <button
-                                        className="text-gray-900 font-semibold text-sm px-2 py-1 rounded hover:bg-blue-100"
+                                        className="text-primary-600 font-semibold text-sm px-2 py-1 rounded hover:bg-primary-100"
                                         onClick={() => setMode('year')}
                                     >
                                         {currentMonth.getFullYear()}
                                     </button>
                                 )}
                                 {mode === 'year' && (
-                                    <span className="text-gray-900 font-semibold text-sm">
+                                    <span className="text-primary-600 font-semibold text-sm">
                                         {years[0]} - {years[years.length - 1]}
                                     </span>
                                 )}
@@ -207,9 +205,9 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                                     else if (mode === 'month') setCurrentMonth(prev => new Date(prev.getFullYear() + 1, prev.getMonth(), 1));
                                     else navigateMonth(1);
                                 }}
-                                className="w-6 h-6 rounded-lg bg-blue-100 hover:bg-blue-200 flex items-center justify-center transition-colors"
+                                className="w-6 h-6 rounded-lg bg-primary-100 hover:bg-primary-200 flex items-center justify-center transition-colors"
                             >
-                                <IoChevronForward size={14} className="text-blue-500" />
+                                <IoChevronForward size={14} className="text-primary-600" />
                             </button>
                         </div>
                     </div>
@@ -233,10 +231,10 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                                                     onClick={() => handleDateSelect(date)}
                                                     className={`w-full h-full rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center ${
                                                         isSelected(date)
-                                                            ? 'bg-gradient-to-r from-blue-500 to-blue-400 text-white shadow-lg scale-105'
+                                                            ? 'bg-gradient-to-r from-primary-600 to-primary-400 text-white shadow-lg scale-105'
                                                             : isToday(date)
-                                                            ? 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-                                                            : 'text-gray-700 hover:bg-blue-50'
+                                                            ? 'bg-primary-100 text-primary-600 hover:bg-primary-200'
+                                                            : 'text-gray-700 hover:bg-primary-50'
                                                     }`}
                                                 >
                                                     {date.getDate()}
@@ -257,8 +255,8 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                                         onClick={() => handleMonthSelect(idx)}
                                         className={`py-3 rounded-lg text-sm font-semibold transition-colors ${
                                             currentMonth.getMonth() === idx
-                                                ? 'bg-blue-500 text-white shadow'
-                                                : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                                                ? 'bg-primary-600 text-white shadow'
+                                                : 'bg-primary-50 text-primary-700 hover:bg-primary-100'
                                         }`}
                                     >
                                         {name}
@@ -274,8 +272,8 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                                         onClick={() => handleYearSelect(year)}
                                         className={`py-3 rounded-lg text-sm font-semibold transition-colors ${
                                             currentMonth.getFullYear() === year
-                                                ? 'bg-blue-500 text-white shadow'
-                                                : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                                                ? 'bg-primary-600 text-white shadow'
+                                                : 'bg-primary-50 text-primary-700 hover:bg-primary-100'
                                         }`}
                                     >
                                         {year}
@@ -286,7 +284,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                     </div>
 
                     {/* Footer */}
-                    <div className="p-3 border-t border-blue-100 bg-gray-50">
+                    <div className="p-3 border-t border-primary-100 bg-primary-50">
                         <div className="flex space-x-2">
                             <button
                                 onClick={() => {
@@ -301,7 +299,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                                     setIsOpen(false);
                                     setMode('day');
                                 }}
-                                className="flex-1 px-2 py-1.5 bg-blue-100 hover:bg-blue-200 rounded-lg text-xs text-blue-700 hover:text-blue-900 transition-colors"
+                                className="flex-1 px-2 py-1.5 bg-primary-100 hover:bg-primary-200 rounded-lg text-xs text-primary-700 hover:text-primary-900 transition-colors"
                             >
                                 Hôm nay
                             </button>

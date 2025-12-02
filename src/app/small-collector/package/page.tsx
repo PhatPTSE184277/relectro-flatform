@@ -131,37 +131,38 @@ const PackagePage: React.FC = () => {
             {/* Header */}
             <div className='flex justify-between items-center mb-6'>
                 <div className='flex items-center gap-3'>
-                    <div className='w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center'>
+                    <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center border border-primary-200'>
                         <Package className='text-white' size={20} />
                     </div>
                     <h1 className='text-3xl font-bold text-gray-900'>
                         Quản lý Package
                     </h1>
                 </div>
-                
-                <button
-                    onClick={() => setShowCreateModal(true)}
-                    className='flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-md'
-                >
-                    <Plus size={20} />
-                    Tạo Package Mới
-                </button>
+                <div className='flex gap-4 items-center flex-1 justify-end'>
+                    <button
+                        onClick={() => setShowCreateModal(true)}
+                        className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md border border-primary-200 cursor-pointer'
+                    >
+                        <Plus size={20} />
+                        Tạo Package Mới
+                    </button>
+                    <div className='flex-1 max-w-md'>
+                        <SearchBox
+                            value={search}
+                            onChange={setSearch}
+                            placeholder='Tìm kiếm package...'
+                        />
+                    </div>
+                </div>
             </div>
 
             {/* Filter Section */}
-            <div className='mb-6 space-y-4'>
+            <div className='mb-6'>
                 <PackageFilter
                     status={filter.status as PackageStatus || PackageStatus.Packing}
                     stats={allStats}
                     onFilterChange={(status: PackageStatus) => setFilter({ status, page: 1 })}
                 />
-                <div className='max-w-md'>
-                    <SearchBox
-                        value={search}
-                        onChange={setSearch}
-                        placeholder='Tìm kiếm package...'
-                    />
-                </div>
             </div>
 
             {/* Main Content: List */}

@@ -8,23 +8,11 @@ interface IWProductShowProps {
     status?: string;
 }
 
-const IWProductShow: React.FC<IWProductShowProps> = ({ product, onView, status }) => {
-    // Lấy ảnh đầu tiên từ mảng productImages
-    const productImage = product.productImages?.[0] || '/placeholder.png';
+const IWProductShow: React.FC<IWProductShowProps & { isLast?: boolean }> = ({ product, onView, status, isLast = false }) => {
     const isReceived = status === 'Nhập kho';
 
     return (
-        <tr className='border-b border-gray-100 hover:bg-blue-50/40 transition-colors'>
-            <td className='py-3 px-4'>
-                <div className='w-12 h-12 bg-gray-100 rounded-lg overflow-hidden shadow-sm'>
-                    <img
-                        src={productImage}
-                        alt={product.categoryName || 'Sản phẩm'}
-                        className='w-full h-full object-cover'
-                    />
-                </div>
-            </td>
-
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
             <td className='py-3 px-4 font-medium max-w-[220px]'>
                 <div className='text-gray-900 font-semibold'>
                     {product.categoryName || 'Không rõ'}
@@ -59,7 +47,7 @@ const IWProductShow: React.FC<IWProductShowProps> = ({ product, onView, status }
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}
-                        className='text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition cursor-pointer'
+                        className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
                         title='Xem chi tiết'
                     >
                         <Eye size={16} />

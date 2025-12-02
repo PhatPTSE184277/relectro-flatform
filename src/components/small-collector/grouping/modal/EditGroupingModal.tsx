@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Truck, Package, Calendar } from 'lucide-react';
+import { X, Truck, Package } from 'lucide-react';
+import { formatDate } from '@/utils/FormateDate';
+import PostList from './PostList';
 
 interface EditGroupingModalProps {
     open: boolean;
@@ -13,7 +15,7 @@ interface EditGroupingModalProps {
     }) => void;
     day: any;
     vehicles: any[];
-    allPendingPosts: any[]; 
+    allPosts: any[];
     loading: boolean;
 }
 
@@ -23,7 +25,7 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
     onConfirm,
     day,
     vehicles,
-    allPendingPosts = [],
+    allPosts = [],
     loading
 }) => {
     const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
@@ -31,9 +33,15 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
 
     useEffect(() => {
         if (open && day) {
-            setSelectedVehicleId(day.suggestedVehicle.id);
-            setSelectedPostIds(day.posts.map((p: any) => p.postId));
+            if (day.suggestedVehicle.id !== selectedVehicleId) {
+                setSelectedVehicleId(day.suggestedVehicle.id);
+            }
+            const newPostIds = day.posts.map((p: any) => p.postId);
+            if (JSON.stringify(newPostIds) !== JSON.stringify(selectedPostIds)) {
+                setSelectedPostIds(newPostIds);
+            }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, day]);
 
     const handleTogglePost = (postId: string) => {
@@ -60,7 +68,7 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
         onClose();
     };
 
-    if (!open || !day || !Array.isArray(allPendingPosts)) return null;
+    if (!open || !day || !Array.isArray(allPosts)) return null;
 
     const selectedVehicle = vehicles.find((v) => v.id === selectedVehicleId);
 
@@ -73,19 +81,16 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50'>
+                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-primary-50 to-purple-50'>
                     <div className='flex items-center gap-3'>
-                        <div className='w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center'>
-                            <Calendar className='text-blue-600' size={24} />
-                        </div>
                         <div>
                             <h2 className='text-2xl font-bold text-gray-900'>
                                 Chỉnh sửa thông tin nhóm thu gom
                             </h2>
                             <p className='text-sm text-gray-500 mt-1'>
-                                Ngày: {new Date(day.workDate).toLocaleDateString('vi-VN')}
+                                Ngày: {formatDate(day.workDate)}
                             </p>
                         </div>
                     </div>
@@ -111,15 +116,15 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
                                     onClick={() => setSelectedVehicleId(vehicle.id)}
                                     className={`border rounded-lg p-4 cursor-pointer transition-all ${
                                         selectedVehicleId === vehicle.id
-                                            ? 'border-purple-500 bg-purple-50 shadow-md'
-                                            : 'border-gray-200 hover:border-purple-300'
+                                            ? 'border-primary-500 bg-primary-50 shadow-md'
+                                            : 'border-gray-200 hover:border-primary-300'
                                     }`}
                                 >
                                     <div className='flex items-center gap-6'>
                                         <Truck
                                             className={
                                                 selectedVehicleId === vehicle.id
-                                                    ? 'text-purple-600'
+                                                    ? 'text-primary-600'
                                                     : 'text-gray-400'
                                             }
                                             size={20}
@@ -145,128 +150,30 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
                     </div>
 
                     {/* Posts Selection */}
-                    <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
-                        <div className='p-4 border-b border-gray-100'>
-                            <h3 className='font-semibold text-gray-900 flex items-center gap-2'>
-                                <Package size={18} className='text-blue-600' />
-                                Chọn bưu phẩm ({selectedPostIds.length}/{allPendingPosts.length})
-                            </h3>
-                            <p className='text-xs text-gray-500 mt-1'>
-                                Các bưu phẩm được gợi ý đã được chọn sẵn. Bạn có thể thêm hoặc bỏ chọn.
-                            </p>
-                        </div>
-
-                        <div className='overflow-y-auto max-h-[400px]'>
-                            <table className='w-full'>
-                                <thead className='bg-gray-50 sticky top-0 z-10'>
-                                    <tr className='border-b border-gray-200'>
-                                        <th className='py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase'>
-                                            <input
-                                                type='checkbox'
-                                                checked={
-                                                    selectedPostIds.length === allPendingPosts.length
-                                                }
-                                                onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        setSelectedPostIds(
-                                                            allPendingPosts.map((p: any) => p.postId)
-                                                        );
-                                                    } else {
-                                                        setSelectedPostIds([]);
-                                                    }
-                                                }}
-                                                className='w-4 h-4 text-blue-600 rounded cursor-pointer'
-                                            />
-                                        </th>
-                                        <th className='py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase'>
-                                            STT
-                                        </th>
-                                        <th className='py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase'>
-                                            Người gửi
-                                        </th>
-                                        <th className='py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase'>
-                                            Địa chỉ
-                                        </th>
-                                        <th className='py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase'>
-                                            Sản phẩm
-                                        </th>
-                                        <th className='py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase'>
-                                            Kích thước
-                                        </th>
-                                        <th className='py-3 px-4 text-left text-xs font-semibold text-gray-600 uppercase'>
-                                            Khối lượng
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {allPendingPosts.map((post: any, index: number) => {
-                                        const isSelected = selectedPostIds.includes(post.postId);
-                                        const wasSuggested = day.posts.some((p: any) => p.postId === post.postId);
-                                        return (
-                                            <tr
-                                                key={post.postId}
-                                                onClick={() => handleTogglePost(post.postId)}
-                                                className={`border-b border-gray-100 cursor-pointer transition-colors ${
-                                                    isSelected
-                                                        ? 'bg-blue-50'
-                                                        : 'hover:bg-gray-50'
-                                                }`}
-                                            >
-                                                <td className='py-3 px-4'>
-                                                    <input
-                                                        type='checkbox'
-                                                        checked={isSelected}
-                                                        onChange={() => handleTogglePost(post.postId)}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                        className='w-4 h-4 text-blue-600 rounded cursor-pointer'
-                                                    />
-                                                </td>
-                                                <td className='py-3 px-4'>
-                                                    <div className='flex items-center gap-2'>
-                                                        <div className='w-6 h-6 rounded-full bg-blue-100 text-blue-600 text-xs font-semibold flex items-center justify-center'>
-                                                            {index + 1}
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className='py-3 px-4'>
-                                                    <p className='text-sm font-medium text-gray-900'>
-                                                        {post.userName}
-                                                    </p>
-                                                </td>
-                                                <td className='py-3 px-4'>
-                                                    <p className='text-sm text-gray-600 max-w-xs truncate'>
-                                                        {post.address}
-                                                    </p>
-                                                </td>
-                                                <td className='py-3 px-4'>
-                                                    <p className='text-sm text-gray-600'>
-                                                        {post.productName || 'N/A'}
-                                                    </p>
-                                                </td>
-                                                <td className='py-3 px-4'>
-                                                    <p className='text-sm text-gray-600'>
-                                                        {post.dimensionText || `${post.length} x ${post.width} x ${post.height} cm`}
-                                                    </p>
-                                                </td>
-                                                <td className='py-3 px-4'>
-                                                    <p className='text-sm font-semibold text-gray-900'>
-                                                        {post.weight} kg
-                                                    </p>
-                                                    <p className='text-xs text-gray-400'>
-                                                        {post.volume} m³
-                                                    </p>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
+                    <div>
+                        <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
+                            <span className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                <Package size={20} className='text-primary-500' />
+                            </span>
+                            Chọn bưu phẩm ({selectedPostIds.length}/{allPosts.length})
+                        </h3>
+                        <p className='text-xs text-gray-500 mb-4 ml-10'>
+                            Các bưu phẩm được gợi ý đã được chọn sẵn. Bạn có thể thêm hoặc bỏ chọn.
+                        </p>
+                        <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
+                            <div className='overflow-x-auto'>
+                                <PostList
+                                    posts={allPosts}
+                                    selectedPostIds={selectedPostIds}
+                                    onTogglePost={handleTogglePost}
+                                />
+                            </div>
                         </div>
                     </div>
 
                     {/* Summary */}
-                    <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
-                        <p className='text-sm text-blue-800'>
+                    <div className='bg-primary-50 border border-primary-200 rounded-lg p-4'>
+                        <p className='text-sm text-primary-800'>
                             <span className='font-semibold'>Tổng kết:</span> Bạn đã chọn{' '}
                             <span className='font-bold'>{selectedPostIds.length}</span> bưu phẩm
                             {selectedVehicle && (
@@ -287,10 +194,9 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
                     <button
                         onClick={handleConfirm}
                         disabled={loading || !selectedVehicleId || selectedPostIds.length === 0}
-                        className='px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-medium cursor-pointer flex items-center gap-2'
+                        className='px-5 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-medium cursor-pointer flex items-center gap-2'
                     >
-                        <Package size={18} />
-                        {loading ? 'Đang cập nhật...' : 'Xác nhận chỉnh sửa'}
+                        {loading ? 'Đang cập nhật...' : 'Xác nhận'}
                     </button>
                 </div>
             </div>

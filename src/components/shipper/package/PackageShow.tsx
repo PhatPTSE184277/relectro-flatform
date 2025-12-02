@@ -1,6 +1,7 @@
 import React from 'react';
-import { Eye } from 'lucide-react';
+import { Eye, QrCode } from 'lucide-react';
 import { PackageType } from '@/types/Package';
+import { PackageStatus } from '@/enums/PackageStatus';
 
 interface PackageShowProps {
     package: PackageType;
@@ -8,13 +9,14 @@ interface PackageShowProps {
     onScan?: () => void;
 }
 
-const PackageShow: React.FC<PackageShowProps> = ({
+const PackageShow: React.FC<PackageShowProps & { isLast?: boolean }> = ({
     package: pkg,
     onView,
-    onScan
+    onScan,
+    isLast = false
 }) => {
     return (
-        <tr className='border-b border-gray-100 hover:bg-blue-50/40 transition-colors'>
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
             <td className='py-3 px-4 font-medium'>
                 <div className='text-gray-900'>{pkg.packageId}</div>
             </td>
@@ -24,8 +26,22 @@ const PackageShow: React.FC<PackageShowProps> = ({
             </td>
 
             <td className='py-3 px-4 text-gray-700'>
-                <span className='px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700'>
+                <span className='px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700'>
                     {pkg.products.length} sản phẩm
+                </span>
+            </td>
+
+            <td className='py-3 px-4'>
+                <span
+                    className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
+                        pkg.status === PackageStatus.Closed
+                            ? 'bg-purple-100 text-purple-700'
+                            : pkg.status === PackageStatus.Shipping
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-gray-100 text-gray-600'
+                    }`}
+                >
+                    {pkg.status}
                 </span>
             </td>
 
@@ -33,7 +49,7 @@ const PackageShow: React.FC<PackageShowProps> = ({
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}
-                        className='text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition cursor-pointer'
+                        className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
                         title='Xem chi tiết'
                     >
                         <Eye size={16} />
@@ -41,13 +57,10 @@ const PackageShow: React.FC<PackageShowProps> = ({
                     {onScan && (
                         <button
                             onClick={onScan}
-                            className='text-green-600 hover:text-green-800 flex items-center gap-1 font-medium transition cursor-pointer'
+                            className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
                             title='Quét mã package'
                         >
-                            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                <path d="M7 7h.01M7 12h.01M7 17h.01M12 7h.01M12 12h.01M12 17h.01M17 7h.01M17 12h.01M17 17h.01"/>
-                            </svg>
+                            <QrCode size={16} />
                         </button>
                     )}
                 </div>

@@ -15,9 +15,9 @@ const Pagination: React.FC<PaginationProps> = ({
 
   const getPages = () => {
     const pages = [];
-    if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
+          if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+          } else {
       if (page <= 3) {
         pages.push(1, 2, 3, 4, "...", totalPages);
       } else if (page >= totalPages - 2) {
@@ -31,21 +31,21 @@ const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <div className="flex justify-center items-center gap-2 py-4">
-      <button
-        className="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium transition disabled:opacity-50"
-        disabled={page === 1}
-        onClick={() => onPageChange(page - 1)}
-      >
-        &lt;
-      </button>
+            <button
+              className="px-3 py-2 rounded-lg bg-primary-50 text-text-main hover:bg-primary-100 font-medium transition disabled:opacity-50"
+              disabled={page === 1}
+              onClick={() => onPageChange(page - 1)}
+            >
+              &lt;
+            </button>
       {getPages().map((p, idx) =>
         typeof p === "number" ? (
           <button
             key={p}
             className={`px-3 py-2 rounded-lg font-medium transition ${
-              p === page
-                ? "bg-blue-500 text-white shadow"
-                : "bg-gray-100 text-gray-700 hover:bg-blue-100"
+                    p === page
+                      ? "bg-primary-600 text-white shadow"
+                      : "bg-primary-50 text-text-main hover:bg-primary-100"
             }`}
             onClick={() => onPageChange(p)}
             disabled={p === page}
@@ -58,13 +58,13 @@ const Pagination: React.FC<PaginationProps> = ({
           </span>
         )
       )}
-      <button
-        className="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium transition disabled:opacity-50"
-        disabled={page === totalPages}
-        onClick={() => onPageChange(page + 1)}
-      >
-        &gt;
-      </button>
+            <button
+              className="px-3 py-2 rounded-lg bg-primary-50 text-text-main hover:bg-primary-100 font-medium transition disabled:opacity-50"
+              disabled={page === totalPages}
+              onClick={() => onPageChange(page + 1)}
+            >
+              &gt;
+            </button>
     </div>
   );
 };

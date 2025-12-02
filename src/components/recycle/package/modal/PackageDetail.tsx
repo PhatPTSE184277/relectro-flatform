@@ -4,6 +4,7 @@ import React from 'react';
 import { Info, List } from 'lucide-react';
 import { PackageType } from '@/types/Package';
 import PackageInfoCard from './PackageInfoCard';
+import ProductList from './ProductList';
 import { PackageStatus } from '@/enums/PackageStatus';
 
 interface PackageDetailProps {
@@ -28,9 +29,9 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-blue-50 to-purple-50'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-900'>
                             Chi tiết Package
@@ -52,7 +53,9 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                 <div className='flex-1 overflow-y-auto p-6'>
                     {/* Package Info Title */}
                     <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-                        <Info className='w-5 h-5 text-blue-600' />
+                        <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                            <Info className='w-5 h-5 text-primary-500' />
+                        </span>
                         Thông tin package
                     </h3>
                     {/* Package Info Card */}
@@ -61,80 +64,15 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                     {/* Products List */}
                     <div>
                         <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-                            <List className='w-5 h-5 text-blue-600' />
+                            <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                <List className='w-5 h-5 text-primary-500' />
+                            </span>
                             Danh sách sản phẩm
                         </h3>
-                        <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
-                            <div className='overflow-x-auto'>
-                                <table className='w-full text-sm text-gray-800'>
-                                    <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
-                                        <tr>
-                                            <th className='py-3 px-4 text-left'>
-                                                STT
-                                            </th>
-                                            <th className='py-3 px-4 text-left'>
-                                                Danh mục
-                                            </th>
-                                            <th className='py-3 px-4 text-left'>
-                                                Thương hiệu
-                                            </th>
-                                            <th className='py-3 px-4 text-left'>
-                                                Ghi chú
-                                            </th>
-                                            <th className='py-3 px-4 text-left'>
-                                                QR Code
-                                            </th>
-                                            {isRecycling && (
-                                                <th className='py-3 px-4 text-center'>
-                                                    Trạng thái
-                                                </th>
-                                            )}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {pkg.products.map((product, index) => (
-                                            <tr
-                                                key={product.productId}
-                                                className='border-b border-gray-100 hover:bg-blue-50/40 transition-colors'
-                                            >
-                                                <td className='py-3 px-4 font-medium'>
-                                                    <span className='w-6 h-6 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center font-semibold'>
-                                                        {index + 1}
-                                                    </span>
-                                                </td>
-                                                <td className='py-3 px-4 font-medium'>
-                                                    <div className='text-gray-900'>
-                                                        {product.categoryName}
-                                                    </div>
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-700'>
-                                                    {product.brandName}
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-600 text-xs max-w-xs truncate'>
-                                                    {product.description || '-'}
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-400 font-mono text-xs'>
-                                                    {product.qrCode}
-                                                </td>
-                                                {isRecycling && (
-                                                    <td className='py-3 px-4 text-center'>
-                                                        {product.isChecked ? (
-                                                            <span className='inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700'>
-                                                                ✓ Đã quét
-                                                            </span>
-                                                        ) : (
-                                                            <span className='inline-block px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700'>
-                                                                Chưa quét
-                                                            </span>
-                                                        )}
-                                                    </td>
-                                                )}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <ProductList
+                            products={pkg.products}
+                            showStatus={isRecycling}
+                        />
                     </div>
                 </div>
             </div>

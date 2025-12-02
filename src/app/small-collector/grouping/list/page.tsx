@@ -51,16 +51,16 @@ const GroupingListPage: React.FC = () => {
             {/* Header */}
             <div className='flex items-center justify-between mb-6'>
                 <div className='flex items-center gap-3'>
-                    <div className='w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center'>
-                      <GitBranch className='text-white' size={20} />
-                    </div>
+                                        <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
+                                            <GitBranch className='text-white' size={20} />
+                                        </div>
                     <h1 className='text-3xl font-bold text-gray-900'>
                         Danh sách nhóm thu gom
                     </h1>
                 </div>
                 <button
                     onClick={handleCreateNew}
-                    className='flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer'
+                    className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors cursor-pointer'
                 >
                     <Plus size={20} />
                     Tạo nhóm mới

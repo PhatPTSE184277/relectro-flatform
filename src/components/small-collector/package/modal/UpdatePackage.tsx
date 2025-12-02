@@ -190,18 +190,16 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50'>
-                    <div className='flex items-center gap-3'>
-                        <div>
-                            <h2 className='text-2xl font-bold text-gray-900'>
-                                Cập nhật Package
-                            </h2>
-                            <p className='text-sm text-gray-500 mt-1'>
-                                Quét QR code để thêm hoặc xóa sản phẩm
-                            </p>
-                        </div>
+                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100 border-primary-100'>
+                    <div>
+                        <h2 className='text-2xl font-bold text-gray-900'>
+                            Cập nhật Package
+                        </h2>
+                        <p className='text-sm text-gray-500 mt-1'>
+                            Quét QR code để thêm hoặc xóa sản phẩm
+                        </p>
                     </div>
                     <button
                         onClick={handleClose}
@@ -223,7 +221,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                             value={packageName}
                             onChange={(e) => setPackageName(e.target.value)}
                             placeholder='Nhập tên package...'
-                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900'
+                            className='w-full px-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900'
                         />
                     </div>
 
@@ -240,18 +238,18 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                                     value={qrCodeInput}
                                     onChange={(e) => setQrCodeInput(e.target.value)}
                                     placeholder='Quét hoặc nhập mã QR...'
-                                    className='w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900'
+                                    className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900'
                                     disabled={loading}
                                 />
                                 <ScanLine
-                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400'
+                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
                                     size={18}
                                 />
                             </div>
                             <button
                                 type='submit'
                                 disabled={loading}
-                                className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-gray-300 cursor-pointer'
+                                className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition disabled:bg-gray-300 cursor-pointer border border-primary-200 shadow-md'
                             >
                                 {loading ? 'Đang quét...' : 'Quét'}
                             </button>
@@ -271,7 +269,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                                 <table className='w-full text-sm'>
                                     <thead className='bg-gray-50 sticky top-0'>
                                         <tr>
-                                            <th className='py-2 px-3 text-left text-xs font-medium text-gray-500'>
+                                            <th className='py-2 px-3 text-center text-xs font-medium text-gray-500'>
                                                 STT
                                             </th>
                                             <th className='py-2 px-3 text-left text-xs font-medium text-gray-500'>
@@ -303,8 +301,10 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                                                         : 'hover:bg-gray-50'
                                                 }`}
                                             >
-                                                <td className='py-2 px-3 text-gray-700'>
-                                                    {index + 1}
+                                                <td className='py-2 px-3 text-gray-700 text-center'>
+                                                    <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold mx-auto'>
+                                                        {index + 1}
+                                                    </span>
                                                 </td>
                                                 <td className='py-2 px-3 text-gray-900 font-medium'>
                                                     {product.categoryName}
@@ -343,17 +343,17 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
 
                 {/* Footer */}
                 <div className='flex justify-between items-center gap-3 p-5 border-t border-gray-100 bg-white'>
-                    <div className='text-sm text-gray-600'>
+                    <div className='text-sm text-gray-600 flex items-center'>
                         <span className='font-medium text-gray-900'>
                             {scannedProducts.length}
-                        </span>{' '}
-                        sản phẩm đã thêm
+                        </span>
+                        <span className='ml-1'>sản phẩm đã thêm</span>
                     </div>
                     <div className='flex gap-3'>
                         <button
                             onClick={handleSubmit}
                             disabled={!packageName.trim() || scannedProducts.length === 0}
-                            className='p-2 rounded-lg text-white cursor-pointer shadow-md transition-all duration-200 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2'
+                            className='p-2 rounded-lg text-white cursor-pointer shadow-md transition-all duration-200 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-primary-200'
                             title='Cập nhật Package'
                         >
                             <Package size={22} />

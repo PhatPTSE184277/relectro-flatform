@@ -51,7 +51,7 @@ const GroupingPage: React.FC = () => {
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
             {/* Header */}
             <div className='flex items-center gap-3 mb-6'>
-                <div className='w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center'>
+                <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
                     <GitBranch className='text-white' size={20} />
                 </div>
                 <h1 className='text-3xl font-bold text-gray-900'>
@@ -59,7 +59,7 @@ const GroupingPage: React.FC = () => {
                 </h1>
                 <button
                     onClick={() => router.push('/small-collector/grouping/list')}
-                    className='ml-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer'
+                    className='ml-auto px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors cursor-pointer'
                 >
                     Xem danh sách nhóm
                 </button>
@@ -74,7 +74,7 @@ const GroupingPage: React.FC = () => {
                                 <div
                                     className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
                                         activeStep >= step.id
-                                            ? 'bg-blue-600 text-white'
+                                            ? 'bg-primary-600 text-white'
                                             : 'bg-gray-200 text-gray-400'
                                     }`}
                                 >
@@ -83,7 +83,7 @@ const GroupingPage: React.FC = () => {
                                 <span
                                     className={`mt-2 text-sm font-medium ${
                                         activeStep >= step.id
-                                            ? 'text-blue-600'
+                                            ? 'text-primary-600'
                                             : 'text-gray-400'
                                     }`}
                                 >
@@ -94,7 +94,7 @@ const GroupingPage: React.FC = () => {
                                 <div
                                     className={`w-24 h-1 mx-4 transition-all ${
                                         activeStep > step.id
-                                            ? 'bg-blue-600'
+                                            ? 'bg-primary-600'
                                             : 'bg-gray-200'
                                     }`}
                                 />
@@ -109,7 +109,7 @@ const GroupingPage: React.FC = () => {
                 {activeStep === 1 && (
                     <PreAssignStep
                         loading={loading}
-                        pendingPosts={pendingPosts}
+                        posts={pendingPosts}
                         loadThreshold={loadThreshold}
                         setLoadThreshold={setLoadThreshold}
                         onGetSuggestion={handleGetSuggestion}
@@ -121,7 +121,7 @@ const GroupingPage: React.FC = () => {
                         loading={loading}
                         preAssignResult={preAssignResult}
                         vehicles={vehicles}
-                        pendingPosts={pendingPosts}
+                        posts={pendingPosts}
                         onCreateGrouping={handleCreateGrouping}
                         onBack={() => setActiveStep(1)}
                         calculateRoute={calculateRoute}

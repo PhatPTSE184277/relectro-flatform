@@ -1,12 +1,11 @@
 'use client';
 
 import React from 'react';
-import { AlertCircle } from 'lucide-react';
-import PendingPostList from './PendingPostList';
+import PostList from './PostList';
 
 interface PreAssignStepProps {
     loading: boolean;
-    pendingPosts: any[];
+    posts: any[];
     loadThreshold: number;
     setLoadThreshold: (value: number) => void;
     onGetSuggestion: () => void;
@@ -14,7 +13,7 @@ interface PreAssignStepProps {
 
 const PreAssignStep: React.FC<PreAssignStepProps> = ({
     loading,
-    pendingPosts,
+    posts,
     loadThreshold,
     setLoadThreshold,
     onGetSuggestion
@@ -45,13 +44,10 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                         onChange={(e) =>
                             setLoadThreshold(Number(e.target.value))
                         }
-                        className='flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer'
-                        style={{
-                            accentColor: '#2563eb'
-                        }}
+                        className='flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-500'
                     />
                     <div className='w-16 text-center'>
-                        <span className='text-2xl font-bold text-blue-600'>
+                        <span className='text-2xl font-bold text-primary-600'>
                             {loadThreshold}
                         </span>
                         <span className='text-sm text-gray-500'>%</span>
@@ -62,40 +58,19 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 </p>
             </div>
 
-            {/* Warning */}
-            {/* <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3'>
-                            <AlertCircle className='text-yellow-600 shrink-0 mt-0.5' size={20} />
-                            <div className='text-sm text-yellow-800'>
-                                <p className='font-medium mb-1'>Lưu ý:</p>
-                                <ul className='list-disc list-inside space-y-1'>
-                                    <li>
-                                        Hệ thống sẽ ưu tiên gom nhóm theo khoảng cách gần
-                                        nhất
-                                    </li>
-                                    <li>
-                                        Ngưỡng tải cao hơn có thể giảm số lượng phương tiện
-                                        cần sử dụng
-                                    </li>
-                                    <li>
-                                        Bạn có thể điều chỉnh lại sau khi xem gợi ý
-                                    </li>
-                                </ul>
-                            </div>
-                        </div> */}
-
             {/* Action Button */}
             <div className='flex justify-center mb-4'>
                 <button
                     onClick={onGetSuggestion}
-                    disabled={loading || pendingPosts.length === 0}
-                    className='py-2 px-6 text-base bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors'
+                    disabled={loading || (posts?.length || 0) === 0}
+                    className='py-2 px-6 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer'
                 >
                     {loading ? 'Đang xử lý...' : 'Lấy gợi ý gom nhóm'}
                 </button>
             </div>
 
             {/* Pending Posts List */}
-            <PendingPostList pendingPosts={pendingPosts} loading={loading} />
+            <PostList posts={posts} loading={loading} />
         </div>
     );
 };

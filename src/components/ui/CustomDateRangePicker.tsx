@@ -16,8 +16,8 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
     onToDateChange
 }) => {
     return (
-        <div className='flex items-center gap-3 bg-white rounded-xl shadow-md border border-blue-100 p-4'>
-            <Calendar className='text-blue-500' size={20} />
+        <div className='flex items-center gap-3 bg-white rounded-xl shadow-md border border-primary-200 p-4'>
+            <Calendar className='text-primary-500' size={20} />
             
             <div className='flex items-center gap-3 flex-1'>
                 <div className='flex-1'>

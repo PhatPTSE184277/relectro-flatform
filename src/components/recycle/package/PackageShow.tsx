@@ -9,15 +9,16 @@ interface PackageShowProps {
     onCheckProducts?: () => void;
 }
 
-const PackageShow: React.FC<PackageShowProps> = ({
+const PackageShow: React.FC<PackageShowProps & { isLast?: boolean }> = ({
     package: pkg,
     onView,
-    onCheckProducts
+    onCheckProducts,
+    isLast = false
 }) => {
     const isRecycling = pkg.status === PackageStatus.Recycling;
     
     return (
-        <tr className='border-b border-gray-100 hover:bg-blue-50/40 transition-colors'>
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
             <td className='py-3 px-4 font-medium'>
                 <div className='text-gray-900'>{pkg.packageId}</div>
             </td>
@@ -27,7 +28,7 @@ const PackageShow: React.FC<PackageShowProps> = ({
             </td>
 
             <td className='py-3 px-4 text-gray-700'>
-                <span className='px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700'>
+                <span className='px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700'>
                     {pkg.products.length} sản phẩm
                 </span>
             </td>
@@ -50,7 +51,7 @@ const PackageShow: React.FC<PackageShowProps> = ({
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}
-                        className='text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition cursor-pointer'
+                        className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
                         title='Xem chi tiết'
                     >
                         <Eye size={16} />
@@ -58,7 +59,7 @@ const PackageShow: React.FC<PackageShowProps> = ({
                     {isRecycling && onCheckProducts && (
                         <button
                             onClick={onCheckProducts}
-                            className='text-green-600 hover:text-green-800 flex items-center gap-1 font-medium transition cursor-pointer'
+                            className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
                             title='Quét kiểm tra sản phẩm'
                         >
                             <QrCode size={16} />

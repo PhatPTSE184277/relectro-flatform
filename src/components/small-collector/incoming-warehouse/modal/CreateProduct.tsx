@@ -246,13 +246,13 @@ const CreateProduct: React.FC<CreateProductProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-blue-50 to-blue-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100'>
                     <div className='flex items-center gap-3'>
                         <div>
-                            <h2 className='text-2xl font-bold text-gray-900'>
+                            <h2 className='text-2xl font-bold text-gray-800'>
                                 Tạo Sản Phẩm Mới
                             </h2>
-                            <p className='text-sm text-gray-500 mt-1'>
+                            <p className='text-sm text-gray-600 mt-1'>
                                 Nhận hàng từ người gửi tại kho
                             </p>
                         </div>
@@ -266,9 +266,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                 </div>
 
                 {/* Body */}
-                <div className='flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50'>
+                <div className='flex-1 overflow-y-auto p-6 space-y-6 bg-white'>
                     {/* Phone Search */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-blue-100'>
+                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>
                             Số Điện Thoại Người Gửi{' '}
                             <span className='text-red-500'>*</span>
@@ -284,36 +284,36 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
                                     placeholder='Nhập số điện thoại...'
-                                    className='w-full pl-10 pr-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
+                                    className='w-full pl-10 pr-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
                                     autoComplete='off'
                                 />
                                 <User
-                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400'
+                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
                                     size={18}
                                 />
                             </div>
                             <button
                                 type='submit'
-                                className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium flex items-center gap-2 cursor-pointer'
+                                className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium flex items-center gap-2 cursor-pointer'
                             >
                                 <ScanLine size={18} />
                                 Tìm
                             </button>
                         </form>
                         {user && (
-                            <div className='mt-3 p-3 bg-green-50 border border-green-200 rounded-lg'>
+                            <div className='mt-3 p-3 bg-primary-50 border border-primary-200 rounded-lg'>
                                 <div className='flex items-center gap-2 mb-2'>
-                                    <div className='w-8 h-8 rounded-full bg-green-500 flex items-center justify-center'>
+                                    <div className='w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center'>
                                         <User
                                             className='text-white'
                                             size={16}
                                         />
                                     </div>
-                                    <span className='font-semibold text-green-900'>
+                                    <span className='font-semibold text-primary-900'>
                                         {user.name}
                                     </span>
                                 </div>
-                                <div className='text-sm text-green-700 space-y-1'>
+                                <div className='text-sm text-primary-700 space-y-1'>
                                     {user.email && (
                                         <p>
                                             <span className='font-medium'>
@@ -361,7 +361,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                     </div>
 
                     {/* Product QR Code */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>
                             Mã QR Sản Phẩm{' '}
                             <span className='text-red-500'>*</span>
@@ -374,17 +374,17 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     value={qrCode}
                                     onChange={(e) => setQrCode(e.target.value)}
                                     placeholder='Quét hoặc nhập mã QR sản phẩm...'
-                                    className='w-full pl-10 pr-4 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
+                                    className='w-full pl-10 pr-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
                                     autoComplete='off'
                                 />
                                 <ScanLine
-                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400'
+                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
                                     size={18}
                                 />
                             </div>
                             <button
                                 type='button'
-                                className='px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium flex items-center gap-2 cursor-pointer'
+                                className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium flex items-center gap-2 cursor-pointer'
                                 onClick={() => {
                                     /* Mở modal quét QR ở đây */
                                 }}
@@ -399,7 +399,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                     <div className='space-y-4'>
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                             {/* Danh Mục Cha */}
-                            <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                            <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
                                 <label className='block text-sm font-medium text-gray-700 mb-2'>
                                     Danh Mục Cha{' '}
                                     <span className='text-red-500'>*</span>
@@ -419,7 +419,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                             </div>
 
                             {/* Danh Mục Con */}
-                            <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                            <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
                                 <label className='block text-sm font-medium text-gray-700 mb-2'>
                                     Danh Mục Con{' '}
                                     <span className='text-red-500'>*</span>
@@ -478,14 +478,14 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     onChange={setPoint}
                                     placeholder='Nhập điểm...'
                                     min={0}
-                                    className='w-full px-4 py-2 border border-blue-300 rounded-lg text-gray-900 placeholder-gray-400 placeholder-font-medium font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                                    className='w-full px-4 py-2 border border-primary-300 rounded-lg text-gray-900 placeholder-gray-400 placeholder-font-medium font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent'
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Description */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>
                             Mô Tả
                         </label>
@@ -494,12 +494,12 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder='Nhập mô tả sản phẩm...'
                             rows={3}
-                            className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 resize-none'
+                            className='w-full px-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 resize-none'
                         />
                     </div>
 
                     {/* Image Upload */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>
                             Hình ảnh / Video về sản phẩm{' '}
                             <span className='text-red-500'>*</span>
@@ -508,8 +508,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                             Tối đa 5 ảnh/video, mỗi file không quá 10MB
                         </p>
                         <div className='flex gap-4 items-start'>
-                            <label className='cursor-pointer flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition'>
-                                <Upload className='text-gray-400' size={32} />
+                            <label className='cursor-pointer flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-primary-300 rounded-lg hover:border-primary-400 hover:bg-primary-50 transition'>
+                                <Upload className='text-primary-400' size={32} />
                                 <span className='text-xs text-gray-500 mt-2'>
                                     Thêm ảnh
                                 </span>
@@ -529,7 +529,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                         <img
                                             src={img}
                                             alt={`Product ${index + 1}`}
-                                            className='w-full h-32 object-cover rounded-lg border border-gray-200'
+                                            className='w-full h-32 object-cover rounded-lg border border-primary-200'
                                         />
                                         <button
                                             onClick={() =>
@@ -548,7 +548,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className='flex justify-between items-center gap-3 p-5 border-t border-gray-100 bg-white'>
+                <div className='flex justify-between items-center gap-3 p-5 border-t border-primary-100 bg-white'>
                     <div className='text-sm text-gray-600'>
                         <span className='font-semibold'>{images.length}</span>{' '}
                         ảnh đã thêm
@@ -557,7 +557,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                         <button
                             onClick={handleSubmit}
                             disabled={uploading}
-                            className='px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2'
+                            className='px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2'
                         >
                             {uploading ? (
                                 <>

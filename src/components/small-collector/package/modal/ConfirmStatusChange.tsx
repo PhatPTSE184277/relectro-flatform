@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { AlertTriangle, Truck, X } from 'lucide-react';
+import { Truck, X } from 'lucide-react';
 
 interface ConfirmStatusChangeProps {
     open: boolean;
@@ -28,16 +28,11 @@ const ConfirmStatusChange: React.FC<ConfirmStatusChangeProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-fadeIn'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-orange-50 to-red-50'>
-                    <div className='flex items-center gap-3'>
-                        <div className='w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center'>
-                            <AlertTriangle className='text-orange-600' size={24} />
-                        </div>
-                        <div>
-                            <h2 className='text-xl font-bold text-gray-900'>
-                                Xác nhận đóng trạng thái
-                            </h2>
-                        </div>
+                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100 border-primary-100'>
+                    <div>
+                        <h2 className='text-xl font-bold text-gray-900'>
+                            Xác nhận đóng trạng thái
+                        </h2>
                     </div>
                     <button
                         onClick={onClose}
@@ -49,11 +44,11 @@ const ConfirmStatusChange: React.FC<ConfirmStatusChangeProps> = ({
 
                 {/* Body */}
                 <div className='p-6 space-y-4'>
-                    <div className='bg-orange-50 border border-orange-200 rounded-lg p-4'>
-                        <p className='text-sm text-orange-800 font-medium mb-2'>
+                    <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-4'>
+                        <p className='text-sm text-yellow-800 font-medium mb-2'>
                             Cảnh báo quan trọng
                         </p>
-                        <p className='text-sm text-orange-700'>
+                        <p className='text-sm text-yellow-700'>
                             Sau khi đóng trạng thái package sẽ{' '}
                             <strong>KHÔNG THỂ</strong> chỉnh sửa.
                         </p>
@@ -79,9 +74,8 @@ const ConfirmStatusChange: React.FC<ConfirmStatusChangeProps> = ({
                             onConfirm();
                             onClose();
                         }}
-                        className='flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition font-medium cursor-pointer'
+                        className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium cursor-pointer shadow-md border border-primary-200'
                     >
-                        <Truck size={18} />
                         Xác nhận đóng
                     </button>
                 </div>

@@ -63,14 +63,14 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
             ></div>
 
             {/* Modal */}
-            <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-blue-50 to-purple-50'>
+                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100'>
                     <div className='flex-1'>
-                        <h2 className='text-2xl font-bold text-gray-900'>
+                        <h2 className='text-2xl font-bold text-gray-800'>
                             Chi tiết tuyến thu gom
                         </h2>
-                        <p className='text-sm text-gray-500 mt-1'>
+                        <p className='text-sm text-gray-600 mt-1'>
                             Thông tin chi tiết về tuyến thu gom và lịch sử
                         </p>
                     </div>
@@ -86,7 +86,7 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                 {/* Content */}
                 <div className='flex flex-col md:flex-row flex-1 overflow-hidden'>
                     {/* LEFT - IMAGE */}
-                    <div className='md:w-1/3 p-6 bg-gray-50 flex flex-col items-center border-r overflow-y-auto'>
+                    <div className='md:w-1/3 p-6 bg-gray-50 flex flex-col items-center border-r border-primary-100 overflow-y-auto'>
                         <div className='w-full flex flex-col items-center gap-4'>
                             {/* Badge Status */}
                             <span
@@ -104,7 +104,7 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                                     '/placeholder.png'
                                 }
                                 alt='Ảnh chính'
-                                className='w-full max-w-xs h-72 object-contain rounded-xl border border-gray-200 bg-white cursor-zoom-in shadow-sm'
+                                className='w-full max-w-xs h-72 object-contain rounded-xl border border-primary-200 bg-white cursor-zoom-in shadow-sm'
                                 onClick={() =>
                                     setZoomImg(
                                         route.pickUpItemImages?.[selectedImg]
@@ -127,8 +127,8 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                                                     }
                                                     className={`w-16 h-16 object-cover rounded-lg cursor-pointer transition-all ${
                                                         idx === selectedImg
-                                                            ? 'border-2 border-blue-500 ring-2 ring-blue-300 scale-105'
-                                                            : 'border border-gray-200 hover:border-blue-300'
+                                                            ? 'border-2 border-primary-500 ring-2 ring-primary-200 scale-105'
+                                                            : 'border border-primary-100 hover:border-primary-200'
                                                     }`}
                                                 />
                                             )
@@ -144,40 +144,48 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                         <div className='grid grid-cols-2 gap-4'>
                             <InfoCard
                                 icon={
-                                    <Package
-                                        className='text-blue-600'
-                                        size={20}
-                                    />
+                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                        <Package
+                                            className='text-primary-500'
+                                            size={20}
+                                        />
+                                    </span>
                                 }
                                 label='Thương hiệu'
                                 value={route.brandName || 'Không rõ'}
                             />
                             <InfoCard
                                 icon={
-                                    <Tag
-                                        className='text-purple-600'
-                                        size={20}
-                                    />
+                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-50 border border-purple-200">
+                                        <Tag
+                                            className='text-purple-500'
+                                            size={20}
+                                        />
+                                    </span>
                                 }
                                 label='Danh mục'
                                 value={route.subCategoryName || 'Không rõ'}
                             />
                             <InfoCard
                                 icon={
-                                    <Truck
-                                        className='text-green-600'
-                                        size={20}
-                                    />
+                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-green-50 border border-green-200">
+                                        <Truck
+                                            className='text-green-600'
+                                            size={20}
+                                        />
+                                    </span>
                                 }
                                 label='Biển số xe'
                                 value={route.licensePlate || 'Không rõ'}
                             />
                             <InfoCard
                                 icon={
-                                    <Calendar
-                                        className='text-orange-600'
-                                        size={20}
-                                    />
+                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-50 border border-blue-200">
+                                        <Calendar
+                                            className='text-blue-600'
+                                            size={20}
+                                        />
+                                    </span>
                                 }
                                 label='Ngày thu gom'
                                 value={
@@ -193,7 +201,11 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                         {/* Người gửi */}
                         <Section
                             title='Người gửi'
-                            icon={<User className='text-blue-600' size={18} />}
+                            icon={
+                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                    <User className='text-primary-500' size={18} />
+                                </span>
+                            }
                         >
                             <UserInfo user={route.sender} />
                         </Section>
@@ -202,10 +214,12 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                         <Section
                             title='Nhân viên thu gom'
                             icon={
-                                <UserCheck
-                                    className='text-green-600'
-                                    size={18}
-                                />
+                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                    <UserCheck
+                                        className='text-primary-500'
+                                        size={18}
+                                    />
+                                </span>
                             }
                         >
                             <UserInfo user={route.collector} />
@@ -215,7 +229,9 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                         <Section
                             title='Lịch thu gom'
                             icon={
-                                <Clock className='text-orange-600' size={18} />
+                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                    <Clock className='text-primary-500' size={18} />
+                                </span>
                             }
                         >
                             <div className='space-y-2 text-sm text-gray-700'>
@@ -253,10 +269,12 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                                 <Section
                                     title='Ảnh xác nhận'
                                     icon={
-                                        <Package
-                                            className='text-purple-600'
-                                            size={18}
-                                        />
+                                        <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                            <Package
+                                                className='text-primary-500'
+                                                size={18}
+                                            />
+                                        </span>
                                     }
                                 >
                                     <div className='flex gap-2 flex-wrap'>
@@ -268,7 +286,7 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                                                     alt={`Ảnh xác nhận ${
                                                         idx + 1
                                                     }`}
-                                                    className='w-20 h-20 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-400 hover:shadow-lg transition-all'
+                                                    className='w-20 h-20 object-cover rounded-lg border-2 border-primary-100 cursor-pointer hover:border-primary-400 hover:shadow-lg transition-all'
                                                     onClick={() =>
                                                         setZoomImg(img)
                                                     }
@@ -312,7 +330,7 @@ interface InfoCardProps {
     value: React.ReactNode;
 }
 const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value }) => (
-    <div className='p-4 bg-gray-50 rounded-lg border flex gap-3'>
+    <div className='p-4 bg-gray-50 rounded-lg border border-primary-100 flex gap-3'>
         {icon}
         <div>
             <p className='text-sm text-gray-600'>{label}</p>
@@ -328,11 +346,11 @@ interface SectionProps {
     children: React.ReactNode;
 }
 const Section: React.FC<SectionProps> = ({ title, icon, children }) => (
-    <div className='pt-4 border-t'>
+    <div className='pt-4 border-t border-primary-100'>
         <div className='flex items-center gap-2 mb-2 text-gray-800 font-semibold'>
             {icon} <span>{title}</span>
         </div>
-        <div className='p-4 bg-gray-50 rounded-lg border'>{children}</div>
+        <div className='p-4 bg-gray-50 rounded-lg border border-primary-100'>{children}</div>
     </div>
 );
 

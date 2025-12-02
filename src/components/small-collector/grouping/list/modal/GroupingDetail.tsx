@@ -9,6 +9,7 @@ import {
     User,
     Navigation
 } from 'lucide-react';
+import { formatDimensionText } from '@/utils/formatDimensionText';
 
 interface Route {
     pickupOrder: number;
@@ -64,7 +65,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-blue-50 to-purple-50'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-900'>
                             Chi tiết nhóm thu gom
@@ -85,7 +86,9 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                 <div className='flex-1 overflow-y-auto p-6'>
                     {/* Group Info */}
                     <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-                        <Package className='w-5 h-5 text-blue-600' />
+                        <span className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                            <Package className='w-5 h-5 text-primary-500' />
+                        </span>
                         Thông tin nhóm
                     </h3>
                     <div className='bg-white rounded-xl p-6 mb-6 shadow-sm border border-gray-100'>
@@ -93,17 +96,29 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                             {/* Ngày thu gom */}
                             <div className='flex flex-col'>
                                 <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
-                                    <Calendar size={14} />
+                                    <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                        <Calendar
+                                            size={14}
+                                            className='text-primary-400'
+                                        />
+                                    </span>
                                     Ngày thu gom
                                 </div>
                                 <div className='text-sm font-medium text-gray-900'>
-                                    {new Date(grouping.groupDate).toLocaleDateString('vi-VN')}
+                                    {new Date(
+                                        grouping.groupDate
+                                    ).toLocaleDateString('vi-VN')}
                                 </div>
                             </div>
                             {/* Phương tiện */}
                             <div className='flex flex-col'>
                                 <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
-                                    <Truck size={14} />
+                                    <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                        <Truck
+                                            size={14}
+                                            className='text-primary-400'
+                                        />
+                                    </span>
                                     Phương tiện
                                 </div>
                                 <div className='text-sm font-medium text-gray-900'>
@@ -113,7 +128,12 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                             {/* Người thu gom */}
                             <div className='flex flex-col'>
                                 <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
-                                    <User size={14} />
+                                    <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                        <User
+                                            size={14}
+                                            className='text-primary-400'
+                                        />
+                                    </span>
                                     Người thu gom
                                 </div>
                                 <div className='text-sm font-medium text-gray-900'>
@@ -123,7 +143,12 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                             {/* Điểm thu gom */}
                             <div className='flex flex-col'>
                                 <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
-                                    <MapPin size={14} />
+                                    <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                        <MapPin
+                                            size={14}
+                                            className='text-primary-400'
+                                        />
+                                    </span>
                                     Điểm thu gom
                                 </div>
                                 <div className='text-sm font-medium text-gray-900'>
@@ -136,23 +161,42 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                     {/* Statistics */}
                     <div className='grid grid-cols-3 gap-4 mb-6'>
                         <div className='bg-blue-50 rounded-xl p-4 border border-blue-100 shadow-sm flex items-center justify-between'>
-                            <span className='text-xs font-semibold uppercase text-blue-700'>Tổng bưu phẩm</span>
-                            <span className='text-2xl font-bold text-blue-900'>{grouping.totalPosts}</span>
+                            <span className='text-xs font-semibold uppercase text-blue-700'>
+                                Tổng bưu phẩm
+                            </span>
+                            <span className='text-2xl font-bold text-blue-900'>
+                                {grouping.totalPosts}
+                            </span>
                         </div>
                         <div className='bg-purple-50 rounded-xl p-4 border border-purple-100 shadow-sm flex items-center justify-between'>
-                            <span className='text-xs font-semibold uppercase text-purple-700'>Tổng khối lượng</span>
-                            <span className='text-2xl font-bold text-purple-900'>{grouping.totalWeightKg} <span className='text-sm font-normal'>kg</span></span>
+                            <span className='text-xs font-semibold uppercase text-purple-700'>
+                                Tổng khối lượng
+                            </span>
+                            <span className='text-2xl font-bold text-purple-900'>
+                                {grouping.totalWeightKg}{' '}
+                                <span className='text-sm font-normal'>kg</span>
+                            </span>
                         </div>
                         <div className='bg-green-50 rounded-xl p-4 border border-green-100 shadow-sm flex items-center justify-between'>
-                            <span className='text-xs font-semibold uppercase text-green-700'>Tổng thể tích</span>
-                            <span className='text-2xl font-bold text-green-900'>{grouping.totalVolumeM3} <span className='text-sm font-normal'>m³</span></span>
+                            <span className='text-xs font-semibold uppercase text-green-700'>
+                                Tổng thể tích
+                            </span>
+                            <span className='text-2xl font-bold text-green-900'>
+                                {grouping.totalVolumeM3}{' '}
+                                <span className='text-sm font-normal'>m³</span>
+                            </span>
                         </div>
                     </div>
 
                     {/* Routes List */}
                     <div>
                         <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-                            <Navigation size={20} className='text-blue-600' />
+                            <span className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                <Navigation
+                                    size={20}
+                                    className='text-primary-500'
+                                />
+                            </span>
                             Lộ trình thu gom ({routes.length} điểm)
                         </h3>
                         <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
@@ -161,7 +205,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                                         <tr>
                                             <th className='py-3 px-4 text-left'>
-                                                Thứ tự
+                                                STT
                                             </th>
                                             <th className='py-3 px-4 text-left'>
                                                 Người gửi
@@ -170,71 +214,76 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                                 Địa chỉ
                                             </th>
                                             <th className='py-3 px-4 text-left'>
-                                                Kích thước
+                                                Kích thước (cm)
                                             </th>
                                             <th className='py-3 px-4 text-left'>
                                                 Khối lượng
                                             </th>
                                             <th className='py-3 px-4 text-left'>
-                                                Thể tích
-                                            </th>
-                                            <th className='py-3 px-4 text-left'>
                                                 Khoảng cách
                                             </th>
                                             <th className='py-3 px-4 text-left'>
-                                                Giờ đến dự kiến
+                                                <div className='flex justify-center'>
+                                                    Giờ đến dự kiến
+                                                </div>
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {routes.map((route) => (
-                                            <tr
-                                                key={route.postId}
-                                                className='border-b border-gray-100 hover:bg-blue-50/40 transition-colors'
-                                            >
-                                                <td className='py-3 px-4'>
-                                                    <div className='flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold text-sm'>
-                                                        {route.pickupOrder}
-                                                    </div>
-                                                </td>
-                                                <td className='py-3 px-4 font-medium text-gray-900'>
-                                                    {route.userName}
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-700 max-w-xs'>
-                                                    <div className='line-clamp-2'>
-                                                        {route.address}
-                                                    </div>
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-700'>
-                                                    <span className='font-medium'>
-                                                        {route.dimensionText}
-                                                    </span>
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-700'>
-                                                    <span className='font-medium'>
-                                                        {route.weightKg}
-                                                    </span>{' '}
-                                                    kg
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-700'>
-                                                    {route.volumeM3} m³
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-700'>
-                                                    <span className='flex items-center gap-1'>
-                                                        <Navigation
-                                                            size={12}
-                                                            className='text-blue-500'
-                                                        />
-                                                        {route.distanceKm} km
-                                                    </span>
-                                                </td>
-                                                <td className='py-3 px-4'>
-                                                    <span className='px-2 py-1 bg-green-100 text-green-700 rounded-md text-xs font-medium'>
-                                                        {route.estimatedArrival}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        {routes.map((route, idx) => {
+                                            const isLast = idx === routes.length - 1;
+                                            return (
+                                                <tr
+                                                    key={route.postId}
+                                                    className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50 transition-colors`}
+                                                >
+                                                    <td className='py-3 px-4 font-medium'>
+                                                        <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold'>
+                                                            {route.pickupOrder}
+                                                        </span>
+                                                    </td>
+                                                    <td className='py-3 px-4 font-medium text-gray-900'>
+                                                        {route.userName}
+                                                    </td>
+                                                    <td className='py-3 px-4 text-gray-700 max-w-xs'>
+                                                        <div className='line-clamp-2'>
+                                                            {route.address}
+                                                        </div>
+                                                    </td>
+                                                    <td className='py-3 px-4 text-gray-700'>
+                                                        {formatDimensionText(route)}
+                                                    </td>
+                                                    <td className='py-3 px-4 text-gray-700'>
+                                                        <div className='flex flex-col gap-1'>
+                                                            <span className='text-xs'>
+                                                                <span className='font-medium'>{route.weightKg || 0}</span> kg
+                                                            </span>
+                                                            <span className='text-xs text-gray-500'>
+                                                                {route.volumeM3 || 0} m³
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td className='py-3 px-4 text-gray-700'>
+                                                        <span className='flex items-center gap-1'>
+                                                            <span className='w-5 h-5 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                                                <Navigation
+                                                                    size={12}
+                                                                    className='text-primary-400'
+                                                                />
+                                                            </span>
+                                                            {route.distanceKm} km
+                                                        </span>
+                                                    </td>
+                                                    <td className='py-3 px-4'>
+                                                        <div className='flex justify-center'>
+                                                            <span className='px-2 py-1 bg-green-100 text-green-700 rounded-md text-xs font-medium'>
+                                                                {route.estimatedArrival}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>

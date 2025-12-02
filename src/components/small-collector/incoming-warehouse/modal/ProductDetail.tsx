@@ -78,20 +78,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
             ></div>
 
             {/* Modal */}
-            <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-blue-50 to-purple-50'>
+                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100'>
                     <div>
-                        <h2 className='text-2xl font-bold text-gray-900'>
+                        <h2 className='text-2xl font-bold text-gray-800'>
                             Chi tiết sản phẩm
                         </h2>
-                        <p className='text-sm text-gray-500 mt-1'>
+                        <p className='text-sm text-gray-600 mt-1'>
                             Thông tin chi tiết về sản phẩm và lịch sử thu gom
                         </p>
                     </div>
                     <button
                         onClick={onClose}
-                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer'
+                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
                         aria-label='Đóng'
                     >
                         &times;
@@ -101,7 +101,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                 {/* Content */}
                 <div className='flex flex-col md:flex-row flex-1 overflow-hidden'>
                     {/* LEFT - IMAGE */}
-                    <div className='md:w-1/3 p-6 bg-gray-50 flex flex-col items-center border-r overflow-y-auto'>
+                    <div className='md:w-1/3 p-6 bg-gray-50 flex flex-col items-center border-r border-primary-100 overflow-y-auto'>
                         <div className='relative w-full flex flex-col items-center gap-4'>
                             {/* Badge trạng thái trên ảnh lớn - đồng bộ CollectorRouteDetail */}
                             <span
@@ -114,7 +114,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                             <img
                                 src={product.productImages?.[selectedImg]}
                                 alt='main'
-                                className='w-full max-w-xs h-72 object-contain rounded-xl border border-gray-200 bg-white cursor-zoom-in shadow-sm'
+                                className='w-full max-w-xs h-72 object-contain rounded-xl border border-primary-200 bg-white cursor-zoom-in shadow-sm'
                                 onClick={() =>
                                     setZoomImg(
                                         product.productImages?.[selectedImg]
@@ -132,8 +132,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                                                 alt={`Ảnh ${i + 1}`}
                                                 className={`w-14 h-14 object-cover rounded-lg border cursor-pointer transition-all ${
                                                     i === selectedImg
-                                                        ? 'border-blue-500 ring-2 ring-blue-300 scale-105'
-                                                        : 'border-gray-200 hover:border-blue-300'
+                                                        ? 'border-2 border-primary-500 ring-2 ring-primary-200 scale-105'
+                                                        : 'border border-primary-100 hover:border-primary-200'
                                                 }`}
                                                 onClick={() =>
                                                     setSelectedImg(i)
@@ -154,27 +154,33 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                             <InfoCard
                                 icon={
-                                    <List className='text-blue-600' size={20} />
+                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                        <List className='text-primary-500' size={20} />
+                                    </span>
                                 }
                                 label='Danh mục'
                                 value={product.categoryName}
                             />
                             <InfoCard
                                 icon={
-                                    <Package
-                                        className='text-green-600'
-                                        size={20}
-                                    />
+                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-50 border border-purple-200">
+                                        <Package
+                                            className='text-purple-500'
+                                            size={20}
+                                        />
+                                    </span>
                                 }
                                 label='Mã QR'
                                 value={product.qrCode || 'Chưa có mã'}
                             />
                             <InfoCard
                                 icon={
-                                    <Star
-                                        className='text-yellow-500'
-                                        size={20}
-                                    />
+                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-yellow-50 border border-yellow-200">
+                                        <Star
+                                            className='text-yellow-500'
+                                            size={20}
+                                        />
+                                    </span>
                                 }
                                 label='Điểm ước tính'
                                 value={product.estimatePoint}
@@ -185,7 +191,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                         <Section
                             title='Thông tin sản phẩm'
                             icon={
-                                <Package className='text-blue-600' size={18} />
+                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                    <Package className='text-primary-500' size={18} />
+                                </span>
                             }
                         >
                             <div className='space-y-2 text-sm text-gray-700'>
@@ -226,7 +234,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                         {/* Sender Info */}
                         <Section
                             title='Người gửi'
-                            icon={<User className='text-blue-600' size={18} />}
+                            icon={
+                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                    <User className='text-primary-500' size={18} />
+                                </span>
+                            }
                         >
                             <UserInfo user={product.sender} />
                         </Section>
@@ -236,10 +248,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                             <Section
                                 title='Nhân viên thu gom'
                                 icon={
-                                    <UserCheck
-                                        className='text-green-600'
-                                        size={18}
-                                    />
+                                    <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                        <UserCheck
+                                            className='text-primary-500'
+                                            size={18}
+                                        />
+                                    </span>
                                 }
                             >
                                 <UserInfo user={product.collector} />
@@ -252,10 +266,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                                 <Section
                                     title='Lịch thu gom'
                                     icon={
-                                        <Clock
-                                            className='text-orange-600'
-                                            size={18}
-                                        />
+                                        <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                            <Clock
+                                                className='text-primary-500'
+                                                size={18}
+                                            />
+                                        </span>
                                     }
                                 >
                                     <div className='space-y-2 text-sm text-gray-700'>
@@ -330,7 +346,7 @@ interface InfoCardProps {
     value: React.ReactNode;
 }
 const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value }) => (
-    <div className='p-4 bg-gray-50 rounded-lg border flex gap-3'>
+    <div className='p-4 bg-gray-50 rounded-lg border border-primary-100 flex gap-3'>
         {icon}
         <div>
             <p className='text-sm text-gray-600'>{label}</p>
@@ -346,11 +362,11 @@ interface SectionProps {
     children: React.ReactNode;
 }
 const Section: React.FC<SectionProps> = ({ title, icon, children }) => (
-    <div className='pt-4 border-t'>
+    <div className='pt-4 border-t border-primary-100'>
         <div className='flex items-center gap-2 mb-2 text-gray-800 font-semibold'>
             {icon} <span>{title}</span>
         </div>
-        <div className='p-4 bg-gray-50 rounded-lg border'>{children}</div>
+        <div className='p-4 bg-gray-50 rounded-lg border border-primary-100'>{children}</div>
     </div>
 );
 

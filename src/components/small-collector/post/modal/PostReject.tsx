@@ -11,10 +11,19 @@ const PostReject: React.FC<PostRejectProps> = ({
   onClose,
   onConfirm,
 }) => {
-  const [reason, setReason] = useState("");
+
+  const REASON_TAGS = [
+    "Ảnh sản phẩm không rõ ràng",
+    "Mô tả thiếu thông tin liên hệ",
+    "Nội dung không phù hợp quy định",
+    "Khác"
+  ];
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [customReason, setCustomReason] = useState("");
 
   const handleClose = () => {
-    setReason("");
+    setSelectedTag(null);
+    setCustomReason("");
     onClose();
   };
 
@@ -29,7 +38,7 @@ const PostReject: React.FC<PostRejectProps> = ({
 
       <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-fadeIn">
         
-        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-red-50 to-pink-50">
+        <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-gradient-to-r from-red-50 to-primary-100">
           <h2 className="text-2xl font-bold text-gray-800">Từ chối bài đăng</h2>
           <button
             onClick={handleClose}
@@ -44,13 +53,28 @@ const PostReject: React.FC<PostRejectProps> = ({
             <label className="block text-sm font-medium text-gray-700">
               Lý do từ chối <span className="text-red-500">*</span>
             </label>
-            <textarea
-              className="w-full border border-gray-200 rounded-xl p-3 text-gray-800 placeholder-gray-400 focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none resize-none transition-all duration-200 bg-white"
-              rows={6}
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="Nhập lý do từ chối bài đăng..."
-            />
+            <div className="flex flex-wrap gap-2 mb-2">
+              {REASON_TAGS.map((tag) => (
+                <button
+                  type="button"
+                  key={tag}
+                  className={`px-3 py-1 rounded-full border text-sm font-medium transition-colors cursor-pointer
+                    ${selectedTag === tag ? "bg-primary-100 border-primary-500 text-primary-700" : "bg-gray-100 border-gray-200 text-gray-600 hover:bg-primary-50"}`}
+                  onClick={() => setSelectedTag(tag)}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+            {selectedTag === "Khác" && (
+              <textarea
+                className="w-full border border-gray-200 rounded-xl p-3 text-gray-800 placeholder-gray-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-100 outline-none resize-none transition-all duration-200 bg-white"
+                rows={4}
+                value={customReason}
+                onChange={(e) => setCustomReason(e.target.value)}
+                placeholder="Nhập lý do từ chối bài đăng..."
+              />
+            )}
           </div>
 
           <div className="bg-white rounded-xl p-4 border border-gray-100 text-gray-600 text-sm shadow-inner">
@@ -75,15 +99,19 @@ const PostReject: React.FC<PostRejectProps> = ({
             Hủy
           </button>
           <button
-            disabled={!reason.trim()}
+            disabled={
+              !selectedTag || (selectedTag === "Khác" && !customReason.trim())
+            }
             onClick={() => {
-              onConfirm(reason);
-              setReason("");
+              const finalReason = selectedTag === "Khác" ? customReason : selectedTag;
+              onConfirm(finalReason || "");
+              setSelectedTag(null);
+              setCustomReason("");
             }}
             className={`px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 ${
-              reason.trim()
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-red-300 cursor-not-allowed"
+              selectedTag && (selectedTag !== "Khác" || customReason.trim())
+                ? "bg-primary-500 hover:bg-primary-600"
+                : "bg-primary-300 cursor-not-allowed"
             }`}
           >
             Xác nhận từ chối

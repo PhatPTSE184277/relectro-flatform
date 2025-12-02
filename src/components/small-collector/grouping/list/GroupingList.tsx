@@ -35,11 +35,12 @@ const GroupingList: React.FC<GroupingListProps> = ({
                                 <GroupingTableSkeleton key={idx} />
                             ))
                         ) : groupings.length > 0 ? (
-                            groupings.map((group) => (
+                            groupings.map((group, idx) => (
                                 <GroupingShow
                                     key={group.groupId}
                                     grouping={group}
                                     onViewDetail={onViewDetail}
+                                    isLast={idx === groupings.length - 1}
                                 />
                             ))
                         ) : (

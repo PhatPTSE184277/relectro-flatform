@@ -25,6 +25,7 @@ const PackageList: React.FC<PackageListProps> = ({
                             <th className='py-3 px-4 text-left'>Mã Package</th>
                             <th className='py-3 px-4 text-left'>Tên Package</th>
                             <th className='py-3 px-4 text-left'>Số sản phẩm</th>
+                            <th className='py-3 px-4 text-left'>Trạng thái</th>
                             <th className='py-3 px-4 text-center'>Hành động</th>
                         </tr>
                     </thead>
@@ -35,12 +36,13 @@ const PackageList: React.FC<PackageListProps> = ({
                                 <PackageTableSkeleton key={idx} />
                             ))
                         ) : packages.length > 0 ? (
-                            packages.map((pkg) => (
+                            packages.map((pkg, idx) => (
                                 <PackageShow
                                     key={pkg.packageId}
                                     package={pkg}
                                     onView={() => onViewDetail(pkg)}
                                     onScan={onScan ? () => onScan(pkg) : undefined}
+                                    isLast={idx === packages.length - 1}
                                 />
                             ))
                         ) : (

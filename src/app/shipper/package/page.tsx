@@ -10,7 +10,7 @@ import ScanPackageModal from '@/components/shipper/package/modal/ScanPackageModa
 import PackageFilter from '@/components/shipper/package/PackageFilter';
 import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
-import { Package, Plus } from 'lucide-react';
+import { Package, ScanLine } from 'lucide-react';
 
 const ShipperPackagePage: React.FC = () => {
     const {
@@ -35,7 +35,9 @@ const ShipperPackagePage: React.FC = () => {
             pkg.packageName.toLowerCase().includes(search.toLowerCase()) ||
             pkg.products.some(
                 (p) =>
-                    p.categoryName.toLowerCase().includes(search.toLowerCase()) ||
+                    p.categoryName
+                        .toLowerCase()
+                        .includes(search.toLowerCase()) ||
                     p.brandName.toLowerCase().includes(search.toLowerCase())
             );
         return matchSearch;
@@ -64,37 +66,42 @@ const ShipperPackagePage: React.FC = () => {
             {/* Header */}
             <div className='flex justify-between items-center mb-6'>
                 <div className='flex items-center gap-3'>
-                    <div className='w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center'>
+                    <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
                         <Package className='text-white' size={20} />
                     </div>
                     <h1 className='text-3xl font-bold text-gray-900'>
                         Quản lý Package
                     </h1>
                 </div>
-                
-                <button
-                    onClick={() => setShowScanModal(true)}
-                    className='flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-md cursor-pointer'
-                >
-                    <Plus size={20} />
-                    Quét mã giao hàng
-                </button>
+                <div className='flex gap-4 items-center flex-1 justify-end'>
+                    <button
+                        onClick={() => setShowScanModal(true)}
+                        className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md cursor-pointer'
+                    >
+                        <ScanLine size={20} />
+                        Quét mã giao hàng
+                    </button>
+                    <div className='flex-1 max-w-md'>
+                        <SearchBox
+                            value={search}
+                            onChange={setSearch}
+                            placeholder='Tìm kiếm package...'
+                        />
+                    </div>
+                </div>
             </div>
 
             {/* Filter Section */}
             <div className='mb-6 space-y-4'>
                 <PackageFilter
-                    status={filter.status as PackageStatus || PackageStatus.Closed}
+                    status={
+                        (filter.status as PackageStatus) || PackageStatus.Closed
+                    }
                     stats={allStats}
-                    onFilterChange={(status: PackageStatus) => setFilter({ status, page: 1 })}
+                    onFilterChange={(status: PackageStatus) =>
+                        setFilter({ status, page: 1 })
+                    }
                 />
-                <div className='max-w-md'>
-                    <SearchBox
-                        value={search}
-                        onChange={setSearch}
-                        placeholder='Tìm kiếm package...'
-                    />
-                </div>
             </div>
 
             {/* Main Content: List */}

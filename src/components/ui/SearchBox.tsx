@@ -32,8 +32,8 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-2 bg-white rounded-xl border border-gray-200 px-3 py-2 shadow-sm">
-      <Search className="text-gray-400" size={18} />
+    <div className="flex items-center gap-2 bg-white rounded-xl border border-primary-200 focus-within:ring-2 focus-within:ring-primary-400 px-3 py-2 shadow-sm transition-all">
+      <Search className="text-primary-400" size={18} />
       <input
         type="text"
         className="flex-1 outline-none bg-transparent text-gray-800 placeholder-gray-400"

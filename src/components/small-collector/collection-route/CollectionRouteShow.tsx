@@ -9,22 +9,13 @@ interface CollectionRouteShowProps {
     onView: () => void;
 }
 
-const CollectionRouteShow: React.FC<CollectionRouteShowProps> = ({
+const CollectionRouteShow: React.FC<CollectionRouteShowProps & { isLast?: boolean }> = ({
     route,
-    onView
+    onView,
+    isLast = false
 }) => {
     return (
-        <tr className='border-b border-gray-100 hover:bg-blue-50/40 transition-colors'>
-            <td className='py-3 px-4'>
-                <div className='w-12 h-12 bg-gray-100 rounded-lg overflow-hidden shadow-sm'>
-                    <img
-                        src={route.pickUpItemImages?.[0] || '/placeholder.png'}
-                        alt={route.brandName || 'Thương hiệu'}
-                        className='w-full h-full object-cover'
-                    />
-                </div>
-            </td>
-
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
             <td className='py-3 px-4 font-medium max-w-[220px]'>
                 <div className='text-gray-900 line-clamp-2'>{route.brandName || 'Không rõ'}</div>
             </td>
@@ -41,7 +32,7 @@ const CollectionRouteShow: React.FC<CollectionRouteShowProps> = ({
                 <div className='line-clamp-2'>{route.address}</div>
             </td>
 
-            <td className='py-3 px-4 text-sm text-gray-600'>
+            <td className='py-3 px-4 text-sm text-gray-600 text-center'>
                 {formatTime(route.estimatedTime)}
             </td>
 
@@ -49,7 +40,7 @@ const CollectionRouteShow: React.FC<CollectionRouteShowProps> = ({
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}
-                        className='text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium transition cursor-pointer'
+                        className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
                         title='Xem chi tiết'
                     >
                         <Eye size={16} />

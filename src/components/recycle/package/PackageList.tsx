@@ -36,12 +36,13 @@ const PackageList: React.FC<PackageListProps> = ({
                                 <PackageTableSkeleton key={idx} />
                             ))
                         ) : packages.length > 0 ? (
-                            packages.map((pkg) => (
+                            packages.map((pkg, idx) => (
                                 <PackageShow
                                     key={pkg.packageId}
                                     package={pkg}
                                     onView={() => onViewDetail(pkg)}
                                     onCheckProducts={onCheckProducts ? () => onCheckProducts(pkg) : undefined}
+                                    isLast={idx === packages.length - 1}
                                 />
                             ))
                         ) : (

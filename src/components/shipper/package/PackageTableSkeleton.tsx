@@ -15,6 +15,9 @@ const PackageTableSkeleton: React.FC = () => (
             <div className='h-4 bg-gray-200 rounded w-20 animate-pulse' />
         </td>
         <td className='py-3 px-4'>
+            <div className='h-4 bg-gray-200 rounded w-20 animate-pulse' />
+        </td>
+        <td className='py-3 px-4'>
             <div className='flex justify-center gap-2'>
                 <div className='h-8 w-8 bg-gray-200 rounded animate-pulse' />
             </div>
