@@ -1,9 +1,9 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { IoLogOutOutline, IoSparklesOutline } from 'react-icons/io5';
-import { useEffect, useState } from 'react';
 
 type User = {
     name?: string;
@@ -24,7 +24,14 @@ const getMe = async (): Promise<User | null> => {
     return null;
 };
 
-const Header = () => {
+
+interface HeaderProps {
+    title?: string;
+    href?: string;
+    profileHref?: string;
+}
+
+const Header = ({ title, href, profileHref }: HeaderProps) => {
     const router = useRouter();
     const pathname = usePathname();
     const [user, setUser] = useState<User | null>(null);
@@ -43,10 +50,13 @@ const Header = () => {
         router.push('/');
     };
 
-    const handleReloadIfAdminHome = (
-        e: React.MouseEvent<HTMLAnchorElement>
-    ) => {
-        if (pathname === '/admin/dashboard') {
+    // Sử dụng props truyền vào, không tự động lấy từ pathname nữa
+    const finalTitle = title;
+    const finalHref = href;
+    const finalProfileHref = profileHref ?? '/';
+
+    const handleReload = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        if (pathname === finalHref) {
             e.preventDefault();
             window.location.reload();
         }
@@ -58,12 +68,12 @@ const Header = () => {
                 <div className='flex justify-between items-center h-16'>
                     <div className='flex items-center space-x-8'>
                         <Link
-                            href='/admin/dashboard'
-                            className='text-2xl font-bold bg-linear-to-r from-blue-500 to-blue-400 bg-clip-text text-transparent flex items-center gap-2 cursor-pointer'
-                            onClick={handleReloadIfAdminHome}
+                            href={finalHref ?? '/'}
+                            className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-primary-400 bg-clip-text text-transparent flex items-center gap-2 cursor-pointer"
+                            onClick={handleReload}
                         >
-                            <IoSparklesOutline className='text-blue-400 text-2xl' />
-                            Bảng điều khiển quản trị
+                            <IoSparklesOutline className="text-primary-400 text-2xl" />
+                            {finalTitle}
                         </Link>
                     </div>
 
@@ -71,13 +81,11 @@ const Header = () => {
                         {user && (
                             <>
                                 <div
-                                    className='flex items-center space-x-3 bg-white border border-blue-100 rounded-xl px-4 py-2 shadow cursor-pointer hover:shadow-md transition'
-                                    onClick={() =>
-                                        router.push('/admin/profile')
-                                    }
+                                    className="flex items-center space-x-3 bg-white border border-primary-100 rounded-xl px-4 py-2 shadow cursor-pointer hover:shadow-md transition"
+                                    onClick={() => router.push(finalProfileHref)}
                                 >
-                                    <div className='w-8 h-8 rounded-full bg-linear-to-br from-blue-400 to-blue-500 text-white flex items-center justify-center font-bold text-sm ring-2 ring-blue-200'>
-                                        {user.name?.charAt(0).toUpperCase()}
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-500 text-white flex items-center justify-center font-bold text-sm ring-2 ring-primary-200">
+                                        {user.name?.charAt(0).toUpperCase() || 'U'}
                                     </div>
                                     <span className='hidden sm:block text-sm font-medium text-gray-700'>
                                         {user.name}
@@ -88,7 +96,7 @@ const Header = () => {
                                     className='flex items-center gap-2 text-gray-700 hover:text-red-600 text-sm font-medium transition-colors px-4 py-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-100 cursor-pointer'
                                 >
                                     <IoLogOutOutline />
-                                    Logout
+                                    Đăng xuất
                                 </button>
                             </>
                         )}

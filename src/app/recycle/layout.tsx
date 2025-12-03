@@ -1,5 +1,6 @@
-import Header from '@/components/recycle/Header';
-import Sidebar from '@/components/recycle/Sidebar';
+import Header from '@/components/ui/Header';
+import Sidebar from '@/components/ui/Sidebar';
+import { recyclerMenuItems } from '@/constants/recycle/MenuItems';
 import { RecyclerPackageProvider } from '@/contexts/recycle/PackageContext';
 
 export default function RecycleLayout({
@@ -10,9 +11,13 @@ export default function RecycleLayout({
     return (
         <RecyclerPackageProvider>
             <div className='h-screen flex flex-col bg-gray-50'>
-                <Header />
+                <Header 
+                    title="Bảng điều khiển tái chế" 
+                    href="/recycle/dashboard" 
+                    profileHref="/recycle/profile" 
+                />
                 <div className='flex flex-1 overflow-hidden'>
-                    <Sidebar />
+                    <Sidebar menuItems={recyclerMenuItems} />
                     <main className='flex-1 overflow-y-auto'>
                         {children}
                     </main>

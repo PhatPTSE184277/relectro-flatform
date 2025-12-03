@@ -1,5 +1,6 @@
-import Header from "@/components/admin/Header";
-import Sidebar from "@/components/admin/Sidebar";
+import Header from "@/components/ui/Header";
+import Sidebar from "@/components/ui/Sidebar";
+import { adminMenuItems } from "@/constants/admin/MenuItem";
 import { UserProvider } from "@/contexts/admin/UserContext";
 
 export default function AdminLayout({
@@ -10,9 +11,13 @@ export default function AdminLayout({
   return (
     <UserProvider>
       <div className="h-screen flex flex-col bg-gray-50">
-        <Header />
+        <Header 
+          title="Bảng điều khiển quản trị" 
+          href="/admin/dashboard" 
+          profileHref="/admin/profile" 
+        />
         <div className="flex flex-1 overflow-hidden">
-          <Sidebar />
+          <Sidebar menuItems={adminMenuItems}/>
           <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
       </div>

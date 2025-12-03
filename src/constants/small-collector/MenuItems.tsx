@@ -7,7 +7,8 @@ import {
     Route,
     Warehouse,
     Package,
-    GitBranch
+    GitBranch,
+    Boxes
 } from 'lucide-react';
 
 export const collectorMenuItems = [
@@ -49,5 +50,11 @@ export const collectorMenuItems = [
         label: 'Quản lý package',
         path: '/small-collector/package',
         icon: <Package size={20} />
+    },
+    {
+        id: 'product-query',
+        label: 'Truy vấn sản phẩm',
+        path: '/small-collector/product-query',
+        icon: <Boxes size={20} />
     }
 ];

@@ -1,5 +1,6 @@
-import Header from '@/components/small-collector/Header';
-import Sidebar from '@/components/small-collector/Sidebar';
+import Header from '@/components/ui/Header';
+import Sidebar from '@/components/ui/Sidebar';
+import { collectorMenuItems } from '@/constants/small-collector/MenuItems';
 import { CategoryProvider } from '@/contexts/small-collector/CategoryContext';
 import { CollectionRouteProvider } from '@/contexts/small-collector/CollectionRouteContext';
 import { IWProductProvider } from '@/contexts/small-collector/IWProductContext';
@@ -20,9 +21,13 @@ export default function SmallCollectorLayout({
                         <UserProvider>
                             <CategoryProvider>
                                 <div className='h-screen flex flex-col bg-gray-50'>
-                                    <Header />
+                                    <Header 
+                                        title="Bảng điều khiển thu gom" 
+                                        href="/small-collector/dashboard" 
+                                        profileHref="/employee/profile" 
+                                    />
                                     <div className='flex flex-1 overflow-hidden'>
-                                        <Sidebar />
+                                        <Sidebar menuItems={collectorMenuItems} />
                                         <main className='flex-1 overflow-y-auto'>
                                             {children}
                                         </main>
