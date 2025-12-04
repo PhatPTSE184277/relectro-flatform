@@ -231,7 +231,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                                                     onClick={() => handleDateSelect(date)}
                                                     className={`w-full h-full rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center ${
                                                         isSelected(date)
-                                                            ? 'bg-gradient-to-r from-primary-600 to-primary-400 text-white shadow-lg scale-105'
+                                                            ? 'bg-linear-to-r from-primary-600 to-primary-400 text-white shadow-lg scale-105'
                                                             : isToday(date)
                                                             ? 'bg-primary-100 text-primary-600 hover:bg-primary-200'
                                                             : 'text-gray-700 hover:bg-primary-50'

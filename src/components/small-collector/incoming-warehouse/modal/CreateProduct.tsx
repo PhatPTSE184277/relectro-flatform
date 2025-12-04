@@ -246,7 +246,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
                     <div className='flex items-center gap-3'>
                         <div>
                             <h2 className='text-2xl font-bold text-gray-800'>

@@ -60,7 +60,7 @@ const UpdateQuotaModal: React.FC<UpdateQuotaModalProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100 border-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-900 flex items-center gap-2'>
                             <Percent size={24} className='text-primary-600' />

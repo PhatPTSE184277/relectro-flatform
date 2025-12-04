@@ -129,7 +129,7 @@ const LoginForm = () => {
                 <button
                     type='submit'
                     disabled={loading}
-                    className={`w-full bg-gradient-to-r from-primary-500 to-primary-400 text-white font-semibold py-2 rounded-lg shadow hover:from-primary-600 hover:to-primary-600 transition-all flex items-center cursor-pointer justify-center gap-2 ${
+                    className={`w-full bg-linear-to-r from-primary-500 to-primary-400 text-white font-semibold py-2 rounded-lg shadow hover:from-primary-600 hover:to-primary-600 transition-all flex items-center cursor-pointer justify-center gap-2 ${
                         loading ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                 >

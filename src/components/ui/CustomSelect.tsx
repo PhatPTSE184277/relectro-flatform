@@ -83,7 +83,7 @@ const CustomSelect = <T,>({
                                 }}
                                 className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors ${
                                     value === getValue(opt)
-                                        ? 'bg-gradient-to-r from-primary-500 to-primary-400 text-white'
+                                        ? 'bg-linear-to-r from-primary-500 to-primary-400 text-white'
                                         : 'text-gray-700 hover:bg-primary-50'
                                 }`}
                             >

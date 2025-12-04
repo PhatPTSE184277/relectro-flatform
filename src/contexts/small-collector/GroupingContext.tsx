@@ -38,6 +38,8 @@ interface ProductInDay {
     address: string;
     weight: number;
     volume: number;
+    categoryName?: string;
+    brandName?: string;
 }
 
 interface DaySuggestion {
@@ -65,6 +67,8 @@ interface PendingProduct {
     volume: number;
     scheduleJson: string;
     status: string;
+    categoryName?: string;
+    brandName?: string;
 }
 
 interface GroupingContextType {

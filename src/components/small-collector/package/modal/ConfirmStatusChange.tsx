@@ -28,7 +28,7 @@ const ConfirmStatusChange: React.FC<ConfirmStatusChangeProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-fadeIn'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100 border-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
                         <h2 className='text-xl font-bold text-gray-900'>
                             Xác nhận đóng trạng thái
