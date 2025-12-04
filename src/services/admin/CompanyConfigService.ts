@@ -2,8 +2,15 @@ import axios from '@/lib/axios';
 import {
     AssignCompanyConfigResponse,
     AssignCompanyConfigPostRequest,
-    AssignCompanyConfigPostResponse
+    AssignCompanyConfigPostResponse,
+    CompanyConfigDetail
 } from '@/types';
+
+// Lấy chi tiết cấu hình công ty theo companyId từ API /api/product-query/config/company/{companyId}
+export const getCompanyConfigDetail = async (companyId: number): Promise<CompanyConfigDetail> => {
+    const response = await axios.get<CompanyConfigDetail>(`/product-query/config/company/${companyId}`);
+    return response.data;
+};
 
 // Lấy danh sách cấu hình công ty từ API /api/assign/company-config
 export const getAssignCompanyConfig =

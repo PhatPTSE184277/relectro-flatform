@@ -9,20 +9,18 @@ interface EditConfigModalProps {
     onClose: () => void;
     onConfirm: (company: any) => void;
     company: any;
+    loading?: boolean;
 }
 
 const EditConfigModal: React.FC<EditConfigModalProps> = ({
     open,
     onClose,
     onConfirm,
-    company
+    company,
+    loading = false
 }) => {
-    const [ratioPercent, setRatioPercent] = useState<number>(
-        typeof company?.ratioPercent === 'number' && !isNaN(company.ratioPercent)
-            ? company.ratioPercent
-            : 0
-    );
-    const [smallPoints, setSmallPoints] = useState<any[]>(company?.smallPoints ? [...company.smallPoints] : []);
+    const [ratioPercent, setRatioPercent] = useState<number>(0);
+    const [smallPoints, setSmallPoints] = useState<any[]>([]);
 
     useEffect(() => {
         if (open && company) {
@@ -30,17 +28,12 @@ const EditConfigModal: React.FC<EditConfigModalProps> = ({
                 typeof company.ratioPercent === 'number' && !isNaN(company.ratioPercent)
                     ? company.ratioPercent
                     : 0;
-            const newSmallPoints = company.smallPoints ? [...company.smallPoints] : [];
+            const newSmallPoints = Array.isArray(company.smallPoints) ? [...company.smallPoints] : [];
 
-            if (newRatioPercent !== ratioPercent) {
-                setRatioPercent(newRatioPercent);
-            }
-
-            if (JSON.stringify(newSmallPoints) !== JSON.stringify(smallPoints)) {
-                setSmallPoints(newSmallPoints);
-            }
+            setRatioPercent(newRatioPercent);
+            setSmallPoints(newSmallPoints);
         }
-    }, [open, company, ratioPercent, smallPoints]);
+    }, [open, company]);
 
     const handleUpdateRadius = (smallPointId: number, radiusKm: number) => {
         setSmallPoints((prev) =>
@@ -71,16 +64,10 @@ const EditConfigModal: React.FC<EditConfigModalProps> = ({
     };
 
     const handleClose = () => {
-        setRatioPercent(
-            typeof company.ratioPercent === 'number' && !isNaN(company.ratioPercent)
-                ? company.ratioPercent
-                : 0
-        );
-        setSmallPoints(company.smallPoints ? [...company.smallPoints] : []);
         onClose();
     };
 
-    if (!open) return null;
+    if (!open || !company) return null;
 
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
@@ -96,7 +83,6 @@ const EditConfigModal: React.FC<EditConfigModalProps> = ({
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-900 flex items-center gap-2'>
-                            <Settings size={24} className='text-primary-600' />
                             Chỉnh sửa cấu hình
                         </h2>
                         <p className='text-sm text-gray-600 mt-1'>
@@ -114,99 +100,111 @@ const EditConfigModal: React.FC<EditConfigModalProps> = ({
 
                 {/* Main content */}
                 <div className='flex-1 overflow-y-auto p-6'>
-                    {/* Ratio Percent */}
-                    <div className='bg-gray-50 rounded-lg p-6 mb-6'>
-                        <label className='block text-sm font-medium text-gray-700 mb-3'>
-                            Tỷ lệ phân bổ (%)
-                        </label>
-                        <div className='flex items-center gap-4'>
-                            <input
-                                type='range'
-                                min='0'
-                                max='100'
-                                value={ratioPercent}
-                                onChange={(e) => setRatioPercent(Number(e.target.value))}
-                                className='flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-500'
-                            />
-                            <span className='text-lg font-semibold text-primary-600 min-w-[60px] text-right'>
-                                {ratioPercent}%
-                            </span>
+                    {loading ? (
+                        <div className='flex items-center justify-center py-12'>
+                            <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600'></div>
                         </div>
-                        <p className='text-xs text-gray-500 mt-2'>
-                            Tỷ lệ công việc được phân bổ cho team này
-                        </p>
-                    </div>
+                    ) : (
+                        <>
+                            {/* Ratio Percent OUTSIDE, styled like card below */}
+                            <div className='border rounded-lg p-4 mb-6 bg-primary-50/30 border-primary-200'>
+                                <div className='flex items-center justify-between mb-3'>
+                                    <label className='font-medium text-gray-900 flex items-center gap-2 text-base'>
+                                        Tỷ lệ phân bổ cho team (%)
+                                    </label>
+                                    <span className='text-lg font-semibold text-primary-600 min-w-[60px] text-right'>
+                                        {ratioPercent}%
+                                    </span>
+                                </div>
+                                <div className='flex items-center gap-4'>
+                                    <input
+                                        type='range'
+                                        min='0'
+                                        max='100'
+                                        value={ratioPercent}
+                                        onChange={(e) => setRatioPercent(Number(e.target.value))}
+                                        className='flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-500'
+                                    />
+                                </div>
+                                <p className='text-xs text-gray-500 mt-2'>
+                                    Tỷ lệ công việc được phân bổ cho team này
+                                </p>
+                            </div>
 
-                    {/* Small Points Configuration */}
-                    <div>
-                        <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-                            <MapPin size={20} className='text-primary-600' />
-                            Cấu hình điểm thu gom
-                        </h3>
-                        <div className='space-y-4'>
-                            {smallPoints.map((sp, idx) => {
-                                return (
-                                    <div
-                                        key={idx}
-                                        className={`border rounded-lg p-4 ${
-                                            sp.active
-                                                ? 'border-primary-200 bg-primary-50/30'
-                                                : 'border-gray-200 bg-gray-50'
-                                        }`}
-                                    >
-                                        <div className='flex items-center justify-between mb-3'>
-                                            <div>
-                                                <h4 className='font-medium text-gray-900'>
-                                                    {sp.name || `Điểm ${sp.smallPointId}`}
-                                                </h4>
-                                                <p className='text-xs text-gray-500'>
-                                                    {company.companyName || 'N/A'}
-                                                </p>
-                                            </div>
-                                            <span
-                                                className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                            {/* Small Points Configuration */}
+                            <div>
+                                <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
+                                    <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                        <MapPin size={18} className='text-primary-600' />
+                                    </span>
+                                    Cấu hình điểm thu gom
+                                </h3>
+                                <div className='space-y-4'>
+                                    {smallPoints?.map((sp, idx) => {
+                                        return (
+                                            <div
+                                                key={idx}
+                                                className={`border rounded-lg p-4 ${
                                                     sp.active
-                                                        ? 'bg-green-100 text-green-700'
-                                                        : 'bg-gray-100 text-gray-600'
+                                                        ? 'border-primary-200 bg-primary-50/30'
+                                                        : 'border-gray-200 bg-gray-50'
                                                 }`}
                                             >
-                                                {sp.active ? 'Hoạt động' : 'Tắt'}
-                                            </span>
-                                        </div>
+                                                <div className='flex items-center justify-between mb-3'>
+                                                    <div>
+                                                        <h4 className='font-medium text-gray-900 flex items-center gap-2'>
+                                                            {sp.name || `Điểm ${sp.smallPointId}`}
+                                                        </h4>
+                                                        <p className='text-xs text-gray-500'>
+                                                            {company.companyName || 'N/A'}
+                                                        </p>
+                                                    </div>
+                                                    <span
+                                                        className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                                                            sp.active
+                                                                ? 'bg-green-100 text-green-700'
+                                                                : 'bg-gray-100 text-gray-600'
+                                                        }`}
+                                                    >
+                                                        {sp.active ? 'Hoạt động' : 'Tắt'}
+                                                    </span>
+                                                </div>
 
-                                        <div className='grid grid-cols-2 gap-4'>
-                                            <div>
-                                                <label className='block text-xs font-medium text-gray-700 mb-2'>
-                                                    Bán kính (km)
-                                                </label>
-                                                <CustomNumberInput
-                                                    value={sp.radiusKm}
-                                                    onChange={(val) => handleUpdateRadius(sp.smallPointId, val)}
-                                                    min={1}
-                                                    max={50}
-                                                    placeholder='Nhập bán kính...'
-                                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 placeholder-gray-400 transition disabled:bg-gray-100 disabled:cursor-not-allowed ${sp.radiusKm <= 0 ? 'border-red-400' : 'border-primary-200'}`}
-                                                />
+                                                <div className='grid grid-cols-2 gap-4'>
+                                                    <div>
+                                                        <label className='block text-xs font-medium text-gray-700 mb-2'>
+                                                            Bán kính (km)
+                                                        </label>
+                                                        <CustomNumberInput
+                                                            value={sp.radiusKm}
+                                                            onChange={(val) => handleUpdateRadius(sp.smallPointId, val)}
+                                                            min={1}
+                                                            max={50}
+                                                            placeholder='Nhập bán kính...'
+                                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 placeholder-gray-400 transition disabled:bg-gray-100 disabled:cursor-not-allowed ${sp.radiusKm <= 0 ? 'border-red-400' : 'border-primary-200'}`}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className='block text-xs font-medium text-gray-700 mb-2'>
+                                                            Khoảng cách tối đa (km)
+                                                        </label>
+                                                        <CustomNumberInput
+                                                            value={sp.maxRoadDistanceKm}
+                                                            onChange={(val) => handleUpdateMaxDistance(sp.smallPointId, val)}
+                                                            min={1}
+                                                            max={100}
+                                                            placeholder='Nhập khoảng cách tối đa...'
+                                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 placeholder-gray-400 transition disabled:bg-gray-100 disabled:cursor-not-allowed ${sp.maxRoadDistanceKm <= 0 ? 'border-red-400' : 'border-primary-200'}`}
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <label className='block text-xs font-medium text-gray-700 mb-2'>
-                                                    Khoảng cách tối đa (km)
-                                                </label>
-                                                <CustomNumberInput
-                                                    value={sp.maxRoadDistanceKm}
-                                                    onChange={(val) => handleUpdateMaxDistance(sp.smallPointId, val)}
-                                                    min={1}
-                                                    max={100}
-                                                    placeholder='Nhập khoảng cách tối đa...'
-                                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 placeholder-gray-400 transition disabled:bg-gray-100 disabled:cursor-not-allowed ${sp.maxRoadDistanceKm <= 0 ? 'border-red-400' : 'border-primary-200'}`}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 {/* Footer */}

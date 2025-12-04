@@ -1,17 +1,17 @@
 import React from 'react';
-import ConfigShow from './ConfigShow';
-import ConfigTableSkeleton from './ConfigTableSkeleton';
+import CompanyShow from './CompanyShow';
+import CompanyTableSkeleton from './CompanyTableSkeleton';
 
-interface ConfigListProps {
+interface CompanyListProps {
     companies: any[];
     loading: boolean;
-    onEdit: (company: any) => void;
+    onViewDetail: (company: any) => void;
 }
 
-const ConfigList: React.FC<ConfigListProps> = ({
+const CompanyList: React.FC<CompanyListProps> = ({
     companies,
     loading,
-    onEdit
+    onViewDetail
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -19,11 +19,11 @@ const ConfigList: React.FC<ConfigListProps> = ({
                 <table className='w-full text-sm text-gray-800'>
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                         <tr>
-                            <th className='py-3 px-4 text-center w-12'>STT</th>
-                            <th className='py-3 px-4 text-left'>Công ty</th>
-                            <th className='py-3 px-4 text-left'>Tỷ lệ (%)</th>
-                            <th className='py-3 px-4 text-left'>Điểm thu gom</th>
-                            <th className='py-3 px-4 text-left'>Số điểm thu gom</th>
+                            <th className='py-3 px-4 text-left'>Tên công ty</th>
+                            <th className='py-3 px-4 text-left'>Email</th>
+                            <th className='py-3 px-4 text-left'>Số điện thoại</th>
+                            <th className='py-3 px-4 text-left'>Thành phố</th>
+                            <th className='py-3 px-4 text-center'>Trạng thái</th>
                             <th className='py-3 px-4 text-center'>Hành động</th>
                         </tr>
                     </thead>
@@ -31,22 +31,21 @@ const ConfigList: React.FC<ConfigListProps> = ({
                     <tbody>
                         {loading ? (
                             Array.from({ length: 6 }).map((_, idx) => (
-                                <ConfigTableSkeleton key={idx} />
+                                <CompanyTableSkeleton key={idx} />
                             ))
                         ) : companies.length > 0 ? (
                             companies.map((company, idx) => (
-                                <ConfigShow
-                                    key={company.companyId}
+                                <CompanyShow
+                                    key={company.id}
                                     company={company}
-                                    onEdit={onEdit}
+                                    onView={() => onViewDetail(company)}
                                     isLast={idx === companies.length - 1}
-                                    index={idx}
                                 />
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={5} className='text-center py-8 text-gray-400'>
-                                    Không có cấu hình nào.
+                                <td colSpan={6} className='text-center py-8 text-gray-400'>
+                                    Không có công ty nào.
                                 </td>
                             </tr>
                         )}
@@ -57,4 +56,4 @@ const ConfigList: React.FC<ConfigListProps> = ({
     );
 };
 
-export default ConfigList;
+export default CompanyList;

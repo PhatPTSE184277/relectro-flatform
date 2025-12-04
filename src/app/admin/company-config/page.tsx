@@ -12,32 +12,53 @@ const CompanyConfigPage: React.FC = () => {
     const {
         loading,
         companiesWithPoints,
-        updateConfig
+        updateConfig,
+        getCompanyConfigDetailById
     } = useCompanyConfigContext();
 
     const [search, setSearch] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
     const [selectedTeam, setSelectedTeam] = useState<any | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [loadingDetail, setLoadingDetail] = useState(false);
 
     const companies = companiesWithPoints || [];
 
     const filteredCompanies = companies.filter((company) => {
-        const matchSearch = company.companyName?.toLowerCase().includes(search.toLowerCase()) ||
-                           company.companyId.toString().includes(search.toLowerCase());
-        
+        const matchSearch =
+            company.companyName?.toLowerCase().includes(search.toLowerCase()) ||
+            company.companyId.toString().includes(search.toLowerCase());
+
         if (filterStatus === 'active') {
-            return matchSearch && company.smallPoints.some((sp: any) => sp.active);
+            return (
+                matchSearch && company.smallPoints.some((sp: any) => sp.active)
+            );
         }
         if (filterStatus === 'inactive') {
-            return matchSearch && company.smallPoints.every((sp: any) => !sp.active);
+            return (
+                matchSearch &&
+                company.smallPoints.every((sp: any) => !sp.active)
+            );
         }
         return matchSearch;
     });
 
-    const handleEditCompany = (company: any) => {
-        setSelectedTeam(company);
-        setShowEditModal(true);
+    const handleEditCompany = async (company: any) => {
+        setLoadingDetail(true);
+        try {
+            const detail = await getCompanyConfigDetailById(company.companyId);
+            if (detail) {
+                setSelectedTeam(detail);
+            } else {
+                setSelectedTeam(company);
+            }
+            setShowEditModal(true);
+        } catch (err) {
+            setSelectedTeam(company);
+            setShowEditModal(true);
+        } finally {
+            setLoadingDetail(false);
+        }
     };
 
     const handleUpdateConfig = async (updatedCompany: any) => {
@@ -84,9 +105,9 @@ const CompanyConfigPage: React.FC = () => {
             />
 
             {/* Edit Modal */}
-            {showEditModal && selectedTeam && (
+            {showEditModal && (
                 <EditConfigModal
-                    key={selectedTeam.companyId}
+                    key={selectedTeam?.companyId}
                     open={showEditModal}
                     onClose={() => {
                         setShowEditModal(false);
@@ -94,6 +115,7 @@ const CompanyConfigPage: React.FC = () => {
                     }}
                     onConfirm={handleUpdateConfig}
                     company={selectedTeam}
+                    loading={loadingDetail}
                 />
             )}
         </div>

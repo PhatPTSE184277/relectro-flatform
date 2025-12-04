@@ -4,12 +4,14 @@ import { Edit } from 'lucide-react';
 interface ConfigShowProps {
     company: any;
     onEdit: (company: any) => void;
+    index?: number;
 }
 
 const ConfigShow: React.FC<ConfigShowProps & { isLast?: boolean }> = ({
     company,
     onEdit,
-    isLast = false
+    isLast = false,
+    index
 }) => {
     const activePoints = company.smallPoints.filter(
         (sp: any) => sp.active
@@ -22,12 +24,14 @@ const ConfigShow: React.FC<ConfigShowProps & { isLast?: boolean }> = ({
                 !isLast ? 'border-b border-primary-100' : ''
             } hover:bg-primary-50/40 transition-colors`}
         >
+            <td className='py-3 px-4 text-center'>
+                <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-base flex items-center justify-center font-bold mx-auto shadow-sm'>
+                    {index !== undefined ? index + 1 : ''}
+                </span>
+            </td>
             <td className='py-3 px-4 font-medium'>
                 <div className='text-gray-900'>
                     {company.companyName || `Company ${company.companyId}`}
-                </div>
-                <div className='text-xs text-gray-500'>
-                    ID: {company.companyId}
                 </div>
             </td>
 

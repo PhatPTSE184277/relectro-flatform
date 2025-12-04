@@ -69,7 +69,7 @@ const Header = ({ title, href, profileHref }: HeaderProps) => {
                     <div className='flex items-center space-x-8'>
                         <Link
                             href={finalHref ?? '/'}
-                            className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-primary-400 bg-clip-text text-transparent flex items-center gap-2 cursor-pointer"
+                            className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent flex items-center gap-2 cursor-pointer"
                             onClick={handleReload}
                         >
                             <IoSparklesOutline className="text-primary-400 text-2xl" />

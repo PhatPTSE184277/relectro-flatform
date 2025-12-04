@@ -1,4 +1,5 @@
 import React from "react";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 interface PaginationProps {
   page: number;
@@ -15,9 +16,9 @@ const Pagination: React.FC<PaginationProps> = ({
 
   const getPages = () => {
     const pages = [];
-          if (totalPages <= 5) {
-            for (let i = 1; i <= totalPages; i++) pages.push(i);
-          } else {
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
       if (page <= 3) {
         pages.push(1, 2, 3, 4, "...", totalPages);
       } else if (page >= totalPages - 2) {
@@ -30,41 +31,40 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="flex justify-center items-center gap-2 py-4">
-            <button
-              className="px-3 py-2 rounded-lg bg-primary-50 text-text-main hover:bg-primary-100 font-medium transition disabled:opacity-50"
-              disabled={page === 1}
-              onClick={() => onPageChange(page - 1)}
-            >
-              &lt;
-            </button>
+    <div className="flex justify-center mt-6 gap-2 items-center">
+      <button
+        className={`w-7 h-7 rounded-full bg-primary-50 border flex items-center justify-center text-primary-600 text-xs hover:bg-primary-100 transition ${page === 1 ? 'cursor-default opacity-50' : 'cursor-pointer'}`}
+        disabled={page === 1}
+        onClick={() => onPageChange(page - 1)}
+        title="Trang trước"
+      >
+        <FiChevronLeft size={16} />
+      </button>
       {getPages().map((p, idx) =>
         typeof p === "number" ? (
           <button
             key={p}
-            className={`px-3 py-2 rounded-lg font-medium transition ${
-                    p === page
-                      ? "bg-primary-600 text-white shadow"
-                      : "bg-primary-50 text-text-main hover:bg-primary-100"
-            }`}
+            className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition ${page === p
+                ? 'bg-primary-600 text-white shadow'
+                : 'bg-primary-50 border text-primary-700 hover:bg-primary-100 cursor-pointer'
+              }`}
             onClick={() => onPageChange(p)}
-            disabled={p === page}
+            disabled={page === p}
           >
             {p}
           </button>
         ) : (
-          <span key={idx} className="px-2 py-2 text-gray-400 select-none">
-            ...
-          </span>
+          <span key={idx} className="w-7 h-7 flex items-center justify-center text-xs text-gray-400">...</span>
         )
       )}
-            <button
-              className="px-3 py-2 rounded-lg bg-primary-50 text-text-main hover:bg-primary-100 font-medium transition disabled:opacity-50"
-              disabled={page === totalPages}
-              onClick={() => onPageChange(page + 1)}
-            >
-              &gt;
-            </button>
+      <button
+        className={`w-7 h-7 rounded-full bg-primary-50 border flex items-center justify-center text-primary-600 text-xs hover:bg-primary-100 transition ${page === totalPages ? 'cursor-default opacity-50' : 'cursor-pointer'}`}
+        disabled={page === totalPages}
+        onClick={() => onPageChange(page + 1)}
+        title="Trang sau"
+      >
+        <FiChevronRight size={16} />
+      </button>
     </div>
   );
 };

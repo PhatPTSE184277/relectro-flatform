@@ -1,0 +1,106 @@
+'use client';
+
+import React from 'react';
+import { Building2 } from 'lucide-react';
+
+interface CompanyDetailProps {
+    company: any;
+    onClose: () => void;
+}
+
+const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onClose }) => {
+    if (!company) {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose}></div>
+                <div className="relative bg-white rounded-2xl p-6 max-w-md shadow-xl z-10">
+                    <p className="text-gray-500">Không có dữ liệu công ty</p>
+                    <button
+                        onClick={onClose}
+                        className="mt-4 px-4 py-2 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition cursor-pointer"
+                    >
+                        Đóng
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    const getStatusBadgeClass = (status: string) => {
+        const normalized = status?.toLowerCase() || '';
+        if (normalized === 'active') return 'bg-green-100 text-green-700 border-green-300';
+        if (normalized === 'inactive') return 'bg-gray-100 text-gray-600 border-gray-300';
+        return 'bg-yellow-100 text-yellow-700 border-yellow-300';
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Overlay */}
+            <div
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                onClick={onClose}
+            ></div>
+
+            {/* Modal container */}
+            <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]">
+                {/* Header */}
+                <div className="flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100 border-primary-100">
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900">
+                            Chi tiết công ty
+                        </h2>
+                        <p className="text-sm text-gray-500 mt-1">
+                            Thông tin chi tiết về công ty
+                        </p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer"
+                        aria-label="Đóng"
+                    >
+                        &times;
+                    </button>
+                </div>
+
+                {/* Main content */}
+                <div className="flex-1 overflow-y-auto p-6">
+                    {/* Thông tin công ty */}
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                            <Building2 className='w-5 h-5 text-primary-500' />
+                        </span>
+                        Thông tin công ty
+                    </h3>
+                    <div className="bg-white rounded-xl p-6 mb-6 shadow-sm border border-gray-100">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <InfoCard label="Tên công ty" value={company.name || 'Không rõ'} />
+                            <InfoCard label="Email" value={company.companyEmail || 'Chưa có'} />
+                            <InfoCard label="Số điện thoại" value={company.phone || 'Chưa có'} />
+                            <InfoCard label="Thành phố" value={company.city || 'Chưa có'} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Animation */}
+                <style>{`
+                    .animate-scaleIn { animation: scaleIn .2s ease-out; }
+                    @keyframes scaleIn { from {transform: scale(.9); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+                `}</style>
+            </div>
+        </div>
+    );
+};
+
+// InfoCard Component
+interface InfoCardProps {
+    label: string;
+    value: React.ReactNode;
+}
+const InfoCard: React.FC<InfoCardProps> = ({ label, value }) => (
+    <div className="flex items-center text-sm font-medium text-gray-900 gap-1">
+        <span className="text-gray-700 font-semibold">{label}:</span>
+        <span>{value}</span>
+    </div>
+);
+
+export default CompanyDetail;
