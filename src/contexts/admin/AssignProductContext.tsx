@@ -43,13 +43,11 @@ export const AssignProductProvider: React.FC<Props> = ({ children }) => {
         try {
             const currentPage = pageArg ?? page;
             const currentPageSize = pageSizeArg ?? pageSize;
-            const data = await getAssignedProductsByDate(workDate, currentPage, currentPageSize);
-            // If API returns { items: AssignedProduct[], totalPages: number }
-            if (data && typeof data === 'object' && 'items' in data && Array.isArray(data.items)) {
-                setAssignedProducts(data.items);
-                setTotalPages(data.totalPages ? Number(data.totalPages) : 1);
-            } else if (Array.isArray(data)) {
-                // Fallback: client-side pagination
+            const data = await getAssignedProductsByDate(workDate);
+            
+            // API returns AssignedProduct[]
+            if (Array.isArray(data)) {
+                // Client-side pagination
                 setTotalPages(Math.max(1, Math.ceil(data.length / currentPageSize)));
                 setAssignedProducts(data.slice((currentPage - 1) * currentPageSize, currentPage * currentPageSize));
             } else {
