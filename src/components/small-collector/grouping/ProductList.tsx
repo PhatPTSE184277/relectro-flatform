@@ -1,41 +1,47 @@
 import React from 'react';
 
-import PostShow from './PostShow';
-import PostSkeleton from './PostSkeleton';
+import ProductShow from './ProductShow';
+import ProductSkeleton from './ProductSkeleton';
 
-interface PostListProps {
-    posts: any[];
+interface ProductListProps {
+    products: any[];
     loading: boolean;
+    page?: number;
+    itemsPerPage?: number;
 }
 
-const PostList: React.FC<PostListProps> = ({ posts, loading }) => {
+const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, itemsPerPage = 10 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>
                 <table className='w-full text-sm text-gray-800'>
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                         <tr>
+                            <th className='py-3 px-4 text-center w-16'>STT</th>
                             <th className='py-3 px-4 text-left'>Người gửi</th>
                             <th className='py-3 px-4 text-left'>Địa chỉ</th>
-                            <th className='py-3 px-4 text-left'>Sản phẩm</th>
-                            <th className='py-3 px-4 text-left'>Kích thước (cm)</th>
                             <th className='py-3 px-4 text-left'>Khối lượng</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
                             Array.from({ length: 6 }).map((_, idx) => (
-                                <PostSkeleton key={idx} />
+                                <ProductSkeleton key={idx} />
                             ))
-                        ) : posts?.length === 0 ? (
+                        ) : products?.length === 0 ? (
                             <tr>
                                 <td colSpan={5} className='text-center py-8 text-gray-400'>
-                                    Không có bưu phẩm nào chưa gom nhóm.
+                                    Không có sản phẩm nào chưa gom nhóm.
                                 </td>
                             </tr>
                         ) : (
-                            posts?.map((post, idx) => (
-                                <PostShow key={post.postId} post={post} isLast={idx === posts.length - 1} />
+                            products?.map((product, idx) => (
+                                <ProductShow 
+                                    key={product.productId} 
+                                    product={product} 
+                                    isLast={idx === products.length - 1}
+                                    stt={(page - 1) * itemsPerPage + idx + 1}
+                                />
                             ))
                         )}
                     </tbody>
@@ -45,4 +51,4 @@ const PostList: React.FC<PostListProps> = ({ posts, loading }) => {
     );
 };
 
-export default PostList;
+export default ProductList;

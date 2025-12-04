@@ -90,40 +90,25 @@ const SmallCollectionDetail: React.FC<SmallCollectionDetailProps> = ({
                         Thông tin chi tiết
                     </h3>
                     <div className='bg-white rounded-xl p-6 shadow-sm border border-gray-100'>
-                        <div className='grid grid-cols-1 gap-4'>
-                            <InfoCard
-                                icon={
-                                    <MapPin className='w-5 h-5 text-primary-500' />
-                                }
-                                label='Địa chỉ'
-                                value={point.address || 'Chưa có'}
-                            />
-                            <InfoCard
-                                icon={
-                                    <Clock className='w-5 h-5 text-primary-500' />
-                                }
-                                label='Giờ mở cửa'
-                                value={point.openTime || 'Chưa có'}
-                            />
-                            <InfoCard
-                                icon={
-                                    <Building className='w-5 h-5 text-primary-500' />
-                                }
-                                label='Công ty'
-                                value={`Công ty số ${point.companyId}`}
-                            />
-                            <div className='flex items-center gap-3 p-3 bg-gray-50 rounded-lg'>
-                                <div className='w-10 h-10 flex items-center justify-center rounded-full bg-white border border-primary-100'>
-                                    <MapPin className='w-5 h-5 text-primary-500' />
-                                </div>
-                                <div>
-                                    <p className='text-xs text-gray-500 font-medium'>
-                                        Tọa độ
-                                    </p>
-                                    <p className='text-sm text-gray-900 font-semibold'>
-                                        {point.latitude}, {point.longitude}
-                                    </p>
-                                </div>
+                        <div className='flex flex-col gap-4'>
+                            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                <InfoCard
+                                    icon={<MapPin className='w-5 h-5 text-primary-500' />}
+                                    label='Địa chỉ'
+                                    value={point.address || 'Chưa có'}
+                                />
+                                <InfoCard
+                                    icon={<Clock className='w-5 h-5 text-primary-500' />}
+                                    label='Giờ mở cửa'
+                                    value={point.openTime || 'Chưa có'}
+                                />
+                            </div>
+                            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                <InfoCard
+                                    icon={<Building className='w-5 h-5 text-primary-500' />}
+                                    label='Công ty'
+                                    value={`Công ty số ${point.companyId}`}
+                                />
                             </div>
                         </div>
                     </div>
@@ -151,8 +136,8 @@ const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value }) => (
             {icon}
         </div>
         <div>
-            <p className='text-xs text-gray-500 font-medium'>{label}</p>
-            <p className='text-sm text-gray-900 font-semibold'>{value}</p>
+            <div className='text-sm font-bold text-gray-700 mb-1'>{label}</div>
+            <div className='text-sm text-gray-900'>{value}</div>
         </div>
     </div>
 );

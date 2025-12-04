@@ -4,6 +4,7 @@ import React, { useRef, useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { SmallCollectionPoint } from '@/types';
+import { createPopupContent } from './SmallCollectionPopupContent';
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || '';
 
@@ -83,23 +84,7 @@ const SmallCollectionMap: React.FC<SmallCollectionMapProps> = ({
             const lat = point.latitude;
             if (typeof lng !== 'number' || typeof lat !== 'number' || isNaN(lng) || isNaN(lat)) return;
 
-            const popupContent = `
-                <div style="background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 12px 16px; min-width: 200px; max-width: 280px; font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 32px; height: 32px; border-radius: 50%; background: ${
-                        point.status === 'Active' ? '#3b82f6' : '#ef4444'
-                    }; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                        <svg width="18" height="18" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Z"/><circle cx="12" cy="9" r="2.5"/></svg>
-                    </div>
-                    <div style="flex: 1; min-width: 0;">
-                        <div style="font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 2px; line-height: 1.3;">${
-                            point.name
-                        }</div>
-                        <div style="font-size: 13px; color: #6b7280; font-weight: 400; line-height: 1.4;">${
-                            point.address
-                        }</div>
-                    </div>
-                </div>
-            `;
+            const popupContent = createPopupContent(point);
 
             const popup = new mapboxgl.Popup({
                 offset: 35,
@@ -109,8 +94,10 @@ const SmallCollectionMap: React.FC<SmallCollectionMapProps> = ({
                 className: 'custom-popup'
             }).setHTML(popupContent);
 
-            const markerColor =
-                point.status === 'Active' ? '#3b82f6' : '#ef4444';
+            // Use Tailwind config colors
+            const primary600 = '#e85a4f';
+            const danger = '#ef4444';
+            const markerColor = point.status === 'Active' ? primary600 : danger;
 
             let marker: mapboxgl.Marker;
             try {
@@ -130,7 +117,9 @@ const SmallCollectionMap: React.FC<SmallCollectionMapProps> = ({
                     </svg>
                 `;
                 el.onmouseenter = () => {
-                    el.style.boxShadow = '0 8px 24px rgba(59,130,246,0.28)';
+                    el.style.boxShadow = point.status === 'Active'
+                        ? '0 8px 24px rgba(232,90,79,0.28)'
+                        : '0 8px 24px rgba(239,68,68,0.28)';
                 };
                 el.onmouseleave = () => {
                     el.style.boxShadow = 'none';

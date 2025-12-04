@@ -19,18 +19,11 @@ const EditConfigModal: React.FC<EditConfigModalProps> = ({
     company,
     loading = false
 }) => {
-    const [ratioPercent, setRatioPercent] = useState<number>(0);
     const [smallPoints, setSmallPoints] = useState<any[]>([]);
 
     useEffect(() => {
         if (open && company) {
-            const newRatioPercent =
-                typeof company.ratioPercent === 'number' && !isNaN(company.ratioPercent)
-                    ? company.ratioPercent
-                    : 0;
             const newSmallPoints = Array.isArray(company.smallPoints) ? [...company.smallPoints] : [];
-
-            setRatioPercent(newRatioPercent);
             setSmallPoints(newSmallPoints);
         }
     }, [open, company]);
@@ -58,7 +51,6 @@ const EditConfigModal: React.FC<EditConfigModalProps> = ({
     const handleConfirm = () => {
         onConfirm({
             ...company,
-            ratioPercent,
             smallPoints
         });
     };
@@ -106,35 +98,10 @@ const EditConfigModal: React.FC<EditConfigModalProps> = ({
                         </div>
                     ) : (
                         <>
-                            {/* Ratio Percent OUTSIDE, styled like card below */}
-                            <div className='border rounded-lg p-4 mb-6 bg-primary-50/30 border-primary-200'>
-                                <div className='flex items-center justify-between mb-3'>
-                                    <label className='font-medium text-gray-900 flex items-center gap-2 text-base'>
-                                        Tỷ lệ phân bổ cho team (%)
-                                    </label>
-                                    <span className='text-lg font-semibold text-primary-600 min-w-[60px] text-right'>
-                                        {ratioPercent}%
-                                    </span>
-                                </div>
-                                <div className='flex items-center gap-4'>
-                                    <input
-                                        type='range'
-                                        min='0'
-                                        max='100'
-                                        value={ratioPercent}
-                                        onChange={(e) => setRatioPercent(Number(e.target.value))}
-                                        className='flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-500'
-                                    />
-                                </div>
-                                <p className='text-xs text-gray-500 mt-2'>
-                                    Tỷ lệ công việc được phân bổ cho team này
-                                </p>
-                            </div>
-
                             {/* Small Points Configuration */}
                             <div>
                                 <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-                                    <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                    <span className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                         <MapPin size={18} className='text-primary-600' />
                                     </span>
                                     Cấu hình điểm thu gom

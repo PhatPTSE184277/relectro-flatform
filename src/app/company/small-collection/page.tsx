@@ -12,8 +12,10 @@ import ImportExcelModal from '@/components/admin/collection-company/modal/Import
 import SmallCollectionFilter from '@/components/company/small-collection/SmallCollectionFilter';
 import { toast } from 'react-toastify';
 import { SmallCollectionPoint } from '@/types';
+import { useAuth } from '@/hooks/useAuth';
 
 const SmallCollectionPage: React.FC = () => {
+    const { user } = useAuth();
     const {
         smallCollections,
         loading,
@@ -29,11 +31,12 @@ const SmallCollectionPage: React.FC = () => {
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [filterStatus, setFilterStatus] = useState('active');
 
-    // TODO: Lấy companyId từ user context hoặc session
-    const companyId = 1; // Temporary hardcoded
+    const companyId = user?.collectionCompanyId;
 
     useEffect(() => {
-        fetchSmallCollections({ companyId, page: 1, limit: 100 });
+        if (companyId) {
+            fetchSmallCollections({ companyId, page: 1, limit: 100 });
+        }
     }, [fetchSmallCollections, companyId]);
 
     const handleViewDetail = (point: SmallCollectionPoint) => {
@@ -47,6 +50,10 @@ const SmallCollectionPage: React.FC = () => {
     };
 
     const handleImportExcel = async (file: File) => {
+        if (!companyId) {
+            toast.error('Không tìm thấy thông tin công ty');
+            return;
+        }
         try {
             await importSmallCollection(file);
             toast.success('Import thành công');
@@ -71,41 +78,43 @@ const SmallCollectionPage: React.FC = () => {
     });
 
     return (
-        <div className='h-full flex flex-col bg-gray-50'>
+        <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
             {/* Header */}
-            <div className='bg-white border-b border-gray-200 px-6 py-4'>
-                <div className='flex justify-between items-center mb-4'>
-                    <div className='flex items-center gap-3'>
-                        <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center border border-primary-200'>
-                            <MapPin className='text-white' size={20} />
-                        </div>
-                        <h1 className='text-3xl font-bold text-gray-900'>
-                            Điểm thu gom nhỏ
-                        </h1>
+            <div className='flex justify-between items-center mb-6'>
+                <div className='flex items-center gap-3'>
+                    <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center border border-primary-200'>
+                        <MapPin className='text-white' size={20} />
                     </div>
-                    <div className='flex gap-4 items-center'>
-                        <button
-                            type='button'
-                            className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md border border-primary-200 cursor-pointer'
-                            onClick={() => setShowImportModal(true)}
-                        >
-                            <IoCloudUploadOutline size={20} />
-                            Import từ Excel
-                        </button>
-                        <div className='w-80'>
-                            <SearchBox
-                                value={search}
-                                onChange={setSearch}
-                                placeholder='Tìm kiếm điểm thu gom...'
-                            />
-                        </div>
+                    <h1 className='text-3xl font-bold text-gray-900'>
+                        Điểm thu gom nhỏ
+                    </h1>
+                </div>
+                <div className='flex gap-4 items-center flex-1 justify-end'>
+                    <button
+                        type='button'
+                        className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md border border-primary-200 cursor-pointer'
+                        onClick={() => setShowImportModal(true)}
+                    >
+                        <IoCloudUploadOutline size={20} />
+                        Import từ Excel
+                    </button>
+                    <div className='flex-1 max-w-md'>
+                        <SearchBox
+                            value={search}
+                            onChange={setSearch}
+                            placeholder='Tìm kiếm điểm thu gom...'
+                        />
                     </div>
                 </div>
+            </div>
+
+            {/* Filter Section */}
+            <div className='mb-6'>
                 <SmallCollectionFilter status={filterStatus} onFilterChange={setFilterStatus} />
             </div>
 
             {/* Main Content: List + Map */}
-            <div className='flex-1 flex overflow-hidden'>
+            <div className='flex-1 flex overflow-hidden min-h-[600px]'>
                 {/* List - Left Side */}
                 <div className='w-1/2 overflow-y-auto p-6 border-r border-gray-200'>
                     <SmallCollectionList

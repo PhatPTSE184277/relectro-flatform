@@ -28,15 +28,15 @@ const Sidebar = ({ menuItems}: SidebarProps) => {
                         <Link
                             key={item.label}
                             href={item.path}
-                            className={`flex items-center gap-3 px-4 py-2 rounded-lg text-base font-medium transition-all duration-200 group
+                            className={`flex items-center gap-3 px-4 py-2 rounded-lg text-base font-medium transition-colors transition-shadow transition-border duration-400 group
                                 ${isActive
                                     ? "bg-primary-50 text-primary-700 shadow border border-primary-200"
-                                    : "text-gray-600 hover:text-primary-700 hover:bg-primary-50"
+                                    : "text-gray-600 hover:text-primary-700 hover:bg-primary-50 hover:shadow hover:border-primary-100"
                                 }
                             `}
                         >
                             <span
-                                className={`text-lg transition ${isActive ? "text-primary-500" : "text-gray-400 group-hover:text-primary-500"}`}
+                                className={`text-lg transition-colors duration-400 ${isActive ? "text-primary-500" : "text-gray-400 group-hover:text-primary-500"}`}
                             >
                                 {item.icon}
                             </span>

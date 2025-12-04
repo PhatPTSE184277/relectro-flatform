@@ -15,6 +15,7 @@ function normalizeStatus(status: string = ''): PostStatus {
 
 interface PostShowProps {
     post: Post;
+    stt?: number;
     onView?: () => void;
     onApprove?: (postId: string) => void;
     onReject?: (postId: string) => void;
@@ -23,6 +24,7 @@ interface PostShowProps {
 
 const PostShow: React.FC<PostShowProps & { isLast?: boolean }> = ({
     post,
+    stt,
     onView,
     onApprove,
     onReject,
@@ -32,6 +34,11 @@ const PostShow: React.FC<PostShowProps & { isLast?: boolean }> = ({
 
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
+            <td className="py-3 px-4 text-center">
+                <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
+                    {stt}
+                </span>
+            </td>
             {/* Ảnh đã bị ẩn */}
             <td className='py-3 px-4 font-medium max-w-[220px]'>
                 <div className='text-sm text-gray-500 mt-1 line-clamp-1'>

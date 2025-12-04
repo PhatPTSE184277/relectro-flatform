@@ -6,28 +6,44 @@ import { Users, Calendar, GitBranch } from 'lucide-react';
 import PreAssignStep from '@/components/small-collector/grouping/PreAssignStep';
 import AssignDayStep from '@/components/small-collector/grouping/AssignDayStep';
 import { useRouter } from 'next/navigation';
+import CustomDatePicker from '@/components/ui/CustomDatePicker';
+import Pagination from '@/components/ui/Pagination';
+import { useAuth } from '@/hooks/useAuth';
 
 const GroupingPage: React.FC = () => {
     const router = useRouter();
+    const { user } = useAuth();
     const {
         loading,
         vehicles,
-        pendingPosts,
+        pendingProducts,
+        pendingProductsData,
         preAssignResult,
         fetchVehicles,
-        fetchPendingPosts,
+        fetchPendingProducts,
         getPreAssignSuggestion,
         createGrouping,
-            calculateRoute
+        calculateRoute
     } = useGroupingContext();
 
     const [activeStep, setActiveStep] = useState(1);
     const [loadThreshold, setLoadThreshold] = useState(80);
+    const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+    const [page, setPage] = useState(1);
+    const itemsPerPage = 10;
+
+    useEffect(() => {
+        console.log('User profile:', user);
+        console.log('smallCollectionPointId:', user?.smallCollectionPointId);
+    }, [user]);
 
     useEffect(() => {
         fetchVehicles();
-        fetchPendingPosts();
-    }, [fetchVehicles, fetchPendingPosts]);
+    }, [fetchVehicles]);
+
+    useEffect(() => {
+        fetchPendingProducts(selectedDate);
+    }, [selectedDate, fetchPendingProducts]);
 
     const handleGetSuggestion = async () => {
         await getPreAssignSuggestion(loadThreshold);
@@ -37,10 +53,22 @@ const GroupingPage: React.FC = () => {
     const handleCreateGrouping = async (payload: {
         workDate: string;
         vehicleId: number;
-        postIds: string[];
+        productIds: string[];
     }) => {
         await createGrouping(payload);
     };
+
+    const handleDateChange = (date: string) => {
+        setSelectedDate(date);
+        setPage(1);
+    };
+
+    // Phân trang
+    const totalPages = Math.ceil((pendingProducts?.length || 0) / itemsPerPage);
+    const paginatedProducts = pendingProducts?.slice(
+        (page - 1) * itemsPerPage,
+        page * itemsPerPage
+    ) || [];
 
     const steps = [
         { id: 1, name: 'Gợi ý gom nhóm', icon: <Users size={20} /> },
@@ -64,6 +92,46 @@ const GroupingPage: React.FC = () => {
                     Xem danh sách nhóm
                 </button>
             </div>
+
+            {/* Date Picker và Thông tin tổng quan */}
+            {activeStep === 1 && (
+                <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6'>
+                    <div className='flex items-center justify-between mb-4'>
+                        <div className='flex-1 max-w-xs'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                Chọn ngày làm việc
+                            </label>
+                            <CustomDatePicker
+                                value={selectedDate}
+                                onChange={handleDateChange}
+                                placeholder='Chọn ngày'
+                            />
+                        </div>
+                        {pendingProductsData && (
+                            <div className='flex gap-6'>
+                                <div className='text-center'>
+                                    <p className='text-sm text-gray-600'>Tổng sản phẩm</p>
+                                    <p className='text-2xl font-bold text-primary-600'>
+                                        {pendingProductsData.total}
+                                    </p>
+                                </div>
+                                <div className='text-center'>
+                                    <p className='text-sm text-gray-600'>Tổng khối lượng</p>
+                                    <p className='text-2xl font-bold text-primary-600'>
+                                        {pendingProductsData.totalWeightKg} kg
+                                    </p>
+                                </div>
+                                <div className='text-center'>
+                                    <p className='text-sm text-gray-600'>Tổng thể tích</p>
+                                    <p className='text-2xl font-bold text-primary-600'>
+                                        {pendingProductsData.totalVolumeM3.toFixed(2)} m³
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Steps */}
             <div className='mb-8'>
@@ -107,13 +175,22 @@ const GroupingPage: React.FC = () => {
             {/* Content */}
             <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-6'>
                 {activeStep === 1 && (
-                    <PreAssignStep
-                        loading={loading}
-                        posts={pendingPosts}
-                        loadThreshold={loadThreshold}
-                        setLoadThreshold={setLoadThreshold}
-                        onGetSuggestion={handleGetSuggestion}
-                    />
+                    <>
+                        <PreAssignStep
+                            loading={loading}
+                            products={paginatedProducts}
+                            loadThreshold={loadThreshold}
+                            setLoadThreshold={setLoadThreshold}
+                            onGetSuggestion={handleGetSuggestion}
+                            page={page}
+                            itemsPerPage={itemsPerPage}
+                        />
+                        <Pagination
+                            page={page}
+                            totalPages={totalPages}
+                            onPageChange={setPage}
+                        />
+                    </>
                 )}
 
                 {activeStep === 2 && preAssignResult && (
@@ -121,7 +198,7 @@ const GroupingPage: React.FC = () => {
                         loading={loading}
                         preAssignResult={preAssignResult}
                         vehicles={vehicles}
-                        posts={pendingPosts}
+                        products={pendingProducts}
                         onCreateGrouping={handleCreateGrouping}
                         onBack={() => setActiveStep(1)}
                         calculateRoute={calculateRoute}

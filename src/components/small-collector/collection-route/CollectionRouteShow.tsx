@@ -9,13 +9,19 @@ interface CollectionRouteShowProps {
     onView: () => void;
 }
 
-const CollectionRouteShow: React.FC<CollectionRouteShowProps & { isLast?: boolean }> = ({
+const CollectionRouteShow: React.FC<CollectionRouteShowProps & { isLast?: boolean; stt?: number }> = ({
     route,
     onView,
-    isLast = false
+    isLast = false,
+    stt
 }) => {
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
+            <td className='py-3 px-4 text-center'>
+                <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
+                    {stt}
+                </span>
+            </td>
             <td className='py-3 px-4 font-medium max-w-[220px]'>
                 <div className='text-gray-900 line-clamp-2'>{route.brandName || 'Không rõ'}</div>
             </td>

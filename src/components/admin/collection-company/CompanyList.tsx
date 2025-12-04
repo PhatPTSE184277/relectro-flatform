@@ -19,11 +19,11 @@ const CompanyList: React.FC<CompanyListProps> = ({
                 <table className='w-full text-sm text-gray-800'>
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                         <tr>
+                            <th className='py-3 px-4 text-center w-12'>STT</th>
                             <th className='py-3 px-4 text-left'>Tên công ty</th>
                             <th className='py-3 px-4 text-left'>Email</th>
                             <th className='py-3 px-4 text-left'>Số điện thoại</th>
                             <th className='py-3 px-4 text-left'>Thành phố</th>
-                            <th className='py-3 px-4 text-center'>Trạng thái</th>
                             <th className='py-3 px-4 text-center'>Hành động</th>
                         </tr>
                     </thead>
@@ -40,6 +40,7 @@ const CompanyList: React.FC<CompanyListProps> = ({
                                     company={company}
                                     onView={() => onViewDetail(company)}
                                     isLast={idx === companies.length - 1}
+                                    index={idx}
                                 />
                             ))
                         ) : (

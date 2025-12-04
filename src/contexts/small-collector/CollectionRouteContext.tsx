@@ -14,6 +14,7 @@ import {
 } from '@/services/small-collector/CollectionRouteService';
 import { toast } from 'react-toastify';
 import type { CollectionRoute } from '@/types/CollectionRoute';
+import { useAuth } from '@/hooks/useAuth';
 
 interface CollectionRouteContextType {
     routes: CollectionRoute[];
@@ -53,6 +54,7 @@ function normalizeStatus(status: string = ""): string {
 }
 
 export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
+    const { user } = useAuth();
     const [routes, setRoutes] = useState<CollectionRoute[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [selectedDate, setSelectedDate] = useState<string>(() => {
@@ -74,12 +76,17 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
 
     // fetchRoutes truyền pickUpDate là string
     const fetchRoutes = useCallback(async (pickUpDate?: string) => {
+        if (!user?.smallCollectionPointId) {
+            console.warn('No smallCollectionPointId found in user profile');
+            return;
+        }
         setLoading(true);
         try {
             const dateToUse = pickUpDate || selectedDate;
             const response = await getCollectionRoutesByDate({
                 page: currentPage,
                 limit: 10,
+                collectionPointId: user.smallCollectionPointId,
                 pickUpDate: dateToUse,
                 status: filterStatus || undefined
             });
@@ -96,11 +103,11 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
             const fetchAllStats = async () => {
                 try {
                     const [allRes, notStartedRes, inProgressRes, completedRes, cancelledRes] = await Promise.all([
-                        getCollectionRoutesByDate({ page: 1, limit: 1, pickUpDate: dateToUse }),
-                        getCollectionRoutesByDate({ page: 1, limit: 1, pickUpDate: dateToUse, status: 'Chưa bắt đầu' }),
-                        getCollectionRoutesByDate({ page: 1, limit: 1, pickUpDate: dateToUse, status: 'Đang tiến hành' }),
-                        getCollectionRoutesByDate({ page: 1, limit: 1, pickUpDate: dateToUse, status: 'Hoàn thành' }),
-                        getCollectionRoutesByDate({ page: 1, limit: 1, pickUpDate: dateToUse, status: 'Hủy bỏ' })
+                        getCollectionRoutesByDate({ page: 1, limit: 1, collectionPointId: user.smallCollectionPointId, pickUpDate: dateToUse }),
+                        getCollectionRoutesByDate({ page: 1, limit: 1, collectionPointId: user.smallCollectionPointId, pickUpDate: dateToUse, status: 'Chưa bắt đầu' }),
+                        getCollectionRoutesByDate({ page: 1, limit: 1, collectionPointId: user.smallCollectionPointId, pickUpDate: dateToUse, status: 'Đang tiến hành' }),
+                        getCollectionRoutesByDate({ page: 1, limit: 1, collectionPointId: user.smallCollectionPointId, pickUpDate: dateToUse, status: 'Hoàn thành' }),
+                        getCollectionRoutesByDate({ page: 1, limit: 1, collectionPointId: user.smallCollectionPointId, pickUpDate: dateToUse, status: 'Hủy bỏ' })
                     ]);
 
                     setAllStats({
@@ -125,7 +132,7 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    }, [selectedDate, currentPage, filterStatus]);
+    }, [selectedDate, currentPage, filterStatus, user?.smallCollectionPointId]);
 
     const fetchRouteDetail = useCallback(async (id: string) => {
         setLoading(true);

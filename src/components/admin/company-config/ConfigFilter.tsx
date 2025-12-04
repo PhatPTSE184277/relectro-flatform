@@ -19,17 +19,6 @@ const ConfigFilter: React.FC<ConfigFilterProps> = ({
 
             <div className='flex flex-wrap gap-2'>
                 <button
-                    onClick={() => onFilterChange('all')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                        status === 'all'
-                            ? 'bg-blue-100 text-blue-700 shadow'
-                            : 'bg-gray-100 text-gray-600'
-                    }`}
-                >
-                    Tất cả
-                </button>
-
-                <button
                     onClick={() => onFilterChange('active')}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                         status === 'active'

@@ -13,7 +13,7 @@ import {
     getPostById,
     approvePost,
     rejectPost
-} from '@/services/small-collector/PostService';
+} from '@/services/admin/PostService';
 import type { Post } from '@/types/post';
 import { toast } from 'react-toastify';
 

@@ -17,6 +17,7 @@ import {
     getProductById
 } from '@/services/small-collector/IWProductService';
 import { toast } from 'react-toastify';
+import { useAuth } from '@/redux';
 
 interface ProductFilter {
     page: number;
@@ -62,6 +63,7 @@ const IWProductContext = createContext<IWProductContextType | undefined>(
 type Props = { children: ReactNode };
 
 export const IWProductProvider: React.FC<Props> = ({ children }) => {
+    const { user } = useAuth();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [detailLoading, setDetailLoading] = useState<boolean>(false);
@@ -94,6 +96,10 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
 
     const fetchProducts = useCallback(
         async (customFilter?: Partial<ProductFilter>) => {
+            if (!user?.smallCollectionPointId) {
+                console.warn('No smallCollectionPointId found in user profile');
+                return;
+            }
             setLoading(true);
             try {
                 // Merge filter
@@ -103,7 +109,7 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
                 const response = await filterIncomingWarehouseProducts({
                     fromDate: mergedFilter.fromDate,
                     toDate: mergedFilter.toDate,
-                    smallCollectionPointId: 1
+                    smallCollectionPointId: user.smallCollectionPointId
                 });
 
                 // Nếu API trả về mảng, dùng trực tiếp:
@@ -208,7 +214,7 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
                 setLoading(false);
             }
         },
-        []
+        [user?.smallCollectionPointId, filter]
     );
 
     const receiveProduct = useCallback(

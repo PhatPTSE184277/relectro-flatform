@@ -5,10 +5,13 @@ import { getUnassignedProducts } from '@/services/admin/AssignProductService';
 import AssignProductSelectList from './AssignProductSelectList';
 import Pagination from '@/components/ui/Pagination';
 import { toast } from 'react-toastify';
+import { formatDate } from '@/utils/FormateDate';
 
 interface Product {
     productId: string;
     postId?: string;
+    categoryName: string;
+    brandName: string;
     productName: string;
     userName: string;
     address: string;
@@ -95,7 +98,9 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
         }
     };
 
-    const handleConfirm = () => {
+    const [assignLoading, setAssignLoading] = useState(false);
+
+    const handleConfirm = async () => {
         if (!workDate) {
             alert('Vui lòng chọn ngày phân công');
             return;
@@ -104,7 +109,12 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
             alert('Vui lòng chọn ít nhất 1 sản phẩm');
             return;
         }
-        onConfirm({ workDate, productIds: selectedProductIds });
+        setAssignLoading(true);
+        try {
+            await onConfirm({ workDate, productIds: selectedProductIds });
+        } finally {
+            setAssignLoading(false);
+        }
     };
 
     const handleClose = () => {
@@ -145,7 +155,7 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                 {/* Main content */}
                 <div className='flex-1 overflow-y-auto p-6 bg-gray-50'>
                     <div className='space-y-6'>
-                        <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
+                        <div className='border border-primary-200 rounded-lg p-4 mb-6 bg-primary-50/30'>
                             <label className='block text-sm font-medium text-gray-700 mb-2'>
                                 Chọn ngày phân công
                             </label>
@@ -155,9 +165,7 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                                 placeholder="Chọn ngày"
                             />
                         </div>
-
-                        {/* Products Selection */}
-                        <div>
+                        <div className='border border-primary-200 rounded-lg p-4 bg-primary-50/30'>
                             <div className='flex items-center mb-4 gap-2'>
                                 <span className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
                                     <Package size={20} className='text-primary-500' />
@@ -181,8 +189,6 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                                 />
                             </div>
                         </div>
-
-                        {/* Summary */}
                         <div className='bg-primary-50 border border-primary-200 rounded-lg p-4'>
                             <p className='text-sm text-primary-800'>
                                 <span className='font-semibold'>Tổng kết:</span> Bạn đã chọn{' '}
@@ -190,7 +196,7 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                                 {workDate && (
                                     <>
                                         {' '}cho ngày{' '}
-                                        <span className='font-bold'>{workDate}</span>
+                                        <span className='font-bold'>{formatDate(workDate)}</span>
                                     </>
                                 )}
                             </p>
@@ -202,9 +208,15 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                 <div className='flex justify-end gap-3 p-6 border-t bg-gray-50'>
                     <button
                         onClick={handleConfirm}
-                        disabled={!workDate || selectedProductIds.length === 0}
-                        className='px-6 py-2.5 text-white bg-primary-600 rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium transition cursor-pointer'
+                        disabled={!workDate || selectedProductIds.length === 0 || assignLoading}
+                        className={`px-6 py-2.5 text-white bg-primary-600 rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium transition cursor-pointer flex items-center justify-center gap-2`}
                     >
+                        {assignLoading && (
+                            <svg className='animate-spin h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+                                <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+                                <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z'></path>
+                            </svg>
+                        )}
                         Phân công
                     </button>
                 </div>

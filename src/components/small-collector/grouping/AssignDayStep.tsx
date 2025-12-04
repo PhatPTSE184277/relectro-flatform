@@ -3,17 +3,17 @@
 import React, { useState } from 'react';
 import { Calendar, Truck, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
 import EditGroupingModal from './modal/EditGroupingModal';
-import PostList from './PostList';
+import ProductList from './ProductList';
 
 interface AssignDayStepProps {
     loading: boolean;
     preAssignResult: any;
     vehicles: any[];
-    posts: any[];
+    products: any[];
     onCreateGrouping: (payload: {
         workDate: string;
         vehicleId: number;
-        postIds: string[];
+        productIds: string[];
     }) => void;
     onBack: () => void;
     calculateRoute: (saveResult: boolean) => Promise<void>;
@@ -23,12 +23,21 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     loading,
     preAssignResult,
     vehicles,
-    posts,
+    products,
     onCreateGrouping,
     onBack,
     calculateRoute
 }) => {
-    const [daySuggestions, setDaySuggestions] = useState<any[]>(preAssignResult.days || []);
+    const [daySuggestions, setDaySuggestions] = useState<any[]>(
+        (preAssignResult?.days || []).map((day: any) => ({
+            ...day,
+            products: (day.products || []).map((dayProduct: any) => {
+                // Tìm product đầy đủ từ mảng products để lấy categoryName và brandName
+                const fullProduct = products.find(p => p.productId === dayProduct.productId);
+                return fullProduct ? { ...dayProduct, ...fullProduct } : dayProduct;
+            })
+        }))
+    );
     const [expandedDays, setExpandedDays] = useState<number[]>([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedDay, setSelectedDay] = useState<any>(null);
@@ -49,25 +58,25 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     const handleConfirmEdit = (data: {
         workDate: string;
         vehicleId: number;
-        postIds: string[];
+        productIds: string[];
     }) => {
         // Cập nhật lại ngày đang chỉnh sửa
         setDaySuggestions((prev) => prev.map((day) => {
             if (day.workDate === data.workDate) {
                 const selectedVehicle = vehicles.find(v => v.id === data.vehicleId);
-                const updatedPosts = data.postIds.map(postId => {
-                    const found = posts.find(p => p.postId === postId)
-                    return found ? { ...found } : { postId };
+                const updatedProducts = data.productIds.map(productId => {
+                    const found = products.find(p => p.productId === productId)
+                    return found ? { ...found } : { productId };
                 });
 
                 // Tính lại tổng khối lượng và thể tích
-                const totalWeight = updatedPosts.reduce((sum, p) => sum + (p.weight || 0), 0);
-                const totalVolume = updatedPosts.reduce((sum, p) => sum + (p.volume || 0), 0);
+                const totalWeight = updatedProducts.reduce((sum, p) => sum + (p.weight || 0), 0);
+                const totalVolume = updatedProducts.reduce((sum, p) => sum + (p.volume || 0), 0);
 
                 return {
                     ...day,
                     suggestedVehicle: selectedVehicle,
-                    posts: updatedPosts,
+                    products: updatedProducts,
                     totalWeight,
                     totalVolume
                 };
@@ -83,7 +92,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     const handleCreateGrouping = async (data: {
         workDate: string;
         vehicleId: number;
-        postIds: string[];
+        productIds: string[];
     }) => {
         try {
             await onCreateGrouping(data);
@@ -102,7 +111,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                         Bước 2: Tạo nhóm thu gom
                     </h2>
                     <p className='text-gray-600'>
-                        Chọn ngày, phương tiện và bưu phẩm để tạo nhóm thu gom
+                        Chọn ngày, phương tiện và sản phẩm để tạo nhóm thu gom
                     </p>
                 </div>
                 <button
@@ -133,7 +142,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                                         {new Date(day.workDate).toLocaleDateString('vi-VN')}
                                     </p>
                                     <p className='text-sm text-gray-600'>
-                                        {day.posts.length} bưu phẩm, tổng khối lượng: {day.totalWeight} kg, tổng thể tích: {day.totalVolume} m³
+                                        {day.originalPostCount || (day.products || []).length} sản phẩm • {day.totalWeight || 0} kg • {(day.totalVolume || 0).toFixed(2)} m³
                                     </p>
                                 </div>
                             </div>
@@ -184,19 +193,8 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                                     </div>
                                 </div>
 
-                                {/* Posts List */}
-                                <PostList posts={day.posts.map((post: any) => {
-                                    const found = posts.find((p) => p.postId === post.postId);
-                                    return {
-                                        ...post,
-                                        productName: found?.productName || '',
-                                        sizeTier: found?.sizeTier || '',
-                                        dimensionText: found?.dimensionText,
-                                        length: found?.length,
-                                        width: found?.width,
-                                        height: found?.height,
-                                    };
-                                })} loading={false} />
+                                {/* Products List */}
+                                <ProductList products={day.products || []} loading={false} />
 
                                 {/* Action Button */}
                                 <div className='pt-2 flex gap-3 justify-end'>
@@ -204,9 +202,9 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                                         onClick={() => handleCreateGrouping({
                                             workDate: day.workDate,
                                             vehicleId: day.suggestedVehicle.id,
-                                            postIds: day.posts.map((p: any) => p.postId)
+                                            productIds: (day.products || []).map((p: any) => p.productId)
                                         })}
-                                        disabled={loading}
+                                        disabled={loading || (day.products || []).length === 0}
                                         className='py-3 px-4 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-sm cursor-pointer'
                                     >
                                         Tạo nhóm thu gom
@@ -228,7 +226,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                 onConfirm={handleConfirmEdit}
                 day={selectedDay}
                 vehicles={vehicles}
-                allPosts={posts}
+                allProducts={products}
                 loading={loading}
             />
         </div>

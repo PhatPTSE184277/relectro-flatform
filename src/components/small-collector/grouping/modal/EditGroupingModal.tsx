@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Truck, Package } from 'lucide-react';
 import { formatDate } from '@/utils/FormateDate';
-import PostList from './PostList';
+import ProductList from './ProductList';
 
 interface EditGroupingModalProps {
     open: boolean;
@@ -11,11 +11,11 @@ interface EditGroupingModalProps {
     onConfirm: (data: {
         workDate: string;
         vehicleId: number;
-        postIds: string[];
+        productIds: string[];
     }) => void;
     day: any;
     vehicles: any[];
-    allPosts: any[];
+    allProducts: any[];
     loading: boolean;
 }
 
@@ -25,50 +25,63 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
     onConfirm,
     day,
     vehicles,
-    allPosts = [],
+    allProducts = [],
     loading
 }) => {
     const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
-    const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
+    const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
 
     useEffect(() => {
         if (open && day) {
             if (day.suggestedVehicle.id !== selectedVehicleId) {
                 setSelectedVehicleId(day.suggestedVehicle.id);
             }
-            const newPostIds = day.posts.map((p: any) => p.postId);
-            if (JSON.stringify(newPostIds) !== JSON.stringify(selectedPostIds)) {
-                setSelectedPostIds(newPostIds);
+            const newProductIds = day.products.map((p: any) => p.productId);
+            if (JSON.stringify(newProductIds) !== JSON.stringify(selectedProductIds)) {
+                setSelectedProductIds(newProductIds);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, day]);
 
-    const handleTogglePost = (postId: string) => {
-        if (selectedPostIds.includes(postId)) {
-            setSelectedPostIds(selectedPostIds.filter((id) => id !== postId));
+    const handleToggleProduct = (productId: string) => {
+        setSelectedProductIds((prev) => {
+            if (prev.includes(productId)) {
+                return prev.filter((id) => id !== productId);
+            } else {
+                return [...prev, productId];
+            }
+        });
+    };
+
+    const handleToggleAll = () => {
+        const allProductIds = allProducts.map((p: any) => p.productId);
+        if (selectedProductIds.length === allProducts.length) {
+            // Bỏ hết
+            setSelectedProductIds([]);
         } else {
-            setSelectedPostIds([...selectedPostIds, postId]);
+            // Chọn hết
+            setSelectedProductIds(allProductIds);
         }
     };
 
     const handleConfirm = () => {
-        if (selectedVehicleId && selectedPostIds.length > 0) {
+        if (selectedVehicleId && selectedProductIds.length > 0) {
             onConfirm({
                 workDate: day.workDate,
                 vehicleId: selectedVehicleId,
-                postIds: selectedPostIds
+                productIds: selectedProductIds
             });
         }
     };
 
     const handleClose = () => {
         setSelectedVehicleId(null);
-        setSelectedPostIds([]);
+        setSelectedProductIds([]);
         onClose();
     };
 
-    if (!open || !day || !Array.isArray(allPosts)) return null;
+    if (!open || !day || !Array.isArray(allProducts)) return null;
 
     const selectedVehicle = vehicles.find((v) => v.id === selectedVehicleId);
 
@@ -149,23 +162,24 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
                         </div>
                     </div>
 
-                    {/* Posts Selection */}
+                    {/* Products Selection */}
                     <div>
                         <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
                             <span className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
                                 <Package size={20} className='text-primary-500' />
                             </span>
-                            Chọn bưu phẩm ({selectedPostIds.length}/{allPosts.length})
+                            Chọn sản phẩm ({selectedProductIds.length}/{allProducts.length})
                         </h3>
                         <p className='text-xs text-gray-500 mb-4 ml-10'>
-                            Các bưu phẩm được gợi ý đã được chọn sẵn. Bạn có thể thêm hoặc bỏ chọn.
+                            Các sản phẩm được gợi ý đã được chọn sẵn. Bạn có thể thêm hoặc bỏ chọn.
                         </p>
                         <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
                             <div className='overflow-x-auto'>
-                                <PostList
-                                    posts={allPosts}
-                                    selectedPostIds={selectedPostIds}
-                                    onTogglePost={handleTogglePost}
+                                <ProductList
+                                    products={allProducts}
+                                    selectedProductIds={selectedProductIds}
+                                    onToggleProduct={handleToggleProduct}
+                                    onToggleAll={handleToggleAll}
                                 />
                             </div>
                         </div>
@@ -175,7 +189,7 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
                     <div className='bg-primary-50 border border-primary-200 rounded-lg p-4'>
                         <p className='text-sm text-primary-800'>
                             <span className='font-semibold'>Tổng kết:</span> Bạn đã chọn{' '}
-                            <span className='font-bold'>{selectedPostIds.length}</span> bưu phẩm
+                            <span className='font-bold'>{selectedProductIds.length}</span> sản phẩm
                             {selectedVehicle && (
                                 <>
                                     {' '}
@@ -193,7 +207,7 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
                 <div className='flex justify-end gap-3 p-6 border-t border-gray-100 bg-white'>
                     <button
                         onClick={handleConfirm}
-                        disabled={loading || !selectedVehicleId || selectedPostIds.length === 0}
+                        disabled={loading || !selectedVehicleId || selectedProductIds.length === 0}
                         className='px-5 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-medium cursor-pointer flex items-center gap-2'
                     >
                         {loading ? 'Đang cập nhật...' : 'Xác nhận'}

@@ -22,6 +22,7 @@ const IWProductList: React.FC<IWProductListProps> = ({
                 <table className='w-full text-sm text-gray-800'>
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                         <tr>
+                            <th className='py-3 px-4 text-center w-12'>STT</th>
                             <th className='py-3 px-4 text-left'>Loại sản phẩm</th>
                             <th className='py-3 px-4 text-left'>Mã QR</th>
                             <th className='py-3 px-4 text-left'>Thương hiệu</th>
@@ -44,6 +45,7 @@ const IWProductList: React.FC<IWProductListProps> = ({
                                     onView={() => onViewDetail(product)}
                                     status={status}
                                     isLast={idx === products.length - 1}
+                                    stt={idx + 1}
                                 />
                             ))
                         ) : (

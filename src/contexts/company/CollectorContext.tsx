@@ -1,8 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
 import { getCollectorsByCompany, getCollectorById, importCollectorsExcel } from '@/services/company/CollectorService';
 import { Collector } from '@/types';
+import { useAuth } from '@/hooks/useAuth';
 
 interface CollectorContextType {
 	loading: boolean;
@@ -18,6 +19,7 @@ interface CollectorContextType {
 const CollectorContext = createContext<CollectorContextType | undefined>(undefined);
 
 export const CollectorProvider = ({ children }: { children: ReactNode }) => {
+	const { user } = useAuth();
 	const [loading, setLoading] = useState(false);
 	const [collectors, setCollectors] = useState<Collector[]>([]);
 	const [selectedCollector, setSelectedCollector] = useState<Collector | null>(null);
@@ -36,6 +38,13 @@ export const CollectorProvider = ({ children }: { children: ReactNode }) => {
 			setLoading(false);
 		}
 	}, []);
+
+	// Auto-fetch collectors khi có collectionCompanyId từ user
+	useEffect(() => {
+		if (user?.collectionCompanyId) {
+			fetchCollectors(user.collectionCompanyId);
+		}
+	}, [user?.collectionCompanyId, fetchCollectors]);
 
 	const fetchCollector = useCallback(async (collectorId: string) => {
 		setLoading(true);

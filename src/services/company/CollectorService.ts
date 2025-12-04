@@ -4,7 +4,6 @@ import { Collector } from '@/types';
 export const getCollectorsByCompany = async (
     companyId: number
 ): Promise<Collector[]> => {
-    companyId = 1;
     const response = await axios.get(`/collectors/company/${companyId}`);
     return response.data;
 };

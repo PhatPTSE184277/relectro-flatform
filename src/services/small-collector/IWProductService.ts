@@ -6,11 +6,11 @@ export type { Product, FilterProductsResponse, CreateProductPayload };
 export const filterIncomingWarehouseProducts = async ({
     fromDate,
     toDate,
-    smallCollectionPointId = 1
+    smallCollectionPointId
 }: {
     fromDate?: string;
     toDate?: string;
-    smallCollectionPointId?: number;
+    smallCollectionPointId: number;
 }): Promise<FilterProductsResponse> => {
     const params: Record<string, any> = {};
 

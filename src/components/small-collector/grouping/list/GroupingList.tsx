@@ -23,7 +23,7 @@ const GroupingList: React.FC<GroupingListProps> = ({
                             <th className='py-3 px-4 text-left'>Ngày thu gom</th>
                             <th className='py-3 px-4 text-left'>Phương tiện</th>
                             <th className='py-3 px-4 text-left'>Người thu gom</th>
-                            <th className='py-3 px-4 text-left'>Số bưu phẩm</th>
+                            <th className='py-3 px-4 text-left'>Số sản phẩm</th>
                             <th className='py-3 px-4 text-left'>Khối lượng</th>
                             <th className='py-3 px-4 text-center'>Hành động</th>
                         </tr>

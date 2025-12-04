@@ -15,6 +15,7 @@ import {
     CollectionCompany
 } from '@/services/admin/CollectionCompanyService';
 import { toast } from 'react-toastify';
+import { useAuth } from '@/hooks/useAuth';
 
 interface CollectionCompanyContextType {
     companies: CollectionCompany[];
@@ -33,6 +34,7 @@ const CollectionCompanyContext = createContext<
 type Props = { children: ReactNode };
 
 export const CollectionCompanyProvider: React.FC<Props> = ({ children }) => {
+    const { user } = useAuth();
     const [companies, setCompanies] = useState<CollectionCompany[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -42,7 +44,16 @@ export const CollectionCompanyProvider: React.FC<Props> = ({ children }) => {
         setError(null);
         try {
             const data = await getCollectionCompanies();
-            setCompanies(data);
+            
+            // Nếu là Collector, chỉ lấy công ty của mình
+            if (user?.role === 'Collector' && user?.collectionCompanyId) {
+                const filteredData = data.filter(
+                    (company) => company.id === user.collectionCompanyId
+                );
+                setCompanies(filteredData);
+            } else {
+                setCompanies(data);
+            }
         } catch (err: any) {
             setError(
                 err?.response?.data?.message ||
@@ -52,7 +63,7 @@ export const CollectionCompanyProvider: React.FC<Props> = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [user]);
 
     const fetchCompanyById = useCallback(async (id: number) => {
         setLoading(true);

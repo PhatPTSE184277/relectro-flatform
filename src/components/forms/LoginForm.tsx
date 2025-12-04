@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
     IoPersonOutline,
@@ -7,13 +7,43 @@ import {
     IoEyeOutline
 } from 'react-icons/io5';
 import { toast } from 'react-toastify';
-import { login } from '@/services/AuthService'; // Thêm import này
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { login, clearError } from '@/redux/reducers/authReducer';
 
 const LoginForm = () => {
     const [formData, setFormData] = useState({ username: '', password: '' });
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-    const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const dispatch = useAppDispatch();
+    const { loading, error, isAuthenticated, user } = useAppSelector((state) => state.auth);
+
+    useEffect(() => {
+        if (error) {
+            toast.error(error);
+            dispatch(clearError());
+        }
+    }, [error, dispatch]);
+
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            toast.success('Đăng nhập thành công!');
+            
+            // Route based on user role (backend enum)
+            switch (user.role) {
+                case 'AdminWarehouse':
+                    router.push('/small-collector/dashboard');
+                    break;
+                case 'Admin':
+                    router.push('/admin/dashboard');
+                    break;
+                case 'AdminCompany':
+                    router.push('/company/dashboard');
+                    break;
+                default:
+                    router.push('/admin/dashboard');
+            }
+        }
+    }, [isAuthenticated, user, router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,23 +61,7 @@ const LoginForm = () => {
             return;
         }
 
-        setLoading(true);
-        try {
-            const res = await login(formData.username);
-
-            localStorage.setItem('token', res.token);
-
-            toast.success('Đăng nhập thành công!');
-            if (formData.username === 'adminthugomnho@gmail.com') {
-                router.push('/collector/dashboard');
-            } else {
-                router.push('/admin/dashboard');
-            }
-        } catch (error: any) {
-            toast.error(error?.message || 'Đăng nhập thất bại!');
-        } finally {
-            setLoading(false);
-        }
+        dispatch(login({ username: formData.username, password: formData.password }));
     };
 
     return (
@@ -62,13 +76,14 @@ const LoginForm = () => {
                     </label>
                     <div className='relative'>
                         <IoPersonOutline className='absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400 text-lg' />
+                                            <IoPersonOutline className='absolute top-1/2 left-3 transform -translate-y-1/2 text-primary-400 text-lg' />
                         <input
                             id='username'
                             name='username'
                             type='text'
                             autoComplete='username'
                             required
-                            className='block w-full rounded-lg border border-gray-200 py-2 pl-10 pr-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition'
+                            className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100 transition'
                             placeholder='Nhập tên đăng nhập'
                             value={formData.username}
                             onChange={handleChange}
@@ -85,12 +100,13 @@ const LoginForm = () => {
                     </label>
                     <div className='relative'>
                         <IoLockClosedOutline className='absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400 text-lg' />
+                                            <IoLockClosedOutline className='absolute top-1/2 left-3 transform -translate-y-1/2 text-primary-400 text-lg' />
                         <input
                             id='password'
                             name='password'
                             type={isPasswordVisible ? 'text' : 'password'}
                             autoComplete='current-password'
-                            className='block w-full rounded-lg border border-gray-200 py-2 pl-10 pr-10 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition'
+                            className='w-full pl-10 pr-10 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100 transition'
                             placeholder='Nhập mật khẩu'
                             value={formData.password}
                             onChange={handleChange}

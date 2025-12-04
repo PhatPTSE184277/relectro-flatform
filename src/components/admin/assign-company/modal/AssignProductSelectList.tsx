@@ -3,6 +3,8 @@ import React from 'react';
 interface Product {
     productId: string;
     postId?: string;
+    categoryName: string;
+    brandName: string;
     productName: string;
     userName: string;
     address: string;
@@ -26,7 +28,9 @@ const AssignProductSelectList: React.FC<AssignProductSelectListProps> = ({
     pageSize
 }) => {
     // Kiểm tra tất cả sản phẩm trên trang hiện tại đã được chọn chưa
-    const allCurrentPageSelected = products.length > 0 && products.every(p => selectedProductIds.includes(p.productId));
+    const allCurrentPageSelected =
+        products.length > 0 &&
+        products.every((p) => selectedProductIds.includes(p.productId));
     const disableCheckbox = true;
     return (
         <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
@@ -44,7 +48,9 @@ const AssignProductSelectList: React.FC<AssignProductSelectListProps> = ({
                                 />
                             </th>
                             <th className='py-3 px-4 text-left'>STT</th>
-                            <th className='py-3 px-4 text-left'>Tên sản phẩm</th>
+                            <th className='py-3 px-4 text-left'>
+                                Sản phẩm
+                            </th>
                             <th className='py-3 px-4 text-left'>Khách hàng</th>
                             <th className='py-3 px-4 text-left'>Địa chỉ</th>
                         </tr>
@@ -52,7 +58,10 @@ const AssignProductSelectList: React.FC<AssignProductSelectListProps> = ({
                     <tbody>
                         {loading ? (
                             Array.from({ length: 6 }).map((_, idx) => (
-                                <tr key={idx} className='border-b border-gray-100'>
+                                <tr
+                                    key={idx}
+                                    className='border-b border-gray-100'
+                                >
                                     <td className='py-3 px-4'>
                                         <div className='w-4 h-4 bg-gray-200 rounded animate-pulse' />
                                     </td>
@@ -72,12 +81,18 @@ const AssignProductSelectList: React.FC<AssignProductSelectListProps> = ({
                             ))
                         ) : products.length > 0 ? (
                             products.map((product, index) => {
-                                const isSelected = selectedProductIds.includes(product.productId);
+                                const isSelected = selectedProductIds.includes(
+                                    product.productId
+                                );
                                 const isLast = index === products.length - 1;
                                 return (
                                     <tr
                                         key={product.productId}
-                                        className={`${!isLast ? 'border-b border-primary-100' : ''} ${isSelected ? 'bg-primary-50' : ''}`}
+                                        className={`${
+                                            !isLast
+                                                ? 'border-b border-primary-100'
+                                                : ''
+                                        } ${isSelected ? 'bg-primary-50' : ''}`}
                                     >
                                         <td className='py-3 px-4'>
                                             <input
@@ -89,11 +104,19 @@ const AssignProductSelectList: React.FC<AssignProductSelectListProps> = ({
                                         </td>
                                         <td className='py-3 px-4'>
                                             <span className='w-6 h-6 rounded-full bg-primary-600 text-white text-xs flex items-center justify-center font-semibold'>
-                                                {(page - 1) * pageSize + index + 1}
+                                                {(page - 1) * pageSize +
+                                                    index +
+                                                    1}
                                             </span>
                                         </td>
                                         <td className='py-3 px-4 font-medium text-gray-900'>
-                                            {product.productName || <span className='text-gray-400'>Chưa có tên</span>}
+                                            {product.categoryName
+                                                ? product.categoryName
+                                                : 'Không rõ'}
+                                            {' - '}
+                                            {product.brandName
+                                                ? product.brandName
+                                                : 'Không rõ'}
                                         </td>
                                         <td className='py-3 px-4 text-gray-700'>
                                             {product.userName}
@@ -108,7 +131,10 @@ const AssignProductSelectList: React.FC<AssignProductSelectListProps> = ({
                             })
                         ) : (
                             <tr>
-                                <td colSpan={5} className='text-center py-8 text-gray-400'>
+                                <td
+                                    colSpan={5}
+                                    className='text-center py-8 text-gray-400'
+                                >
                                     Không có sản phẩm nào
                                 </td>
                             </tr>

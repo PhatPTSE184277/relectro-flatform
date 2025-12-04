@@ -10,19 +10,22 @@ import { toast } from 'react-toastify';
 import { Collector } from '@/types';
 import { Users } from 'lucide-react';
 import ImportExcelModal from '@/components/admin/collection-company/modal/ImportExcelModal';
+import { useAuth } from '@/hooks/useAuth';
 
 const CollectorPage: React.FC = () => {
+    const { user } = useAuth();
     const { collectors, loading, fetchCollectors, importCollectors } = useCollectorContext();
     const [selectedCollector, setSelectedCollector] = useState<Collector | null>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [search, setSearch] = useState('');
     const [showImportModal, setShowImportModal] = useState(false);
 
-    // TODO: Lấy companyId từ user context hoặc session
-    const companyId = 1; // Temporary hardcoded
+    const companyId = user?.collectionCompanyId;
 
     useEffect(() => {
-        fetchCollectors(companyId);
+        if (companyId) {
+            fetchCollectors(companyId);
+        }
     }, [fetchCollectors, companyId]);
 
     const handleViewDetail = (collector: Collector) => {
@@ -36,6 +39,10 @@ const CollectorPage: React.FC = () => {
     };
 
     const handleImportExcel = async (file: File) => {
+        if (!companyId) {
+            toast.error('Không tìm thấy thông tin công ty');
+            return;
+        }
         try {
             await importCollectors(file);
             toast.success('Import thành công');

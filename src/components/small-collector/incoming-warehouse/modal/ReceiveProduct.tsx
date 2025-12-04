@@ -258,7 +258,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                             <span className='text-base font-medium text-gray-900 flex-1 break-all'>{scannedProduct.brandName}</span>
                                         </div>
                                         <div className='flex items-center w-1/2'>
-                                            <span className='text-sm text-gray-500 w-24 block'>Điểm ước tính:</span>
+                                            <span className='text-sm text-gray-500 w-24 block'>Điểm:</span>
                                             <CustomNumberInput
                                                 value={point}
                                                 onChange={setPoint}

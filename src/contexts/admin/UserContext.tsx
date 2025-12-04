@@ -1,5 +1,6 @@
 'use client';
 
+
 import React, {
     createContext,
     useState,
@@ -8,8 +9,7 @@ import React, {
     useEffect,
     ReactNode
 } from 'react';
-import { getUsers } from '@/services/admin/userService';
-import type { User } from '@/types/user';
+import { getAllUsers, User } from '@/services/admin/UserService';
 
 export type UserContextType = {
     users: User[];
@@ -22,6 +22,7 @@ export type UserContextType = {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+
 type Props = { children: ReactNode };
 
 export const UserProvider: React.FC<Props> = ({ children }) => {
@@ -32,7 +33,7 @@ export const UserProvider: React.FC<Props> = ({ children }) => {
     const fetchUsers = useCallback(async () => {
         setLoading(true);
         try {
-            const data = await getUsers();
+            const data = await getAllUsers();
             setUsers(data);
         } catch (err) {
             setUsers([]);
@@ -58,6 +59,7 @@ export const UserProvider: React.FC<Props> = ({ children }) => {
         <UserContext.Provider value={value}>{children}</UserContext.Provider>
     );
 };
+
 
 export const useUserContext = (): UserContextType => {
     const ctx = useContext(UserContext);

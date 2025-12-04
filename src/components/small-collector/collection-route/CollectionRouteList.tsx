@@ -20,6 +20,7 @@ const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
                 <table className='w-full text-sm text-gray-800'>
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                         <tr>
+                            <th className='py-3 px-4 text-center w-12'>STT</th>
                             <th className='py-3 px-4 text-left'>Thương hiệu</th>
                             <th className='py-3 px-4 text-left'>Người gửi</th>
                             <th className='py-3 px-4 text-left'>Người thu gom</th>
@@ -41,6 +42,7 @@ const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
                                     route={route}
                                     onView={() => onViewDetail(route.collectionRouteId)}
                                     isLast={idx === routes.length - 1}
+                                    stt={idx + 1}
                                 />
                             ))
                         ) : (

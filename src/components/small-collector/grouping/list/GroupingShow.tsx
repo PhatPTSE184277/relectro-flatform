@@ -30,7 +30,7 @@ const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean }> = ({ grou
 
             <td className='py-3 px-4 text-gray-700'>
                 <span className='px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700'>
-                    {grouping.totalPosts} bưu phẩm
+                    {grouping.totalPosts} sản phẩm
                 </span>
             </td>
 

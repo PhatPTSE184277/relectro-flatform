@@ -58,6 +58,7 @@ const PostList: React.FC<PostListProps> = ({
         <table className="w-full text-sm text-gray-800">
           <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold">
             <tr>
+              <th className="py-3 px-4 text-center w-12">STT</th>
               {/* <th className="py-3 px-4 text-left">Ảnh</th> */}
               <th className="py-3 px-4 text-left">Người gửi</th>
               <th className="py-3 px-4 text-left">Danh mục</th>
@@ -77,6 +78,7 @@ const PostList: React.FC<PostListProps> = ({
                 <PostShow
                   key={p.id}
                   post={p}
+                  stt={idx + 1}
                   onView={() => onView(p)}
                   onApprove={handleApprove}
                   onReject={() => handleReject(p.id)}
@@ -86,7 +88,7 @@ const PostList: React.FC<PostListProps> = ({
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="text-center py-8 text-gray-400">
+                <td colSpan={6} className="text-center py-8 text-gray-400">
                   Không có bài đăng nào.
                 </td>
               </tr>

@@ -11,7 +11,7 @@ import { getProductsByCompany } from '@/services/company/ProductQueryService';
 
 interface ProductQueryContextType {
   loading: boolean;
-  products: any[];
+  products: any;
   error: string | null;
   fetchProducts: (companyId: number, workDate: string) => Promise<void>;
   clearProducts: () => void;
@@ -21,7 +21,7 @@ const ProductQueryContext = createContext<ProductQueryContextType | undefined>(u
 
 export const ProductQueryProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   const fetchProducts = useCallback(async (companyId: number, workDate: string) => {
@@ -29,17 +29,17 @@ export const ProductQueryProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const data = await getProductsByCompany(companyId, workDate);
-      setProducts(data?.products || []);
+      setProducts(data);
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Lỗi khi tải sản phẩm');
-      setProducts([]);
+      setProducts(null);
     } finally {
       setLoading(false);
     }
   }, []);
 
   const clearProducts = useCallback(() => {
-    setProducts([]);
+    setProducts(null);
     setError(null);
   }, []);
 

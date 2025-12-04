@@ -216,14 +216,15 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                     value={packageId}
                                     onChange={(e) => setPackageId(e.target.value)}
                                     placeholder='Quét hoặc nhập mã package...'
-                                    className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-gray-900 bg-white'
+                                    disabled={loading}
+                                    className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
+                                    autoComplete='off'
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
                                             e.preventDefault();
                                             packageNameRef.current?.focus();
                                         }
                                     }}
-                                    style={{ boxShadow: 'none' }}
                                 />
                                 <ScanLine
                                     className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
@@ -242,7 +243,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                 value={packageName}
                                 onChange={(e) => setPackageName(e.target.value)}
                                 placeholder='Nhập tên package...'
-                                className='w-full px-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900'
+                                  className='w-full px-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-gray-900'
                             />
                         </div>
                     </div>

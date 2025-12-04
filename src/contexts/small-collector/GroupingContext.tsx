@@ -14,13 +14,15 @@ import {
     getVehicles,
     getGroupById,
     getGroupsByCollectionPointId,
-    getPendingGroupingPosts,
+    getPendingGroupingProducts,
     Vehicle,
     PreAssignGroupingPayload,
     AssignDayGroupingPayload,
-    AutoGroupPayload
+    AutoGroupPayload,
+    PendingProductsResponse
 } from '@/services/small-collector/GroupingService';
 import { toast } from 'react-toastify';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SuggestedVehicle {
     id: number;
@@ -30,8 +32,8 @@ interface SuggestedVehicle {
     allowedCapacityKg: number;
 }
 
-interface PostInDay {
-    postId: string;
+interface ProductInDay {
+    productId: string;
     userName: string;
     address: string;
     weight: number;
@@ -40,11 +42,11 @@ interface PostInDay {
 
 interface DaySuggestion {
     workDate: string;
-    originalPostCount: number;
+    originalProductCount: number;
     totalWeight: number;
     totalVolume: number;
     suggestedVehicle: SuggestedVehicle;
-    posts: PostInDay[];
+    products: ProductInDay[];
 }
 
 interface PreAssignResponse {
@@ -53,8 +55,8 @@ interface PreAssignResponse {
     days: DaySuggestion[];
 }
 
-interface PendingPost {
-    postId: string;
+interface PendingProduct {
+    productId: string;
     userName: string;
     address: string;
     productName: string;
@@ -69,13 +71,14 @@ interface GroupingContextType {
     loading: boolean;
     groupDetailLoading: boolean;
     vehicles: Vehicle[];
-    pendingPosts: PendingPost[];
+    pendingProducts: PendingProduct[];
+    pendingProductsData: PendingProductsResponse | null;
     preAssignResult: PreAssignResponse | null;
     autoGroupResult: any | null;
     groupDetail: any | null;
     groups: any[];
     fetchVehicles: () => Promise<void>;
-    fetchPendingPosts: () => Promise<void>;
+    fetchPendingProducts: (workDate?: string) => Promise<void>;
     fetchGroups: () => Promise<void>;
     getPreAssignSuggestion: (loadThresholdPercent: number) => Promise<void>;
     createGrouping: (payload: AssignDayGroupingPayload) => Promise<void>;
@@ -88,18 +91,21 @@ const GroupingContext = createContext<GroupingContextType | undefined>(undefined
 type Props = { children: ReactNode };
 
 export function GroupingProvider({ children }: Props) {
+    const { user } = useAuth();
     const [loading, setLoading] = useState<boolean>(false);
     const [groupDetailLoading, setGroupDetailLoading] = useState<boolean>(false);
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-    const [pendingPosts, setPendingPosts] = useState<PendingPost[]>([]);
+    const [pendingProducts, setPendingProducts] = useState<PendingProduct[]>([]);
+    const [pendingProductsData, setPendingProductsData] = useState<PendingProductsResponse | null>(null);
     const [preAssignResult, setPreAssignResult] = useState<PreAssignResponse | null>(null);
     const [autoGroupResult, setAutoGroupResult] = useState<any | null>(null);
     const [groupDetail, setGroupDetail] = useState<any | null>(null);
     const [groups, setGroups] = useState<any[]>([]);
     const fetchGroups = useCallback(async () => {
+        if (!user?.smallCollectionPointId) return;
         setLoading(true);
         try {
-            const data = await getGroupsByCollectionPointId(1);
+            const data = await getGroupsByCollectionPointId(user.smallCollectionPointId);
             setGroups(data);
         } catch (err) {
             console.error('fetchGroups error', err);
@@ -107,12 +113,13 @@ export function GroupingProvider({ children }: Props) {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [user?.smallCollectionPointId]);
 
     const fetchVehicles = useCallback(async () => {
+        if (!user?.smallCollectionPointId) return;
         setLoading(true);
         try {
-            const data = await getVehicles();
+            const data = await getVehicles(user.smallCollectionPointId);
             setVehicles(data);
         } catch (err) {
             console.error('fetchVehicles error', err);
@@ -120,29 +127,43 @@ export function GroupingProvider({ children }: Props) {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [user?.smallCollectionPointId]);
 
-    const fetchPendingPosts = useCallback(async () => {
+    const fetchPendingProducts = useCallback(async (workDate?: string) => {
+        if (!user?.smallCollectionPointId) {
+            console.warn('No smallCollectionPointId found in user profile:', user);
+            return;
+        }
         setLoading(true);
         try {
-            const data = await getPendingGroupingPosts();
-            setPendingPosts(data);
+            const today = workDate || new Date().toISOString().split('T')[0];
+            console.log('Fetching products for:', { smallPointId: user.smallCollectionPointId, workDate: today });
+            const data = await getPendingGroupingProducts(user.smallCollectionPointId, today);
+            console.log('Products data received:', data);
+            setPendingProductsData(data);
+            setPendingProducts(data.products || []);
         } catch (err) {
-            console.error('fetchPendingPosts error', err);
-            toast.error('Lỗi khi tải danh sách bài viết chờ gom nhóm');
+            console.error('fetchPendingProducts error', err);
+            toast.error('Lỗi khi tải danh sách sản phẩm chờ gom nhóm');
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [user?.smallCollectionPointId]);
 
     const getPreAssignSuggestion = useCallback(
         async (loadThresholdPercent: number) => {
+            if (!user?.smallCollectionPointId) {
+                toast.error('Không tìm thấy thông tin điểm thu gom');
+                return;
+            }
             setLoading(true);
             try {
                 const payload: PreAssignGroupingPayload = {
                     loadThresholdPercent
                 };
-                const data = await preAssignGrouping(payload);
+                const data = await preAssignGrouping(payload, user.smallCollectionPointId);
+                console.log('PreAssign result:', data);
+                console.log('Days structure:', data?.days);
                 setPreAssignResult(data);
                 toast.success('Đã tải gợi ý gom nhóm thành công');
             } catch (err: any) {
@@ -154,17 +175,21 @@ export function GroupingProvider({ children }: Props) {
                 setLoading(false);
             }
         },
-        []
+        [user?.smallCollectionPointId]
     );
 
     const createGrouping = useCallback(
         async (payload: AssignDayGroupingPayload) => {
+            if (!user?.smallCollectionPointId) {
+                toast.error('Không tìm thấy thông tin điểm thu gom');
+                return;
+            }
             setLoading(true);
             try {
-                await assignDayGrouping(payload);
+                await assignDayGrouping(payload, user.smallCollectionPointId);
                 toast.success('Tạo nhóm thu gom thành công');
-                // Refresh pending posts after creating grouping
-                await fetchPendingPosts();
+                // Refresh pending products after creating grouping
+                await fetchPendingProducts();
             } catch (err: any) {
                 console.error('createGrouping error', err);
                 toast.error(
@@ -175,14 +200,18 @@ export function GroupingProvider({ children }: Props) {
                 setLoading(false);
             }
         },
-        [fetchPendingPosts]
+        [user?.smallCollectionPointId, fetchPendingProducts]
     );
 
     const calculateRoute = useCallback(async (saveResult: boolean) => {
+        if (!user?.smallCollectionPointId) {
+            toast.error('Không tìm thấy thông tin điểm thu gom');
+            return;
+        }
         setLoading(true);
         try {
             const payload: AutoGroupPayload = { saveResult };
-            const data = await autoGroup(payload);
+            const data = await autoGroup(payload, user.smallCollectionPointId);
             setAutoGroupResult(data);
             toast.success('Tính toán đoạn đường thành công');
         } catch (err: any) {
@@ -193,7 +222,7 @@ export function GroupingProvider({ children }: Props) {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [user?.smallCollectionPointId]);
 
     const fetchGroupDetail = useCallback(async (groupId: number) => {
         setGroupDetailLoading(true);
@@ -212,13 +241,14 @@ export function GroupingProvider({ children }: Props) {
         loading,
         groupDetailLoading,
         vehicles,
-        pendingPosts,
+        pendingProducts,
+        pendingProductsData,
         preAssignResult,
         autoGroupResult,
         groupDetail,
         groups,
         fetchVehicles,
-        fetchPendingPosts,
+        fetchPendingProducts,
         fetchGroups,
         getPreAssignSuggestion,
         createGrouping,

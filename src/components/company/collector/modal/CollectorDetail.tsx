@@ -81,22 +81,26 @@ const CollectorDetail: React.FC<CollectorDetailProps> = ({ collector, onClose })
                         Thông tin liên hệ
                     </h3>
                     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                        <div className="grid grid-cols-1 gap-4">
-                            <InfoCard 
-                                icon={<Mail className="w-5 h-5 text-primary-500" />}
-                                label="Email" 
-                                value={collector.email || 'Chưa có'} 
-                            />
-                            <InfoCard 
-                                icon={<Phone className="w-5 h-5 text-primary-500" />}
-                                label="Số điện thoại" 
-                                value={collector.phone || 'Chưa có'} 
-                            />
-                            <InfoCard 
-                                icon={<MapPin className="w-5 h-5 text-primary-500" />}
-                                label="Điểm thu gom" 
-                                value={`Điểm thu gom số ${collector.smallCollectionPointId}`} 
-                            />
+                        <div className="flex flex-col gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <InfoCard 
+                                    icon={<Mail className="w-5 h-5 text-primary-500" />}
+                                    label="Email" 
+                                    value={collector.email || 'Chưa có'} 
+                                />
+                                <InfoCard 
+                                    icon={<Phone className="w-5 h-5 text-primary-500" />}
+                                    label="Số điện thoại" 
+                                    value={collector.phone || 'Chưa có'} 
+                                />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <InfoCard 
+                                    icon={<MapPin className="w-5 h-5 text-primary-500" />}
+                                    label="Điểm thu gom" 
+                                    value={`Điểm thu gom số ${collector.smallCollectionPointId}`} 
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -123,8 +127,8 @@ const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value }) => (
             {icon}
         </div>
         <div>
-            <p className="text-xs text-gray-500 font-medium">{label}</p>
-            <p className="text-sm text-gray-900 font-semibold">{value}</p>
+            <div className="text-sm font-bold text-gray-700 mb-1">{label}</div>
+            <div className="text-sm text-gray-900">{value}</div>
         </div>
     </div>
 );

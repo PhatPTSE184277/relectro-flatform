@@ -2,14 +2,12 @@ import React from 'react';
 
 const CollectorTableSkeleton: React.FC = () => (
     <tr className='border-b border-gray-100 hover:bg-gray-50'>
+        <td className='py-3 px-4 text-center'>
+            <div className='w-7 h-7 rounded-full bg-gray-200 mx-auto animate-pulse' />
+        </td>
         <td className='py-3 px-4'>
-            <div className='flex items-center gap-3'>
-                <div className='w-10 h-10 rounded-full bg-gray-200 animate-pulse' />
-                <div>
-                    <div className='h-4 bg-gray-200 rounded w-32 mb-2 animate-pulse' />
-                    <div className='h-3 bg-gray-200 rounded w-24 animate-pulse' />
-                </div>
-            </div>
+            <div className='h-4 bg-gray-200 rounded w-32 mb-2 animate-pulse' />
+            <div className='h-3 bg-gray-200 rounded w-24 animate-pulse' />
         </td>
         <td className='py-3 px-4'>
             <div className='h-4 bg-gray-200 rounded w-40 animate-pulse' />

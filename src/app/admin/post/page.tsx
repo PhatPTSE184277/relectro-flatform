@@ -2,12 +2,12 @@
 import React, { useEffect, useState } from 'react';
 import type { Post } from '@/types/post';
 
-import PostList from '@/components/small-collector/post/PostList';
-import PostFilter from '@/components/small-collector/post/PostFilter';
-import PostDetail from '@/components/small-collector/post/modal/PostDetail';
+import PostList from '@/components/admin/post/PostList';
+import PostFilter from '@/components/admin/post/PostFilter';
+import PostDetail from '@/components/admin/post/modal/PostDetail';
 import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
-import { usePostContext } from '@/contexts/small-collector/PostContext';
+import { usePostContext } from '@/contexts/admin/PostContext';
 import { PostStatus } from '@/enums/PostStatus';
 import { ClipboardList } from 'lucide-react';
 

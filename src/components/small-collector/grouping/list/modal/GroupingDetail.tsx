@@ -16,16 +16,14 @@ interface Route {
     postId: string;
     userName: string;
     address: string;
-    length: number;
-    width: number;
-    height: number;
-    dimensionText: string;
     weightKg: number;
     volumeM3: number;
     distanceKm: number;
     schedule: string;
     estimatedArrival: string;
     sizeTier?: string;
+    categoryName?: string;
+    brandName?: string;
 }
 
 interface GroupingDetailData {
@@ -214,9 +212,6 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                                 Địa chỉ
                                             </th>
                                             <th className='py-3 px-4 text-left'>
-                                                Kích thước (cm)
-                                            </th>
-                                            <th className='py-3 px-4 text-left'>
                                                 Khối lượng
                                             </th>
                                             <th className='py-3 px-4 text-left'>
@@ -243,15 +238,15 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                                         </span>
                                                     </td>
                                                     <td className='py-3 px-4 font-medium text-gray-900'>
-                                                        {route.userName}
+                                                        <div>{route.userName}</div>
+                                                        <div className='text-xs text-gray-500 mt-1'>
+                                                            {route.categoryName ? route.categoryName : 'Không rõ'}{' - '}{route.brandName ? route.brandName : 'Không rõ'}
+                                                        </div>
                                                     </td>
                                                     <td className='py-3 px-4 text-gray-700 max-w-xs'>
                                                         <div className='line-clamp-2'>
                                                             {route.address}
                                                         </div>
-                                                    </td>
-                                                    <td className='py-3 px-4 text-gray-700'>
-                                                        {formatDimensionText(route)}
                                                     </td>
                                                     <td className='py-3 px-4 text-gray-700'>
                                                         <div className='flex flex-col gap-1'>

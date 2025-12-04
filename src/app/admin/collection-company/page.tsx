@@ -4,15 +4,20 @@ import React, { useState } from 'react';
 import { IoSparklesOutline, IoCloudUploadOutline } from 'react-icons/io5';
 import { useCollectionCompanyContext } from '@/contexts/admin/CollectionCompanyContext';
 import CompanyList from '@/components/admin/collection-company/CompanyList';
+import CompanyFilter from '@/components/admin/collection-company/CompanyFilter';
 import CompanyDetail from '@/components/admin/collection-company/modal/CompanyDetail';
 import SearchBox from '@/components/ui/SearchBox';
-import { toast } from 'react-toastify';
+import ImportExcelModal from '@/components/admin/collection-company/modal/ImportExcelModal';
+import { useAuth } from '@/hooks/useAuth';
 
 const CollectionCompanyPage: React.FC = () => {
+    const { user } = useAuth();
     const { companies, loading, importFromExcel } = useCollectionCompanyContext();
     const [selectedCompany, setSelectedCompany] = useState<any>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [search, setSearch] = useState('');
+    const [filterStatus, setFilterStatus] = useState<'active' | 'inactive'>('active');
+    const [showImportModal, setShowImportModal] = useState(false);
 
     const handleViewDetail = (company: any) => {
         setSelectedCompany(company);
@@ -24,33 +29,25 @@ const CollectionCompanyPage: React.FC = () => {
         setSelectedCompany(null);
     };
 
-    const handleImportExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        // Validate file type
-        const validTypes = [
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        ];
-        if (!validTypes.includes(file.type)) {
-            toast.error('Vui lòng chọn file Excel (.xls hoặc .xlsx)');
-            e.target.value = '';
-            return;
-        }
-
+    const handleImportExcel = async (file: File) => {
         await importFromExcel(file);
-        e.target.value = '';
     };
 
     const filteredCompanies = companies.filter((company) => {
         const searchLower = search.toLowerCase();
-        return (
+        const matchSearch =
             company.name?.toLowerCase().includes(searchLower) ||
             company.companyEmail?.toLowerCase().includes(searchLower) ||
             company.phone?.toLowerCase().includes(searchLower) ||
-            company.city?.toLowerCase().includes(searchLower)
-        );
+            company.city?.toLowerCase().includes(searchLower);
+
+        if (filterStatus === 'active') {
+            return matchSearch && company.status?.toLowerCase() === 'active';
+        }
+        if (filterStatus === 'inactive') {
+            return matchSearch && company.status?.toLowerCase() === 'inactive';
+        }
+        return false;
     });
 
     return (
@@ -62,20 +59,20 @@ const CollectionCompanyPage: React.FC = () => {
                         <IoSparklesOutline className='text-white' size={20} />
                     </div>
                     <h1 className='text-3xl font-bold text-gray-900'>
-                        Quản lý công ty thu gom
+                        {user?.role === 'Collector' ? 'Thông tin công ty' : 'Quản lý công ty thu gom'}
                     </h1>
                 </div>
                 <div className='flex gap-4 items-center flex-1 justify-end'>
-                    <label className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md border border-primary-200 cursor-pointer'>
-                        <IoCloudUploadOutline size={20} />
-                        Import từ Excel
-                        <input
-                            type='file'
-                            accept='.xls,.xlsx'
-                            onChange={handleImportExcel}
-                            className='hidden'
-                        />
-                    </label>
+                    {user?.role !== 'Collector' && (
+                        <button
+                            type='button'
+                            className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md border border-primary-200 cursor-pointer'
+                            onClick={() => setShowImportModal(true)}
+                        >
+                            <IoCloudUploadOutline size={20} />
+                            Import từ Excel
+                        </button>
+                    )}
                     <div className='flex-1 max-w-md'>
                         <SearchBox
                             value={search}
@@ -85,6 +82,12 @@ const CollectionCompanyPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Filter */}
+            <CompanyFilter
+                status={filterStatus}
+                onFilterChange={setFilterStatus}
+            />
 
             {/* Company List */}
             <CompanyList
@@ -98,6 +101,15 @@ const CollectionCompanyPage: React.FC = () => {
                 <CompanyDetail
                     company={selectedCompany}
                     onClose={handleCloseModal}
+                />
+            )}
+
+            {/* Import Excel Modal */}
+            {showImportModal && (
+                <ImportExcelModal
+                    open={showImportModal}
+                    onClose={() => setShowImportModal(false)}
+                    onImport={handleImportExcel}
                 />
             )}
         </div>

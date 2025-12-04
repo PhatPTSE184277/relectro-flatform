@@ -19,7 +19,11 @@ const AssignedProductShow: React.FC<AssignedProductShowProps> = ({
                 </span>
             </td>
             <td className='py-3 px-4 font-medium'>
-                <div className='text-gray-900'>{product.productName || 'Không rõ'}</div>
+                <div className='text-gray-900'>
+                    {product.categoryName ? product.categoryName : 'Không rõ'}
+                    {' - '}
+                    {product.brandName ? product.brandName : 'Không rõ'}
+                </div>
             </td>
             <td className='py-3 px-4 text-gray-700'>
                 {product.userName || <span className='text-gray-400'>Chưa có</span>}

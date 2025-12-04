@@ -7,6 +7,7 @@ import SearchBox from '@/components/ui/SearchBox';
 import ConfigList from '@/components/admin/company-config/ConfigList';
 import ConfigFilter from '@/components/admin/company-config/ConfigFilter';
 import EditConfigModal from '@/components/admin/company-config/modal/EditConfigModal';
+import UpdateQuotaModal from '@/components/admin/company-config/modal/UpdateQuotaModal';
 
 const CompanyConfigPage: React.FC = () => {
     const {
@@ -17,10 +18,11 @@ const CompanyConfigPage: React.FC = () => {
     } = useCompanyConfigContext();
 
     const [search, setSearch] = useState('');
-    const [filterStatus, setFilterStatus] = useState('all');
+    const [filterStatus, setFilterStatus] = useState('active');
     const [selectedTeam, setSelectedTeam] = useState<any | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [loadingDetail, setLoadingDetail] = useState(false);
+    const [showQuotaModal, setShowQuotaModal] = useState(false);
 
     const companies = companiesWithPoints || [];
 
@@ -70,6 +72,10 @@ const CompanyConfigPage: React.FC = () => {
         setSelectedTeam(null);
     };
 
+    const handleUpdateQuota = async (updatedCompanies: any[]) => {
+        await updateConfig(updatedCompanies);
+    };
+
     return (
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
             {/* Header + Search */}
@@ -82,12 +88,21 @@ const CompanyConfigPage: React.FC = () => {
                         Cấu hình công ty
                     </h1>
                 </div>
-                <div className='flex-1 max-w-md'>
-                    <SearchBox
-                        value={search}
-                        onChange={setSearch}
-                        placeholder='Tìm kiếm theo tên công ty...'
-                    />
+                <div className='flex items-center gap-3'>
+                    <button
+                        onClick={() => setShowQuotaModal(true)}
+                        className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition cursor-pointer border border-primary-200'
+                    >
+                        <Settings size={16} />
+                        Phân bổ tỷ lệ
+                    </button>
+                    <div className='flex-1 max-w-md'>
+                        <SearchBox
+                            value={search}
+                            onChange={setSearch}
+                            placeholder='Tìm kiếm theo tên công ty...'
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -118,6 +133,14 @@ const CompanyConfigPage: React.FC = () => {
                     loading={loadingDetail}
                 />
             )}
+
+            {/* Update Quota Modal */}
+            <UpdateQuotaModal
+                open={showQuotaModal}
+                onClose={() => setShowQuotaModal(false)}
+                onConfirm={handleUpdateQuota}
+                companies={companies}
+            />
         </div>
     );
 };

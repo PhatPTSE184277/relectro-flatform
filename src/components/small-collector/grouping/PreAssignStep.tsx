@@ -1,22 +1,26 @@
 'use client';
 
 import React from 'react';
-import PostList from './PostList';
+import ProductList from './ProductList';
 
 interface PreAssignStepProps {
     loading: boolean;
-    posts: any[];
+    products: any[];
     loadThreshold: number;
     setLoadThreshold: (value: number) => void;
     onGetSuggestion: () => void;
+    page?: number;
+    itemsPerPage?: number;
 }
 
 const PreAssignStep: React.FC<PreAssignStepProps> = ({
     loading,
-    posts,
+    products,
     loadThreshold,
     setLoadThreshold,
-    onGetSuggestion
+    onGetSuggestion,
+    page = 1,
+    itemsPerPage = 10
 }) => {
     return (
         <div className='space-y-6'>
@@ -62,15 +66,15 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
             <div className='flex justify-center mb-4'>
                 <button
                     onClick={onGetSuggestion}
-                    disabled={loading || (posts?.length || 0) === 0}
+                    disabled={loading || (products?.length || 0) === 0}
                     className='py-2 px-6 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer'
                 >
                     {loading ? 'Đang xử lý...' : 'Lấy gợi ý gom nhóm'}
                 </button>
             </div>
 
-            {/* Pending Posts List */}
-            <PostList posts={posts} loading={loading} />
+            {/* Pending Products List */}
+            <ProductList products={products} loading={loading} page={page} itemsPerPage={itemsPerPage} />
         </div>
     );
 };
