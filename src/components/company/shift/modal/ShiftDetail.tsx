@@ -1,7 +1,10 @@
 'use client';
 
+
 import React from 'react';
-import { User, Calendar, Clock, Truck, CheckCircle } from 'lucide-react';
+import { User, Calendar, Clock, Truck } from 'lucide-react';
+import InfoCard from '@/components/ui/InfoCard';
+import { formatTimeWithDate } from '@/utils/FormatTime';
 
 interface ShiftDetailProps {
     shift: any | null;
@@ -9,6 +12,8 @@ interface ShiftDetailProps {
 }
 
 const ShiftDetail: React.FC<ShiftDetailProps> = ({ shift, onClose }) => {
+
+
     if (!shift) {
         return (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -57,26 +62,9 @@ const ShiftDetail: React.FC<ShiftDetailProps> = ({ shift, onClose }) => {
 
                 {/* Main content */}
                 <div className="flex-1 overflow-y-auto p-6">
-                    {/* Thông tin nhân viên */}
-                    <div className="flex items-center gap-6 mb-6 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                        <div className="w-16 h-16 rounded-full bg-primary-600 flex items-center justify-center text-white text-2xl font-bold">
-                            {shift.collectorName?.charAt(0) || 'N'}
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-bold text-gray-900">{shift.collectorName}</h3>
-                            <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium ${
-                                shift.status === 'Active' 
-                                    ? 'bg-green-100 text-green-700' 
-                                    : 'bg-gray-100 text-gray-600'
-                            }`}>
-                                {shift.status === 'Active' ? 'Hoạt động' : 'Không hoạt động'}
-                            </span>
-                        </div>
-                    </div>
-
                     {/* Thông tin ca làm việc */}
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                        <span className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                             <Calendar className='w-5 h-5 text-primary-500' />
                         </span>
                         Thông tin ca làm việc
@@ -85,48 +73,24 @@ const ShiftDetail: React.FC<ShiftDetailProps> = ({ shift, onClose }) => {
                         <div className="flex flex-col gap-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <InfoCard 
-                                    icon={<User className="w-5 h-5 text-primary-500" />}
+                                    icon={<User className="w-4 h-4 text-primary-500" />} 
                                     label="Nhân viên" 
                                     value={shift.collectorName || 'Chưa có'} 
                                 />
                                 <InfoCard 
-                                    icon={<Truck className="w-5 h-5 text-primary-500" />}
+                                    icon={<Truck className="w-4 h-4 text-primary-500" />} 
                                     label="Biển số xe" 
                                     value={shift.plate_Number || 'Chưa có'} 
                                 />
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4">
                                 <InfoCard 
-                                    icon={<Calendar className="w-5 h-5 text-primary-500" />}
-                                    label="Ngày làm việc" 
-                                    value={shift.workDate ? new Date(shift.workDate).toLocaleDateString('vi-VN') : 'Chưa có'} 
-                                />
-                                <InfoCard 
-                                    icon={<Clock className="w-5 h-5 text-primary-500" />}
+                                    icon={<Clock className="w-4 h-4 text-primary-500" />} 
                                     label="Giờ làm việc" 
                                     value={
                                         shift.shift_Start_Time && shift.shift_End_Time ? (
-                                            <>
-                                                {new Date(shift.shift_Start_Time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
-                                                {' - '}
-                                                {new Date(shift.shift_End_Time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
-                                            </>
+                                            `${formatTimeWithDate(shift.shift_Start_Time)} - ${formatTimeWithDate(shift.shift_End_Time)}`
                                         ) : 'Chưa có'
-                                    } 
-                                />
-                            </div>
-                            <div className="grid grid-cols-1 gap-4">
-                                <InfoCard 
-                                    icon={<CheckCircle className="w-5 h-5 text-primary-500" />}
-                                    label="Trạng thái" 
-                                    value={
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                            shift.status === 'Active' 
-                                                ? 'bg-green-100 text-green-700' 
-                                                : 'bg-gray-100 text-gray-600'
-                                        }`}>
-                                            {shift.status === 'Active' ? 'Hoạt động' : 'Không hoạt động'}
-                                        </span>
                                     } 
                                 />
                             </div>
@@ -143,23 +107,5 @@ const ShiftDetail: React.FC<ShiftDetailProps> = ({ shift, onClose }) => {
         </div>
     );
 };
-
-// InfoCard Component
-interface InfoCardProps {
-    icon: React.ReactNode;
-    label: string;
-    value: React.ReactNode;
-}
-const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value }) => (
-    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-primary-100">
-            {icon}
-        </div>
-        <div>
-            <div className="text-sm font-bold text-gray-700 mb-1">{label}</div>
-            <div className="text-sm text-gray-900">{value}</div>
-        </div>
-    </div>
-);
 
 export default ShiftDetail;

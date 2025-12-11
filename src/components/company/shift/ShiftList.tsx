@@ -22,7 +22,7 @@ const ShiftList: React.FC<ShiftListProps> = ({
                             <th className='py-3 px-4 text-center w-12'>STT</th>
                             <th className='py-3 px-4 text-left'>Nhân viên</th>
                             <th className='py-3 px-4 text-left'>Biển số xe</th>
-                            <th className='py-3 px-4 text-left'>Ngày làm việc</th>
+                            {/* <th className='py-3 px-4 text-left'>Ngày làm việc</th> */}
                             <th className='py-3 px-4 text-left'>Giờ làm việc</th>
                             <th className='py-3 px-4 text-center'>Hành động</th>
                         </tr>

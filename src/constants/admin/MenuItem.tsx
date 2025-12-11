@@ -4,7 +4,8 @@ import {
     Users,
     Factory,
     Package,
-    ClipboardList
+    ClipboardList,
+    Wrench
 } from 'lucide-react';
 
 export const adminMenuItems = [
@@ -36,7 +37,7 @@ export const adminMenuItems = [
         id: 'company-config',
         label: 'Cấu hình công ty',
         path: '/admin/company-config',
-        icon: <Settings size={20} />
+        icon: <Wrench size={20} />
     },
     {
         id: 'system-config',

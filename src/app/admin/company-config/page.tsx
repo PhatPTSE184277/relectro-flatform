@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useCompanyConfigContext } from '@/contexts/admin/CompanyConfigContext';
-import { Settings } from 'lucide-react';
+import { Wrench } from 'lucide-react';
 import SearchBox from '@/components/ui/SearchBox';
 import ConfigList from '@/components/admin/company-config/ConfigList';
 import ConfigFilter from '@/components/admin/company-config/ConfigFilter';
@@ -82,7 +82,7 @@ const CompanyConfigPage: React.FC = () => {
             <div className='flex justify-between items-center mb-6'>
                 <div className='flex items-center gap-3'>
                     <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
-                        <Settings className='text-white' size={20} />
+                        <Wrench className='text-white' size={20} />
                     </div>
                     <h1 className='text-3xl font-bold text-gray-900'>
                         Cấu hình công ty
@@ -93,7 +93,7 @@ const CompanyConfigPage: React.FC = () => {
                         onClick={() => setShowQuotaModal(true)}
                         className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition cursor-pointer border border-primary-200'
                     >
-                        <Settings size={16} />
+                        <Wrench size={16} />
                         Phân bổ tỷ lệ
                     </button>
                     <div className='flex-1 max-w-md'>

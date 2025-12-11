@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Building2, Mail, Phone, MapPin } from 'lucide-react';
-import InfoCard from '@/components/ui/InfoCard';
+import SummaryCard from '@/components/ui/SummaryCard';
 
 interface CompanyDetailProps {
     company: any;
@@ -36,7 +36,7 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onClose }) => {
             ></div>
 
             {/* Modal container */}
-            <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]">
+            <div className="relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]">
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100">
                     <div>
@@ -65,34 +65,31 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onClose }) => {
                         </span>
                         Thông tin công ty
                     </h3>
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                        <div className="flex flex-col gap-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <InfoCard 
-                                    icon={<Building2 className="w-4 h-4 text-primary-500" />} 
-                                    label="Tên công ty" 
-                                    value={company.name || 'Không rõ'} 
-                                />
-                                <InfoCard 
-                                    icon={<Mail className="w-4 h-4 text-primary-500" />} 
-                                    label="Email" 
-                                    value={company.companyEmail || 'Chưa có'} 
-                                />
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <InfoCard 
-                                    icon={<Phone className="w-4 h-4 text-primary-500" />} 
-                                    label="Số điện thoại" 
-                                    value={company.phone || 'Chưa có'} 
-                                />
-                                <InfoCard 
-                                    icon={<MapPin className="w-4 h-4 text-primary-500" />} 
-                                    label="Thành phố" 
-                                    value={company.city || 'Chưa có'} 
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    <SummaryCard
+                        items={[
+                            {
+                                icon: <Building2 className="w-4 h-4 text-primary-500" />, 
+                                label: 'Tên công ty',
+                                value: company.name || 'Không rõ',
+                            },
+                            {
+                                icon: <Mail className="w-4 h-4 text-primary-500" />, 
+                                label: 'Email',
+                                value: company.companyEmail || 'Chưa có',
+                            },
+                            {
+                                icon: <Phone className="w-4 h-4 text-primary-500" />, 
+                                label: 'Số điện thoại',
+                                value: company.phone || 'Chưa có',
+                            },
+                            {
+                                icon: <MapPin className="w-4 h-4 text-primary-500" />, 
+                                label: 'Thành phố',
+                                value: company.city || 'Chưa có',
+                            },
+                        ]}
+                        columns={4}
+                    />
                 </div>
 
                 {/* Animation */}

@@ -1,7 +1,10 @@
+
 'use client';
 
 import React from 'react';
-import { Truck, MapPin, Weight, Ruler } from 'lucide-react';
+import { Truck, MapPin, Weight, Ruler, CheckCircle } from 'lucide-react';
+import InfoCard from '@/components/ui/InfoCard';
+import SummaryCard from '@/components/ui/SummaryCard';
 
 interface VehicleDetailProps {
     vehicle: any | null;
@@ -57,53 +60,52 @@ const VehicleDetail: React.FC<VehicleDetailProps> = ({ vehicle, onClose }) => {
 
                 {/* Main content */}
                 <div className="flex-1 overflow-y-auto p-6">
+                    {/* Summary section */}
+                    <SummaryCard
+                        items={[
+                            {
+                                icon: <Truck className='w-5 h-5 text-primary-500' />,
+                                label: 'Biển số xe',
+                                value: vehicle.plateNumber || 'Không rõ',
+                            },
+                            {
+                                icon: <Weight className='w-5 h-5 text-primary-500' />,
+                                label: 'Tải trọng',
+                                value: vehicle.capacityKg ? `${vehicle.capacityKg} kg` : 'Chưa có',
+                            },
+                            {
+                                icon: <Truck className='w-5 h-5 text-primary-500' />,
+                                label: 'Loại xe',
+                                value: vehicle.vehicleType || 'Không rõ loại xe',
+                            },
+                            {
+                                icon: <Ruler className='w-5 h-5 text-primary-500' />,
+                                label: 'Thể tích',
+                                value: vehicle.capacityM3 ? `${vehicle.capacityM3} m³` : 'Chưa có',
+                            },
+                        ]}
+                    />
                     {/* Thông tin phương tiện */}
-                    <div className="flex items-center gap-6 mb-6 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                        <div className="w-16 h-16 rounded-full bg-primary-600 flex items-center justify-center text-white text-2xl font-bold">
-                            <Truck size={32} />
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-bold text-gray-900">{vehicle.plateNumber || 'Không rõ'}</h3>
-                            <p className="text-sm text-gray-500">{vehicle.vehicleType || 'Không rõ loại xe'}</p>
-                            <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium ${
-                                vehicle.status === 'active' 
-                                    ? 'bg-green-100 text-green-700' 
-                                    : 'bg-gray-100 text-gray-600'
-                            }`}>
-                                {vehicle.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Thông tin chi tiết */}
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                        <span className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                             <Truck className='w-5 h-5 text-primary-500' />
                         </span>
                         Thông tin phương tiện
                     </h3>
                     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <InfoCard
-                                icon={<MapPin className='w-5 h-5 text-primary-500' />}
-                                label="Điểm thu gom"
-                                value={vehicle.smallCollectionPointName || 'Chưa có'}
-                            />
-                            <InfoCard
-                                icon={<Weight className='w-5 h-5 text-primary-500' />}
-                                label="Tải trọng"
-                                value={vehicle.capacityKg ? `${vehicle.capacityKg} kg` : 'Chưa có'}
-                            />
-                            <InfoCard
-                                icon={<Ruler className='w-5 h-5 text-primary-500' />}
-                                label="Thể tích"
-                                value={vehicle.capacityM3 ? `${vehicle.capacityM3} m³` : 'Chưa có'}
-                            />
-                            <InfoCard
-                                icon={<MapPin className='w-5 h-5 text-primary-500' />}
-                                label="Bán kính hoạt động"
-                                value={vehicle.radiusKm ? `${vehicle.radiusKm} km` : 'Chưa có'}
-                            />
+                        <div className="flex flex-col gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <InfoCard
+                                    icon={<MapPin className='w-4 h-4 text-primary-500' />}
+                                    label="Điểm thu gom"
+                                    value={vehicle.smallCollectionPointName || 'Chưa có'}
+                                />
+                                <InfoCard
+                                    icon={<MapPin className='w-4 h-4 text-primary-500' />}
+                                    label="Bán kính hoạt động"
+                                    value={vehicle.radiusKm ? `${vehicle.radiusKm} km` : 'Chưa có'}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -117,23 +119,5 @@ const VehicleDetail: React.FC<VehicleDetailProps> = ({ vehicle, onClose }) => {
         </div>
     );
 };
-
-// InfoCard Component
-interface InfoCardProps {
-    icon: React.ReactNode;
-    label: string;
-    value: React.ReactNode;
-}
-const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value }) => (
-    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-primary-100">
-            {icon}
-        </div>
-        <div>
-            <div className="text-sm font-bold text-gray-700 mb-1">{label}</div>
-            <div className="text-sm text-gray-900">{value}</div>
-        </div>
-    </div>
-);
 
 export default VehicleDetail;

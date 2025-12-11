@@ -56,6 +56,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                     </h3>
                     {/* Package Info Card */}
                     <SummaryCard
+                        columns={4}
                         items={[
                             {
                                 icon: <Tag size={14} className='text-primary-400' />,

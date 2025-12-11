@@ -1,5 +1,19 @@
 import React from 'react';
 import { Eye } from 'lucide-react';
+import { formatIsoToHourMinute } from '@/utils/FormatTime';
+
+// Helper to format time and date if needed
+const formatTimeWithDate = (isoStr: string) => {
+    if (!isoStr) return '';
+    const date = new Date(isoStr);
+    if (isNaN(date.getTime())) return '';
+    const hour = date.getHours().toString().padStart(2, '0');
+    const minute = date.getMinutes().toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${hour}:${minute} ${day}/${month}/${year}`;
+};
 
 interface ShiftShowProps {
     shift: any;
@@ -37,19 +51,15 @@ const ShiftShow: React.FC<ShiftShowProps> = ({
                 )}
             </td>
 
-            <td className='py-3 px-4 text-gray-700'>
+            {/* <td className='py-3 px-4 text-gray-700'>
                 {shift.workDate ? new Date(shift.workDate).toLocaleDateString('vi-VN') : (
                     <span className='text-gray-400'>Chưa có</span>
                 )}
-            </td>
+            </td> */}
 
             <td className='py-3 px-4 text-gray-700'>
                 {shift.shift_Start_Time && shift.shift_End_Time ? (
-                    <>
-                        {new Date(shift.shift_Start_Time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
-                        {' - '}
-                        {new Date(shift.shift_End_Time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
-                    </>
+                    `${formatTimeWithDate(shift.shift_Start_Time)} - ${formatTimeWithDate(shift.shift_End_Time)}`
                 ) : (
                     <span className='text-gray-400'>Chưa có</span>
                 )}
