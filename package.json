@@ -15,7 +15,7 @@
     "lucide-react": "^0.552.0",
     "mapbox": "^1.0.0-beta10",
     "mapbox-gl": "^3.16.0",
-    "next": "16.0.1",
+    "next": "16.0.7",
     "react": "19.2.0",
     "react-datepicker": "^8.8.0",
     "react-dom": "19.2.0",
