@@ -39,6 +39,12 @@ export const adminMenuItems = [
         icon: <Settings size={20} />
     },
     {
+        id: 'system-config',
+        label: 'Cấu hình hệ thống',
+        path: '/admin/system-config',
+        icon: <Settings size={20} />
+    },
+    {
         id: 'user',
         label: 'Người dùng',
         path: '/admin/user',

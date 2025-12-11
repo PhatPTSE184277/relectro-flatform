@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
-import { MapPin, Settings } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 interface EditConfigModalProps {
     open: boolean;
@@ -100,74 +100,74 @@ const EditConfigModal: React.FC<EditConfigModalProps> = ({
                         <>
                             {/* Small Points Configuration */}
                             <div>
-                                <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-                                    <span className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                        <MapPin size={18} className='text-primary-600' />
-                                    </span>
-                                    Cấu hình điểm thu gom
-                                </h3>
-                                <div className='space-y-4'>
-                                    {smallPoints?.map((sp, idx) => {
-                                        return (
-                                            <div
-                                                key={idx}
-                                                className={`border rounded-lg p-4 ${
-                                                    sp.active
-                                                        ? 'border-primary-200 bg-primary-50/30'
-                                                        : 'border-gray-200 bg-gray-50'
-                                                }`}
-                                            >
-                                                <div className='flex items-center justify-between mb-3'>
-                                                    <div>
-                                                        <h4 className='font-medium text-gray-900 flex items-center gap-2'>
-                                                            {sp.name || `Điểm ${sp.smallPointId}`}
-                                                        </h4>
-                                                        <p className='text-xs text-gray-500'>
-                                                            {company.companyName || 'N/A'}
-                                                        </p>
-                                                    </div>
-                                                    <span
-                                                        className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                                                            sp.active
-                                                                ? 'bg-green-100 text-green-700'
-                                                                : 'bg-gray-100 text-gray-600'
-                                                        }`}
-                                                    >
-                                                        {sp.active ? 'Hoạt động' : 'Tắt'}
-                                                    </span>
-                                                </div>
-
-                                                <div className='grid grid-cols-2 gap-4'>
-                                                    <div>
-                                                        <label className='block text-xs font-medium text-gray-700 mb-2'>
-                                                            Bán kính (km)
-                                                        </label>
-                                                        <CustomNumberInput
-                                                            value={sp.radiusKm}
-                                                            onChange={(val) => handleUpdateRadius(sp.smallPointId, val)}
-                                                            min={1}
-                                                            max={50}
-                                                            placeholder='Nhập bán kính...'
-                                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 placeholder-gray-400 transition disabled:bg-gray-100 disabled:cursor-not-allowed ${sp.radiusKm <= 0 ? 'border-red-400' : 'border-primary-200'}`}
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className='block text-xs font-medium text-gray-700 mb-2'>
-                                                            Khoảng cách tối đa (km)
-                                                        </label>
-                                                        <CustomNumberInput
-                                                            value={sp.maxRoadDistanceKm}
-                                                            onChange={(val) => handleUpdateMaxDistance(sp.smallPointId, val)}
-                                                            min={1}
-                                                            max={100}
-                                                            placeholder='Nhập khoảng cách tối đa...'
-                                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 placeholder-gray-400 transition disabled:bg-gray-100 disabled:cursor-not-allowed ${sp.maxRoadDistanceKm <= 0 ? 'border-red-400' : 'border-primary-200'}`}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
+                                <div className='flex items-center justify-between mb-4'>
+                                    <h3 className='text-lg font-semibold text-gray-900 flex items-center gap-2'>
+                                        <span className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                            <MapPin size={18} className='text-primary-600' />
+                                        </span>
+                                        Cấu hình điểm thu gom
+                                    </h3>
+                                    <span className='text-base text-gray-500 font-medium'>{company.companyName || 'N/A'}</span>
+                                </div>
+                                <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
+                                    <div className='overflow-x-auto'>
+                                        <table className='w-full text-sm text-gray-800'>
+                                            <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
+                                                <tr>
+                                                    <th className='py-3 px-4 text-left'>STT</th>
+                                                    <th className='py-3 px-4 text-left'>Tên điểm</th>
+                                                    <th className='py-3 px-4 text-left'>Bán kính (km)</th>
+                                                    <th className='py-3 px-4 text-left'>Khoảng cách tối đa (km)</th>
+                                                    <th className='py-3 px-4 text-left'>Trạng thái</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {smallPoints?.map((sp, idx) => {
+                                                    const isLast = idx === smallPoints.length - 1;
+                                                    return (
+                                                        <tr
+                                                            key={sp.smallPointId}
+                                                            className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50 transition-colors`}
+                                                        >
+                                                            <td className='py-3 px-4 font-medium'>
+                                                                <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold'>
+                                                                    {idx + 1}
+                                                                </span>
+                                                            </td>
+                                                            <td className='py-3 px-4 font-medium text-gray-900'>
+                                                                {sp.name || `Điểm ${sp.smallPointId}`}
+                                                            </td>
+                                                            <td className='py-3 px-4'>
+                                                                <CustomNumberInput
+                                                                    value={sp.radiusKm}
+                                                                    onChange={(val) => handleUpdateRadius(sp.smallPointId, val)}
+                                                                    min={1}
+                                                                    max={50}
+                                                                    placeholder='Bán kính'
+                                                                    className={`w-20 px-2 py-1 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 placeholder-gray-400 transition disabled:bg-gray-100 disabled:cursor-not-allowed ${sp.radiusKm <= 0 ? 'border-red-400' : 'border-primary-200'}`}
+                                                                />
+                                                            </td>
+                                                            <td className='py-3 px-4'>
+                                                                <CustomNumberInput
+                                                                    value={sp.maxRoadDistanceKm}
+                                                                    onChange={(val) => handleUpdateMaxDistance(sp.smallPointId, val)}
+                                                                    min={1}
+                                                                    max={100}
+                                                                    placeholder='Tối đa'
+                                                                    className={`w-20 px-2 py-1 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-gray-900 placeholder-gray-400 transition disabled:bg-gray-100 disabled:cursor-not-allowed ${sp.maxRoadDistanceKm <= 0 ? 'border-red-400' : 'border-primary-200'}`}
+                                                                />
+                                                            </td>
+                                                            <td className='py-3 px-4'>
+                                                                <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${sp.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                                                    {sp.active ? 'Hoạt động' : 'Không hoạt động'}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </>

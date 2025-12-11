@@ -1,7 +1,7 @@
 import axios from '@/lib/axios';
 
 export const getProductsByCompany = async (
-  companyId: number,
+  companyId: string,
   workDate: string
 ): Promise<any> => {
   const response = await axios.get(

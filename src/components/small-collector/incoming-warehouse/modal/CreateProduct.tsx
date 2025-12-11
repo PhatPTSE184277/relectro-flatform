@@ -170,7 +170,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
             onConfirm({
                 senderId: user.userId,
                 description: (description || '').trim(),
-                smallCollectionPointId: 1,
+                smallCollectionPointId: "1",
                 images: uploadedUrls,
                 parentCategoryId: (parentCategoryId || '').trim(),
                 subCategoryId: (subCategoryId || '').trim(),

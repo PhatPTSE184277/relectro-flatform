@@ -28,7 +28,7 @@ import { toast } from 'react-toastify';
 interface PackageFilter {
     page?: number;
     limit?: number;
-    smallCollectionPointId?: number;
+    smallCollectionPointId?: string;
     status?: string;
 }
 
@@ -76,7 +76,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
     const [filter, setFilterState] = useState<PackageFilter>({
         page: 1,
         limit: 10,
-        smallCollectionPointId: 1,
+        smallCollectionPointId: "1",
         status: 'Đang đóng gói'
     });
 

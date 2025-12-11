@@ -7,7 +7,7 @@ import CompanyList from '@/components/admin/collection-company/CompanyList';
 import CompanyFilter from '@/components/admin/collection-company/CompanyFilter';
 import CompanyDetail from '@/components/admin/collection-company/modal/CompanyDetail';
 import SearchBox from '@/components/ui/SearchBox';
-import ImportExcelModal from '@/components/admin/collection-company/modal/ImportExcelModal';
+import ImportExcelModal from '@/components/admin/collection-company/modal/ImportComapnyModal';
 import { useAuth } from '@/hooks/useAuth';
 
 const CollectionCompanyPage: React.FC = () => {

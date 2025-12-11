@@ -10,7 +10,7 @@ export const filterIncomingWarehouseProducts = async ({
 }: {
     fromDate?: string;
     toDate?: string;
-    smallCollectionPointId: number;
+    smallCollectionPointId: string;
 }): Promise<FilterProductsResponse> => {
     const params: Record<string, any> = {};
 

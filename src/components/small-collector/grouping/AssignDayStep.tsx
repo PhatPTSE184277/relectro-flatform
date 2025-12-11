@@ -12,7 +12,7 @@ interface AssignDayStepProps {
     products: any[];
     onCreateGrouping: (payload: {
         workDate: string;
-        vehicleId: number;
+        vehicleId: string;
         productIds: string[];
     }) => void;
     onBack: () => void;
@@ -57,7 +57,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
 
     const handleConfirmEdit = (data: {
         workDate: string;
-        vehicleId: number;
+        vehicleId: string;
         productIds: string[];
     }) => {
         // Cập nhật lại ngày đang chỉnh sửa
@@ -91,7 +91,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     // Xử lý tạo nhóm thu gom (gọi API)
     const handleCreateGrouping = async (data: {
         workDate: string;
-        vehicleId: number;
+        vehicleId: string;
         productIds: string[];
     }) => {
         try {

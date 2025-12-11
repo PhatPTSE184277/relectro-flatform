@@ -71,7 +71,7 @@ const PackagePage: React.FC = () => {
             const payload = {
                 packageId: packageData.packageId,
                 packageName: packageData.packageName,
-                smallCollectionPointsId: filter.smallCollectionPointId || 1,
+                    smallCollectionPointsId: String(filter.smallCollectionPointId || 1),
                 productsQrCode: packageData.productsQrCode
             };
             
@@ -90,7 +90,7 @@ const PackagePage: React.FC = () => {
         try {
             const payload = {
                 packageName: packageData.packageName,
-                smallCollectionPointsId: filter.smallCollectionPointId || 1,
+                    smallCollectionPointsId: String(filter.smallCollectionPointId || 1),
                 productsQrCode: packageData.productsQrCode
             };
             

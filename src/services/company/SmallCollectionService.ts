@@ -19,7 +19,7 @@ export const importSmallCollectionExcel = async (file: File): Promise<any> => {
 export interface SmallCollectionFilterParams {
     page?: number;
     limit?: number;
-    companyId?: number;
+    companyId?: string;
     status?: string;
 }
 
@@ -33,7 +33,7 @@ export const getSmallCollectionsFilter = async (
 };
 
 export const getSmallCollectionPointById = async (
-    smallCollectionPointId: number
+    smallCollectionPointId: string
 ): Promise<SmallCollectionPoint> => {
     const response = await axios.get(
         `/small-collection/${smallCollectionPointId}`

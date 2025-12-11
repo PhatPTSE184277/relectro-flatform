@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig = {
+  images: {
+    domains: ['picsum.photos'],
+  },
   /* config options here */
   reactCompiler: true,
   async rewrites() {

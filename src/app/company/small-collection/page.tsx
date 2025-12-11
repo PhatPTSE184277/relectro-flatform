@@ -8,7 +8,7 @@ import SmallCollectionList from '@/components/company/small-collection/SmallColl
 import SmallCollectionMap from '@/components/company/small-collection/SmallCollectionMap';
 import SmallCollectionDetail from '@/components/company/small-collection/modal/SmallCollectionDetail';
 import SearchBox from '@/components/ui/SearchBox';
-import ImportExcelModal from '@/components/admin/collection-company/modal/ImportExcelModal';
+import ImportExcelModal from '@/components/admin/collection-company/modal/ImportComapnyModal';
 import SmallCollectionFilter from '@/components/company/small-collection/SmallCollectionFilter';
 import { toast } from 'react-toastify';
 import { SmallCollectionPoint } from '@/types';
@@ -19,7 +19,6 @@ const SmallCollectionPage: React.FC = () => {
     const {
         smallCollections,
         loading,
-        fetchSmallCollections,
         importSmallCollection
     } = useSmallCollectionContext();
 
@@ -32,12 +31,6 @@ const SmallCollectionPage: React.FC = () => {
     const [filterStatus, setFilterStatus] = useState('active');
 
     const companyId = user?.collectionCompanyId;
-
-    useEffect(() => {
-        if (companyId) {
-            fetchSmallCollections({ companyId, page: 1, limit: 100 });
-        }
-    }, [fetchSmallCollections, companyId]);
 
     const handleViewDetail = (point: SmallCollectionPoint) => {
         setSelectedSmallCollection(point);
@@ -57,7 +50,6 @@ const SmallCollectionPage: React.FC = () => {
         try {
             await importSmallCollection(file);
             toast.success('Import thành công');
-            await fetchSmallCollections({ companyId, page: 1, limit: 100 });
         } catch (error) {
             toast.error('Import thất bại');
         }

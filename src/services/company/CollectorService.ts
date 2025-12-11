@@ -2,7 +2,7 @@ import axios from '@/lib/axios';
 import { Collector } from '@/types';
 
 export const getCollectorsByCompany = async (
-    companyId: number
+    companyId: string
 ): Promise<Collector[]> => {
     const response = await axios.get(`/collectors/company/${companyId}`);
     return response.data;

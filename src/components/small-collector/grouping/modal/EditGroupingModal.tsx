@@ -10,7 +10,7 @@ interface EditGroupingModalProps {
     onClose: () => void;
     onConfirm: (data: {
         workDate: string;
-        vehicleId: number;
+        vehicleId: string;
         productIds: string[];
     }) => void;
     day: any;
@@ -69,7 +69,7 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
         if (selectedVehicleId && selectedProductIds.length > 0) {
             onConfirm({
                 workDate: day.workDate,
-                vehicleId: selectedVehicleId,
+                vehicleId: String(selectedVehicleId),
                 productIds: selectedProductIds
             });
         }

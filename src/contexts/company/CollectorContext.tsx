@@ -10,7 +10,7 @@ interface CollectorContextType {
 	collectors: Collector[];
 	selectedCollector: Collector | null;
 	error: string | null;
-	fetchCollectors: (companyId: number) => Promise<void>;
+	fetchCollectors: (companyId: string) => Promise<void>;
 	fetchCollector: (collectorId: string) => Promise<void>;
 	importCollectors: (file: File) => Promise<any>;
 	clearCollectors: () => void;
@@ -25,7 +25,7 @@ export const CollectorProvider = ({ children }: { children: ReactNode }) => {
 	const [selectedCollector, setSelectedCollector] = useState<Collector | null>(null);
 	const [error, setError] = useState<string | null>(null);
 
-	const fetchCollectors = useCallback(async (companyId: number) => {
+	const fetchCollectors = useCallback(async (companyId: string) => {
 		setLoading(true);
 		setError(null);
 		try {

@@ -3,16 +3,10 @@
 import React, { useState } from 'react';
 import { formatTime } from '@/utils/FormatTime';
 import { formatDate } from '@/utils/FormateDate';
-import {
-    User,
-    Package,
-    MapPin,
-    Clock,
-    Calendar,
-    Truck,
-    Tag,
-    UserCheck
-} from 'lucide-react';
+import { User, Package, MapPin, Clock, Calendar, Truck, Tag, UserCheck } from 'lucide-react';
+import InfoCard from '@/components/ui/InfoCard';
+import Section from '@/components/ui/Section';
+import UserInfo from '@/components/ui/UserInfo';
 
 interface CollectorRouteDetailProps {
     route: any;
@@ -141,60 +135,26 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                     {/* RIGHT - INFO */}
                     <div className='md:w-2/3 p-6 space-y-5 overflow-y-auto'>
                         {/* Thông tin tuyến thu gom */}
-                        <div className='grid grid-cols-2 gap-4'>
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                             <InfoCard
-                                icon={
-                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                        <Package
-                                            className='text-primary-500'
-                                            size={20}
-                                        />
-                                    </span>
-                                }
-                                label='Thương hiệu'
+                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Package className="w-4 h-4 text-primary-500" /></span>}
+                                label="Thương hiệu"
                                 value={route.brandName || 'Không rõ'}
                             />
                             <InfoCard
-                                icon={
-                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-50 border border-purple-200">
-                                        <Tag
-                                            className='text-purple-500'
-                                            size={20}
-                                        />
-                                    </span>
-                                }
-                                label='Danh mục'
+                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Tag className="w-4 h-4 text-primary-500" /></span>}
+                                label="Danh mục"
                                 value={route.subCategoryName || 'Không rõ'}
                             />
                             <InfoCard
-                                icon={
-                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-green-50 border border-green-200">
-                                        <Truck
-                                            className='text-green-600'
-                                            size={20}
-                                        />
-                                    </span>
-                                }
-                                label='Biển số xe'
+                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Truck className="w-4 h-4 text-primary-500" /></span>}
+                                label="Biển số xe"
                                 value={route.licensePlate || 'Không rõ'}
                             />
                             <InfoCard
-                                icon={
-                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-50 border border-blue-200">
-                                        <Calendar
-                                            className='text-blue-600'
-                                            size={20}
-                                        />
-                                    </span>
-                                }
-                                label='Ngày thu gom'
-                                value={
-                                    route.collectionDate
-                                        ? new Date(
-                                              route.collectionDate
-                                          ).toLocaleDateString('vi-VN')
-                                        : 'Không rõ'
-                                }
+                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Calendar className="w-4 h-4 text-primary-500" /></span>}
+                                label="Ngày thu gom"
+                                value={route.collectionDate ? new Date(route.collectionDate).toLocaleDateString('vi-VN') : 'Không rõ'}
                             />
                         </div>
 
@@ -323,83 +283,5 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
     );
 };
 
-// InfoCard Component
-interface InfoCardProps {
-    icon: React.ReactNode;
-    label: string;
-    value: React.ReactNode;
-}
-const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value }) => (
-    <div className='p-4 bg-gray-50 rounded-lg border border-primary-100 flex gap-3'>
-        {icon}
-        <div>
-            <p className='text-sm text-gray-600'>{label}</p>
-            <p className='text-gray-900 text-sm font-medium'>{value}</p>
-        </div>
-    </div>
-);
-
-// Section Component
-interface SectionProps {
-    title: string;
-    icon: React.ReactNode;
-    children: React.ReactNode;
-}
-const Section: React.FC<SectionProps> = ({ title, icon, children }) => (
-    <div className='pt-4 border-t border-primary-100'>
-        <div className='flex items-center gap-2 mb-2 text-gray-800 font-semibold'>
-            {icon} <span>{title}</span>
-        </div>
-        <div className='p-4 bg-gray-50 rounded-lg border border-primary-100'>{children}</div>
-    </div>
-);
-
-// UserInfo Component
-interface UserInfoProps {
-    user?: {
-        name?: string;
-        phone?: string;
-        email?: string;
-        address?: string;
-        avatar?: string;
-        [key: string]: any;
-    };
-    address?: string;
-}
-const UserInfo: React.FC<UserInfoProps> = ({ user, address }) => {
-    const hasValidData =
-        user && (user.name || user.phone || user.email || user.avatar);
-    if (!hasValidData) {
-        return (
-            <p className='text-sm text-gray-500'>
-                Thông tin người dùng không khả dụng.
-            </p>
-        );
-    }
-
-    const displayAddress = user.address || address;
-
-    return (
-        <div className='flex gap-3 items-start'>
-            {user.avatar && (
-                <img
-                    src={user.avatar}
-                    className='w-14 h-14 rounded-xl object-cover'
-                    alt='Avatar người dùng'
-                />
-            )}
-            <div className='text-sm text-gray-700'>
-                <p>
-                    <b>{user.name || 'Không rõ'}</b>
-                </p>
-                <p>{user.phone || 'Không có số điện thoại'}</p>
-                <p>{user.email || 'Không có email'}</p>
-                {displayAddress && (
-                    <p className='mt-1 text-gray-600'>{displayAddress}</p>
-                )}
-            </div>
-        </div>
-    );
-};
 
 export default CollectorRouteDetail;

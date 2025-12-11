@@ -4,5 +4,5 @@ export interface Collector {
   email: string;
   phone: string;
   avatar: string;
-  smallCollectionPointId: number;
+  smallCollectionPointId: string;
 }

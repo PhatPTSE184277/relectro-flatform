@@ -9,7 +9,7 @@ export const getCollectionRoutesByDate = async ({
 }: {
     page?: number;
     limit?: number;
-    collectionPointId?: number;
+    collectionPointId?: string;
     pickUpDate: string;
     status?: string;
 }) => {

@@ -1,7 +1,8 @@
 'use client';
 import React from 'react';
 import type { PackageType } from '@/types/Package';
-import { Info, List, Tag, Box, Hash, Truck, ListCheck } from 'lucide-react';
+import { Info, List, Tag, Box, ListCheck, Truck } from 'lucide-react';
+import SummaryCard from '@/components/ui/SummaryCard';
 import { PackageStatus } from '@/enums/PackageStatus';
 
 interface PackageDetailProps {
@@ -54,53 +55,27 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                         Thông tin package
                     </h3>
                     {/* Package Info Card */}
-                    <div className='bg-white rounded-xl p-6 mb-6 shadow-sm border border-gray-100'>
-                        <div className='grid grid-cols-4 gap-6'>
-                            {/* Mã package */}
-                            <div className='flex flex-col'>
-                                <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
-                                    <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                        <Tag size={14} className='text-primary-400' />
-                                    </span>
-                                    Mã package
-                                </div>
-                                <div className='text-sm font-medium text-gray-900 break-all'>
-                                    {pkg.packageId}
-                                </div>
-                            </div>
-                            {/* Tên package */}
-                            <div className='flex flex-col'>
-                                <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
-                                    <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                        <Box size={14} className='text-primary-400' />
-                                    </span>
-                                    Tên package
-                                </div>
-                                <div className='text-sm tex font-medium text-gray-900'>
-                                    {pkg.packageName}
-                                </div>
-                            </div>
-                            {/* Số sản phẩm */}
-                            <div className='flex flex-col'>
-                                <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
-                                    <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                        <ListCheck size={14} className='text-primary-400' />
-                                    </span>
-                                    Số sản phẩm
-                                </div>
-                                <div className='text-sm font-medium text-gray-900 h-8 flex items-center'>
-                                    {pkg.products.length}
-                                </div>
-                            </div>
-                            {/* Trạng thái */}
-                            <div className='flex flex-col'>
-                                <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
-                                    <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                        <Truck size={14} className='text-primary-400' />
-                                    </span>
-                                    Trạng thái
-                                </div>
-                                <div>
+                    <SummaryCard
+                        items={[
+                            {
+                                icon: <Tag size={14} className='text-primary-400' />,
+                                label: 'Mã package',
+                                value: pkg.packageId,
+                            },
+                            {
+                                icon: <Box size={14} className='text-primary-400' />,
+                                label: 'Tên package',
+                                value: pkg.packageName,
+                            },
+                            {
+                                icon: <ListCheck size={14} className='text-primary-400' />,
+                                label: 'Số sản phẩm',
+                                value: pkg.products.length,
+                            },
+                            {
+                                icon: <Truck size={14} className='text-primary-400' />,
+                                label: 'Trạng thái',
+                                value: (
                                     <span
                                         className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
                                             pkg.status === PackageStatus.Packing
@@ -116,10 +91,10 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                                     >
                                         {pkg.status}
                                     </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                ),
+                            },
+                        ]}
+                    />
 
                     {/* Products List */}
                     <div>

@@ -16,7 +16,6 @@ const ConfigShow: React.FC<ConfigShowProps & { isLast?: boolean }> = ({
     const activePoints = company.smallPoints.filter(
         (sp: any) => sp.active
     ).length;
-    const totalPoints = company.smallPoints.length;
 
     return (
         <tr

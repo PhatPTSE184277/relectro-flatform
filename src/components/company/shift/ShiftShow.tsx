@@ -1,0 +1,73 @@
+import React from 'react';
+import { Eye } from 'lucide-react';
+
+interface ShiftShowProps {
+    shift: any;
+    onView: () => void;
+    isLast?: boolean;
+    index?: number;
+}
+
+const ShiftShow: React.FC<ShiftShowProps> = ({
+    shift,
+    onView,
+    isLast = false,
+    index
+}) => {
+    return (
+        <tr
+            className={`${
+                !isLast ? 'border-b border-primary-100' : ''
+            } hover:bg-primary-50/40 transition-colors`}
+        >
+            <td className='py-3 px-4 text-center'>
+                <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
+                    {index !== undefined ? index + 1 : ''}
+                </span>
+            </td>
+            <td className='py-3 px-4'>
+                <div className='text-gray-900 font-medium'>
+                    {shift.collectorName || 'Không rõ'}
+                </div>
+            </td>
+
+            <td className='py-3 px-4 text-gray-700'>
+                {shift.plate_Number || (
+                    <span className='text-gray-400'>Chưa có</span>
+                )}
+            </td>
+
+            <td className='py-3 px-4 text-gray-700'>
+                {shift.workDate ? new Date(shift.workDate).toLocaleDateString('vi-VN') : (
+                    <span className='text-gray-400'>Chưa có</span>
+                )}
+            </td>
+
+            <td className='py-3 px-4 text-gray-700'>
+                {shift.shift_Start_Time && shift.shift_End_Time ? (
+                    <>
+                        {new Date(shift.shift_Start_Time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                        {' - '}
+                        {new Date(shift.shift_End_Time).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                    </>
+                ) : (
+                    <span className='text-gray-400'>Chưa có</span>
+                )}
+            </td>
+
+            <td className='py-3 px-4'>
+                <div className='flex justify-center gap-2'>
+                    <button
+                        onClick={onView}
+                        className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
+                        title='Xem chi tiết'
+                    >
+                        <Eye size={16} />
+                    </button>
+                </div>
+            </td>
+        </tr>
+    );
+};
+
+export default ShiftShow;

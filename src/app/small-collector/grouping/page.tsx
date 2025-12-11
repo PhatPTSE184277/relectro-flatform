@@ -52,7 +52,7 @@ const GroupingPage: React.FC = () => {
 
     const handleCreateGrouping = async (payload: {
         workDate: string;
-        vehicleId: number;
+        vehicleId: string;
         productIds: string[];
     }) => {
         await createGrouping(payload);

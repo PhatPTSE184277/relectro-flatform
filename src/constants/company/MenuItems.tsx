@@ -3,6 +3,8 @@ import {
     Users,
     MapPin,
     Package,
+    CalendarClock,
+    Truck
 } from 'lucide-react';
 
 export const MenuItems = [
@@ -23,6 +25,18 @@ export const MenuItems = [
         label: 'Nhân viên thu gom',
         path: '/company/collector',
         icon: <Users size={20} />
+    },
+    {
+        id: 'shift',
+        label: 'Ca làm việc',
+        path: '/company/shift',
+        icon: <CalendarClock size={20} />
+    },
+    {
+        id: 'vehicle',
+        label: 'Phương tiện',
+        path: '/company/vehicle',
+        icon: <Truck size={20} />
     },
     {
         id: 'product-query',

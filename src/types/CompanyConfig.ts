@@ -1,6 +1,6 @@
 // Type for /api/product-query/config/company/{companyId} response
 export interface CompanyConfigDetail {
-	companyId: number;
+	companyId: string;
 	companyName: string;
 	ratioPercent: number;
 	smallPoints: Array<{
@@ -25,7 +25,7 @@ export interface SmallPoint {
 }
 
 export interface CompanyConfigItem {
-	companyId: number;
+	companyId: string;
 	companyName: string;
 	smallPoints: SmallPoint[];
 }
@@ -44,7 +44,7 @@ export interface SmallPointPost {
 }
 
 export interface CompanyConfigPostItem {
-    companyId: number;
+    companyId: string;
     ratioPercent: number;
     smallPoints: SmallPointPost[];
 }

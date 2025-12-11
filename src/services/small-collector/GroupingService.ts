@@ -6,7 +6,7 @@ export interface PreAssignGroupingPayload {
 
 export interface AssignDayGroupingPayload {
     workDate: string;
-    vehicleId: number;
+    vehicleId: string;
     productIds: string[];
 }
 
@@ -27,7 +27,7 @@ export interface AutoGroupPayload {
 
 export const preAssignGrouping = async (
     payload: PreAssignGroupingPayload,
-    collectionPointId: number
+    collectionPointId: string
 ): Promise<any> => {
     const response = await axios.post('/grouping/pre-assign', {
         collectionPointId,
@@ -38,7 +38,7 @@ export const preAssignGrouping = async (
 
 export const assignDayGrouping = async (
     payload: AssignDayGroupingPayload,
-    collectionPointId: number
+    collectionPointId: string
 ): Promise<any> => {
     const response = await axios.post('/grouping/assign-day', {
         collectionPointId,
@@ -47,7 +47,7 @@ export const assignDayGrouping = async (
     return response.data;
 };
 
-export const autoGroup = async (payload: AutoGroupPayload, collectionPointId: number): Promise<any> => {
+export const autoGroup = async (payload: AutoGroupPayload, collectionPointId: string): Promise<any> => {
     const response = await axios.post('/grouping/auto-group', {
         collectionPointId,
         ...payload
@@ -55,13 +55,13 @@ export const autoGroup = async (payload: AutoGroupPayload, collectionPointId: nu
     return response.data;
 };
 
-export const getVehicles = async (smallCollectionPointId: number): Promise<Vehicle[]> => {
+export const getVehicles = async (smallCollectionPointId: string): Promise<Vehicle[]> => {
     const response = await axios.get(`/grouping/vehicles/${smallCollectionPointId}`);
     return response.data;
 };
 
 export const getGroupsByCollectionPointId = async (
-    collectionPointId: number
+    collectionPointId: string
 ): Promise<any[]> => {
     const response = await axios.get(`/grouping/groups/${collectionPointId}`);
     return response.data;
@@ -73,7 +73,7 @@ export const getGroupById = async (groupId: number): Promise<any> => {
 };
 
 export interface PendingProductsResponse {
-    smallPointId: number;
+    smallPointId: string;
     smallPointName: string;
     radiusMaxConfigKm: number;
     maxRoadDistanceKm: number;
@@ -84,7 +84,7 @@ export interface PendingProductsResponse {
 }
 
 export const getPendingGroupingProducts = async (
-    smallPointId: number,
+    smallPointId: string,
     workDate: string
 ): Promise<PendingProductsResponse> => {
     const response = await axios.get(

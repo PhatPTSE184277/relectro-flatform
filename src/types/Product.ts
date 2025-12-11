@@ -22,7 +22,7 @@ export interface ProductSender {
     phone: string;
     avatar: string;
     role: string;
-    smallCollectionPointId: number;
+    smallCollectionPointId: string;
     address?: string;
 }
 
@@ -32,7 +32,7 @@ export interface ProductCollector {
     email: string;
     phone: string;
     avatar: string;
-    smallCollectionPointId: number;
+    smallCollectionPointId: string;
 }
 
 export interface Product {
@@ -72,7 +72,7 @@ export interface FilterProductsResponse {
 export interface CreateProductPayload {
     senderId: string;
     description: string;
-    smallCollectionPointId: number;
+    smallCollectionPointId: string;
     images: string[];
     parentCategoryId: string;
     subCategoryId: string;

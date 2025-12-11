@@ -30,7 +30,7 @@ interface SmallCollectionContextType {
     selectedSmallCollection: SmallCollectionPoint | null;
     pageInfo: PageInfo | null;
     fetchSmallCollections: (params?: any) => Promise<void>;
-    fetchSmallCollectionById: (id: number) => Promise<void>;
+    fetchSmallCollectionById: (id: string) => Promise<void>;
     importSmallCollection: (file: File) => Promise<any>;
     clearSmallCollections: () => void;
 }
@@ -83,13 +83,13 @@ export const SmallCollectionProvider = ({
         if (user?.collectionCompanyId) {
             fetchSmallCollections({ 
                 companyId: user.collectionCompanyId, 
-                page: 1, 
-                limit: 100 
+                page: 1,
+                limit: 10
             });
         }
     }, [user?.collectionCompanyId, fetchSmallCollections]);
 
-    const fetchSmallCollectionById = useCallback(async (id: number) => {
+    const fetchSmallCollectionById = useCallback(async (id: string) => {
         setLoading(true);
         setError(null);
         try {

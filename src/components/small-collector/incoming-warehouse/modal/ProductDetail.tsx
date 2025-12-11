@@ -5,16 +5,17 @@ import React, { useState } from 'react';
 import type { Product } from '@/types/Product';
 import {
     Package,
-    Calendar,
     Star,
     UserCheck,
     User,
-    Info,
     List,
     Clock,
     MapPin
 } from 'lucide-react';
 import { formatDate } from '@/utils/FormateDate';
+import UserInfo from '@/components/ui/UserInfo';
+import InfoCard from '@/components/ui/InfoCard';
+import Section from '@/components/ui/Section';
 
 interface ProductDetailProps {
     product: Product;
@@ -153,36 +154,22 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                         {/* GRID INFO */}
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                             <InfoCard
-                                icon={
-                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                        <List className='text-primary-500' size={20} />
-                                    </span>
-                                }
-                                label='Danh mục'
+                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><List className="w-4 h-4 text-primary-500" /></span>}
+                                label="Danh mục"
                                 value={product.categoryName}
                             />
                             <InfoCard
-                                icon={
-                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-50 border border-purple-200">
-                                        <Package
-                                            className='text-purple-500'
-                                            size={20}
-                                        />
-                                    </span>
-                                }
-                                label='Mã QR'
-                                value={product.qrCode || 'Chưa có mã'}
+                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Package className="w-4 h-4 text-primary-500" /></span>}
+                                label="Mã QR"
+                                value={product.qrCode ? (
+                                    <span className="text-xs font-mono text-gray-700">{product.qrCode}</span>
+                                ) : (
+                                    <span className="text-xs text-gray-400 font-normal">Chưa có mã</span>
+                                )}
                             />
                             <InfoCard
-                                icon={
-                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-yellow-50 border border-yellow-200">
-                                        <Star
-                                            className='text-yellow-500'
-                                            size={20}
-                                        />
-                                    </span>
-                                }
-                                label='Điểm ước tính'
+                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Star className="w-4 h-4 text-primary-500" /></span>}
+                                label="Điểm ước tính"
                                 value={product.estimatePoint}
                             />
                         </div>
@@ -338,83 +325,4 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
         </div>
     );
 };
-
-// InfoCard Props
-interface InfoCardProps {
-    icon: React.ReactNode;
-    label: string;
-    value: React.ReactNode;
-}
-const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value }) => (
-    <div className='p-4 bg-gray-50 rounded-lg border border-primary-100 flex gap-3'>
-        {icon}
-        <div>
-            <p className='text-sm text-gray-600'>{label}</p>
-            <p className='text-gray-900 text-sm font-medium'>{value}</p>
-        </div>
-    </div>
-);
-
-// Section Props
-interface SectionProps {
-    title: string;
-    icon: React.ReactNode;
-    children: React.ReactNode;
-}
-const Section: React.FC<SectionProps> = ({ title, icon, children }) => (
-    <div className='pt-4 border-t border-primary-100'>
-        <div className='flex items-center gap-2 mb-2 text-gray-800 font-semibold'>
-            {icon} <span>{title}</span>
-        </div>
-        <div className='p-4 bg-gray-50 rounded-lg border border-primary-100'>{children}</div>
-    </div>
-);
-
-// UserInfo Props
-interface UserInfoProps {
-    user?: {
-        name?: string;
-        phone?: string;
-        email?: string;
-        address?: string;
-        avatar?: string;
-        [key: string]: any;
-    };
-}
-const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
-    // Kiểm tra xem user có dữ liệu hợp lệ không
-    const hasValidData =
-        user && (user.name || user.phone || user.email || user.avatar);
-
-    if (!hasValidData) {
-        return (
-            <p className='text-sm text-gray-500'>
-                Thông tin người dùng không khả dụng.
-            </p>
-        );
-    }
-
-    return (
-        <div className='flex gap-3 items-start'>
-            {user.avatar && (
-                <img
-                    src={user.avatar}
-                    className='w-14 h-14 rounded-xl object-cover'
-                    alt='Avatar người dùng'
-                />
-            )}
-            <div className='text-sm text-gray-700'>
-                <p>
-                    <b>{user.name || 'Không có tên'}</b>
-                </p>
-                <p>{user.phone || 'Không có số điện thoại'}</p>
-                <p>{user.email || 'Không có email'}</p>
-                {user.address && (
-                    <p className='mt-1 text-gray-600'>{user.address}</p>
-                )}
-            </div>
-        </div>
-    );
-};
-
 export default ProductDetail;

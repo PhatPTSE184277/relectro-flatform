@@ -29,7 +29,7 @@ interface Route {
 interface GroupingDetailData {
     groupId: number;
     groupCode: string;
-    shiftId: number;
+    shiftId: string;
     vehicle: string;
     collector: string;
     groupDate: string;

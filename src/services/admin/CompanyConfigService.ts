@@ -7,7 +7,7 @@ import {
 } from '@/types';
 
 // Lấy chi tiết cấu hình công ty theo companyId từ API /api/product-query/config/company/{companyId}
-export const getCompanyConfigDetail = async (companyId: number): Promise<CompanyConfigDetail> => {
+export const getCompanyConfigDetail = async (companyId: string): Promise<CompanyConfigDetail> => {
     const response = await axios.get<CompanyConfigDetail>(`/product-query/config/company/${companyId}`);
     return response.data;
 };

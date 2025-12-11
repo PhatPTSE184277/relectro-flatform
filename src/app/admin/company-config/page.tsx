@@ -29,7 +29,7 @@ const CompanyConfigPage: React.FC = () => {
     const filteredCompanies = companies.filter((company) => {
         const matchSearch =
             company.companyName?.toLowerCase().includes(search.toLowerCase()) ||
-            company.companyId.toString().includes(search.toLowerCase());
+            company.companyId.includes(search.toLowerCase());
 
         if (filterStatus === 'active') {
             return (

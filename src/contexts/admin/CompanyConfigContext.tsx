@@ -21,7 +21,7 @@ interface CompanyConfigContextType {
 	fetchConfig: () => Promise<void>;
 	postConfig: (data: AssignCompanyConfigPostRequest) => Promise<AssignCompanyConfigPostResponse | null>;
 	updateConfig: (companies: any[]) => Promise<void>;
-	getCompanyConfigDetailById: (companyId: number) => Promise<CompanyConfigDetail | null>;
+	getCompanyConfigDetailById: (companyId: string | number) => Promise<CompanyConfigDetail | null>;
 }
 
 const CompanyConfigContext = createContext<CompanyConfigContextType | undefined>(undefined);
@@ -82,9 +82,9 @@ export const CompanyConfigProvider: React.FC<Props> = ({ children }) => {
 	useEffect(() => {
 		void fetchConfig();
 	}, [fetchConfig]);
-	const getCompanyConfigDetailById = useCallback(async (companyId: number) => {
+	const getCompanyConfigDetailById = useCallback(async (companyId: string | number) => {
 		try {
-			return await getCompanyConfigDetail(companyId);
+			return await getCompanyConfigDetail(String(companyId));
 		} catch (err) {
 			toast.error('Lỗi khi tải chi tiết cấu hình công ty');
 			return null;

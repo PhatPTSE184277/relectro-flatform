@@ -48,7 +48,7 @@ export const CollectionCompanyProvider: React.FC<Props> = ({ children }) => {
             // Nếu là Collector, chỉ lấy công ty của mình
             if (user?.role === 'Collector' && user?.collectionCompanyId) {
                 const filteredData = data.filter(
-                    (company) => company.id === user.collectionCompanyId
+                    (company) => String(company.id) === String(user.collectionCompanyId)
                 );
                 setCompanies(filteredData);
             } else {
@@ -65,11 +65,11 @@ export const CollectionCompanyProvider: React.FC<Props> = ({ children }) => {
         }
     }, [user]);
 
-    const fetchCompanyById = useCallback(async (id: number) => {
+    const fetchCompanyById = useCallback(async (id: string | number) => {
         setLoading(true);
         setError(null);
         try {
-            const data = await getCollectionCompanyById(id);
+            const data = await getCollectionCompanyById(String(id));
             return data;
         } catch (err: any) {
             setError(

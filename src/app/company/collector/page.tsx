@@ -9,7 +9,7 @@ import SearchBox from '@/components/ui/SearchBox';
 import { toast } from 'react-toastify';
 import { Collector } from '@/types';
 import { Users } from 'lucide-react';
-import ImportExcelModal from '@/components/admin/collection-company/modal/ImportExcelModal';
+import ImportCollectorModal from '@/components/company/collector/modal/ImportCollectorModal';
 import { useAuth } from '@/hooks/useAuth';
 
 const CollectorPage: React.FC = () => {
@@ -48,6 +48,7 @@ const CollectorPage: React.FC = () => {
             toast.success('Import thành công');
             await fetchCollectors(companyId);
         } catch (error) {
+            console.log(error);
             toast.error('Import thất bại');
         }
     };
@@ -110,7 +111,7 @@ const CollectorPage: React.FC = () => {
 
             {/* Import Excel Modal */}
             {showImportModal && (
-                <ImportExcelModal
+                <ImportCollectorModal
                     open={showImportModal}
                     onClose={() => setShowImportModal(false)}
                     onImport={handleImportExcel}

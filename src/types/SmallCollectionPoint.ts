@@ -6,5 +6,5 @@ export interface SmallCollectionPoint {
     longitude: number;
     openTime: string;
     status: string;
-    companyId: number;
+    companyId: string;
 }

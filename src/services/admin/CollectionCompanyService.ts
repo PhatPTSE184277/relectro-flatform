@@ -15,7 +15,7 @@ export const getCollectionCompanies = async (): Promise<CollectionCompany[]> => 
 	return response.data;
 };
 
-export const getCollectionCompanyById = async (companyId: number): Promise<CollectionCompany> => {
+export const getCollectionCompanyById = async (companyId: string): Promise<CollectionCompany> => {
   const response = await axios.get(`/collection-company/${companyId}`);
   return response.data;
 };

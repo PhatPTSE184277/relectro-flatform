@@ -13,7 +13,7 @@ interface ProductQueryContextType {
   loading: boolean;
   products: any;
   error: string | null;
-  fetchProducts: (companyId: number, workDate: string) => Promise<void>;
+  fetchProducts: (companyId: string, workDate: string) => Promise<void>;
   clearProducts: () => void;
 }
 
@@ -24,7 +24,7 @@ export const ProductQueryProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProducts = useCallback(async (companyId: number, workDate: string) => {
+  const fetchProducts = useCallback(async (companyId: string, workDate: string) => {
     setLoading(true);
     setError(null);
     try {

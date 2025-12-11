@@ -1,3 +1,4 @@
+
 /* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import PostApprove from './PostApprove';
@@ -16,6 +17,9 @@ import {
     Tag,
     CheckCircle
 } from 'lucide-react';
+import InfoCard from '@/components/ui/InfoCard';
+import Section from '@/components/ui/Section';
+import UserInfo from '@/components/ui/UserInfo';
 
 interface PostDetailProps {
     post: any;
@@ -183,39 +187,23 @@ const PostDetail: React.FC<PostDetailProps> = ({
                         {/* Product Info Grid */}
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                             <InfoCard
-                                icon={
-                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                        <List className='text-primary-500' size={20} />
-                                    </span>
-                                }
-                                label='Danh mục chính'
+                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><List className="w-4 h-4 text-primary-500" /></span>}
+                                label="Danh mục chính"
                                 value={post.parentCategory}
                             />
                             <InfoCard
-                                icon={
-                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-50 border border-purple-200">
-                                        <List className='text-purple-500' size={20} />
-                                    </span>
-                                }
-                                label='Danh mục phụ'
+                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><List className="w-4 h-4 text-primary-500" /></span>}
+                                label="Danh mục phụ"
                                 value={post.subCategory}
                             />
                             <InfoCard
-                                icon={
-                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-yellow-50 border border-yellow-200">
-                                        <Star className='text-yellow-500' size={20} />
-                                    </span>
-                                }
-                                label='Điểm ước tính'
+                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Star className="w-4 h-4 text-primary-500" /></span>}
+                                label="Điểm ước tính"
                                 value={post.estimatePoint || 0}
                             />
                             <InfoCard
-                                icon={
-                                    <span className="w-8 h-8 flex items-center justify-center rounded-full bg-green-50 border border-green-200">
-                                        <Calendar className='text-green-600' size={20} />
-                                    </span>
-                                }
-                                label='Ngày đăng'
+                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Calendar className="w-4 h-4 text-primary-500" /></span>}
+                                label="Ngày đăng"
                                 value={formatDate(post.date)}
                             />
                         </div>
@@ -392,82 +380,6 @@ const PostDetail: React.FC<PostDetailProps> = ({
                 .animate-scaleIn { animation: scaleIn .2s ease-out; }
                 @keyframes scaleIn { from {transform: scale(.9); opacity: 0;} to {transform: scale(1); opacity: 1;} }
             `}</style>
-        </div>
-    );
-};
-
-// InfoCard Component
-interface InfoCardProps {
-    icon: React.ReactNode;
-    label: string;
-    value: React.ReactNode;
-}
-const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value }) => (
-    <div className='p-4 bg-gray-50 rounded-lg border border-primary-100 flex gap-3'>
-        {icon}
-        <div>
-            <p className='text-sm text-gray-600'>{label}</p>
-            <p className='text-gray-900 text-sm font-medium'>{value}</p>
-        </div>
-    </div>
-);
-
-// Section Component
-interface SectionProps {
-    title: string;
-    icon: React.ReactNode;
-    children: React.ReactNode;
-}
-const Section: React.FC<SectionProps> = ({ title, icon, children }) => (
-    <div className='pt-4 border-t border-primary-100'>
-        <div className='flex items-center gap-2 mb-2 text-gray-800 font-semibold'>
-            {icon} <span>{title}</span>
-        </div>
-        <div className='p-4 bg-gray-50 rounded-lg border border-primary-100'>{children}</div>
-    </div>
-);
-
-// UserInfo Component
-interface UserInfoProps {
-    user?: {
-        name?: string;
-        phone?: string;
-        email?: string;
-        address?: string;
-        avatar?: string;
-        [key: string]: any;
-    };
-}
-const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
-    const hasValidData =
-        user && (user.name || user.phone || user.email || user.avatar);
-    if (!hasValidData) {
-        return (
-            <p className='text-sm text-gray-500'>
-                Thông tin người dùng không khả dụng.
-            </p>
-        );
-    }
-
-    return (
-        <div className='flex gap-3 items-start'>
-            {user.avatar && (
-                <img
-                    src={user.avatar}
-                    className='w-14 h-14 rounded-xl object-cover'
-                    alt='Avatar người dùng'
-                />
-            )}
-            <div className='text-sm text-gray-700'>
-                <p>
-                    <b>{user.name || 'Không có tên'}</b>
-                </p>
-                <p>{user.phone || 'Không có số điện thoại'}</p>
-                <p>{user.email || 'Không có email'}</p>
-                {user.address && (
-                    <p className='mt-1 text-gray-600'>{user.address}</p>
-                )}
-            </div>
         </div>
     );
 };

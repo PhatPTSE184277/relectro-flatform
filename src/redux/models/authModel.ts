@@ -6,8 +6,8 @@ export interface UserProfile {
     avatar: string;
     role: 'AdminWarehouse' | 'Collector' | 'User' | 'Admin' | 'AdminCompany';
     points: number;
-    smallCollectionPointId?: number;
-    collectionCompanyId?: number;
+    smallCollectionPointId?: string;
+    collectionCompanyId?: string;
 }
 
 export interface AuthState {

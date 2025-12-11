@@ -9,12 +9,12 @@ import {
 export const filterPackages = async ({
     page = 1,
     limit = 10,
-    smallCollectionPointId = 1,
+    smallCollectionPointId,
     status
 }: {
     page?: number;
     limit?: number;
-    smallCollectionPointId?: number;
+    smallCollectionPointId?: string;
     status?: string;
 }): Promise<FilterPackagesResponse> => {
     const params: Record<string, any> = { page, limit };

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Building2, Mail, Phone, MapPin } from 'lucide-react';
+import InfoCard from '@/components/ui/InfoCard';
 
 interface CompanyDetailProps {
     company: any;
@@ -25,13 +26,6 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onClose }) => {
             </div>
         );
     }
-
-    const getStatusBadgeClass = (status: string) => {
-        const normalized = status?.toLowerCase() || '';
-        if (normalized === 'active') return 'bg-green-100 text-green-700 border-green-300';
-        if (normalized === 'inactive') return 'bg-gray-100 text-gray-600 border-gray-300';
-        return 'bg-yellow-100 text-yellow-700 border-yellow-300';
-    };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -75,24 +69,24 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onClose }) => {
                         <div className="flex flex-col gap-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <InfoCard 
-                                    icon={<Building2 className="w-5 h-5 text-primary-500" />} 
+                                    icon={<Building2 className="w-4 h-4 text-primary-500" />} 
                                     label="Tên công ty" 
                                     value={company.name || 'Không rõ'} 
                                 />
                                 <InfoCard 
-                                    icon={<Mail className="w-5 h-5 text-primary-500" />} 
+                                    icon={<Mail className="w-4 h-4 text-primary-500" />} 
                                     label="Email" 
                                     value={company.companyEmail || 'Chưa có'} 
                                 />
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <InfoCard 
-                                    icon={<Phone className="w-5 h-5 text-primary-500" />} 
+                                    icon={<Phone className="w-4 h-4 text-primary-500" />} 
                                     label="Số điện thoại" 
                                     value={company.phone || 'Chưa có'} 
                                 />
                                 <InfoCard 
-                                    icon={<MapPin className="w-5 h-5 text-primary-500" />} 
+                                    icon={<MapPin className="w-4 h-4 text-primary-500" />} 
                                     label="Thành phố" 
                                     value={company.city || 'Chưa có'} 
                                 />
@@ -110,24 +104,5 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onClose }) => {
         </div>
     );
 };
-
-// InfoCard Component
-
-interface InfoCardProps {
-    icon: React.ReactNode;
-    label: string;
-    value: React.ReactNode;
-}
-const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value }) => (
-    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-primary-100">
-            {icon}
-        </div>
-        <div>
-            <div className="text-sm font-bold text-gray-700 mb-1">{label}</div>
-            <div className="text-sm text-gray-900">{value}</div>
-        </div>
-    </div>
-);
 
 export default CompanyDetail;
