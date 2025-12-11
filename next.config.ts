@@ -1,11 +1,11 @@
 import type { NextConfig } from "next";
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   images: {
     domains: ['picsum.photos'],
   },
-  /* config options here */
-  reactCompiler: true,
+  experimental: {
+  },
   async rewrites() {
     return [
       {
