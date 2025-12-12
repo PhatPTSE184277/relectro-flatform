@@ -19,7 +19,7 @@ const IWProductShow: React.FC<IWProductShowProps & { isLast?: boolean; stt?: num
                 </span>
             </td>
             <td className='py-3 px-4 font-medium max-w-[220px]'>
-                <div className='text-gray-900 font-semibold'>
+                <div className='text-gray-700 font-semibold'>
                     {product.categoryName || 'Không rõ'}
                 </div>
             </td>

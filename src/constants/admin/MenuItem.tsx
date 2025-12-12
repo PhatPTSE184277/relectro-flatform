@@ -5,7 +5,8 @@ import {
     Factory,
     Package,
     ClipboardList,
-    Wrench
+    Wrench,
+    MapPin
 } from 'lucide-react';
 
 export const adminMenuItems = [
@@ -44,6 +45,12 @@ export const adminMenuItems = [
         label: 'Cấu hình hệ thống',
         path: '/admin/system-config',
         icon: <Settings size={20} />
+    },
+    {
+        id: 'tracking',
+        label: 'Theo dõi sản phẩm',
+        path: '/admin/tracking',
+        icon: <MapPin size={20} />
     },
     {
         id: 'user',

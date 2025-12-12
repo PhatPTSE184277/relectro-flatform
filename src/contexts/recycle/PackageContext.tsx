@@ -91,6 +91,8 @@ export const RecyclerPackageProvider: React.FC<Props> = ({ children }) => {
                 Object.keys(params).forEach(
                     (key) => params[key] === undefined && delete params[key]
                 );
+                // Luôn truyền smallCollectionPointId = '2' giống shipper
+                params.smallCollectionPointId = "2";
                 const response: FilterPackagesResponse = await filterPackages(params);
                 setPackages(response.data || []);
                 setTotalPages(response.totalPages);

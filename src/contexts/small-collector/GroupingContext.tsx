@@ -15,6 +15,8 @@ import {
     getGroupById,
     getGroupsByCollectionPointId,
     getPendingGroupingProducts,
+    getReassignDriverCandidates,
+    confirmReassignDriver,
     Vehicle,
     PreAssignGroupingPayload,
     AssignDayGroupingPayload,
@@ -74,6 +76,7 @@ interface PendingProduct {
 interface GroupingContextType {
     loading: boolean;
     groupDetailLoading: boolean;
+    reassignLoading: boolean;
     vehicles: Vehicle[];
     pendingProducts: PendingProduct[];
     pendingProductsData: PendingProductsResponse | null;
@@ -81,6 +84,7 @@ interface GroupingContextType {
     autoGroupResult: any | null;
     groupDetail: any | null;
     groups: any[];
+    driverCandidates: any[];
     fetchVehicles: () => Promise<void>;
     fetchPendingProducts: (workDate?: string) => Promise<void>;
     fetchGroups: () => Promise<void>;
@@ -88,6 +92,8 @@ interface GroupingContextType {
     createGrouping: (payload: AssignDayGroupingPayload) => Promise<void>;
     calculateRoute: (saveResult: boolean) => Promise<void>;
     fetchGroupDetail: (groupId: number) => Promise<void>;
+    fetchDriverCandidates: (companyId: string, date: string) => Promise<void>;
+    reassignDriver: (groupId: number, newCollectorId: string) => Promise<void>;
 }
 
 const GroupingContext = createContext<GroupingContextType | undefined>(undefined);
@@ -98,6 +104,7 @@ export function GroupingProvider({ children }: Props) {
     const { user } = useAuth();
     const [loading, setLoading] = useState<boolean>(false);
     const [groupDetailLoading, setGroupDetailLoading] = useState<boolean>(false);
+    const [reassignLoading, setReassignLoading] = useState<boolean>(false);
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const [pendingProducts, setPendingProducts] = useState<PendingProduct[]>([]);
     const [pendingProductsData, setPendingProductsData] = useState<PendingProductsResponse | null>(null);
@@ -105,6 +112,7 @@ export function GroupingProvider({ children }: Props) {
     const [autoGroupResult, setAutoGroupResult] = useState<any | null>(null);
     const [groupDetail, setGroupDetail] = useState<any | null>(null);
     const [groups, setGroups] = useState<any[]>([]);
+    const [driverCandidates, setDriverCandidates] = useState<any[]>([]);
     const fetchGroups = useCallback(async () => {
         if (!user?.smallCollectionPointId) return;
         setLoading(true);
@@ -241,9 +249,37 @@ export function GroupingProvider({ children }: Props) {
         }
     }, []);
 
+    const fetchDriverCandidates = useCallback(async (companyId: string, date: string) => {
+        setReassignLoading(true);
+        try {
+            const data = await getReassignDriverCandidates(companyId, date);
+            setDriverCandidates(data || []);
+        } catch (error) {
+            console.error('Error fetching driver candidates:', error);
+            setDriverCandidates([]);
+        } finally {
+            setReassignLoading(false);
+        }
+    }, []);
+
+    const reassignDriver = useCallback(async (groupId: number, newCollectorId: string) => {
+        setReassignLoading(true);
+        try {
+            await confirmReassignDriver(groupId, newCollectorId);
+            await fetchGroups();
+            toast.success('Phân lại tài xế thành công');
+        } catch (error: any) {
+            console.error('Error reassigning driver:', error);
+            toast.error(error?.response?.data?.message || 'Lỗi khi phân lại tài xế');
+        } finally {
+            setReassignLoading(false);
+        }
+    }, [fetchGroups]);
+
     const value: GroupingContextType = {
         loading,
         groupDetailLoading,
+        reassignLoading,
         vehicles,
         pendingProducts,
         pendingProductsData,
@@ -251,13 +287,16 @@ export function GroupingProvider({ children }: Props) {
         autoGroupResult,
         groupDetail,
         groups,
+        driverCandidates,
         fetchVehicles,
         fetchPendingProducts,
         fetchGroups,
         getPreAssignSuggestion,
         createGrouping,
         calculateRoute,
-        fetchGroupDetail
+        fetchGroupDetail,
+        fetchDriverCandidates,
+        reassignDriver
     };
 
     return (

@@ -24,6 +24,7 @@ import {
     UpdatePackagePayload
 } from '@/types/Package';
 import { toast } from 'react-toastify';
+import { useAuth } from '@/redux';
 
 interface PackageFilter {
     page?: number;
@@ -61,6 +62,7 @@ const PackageContext = createContext<PackageContextType | undefined>(undefined);
 type Props = { children: ReactNode };
 
 export const PackageProvider: React.FC<Props> = ({ children }) => {
+    const { user } = useAuth();
     const [packages, setPackages] = useState<PackageType[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [selectedPackage, setSelectedPackage] = useState<PackageType | null>(null);
@@ -73,28 +75,41 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
         closed: 0
     });
 
+
     const [filter, setFilterState] = useState<PackageFilter>({
         page: 1,
         limit: 10,
-        smallCollectionPointId: "1",
+        smallCollectionPointId: user?.smallCollectionPointId,
         status: 'Đang đóng gói'
     });
 
+    // Cập nhật smallCollectionPointId khi user thay đổi
+    useEffect(() => {
+        setFilterState((prev) => ({ ...prev, smallCollectionPointId: user?.smallCollectionPointId }));
+    }, [user?.smallCollectionPointId]);
     const setFilter = (newFilter: Partial<PackageFilter>) => {
         setFilterState((prev) => ({ ...prev, ...newFilter }));
     };
 
     const fetchPackages = useCallback(
         async (customFilter?: Partial<PackageFilter>) => {
+            if (!user?.smallCollectionPointId) {
+                console.warn('No smallCollectionPointId found in user profile');
+                return;
+            }
             setLoading(true);
             try {
                 const params: Record<string, any> = {
                     ...filter,
                     ...customFilter
                 };
+                // Remove undefined values first
                 Object.keys(params).forEach(
                     (key) => params[key] === undefined && delete params[key]
                 );
+                // Ensure smallCollectionPointId is always set from user
+                params.smallCollectionPointId = user.smallCollectionPointId;
+                
                 const response: FilterPackagesResponse = await filterPackages(params);
                 setPackages(response.data || []);
                 setTotalPages(response.totalPages);
@@ -107,7 +122,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 setLoading(false);
             }
         },
-        [filter]
+        [filter, user?.smallCollectionPointId]
     );
 
     const fetchAllStats = useCallback(async () => {

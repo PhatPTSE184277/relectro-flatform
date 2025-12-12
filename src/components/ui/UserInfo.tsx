@@ -24,13 +24,23 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
     return (
         <div className='flex gap-3 items-center'>
             {user.avatar && (
-                <Image
-                    src={user.avatar}
-                    width={56}
-                    height={56}
-                    className='w-14 h-14 rounded-xl object-cover shrink-0'
-                    alt='Avatar người dùng'
-                />
+                user.avatar.startsWith('http') && user.avatar.includes('googleusercontent.com') ? (
+                    <img
+                        src={user.avatar}
+                        width={56}
+                        height={56}
+                        className='w-14 h-14 rounded-xl object-cover shrink-0'
+                        alt='Avatar người dùng'
+                    />
+                ) : (
+                    <Image
+                        src={user.avatar}
+                        width={56}
+                        height={56}
+                        className='w-14 h-14 rounded-xl object-cover shrink-0'
+                        alt='Avatar người dùng'
+                    />
+                )
             )}
             <div className='flex flex-col justify-center w-full'>
                 <div className='flex flex-wrap items-center gap-x-2 gap-y-1 text-sm'>

@@ -1,12 +1,13 @@
 import React from 'react';
-import { Eye, Truck } from 'lucide-react';
+import { Eye, Truck, UserCog } from 'lucide-react';
 
 interface GroupingShowProps {
     grouping: any;
     onViewDetail: (grouping: any) => void;
+    onReassignDriver: (grouping: any) => void;
 }
 
-const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean }> = ({ grouping, onViewDetail, isLast = false }) => {
+const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean }> = ({ grouping, onViewDetail, onReassignDriver, isLast = false }) => {
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
             <td className='py-3 px-4 font-medium'>
@@ -53,6 +54,13 @@ const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean }> = ({ grou
                         title='Xem chi tiết'
                     >
                         <Eye size={16} />
+                    </button>
+                    <button
+                        onClick={() => onReassignDriver(grouping)}
+                        className='text-orange-600 hover:text-orange-800 flex items-center gap-1 font-medium transition cursor-pointer'
+                        title='Phân lại tài xế'
+                    >
+                        <UserCog size={16} />
                     </button>
                 </div>
             </td>

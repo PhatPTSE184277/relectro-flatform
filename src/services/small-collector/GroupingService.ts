@@ -93,3 +93,20 @@ export const getPendingGroupingProducts = async (
     );
     return response.data;
 };
+
+// Lấy danh sách tài xế có thể phân lại
+export const getReassignDriverCandidates = async (companyId: string, date: string): Promise<any[]> => {
+    const response = await axios.get('/ReassignDriver/candidates', {
+        params: { companyId, date }
+    });
+    return response.data;
+};
+
+// Xác nhận phân lại tài xế cho nhóm
+export const confirmReassignDriver = async (groupId: number, newCollectorId: string): Promise<any> => {
+    const response = await axios.post('/ReassignDriver/confirm', {
+        groupId,
+        newCollectorId
+    });
+    return response.data;
+};

@@ -1,8 +1,7 @@
-
 'use client';
 
 import React from 'react';
-import { Truck, MapPin, Weight, Ruler, CheckCircle } from 'lucide-react';
+import { Truck, MapPin, Weight, Ruler } from 'lucide-react';
 import InfoCard from '@/components/ui/InfoCard';
 import SummaryCard from '@/components/ui/SummaryCard';
 
@@ -38,7 +37,7 @@ const VehicleDetail: React.FC<VehicleDetailProps> = ({ vehicle, onClose }) => {
             ></div>
 
             {/* Modal container */}
-            <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]">
+            <div className="relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]">
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100">
                     <div>
@@ -60,38 +59,39 @@ const VehicleDetail: React.FC<VehicleDetailProps> = ({ vehicle, onClose }) => {
 
                 {/* Main content */}
                 <div className="flex-1 overflow-y-auto p-6">
+                    {/* Thông tin phương tiện Title */}
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                            <Truck className='w-5 h-5 text-primary-500' />
+                        </span>
+                        Thông tin phương tiện
+                    </h3>
                     {/* Summary section */}
                     <SummaryCard
+                        columns={4}
                         items={[
-                            {
-                                icon: <Truck className='w-5 h-5 text-primary-500' />,
+                            {   
+                                icon: <Truck size={14} className='text-primary-500' />,
                                 label: 'Biển số xe',
                                 value: vehicle.plateNumber || 'Không rõ',
                             },
                             {
-                                icon: <Weight className='w-5 h-5 text-primary-500' />,
+                                icon: <Weight size={14} className='text-primary-500' />,
                                 label: 'Tải trọng',
                                 value: vehicle.capacityKg ? `${vehicle.capacityKg} kg` : 'Chưa có',
                             },
                             {
-                                icon: <Truck className='w-5 h-5 text-primary-500' />,
+                                icon: <Truck size={14} className='text-primary-500' />,
                                 label: 'Loại xe',
                                 value: vehicle.vehicleType || 'Không rõ loại xe',
                             },
                             {
-                                icon: <Ruler className='w-5 h-5 text-primary-500' />,
+                                icon: <Ruler size={14} className='text-primary-500' />,
                                 label: 'Thể tích',
                                 value: vehicle.capacityM3 ? `${vehicle.capacityM3} m³` : 'Chưa có',
                             },
                         ]}
                     />
-                    {/* Thông tin phương tiện */}
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <span className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                            <Truck className='w-5 h-5 text-primary-500' />
-                        </span>
-                        Thông tin phương tiện
-                    </h3>
                     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                         <div className="flex flex-col gap-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

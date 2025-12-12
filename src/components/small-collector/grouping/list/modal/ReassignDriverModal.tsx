@@ -1,0 +1,218 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { X, Calendar, User, CheckCircle, XCircle } from 'lucide-react';
+import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+
+interface ReassignDriverModalProps {
+    open: boolean;
+    grouping: any;
+    onClose: () => void;
+}
+
+const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
+    open,
+    grouping,
+    onClose
+}) => {
+    const user = useSelector((state: RootState) => state.auth.user);
+    const { driverCandidates, reassignLoading, fetchDriverCandidates, reassignDriver } = useGroupingContext();
+    const [selectedDate, setSelectedDate] = useState<string>('');
+    const [selectedDriverId, setSelectedDriverId] = useState<string>('');
+
+    useEffect(() => {
+        if (open && grouping) {
+            // Set ngày mặc định là ngày của nhóm
+            const groupDate = new Date(grouping.groupDate).toISOString().split('T')[0];
+            setSelectedDate(groupDate);
+            setSelectedDriverId('');
+        }
+    }, [open, grouping]);
+
+    useEffect(() => {
+        if (open && selectedDate && user?.collectionCompanyId) {
+            fetchDriverCandidates(String(user.collectionCompanyId), selectedDate);
+        }
+    }, [open, selectedDate, user?.collectionCompanyId, fetchDriverCandidates]);
+
+    const handleConfirm = async () => {
+        if (!selectedDriverId) {
+            return;
+        }
+        await reassignDriver(grouping.groupId, selectedDriverId);
+        handleClose();
+    };
+
+    const handleClose = () => {
+        setSelectedDate('');
+        setSelectedDriverId('');
+        onClose();
+    };
+
+    if (!open || !grouping) return null;
+
+    return (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
+            {/* Overlay */}
+            <div
+                className='absolute inset-0 bg-black/30 backdrop-blur-sm'
+                onClick={handleClose}
+            ></div>
+
+            {/* Modal container */}
+            <div className='relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
+                {/* Header */}
+                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100'>
+                    <div>
+                        <h2 className='text-2xl font-bold text-gray-800'>
+                            Phân lại tài xế
+                        </h2>
+                        <p className='text-sm text-gray-600 mt-1'>
+                            Nhóm: {grouping.groupCode}
+                        </p>
+                    </div>
+                    <button
+                        onClick={handleClose}
+                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
+                        aria-label='Đóng'
+                    >
+                        <X size={28} />
+                    </button>
+                </div>
+
+                {/* Body */}
+                <div className='flex-1 overflow-y-auto p-6 bg-white space-y-6'>
+                    {/* Current Driver Info */}
+                    <div className='bg-gray-50 rounded-xl p-4 border border-gray-200'>
+                        <h3 className='text-sm font-medium text-gray-700 mb-2'>
+                            Tài xế hiện tại
+                        </h3>
+                        <div className='flex items-center gap-2'>
+                            <User className='text-gray-500' size={18} />
+                            <span className='font-semibold text-gray-900'>
+                                {grouping.collector}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Date Picker */}
+                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
+                        <label className='block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2'>
+                            <Calendar size={16} className='text-primary-600' />
+                            Ngày thu gom
+                        </label>
+                        <input
+                            type='date'
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                            className='w-full px-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900'
+                        />
+                    </div>
+
+                    {/* Driver List */}
+                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
+                        <h3 className='text-sm font-medium text-gray-700 mb-3'>
+                            Danh sách tài xế
+                        </h3>
+                        {reassignLoading ? (
+                            <div className='text-center py-8 text-gray-500'>
+                                <div className='animate-pulse'>Đang tải danh sách tài xế...</div>
+                            </div>
+                        ) : (Array.isArray(driverCandidates) ? driverCandidates.length === 0 : true) ? (
+                            <div className='text-center py-8 text-gray-400'>
+                                Không có tài xế nào
+                            </div>
+                        ) : (
+                            <div className='overflow-x-auto max-h-80'>
+                                <table className='w-full text-sm text-gray-800'>
+                                    <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
+                                        <tr>
+                                            <th className='py-3 px-4 text-left'>STT</th>
+                                            <th className='py-3 px-4 text-left'>Tên tài xế</th>
+                                            <th className='py-3 px-4 text-left'>Trạng thái</th>
+                                            <th className='py-3 px-4 text-center'>Chọn</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {driverCandidates.map((driver, idx) => (
+                                            <tr
+                                                key={driver.userId}
+                                                className={`hover:bg-primary-50 transition-colors ${!driver.isAvailable ? 'bg-gray-50 opacity-60 cursor-not-allowed' : ''}`}
+                                                onClick={() => driver.isAvailable && setSelectedDriverId(driver.userId)}
+                                                style={{ cursor: driver.isAvailable ? 'pointer' : 'not-allowed' }}
+                                            >
+                                                <td className='py-3 px-4 font-medium'>{idx + 1}</td>
+                                                <td className='py-3 px-4 font-medium text-gray-900'>
+                                                    <div className='flex items-center gap-2'>
+                                                        <User size={18} className='text-gray-500' />
+                                                        {driver.name}
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4'>
+                                                    <div className='flex items-center gap-2'>
+                                                        {driver.isAvailable ? (
+                                                            <CheckCircle className='text-green-600' size={20} />
+                                                        ) : (
+                                                            <XCircle className='text-red-600' size={20} />
+                                                        )}
+                                                        <span className={`text-xs ${driver.isAvailable ? 'text-green-600' : 'text-red-600'}`}>{driver.statusText}</span>
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4 text-center'>
+                                                    {selectedDriverId === driver.userId && (
+                                                        <div className='w-5 h-5 rounded-full bg-primary-600 flex items-center justify-center mx-auto'>
+                                                            <CheckCircle className='text-white' size={16} />
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className='flex justify-end items-center gap-3 p-5 border-t border-primary-100 bg-white'>
+                    <button
+                        onClick={handleConfirm}
+                        disabled={!selectedDriverId || reassignLoading}
+                        className='px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2'
+                    >
+                        {reassignLoading ? (
+                            <>
+                                <div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
+                                Đang xử lý...
+                            </>
+                        ) : (
+                            'Cập nhật'
+                        )}
+                    </button>
+                </div>
+            </div>
+
+            {/* Animation */}
+            <style jsx>{`
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: scale(0.96) translateY(10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: scale(1) translateY(0);
+                    }
+                }
+                .animate-fadeIn {
+                    animation: fadeIn 0.3s ease-out;
+                }
+            `}</style>
+        </div>
+    );
+};
+
+export default ReassignDriverModal;

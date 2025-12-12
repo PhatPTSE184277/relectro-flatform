@@ -6,6 +6,7 @@ import { SmallCollectionProvider } from '@/contexts/company/SmallCollectionConte
 import { ProductQueryProvider } from '@/contexts/company/ProductQueryContext';
 import { ShiftProvider } from '@/contexts/company/ShiftContext';
 import { VehicleProvider } from '@/contexts/company/VehicleContext';
+import { SettingGroupProvider } from '@/contexts/company/SettingGroupContext';
 
 export default function LargeCollectorLayout({
     children    
@@ -18,17 +19,19 @@ export default function LargeCollectorLayout({
                 <ProductQueryProvider>
                     <ShiftProvider>
                         <VehicleProvider>
-                            <div className='h-screen flex flex-col bg-gray-50'>
-                                <Header 
-                                    title="Bảng điều khiển thu gom lớn" 
-                                    href="/large-collector/dashboard" 
-                                    profileHref="/employee/profile" 
-                                />
-                                <div className='flex flex-1 overflow-hidden'>
-                                    <Sidebar menuItems={MenuItems} />
-                                    <main className='flex-1 overflow-y-auto'>{children}</main>
+                            <SettingGroupProvider>
+                                <div className='h-screen flex flex-col bg-gray-50'>
+                                    <Header 
+                                        title="Bảng điều khiển thu gom lớn" 
+                                        href="/large-collector/dashboard" 
+                                        profileHref="/employee/profile" 
+                                    />
+                                    <div className='flex flex-1 overflow-hidden'>
+                                        <Sidebar menuItems={MenuItems} />
+                                        <main className='flex-1 overflow-y-auto'>{children}</main>
+                                    </div>
                                 </div>
-                            </div>
+                            </SettingGroupProvider>
                         </VehicleProvider>
                     </ShiftProvider>
                 </ProductQueryProvider>

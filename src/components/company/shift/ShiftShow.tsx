@@ -1,19 +1,6 @@
 import React from 'react';
 import { Eye } from 'lucide-react';
-import { formatIsoToHourMinute } from '@/utils/FormatTime';
-
-// Helper to format time and date if needed
-const formatTimeWithDate = (isoStr: string) => {
-    if (!isoStr) return '';
-    const date = new Date(isoStr);
-    if (isNaN(date.getTime())) return '';
-    const hour = date.getHours().toString().padStart(2, '0');
-    const minute = date.getMinutes().toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${hour}:${minute} ${day}/${month}/${year}`;
-};
+import { formatTimeWithDate } from '@/utils/FormatTime';
 
 interface ShiftShowProps {
     shift: any;

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { getTodayString } from '@/utils/getDayString';
 import { useAssignProductContext } from '@/contexts/admin/AssignProductContext';
 import { Package } from 'lucide-react';
 import SearchBox from '@/components/ui/SearchBox';
@@ -22,7 +23,7 @@ const AssignCompanyPage: React.FC = () => {
     } = useAssignProductContext();
 
     const [search, setSearch] = useState('');
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [selectedDate, setSelectedDate] = useState(getTodayString);
     const [showAssignModal, setShowAssignModal] = useState(false);
 
     const filteredProducts = assignedProducts.filter((product) => {

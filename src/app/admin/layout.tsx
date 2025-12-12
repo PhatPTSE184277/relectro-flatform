@@ -5,6 +5,7 @@ import { UserProvider } from '@/contexts/admin/UserContext';
 import { CollectionCompanyProvider } from '@/contexts/admin/CollectionCompanyContext';
 import { PostProvider } from '@/contexts/admin/PostContext';
 import { SystemConfigProvider } from '@/contexts/admin/SystemConfigContext';
+import { TrackingProvider } from '@/contexts/admin/TrackingContext';
 import { CompanyConfigProvider } from '@/contexts/admin/CompanyConfigContext';
 import { AssignProductProvider } from '@/contexts/admin/AssignProductContext';
 
@@ -20,19 +21,21 @@ export default function AdminLayout({
                     <UserProvider>
                         <CollectionCompanyProvider>
                             <SystemConfigProvider>
-                                <div className='h-screen flex flex-col bg-gray-50'>
-                                    <Header
-                                        title='Bảng điều khiển quản trị'
-                                        href='/admin/dashboard'
-                                        profileHref='/admin/profile'
-                                    />
-                                    <div className='flex flex-1 overflow-hidden'>
-                                        <Sidebar menuItems={adminMenuItems} />
-                                        <main className='flex-1 overflow-y-auto'>
-                                            {children}
-                                        </main>
+                                <TrackingProvider>
+                                    <div className='h-screen flex flex-col bg-gray-50'>
+                                        <Header
+                                            title='Bảng điều khiển quản trị'
+                                            href='/admin/dashboard'
+                                            profileHref='/admin/profile'
+                                        />
+                                        <div className='flex flex-1 overflow-hidden'>
+                                            <Sidebar menuItems={adminMenuItems} />
+                                            <main className='flex-1 overflow-y-auto'>
+                                                {children}
+                                            </main>
+                                        </div>
                                     </div>
-                                </div>
+                                </TrackingProvider>
                             </SystemConfigProvider>
                         </CollectionCompanyProvider>
                     </UserProvider>

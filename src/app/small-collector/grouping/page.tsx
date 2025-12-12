@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { getTodayString } from '@/utils/getDayString';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import { Users, Calendar, GitBranch } from 'lucide-react';
 import PreAssignStep from '@/components/small-collector/grouping/PreAssignStep';
@@ -28,7 +29,7 @@ const GroupingPage: React.FC = () => {
 
     const [activeStep, setActiveStep] = useState(1);
     const [loadThreshold, setLoadThreshold] = useState(80);
-    const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+    const [selectedDate, setSelectedDate] = useState<string>(getTodayString);
     const [page, setPage] = useState(1);
     const itemsPerPage = 10;
 

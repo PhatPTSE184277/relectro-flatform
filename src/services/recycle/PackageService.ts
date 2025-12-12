@@ -7,13 +7,16 @@ import {
 export const filterPackages = async ({
     page = 1,
     limit = 10,
+    smallCollectionPointId,
     status
 }: {
     page?: number;
     limit?: number;
+    smallCollectionPointId?: string;
     status?: string;
 }): Promise<FilterPackagesResponse> => {
     const params: Record<string, any> = { page, limit };
+    if (smallCollectionPointId) params.smallCollectionPointId = "2";
     if (status && status.trim()) params.status = status.trim();
 
     const response = await axios.get<FilterPackagesResponse>(
@@ -22,6 +25,7 @@ export const filterPackages = async ({
     );
     return response.data;
 };
+
 
 export const getPackageById = async (packageId: string): Promise<PackageType> => {
     const response = await axios.get<PackageType>(`/packages/${packageId}`);

@@ -6,12 +6,14 @@ interface GroupingListProps {
     groupings: any[];
     loading: boolean;
     onViewDetail: (grouping: any) => void;
+    onReassignDriver: (grouping: any) => void;
 }
 
 const GroupingList: React.FC<GroupingListProps> = ({
     groupings,
     loading,
-    onViewDetail
+    onViewDetail,
+    onReassignDriver
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -40,6 +42,7 @@ const GroupingList: React.FC<GroupingListProps> = ({
                                     key={group.groupId}
                                     grouping={group}
                                     onViewDetail={onViewDetail}
+                                    onReassignDriver={onReassignDriver}
                                     isLast={idx === groupings.length - 1}
                                 />
                             ))

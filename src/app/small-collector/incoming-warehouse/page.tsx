@@ -19,7 +19,6 @@ const IncomingWarehousePage: React.FC = () => {
         filter,
         setFilter,
         totalPages,
-        allStats,
         receiveProduct,
         selectedProduct,
         setSelectedProduct,
@@ -120,7 +119,7 @@ const IncomingWarehousePage: React.FC = () => {
 
             {/* Header + Search */}
             <div className='flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:gap-6'>
-                <div className='flex items-center gap-3 flex-shrink-0'>
+                <div className='flex items-center gap-3 shrink-0'>
                     <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
                         <Warehouse className='text-white' size={20} />
                     </div>
@@ -170,7 +169,6 @@ const IncomingWarehousePage: React.FC = () => {
                 {/* Status Filter */}
                 <IWProductFilter
                     status={filter.status as any}
-                    stats={allStats}
                     onFilterChange={handleFilterChange}
                 />
             </div>

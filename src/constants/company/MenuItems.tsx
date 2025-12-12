@@ -4,7 +4,8 @@ import {
     MapPin,
     Package,
     CalendarClock,
-    Truck
+    Truck,
+    Settings2
 } from 'lucide-react';
 
 export const MenuItems = [
@@ -43,5 +44,11 @@ export const MenuItems = [
         label: 'Tra cứu sản phẩm',
         path: '/company/product-query',
         icon: <Package size={20} />
-    }
+    },
+        {
+        id: 'setting-group',
+        label: 'Cấu hình gom nhóm',
+        path: '/company/setting-group',
+        icon: <Settings2 size={20} />
+    },
 ];

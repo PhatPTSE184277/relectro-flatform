@@ -7,6 +7,7 @@ import GroupingListComponent from '@/components/small-collector/grouping/list/Gr
 
 import Pagination from '@/components/ui/Pagination';
 import GroupingDetail from '@/components/small-collector/grouping/list/modal/GroupingDetail';
+import ReassignDriverModal from '@/components/small-collector/grouping/list/modal/ReassignDriverModal';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 
 const GroupingListPage: React.FC = () => {
@@ -19,6 +20,8 @@ const GroupingListPage: React.FC = () => {
     });
     const [totalPages, setTotalPages] = useState(1);
     const [selectedGrouping, setSelectedGrouping] = useState<any | null>(null);
+    const [showReassignModal, setShowReassignModal] = useState(false);
+    const [reassignGrouping, setReassignGrouping] = useState<any | null>(null);
 
     // Fetch groups on mount
     useEffect(() => {
@@ -44,6 +47,11 @@ const GroupingListPage: React.FC = () => {
     const handleViewDetail = async (grouping: any) => {
         setSelectedGrouping(grouping);
         await fetchGroupDetail(grouping.groupId);
+    };
+
+    const handleReassignDriver = (grouping: any) => {
+        setReassignGrouping(grouping);
+        setShowReassignModal(true);
     };
 
     return (
@@ -85,6 +93,7 @@ const GroupingListPage: React.FC = () => {
                 groupings={filteredGroupings}
                 loading={loading}
                 onViewDetail={handleViewDetail}
+                onReassignDriver={handleReassignDriver}
             />
 
             {/* Pagination */}
@@ -99,6 +108,18 @@ const GroupingListPage: React.FC = () => {
                 <GroupingDetail
                     grouping={groupDetailLoading ? selectedGrouping : groupDetail}
                     onClose={() => setSelectedGrouping(null)}
+                />
+            )}
+
+            {/* Reassign Driver Modal */}
+            {showReassignModal && reassignGrouping && (
+                <ReassignDriverModal
+                    open={showReassignModal}
+                    grouping={reassignGrouping}
+                    onClose={() => {
+                        setShowReassignModal(false);
+                        setReassignGrouping(null);
+                    }}
                 />
             )}
         </div>

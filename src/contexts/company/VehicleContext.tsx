@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
-import { getFilteredVehicles, getVehicleById, VehicleFilterParams } from '@/services/company/VehicleService';
+import { getFilteredVehicles, getVehicleById, importVehiclesExcel, VehicleFilterParams } from '@/services/company/VehicleService';
 
 interface VehicleContextType {
   loading: boolean;
@@ -10,6 +10,7 @@ interface VehicleContextType {
   error: string | null;
   fetchVehicles: (params?: VehicleFilterParams) => Promise<void>;
   fetchVehicleDetail: (id: string) => Promise<void>;
+  importVehicles: (file: File) => Promise<any>;
   clearVehicles: () => void;
 }
 
@@ -49,6 +50,20 @@ export const VehicleProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+  const importVehicles = useCallback(async (file: File) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await importVehiclesExcel(file);
+      return result;
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Lỗi khi import phương tiện');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+    
   const clearVehicles = useCallback(() => {
     setVehicles([]);
     setSelectedVehicle(null);
@@ -62,6 +77,7 @@ export const VehicleProvider = ({ children }: { children: ReactNode }) => {
     error,
     fetchVehicles,
     fetchVehicleDetail,
+    importVehicles,
     clearVehicles,
   };
 
