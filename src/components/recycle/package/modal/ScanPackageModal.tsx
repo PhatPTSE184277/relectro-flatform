@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Package as PackageIcon, X, Info, List } from 'lucide-react';
+import { Package as PackageIcon, X, Info, List, ArrowRight } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { getPackageById } from '@/services/recycle/PackageService';
 import { PackageType } from '@/types/Package';
@@ -158,7 +158,7 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                                     disabled={loading}
                                     className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
                                 >
-                                    {loading ? 'Đang tìm...' : 'Ok'}
+                                    {loading ? 'Đang tìm...' : <ArrowRight className='w-5 h-5' />}
                                 </button>
                             </form>
                         </div>

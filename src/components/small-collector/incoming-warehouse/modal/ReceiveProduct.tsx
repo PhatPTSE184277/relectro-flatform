@@ -2,7 +2,7 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
-import { X, Package as PackageIcon } from 'lucide-react';
+import { X, Package as PackageIcon, ArrowRight } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { getProductByQRCode } from '@/services/small-collector/IWProductService';
 
@@ -203,7 +203,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                     disabled={loading}
                                     className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
                                 >
-                                    {loading ? 'Đang tìm...' : 'Ok'}
+                                    {loading ? 'Đang tìm...' : <ArrowRight className='w-5 h-5' />}
                                 </button>
                             </form>
                         </div>
