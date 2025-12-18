@@ -88,7 +88,6 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onClose }) => {
                                 value: company.city || 'Chưa có',
                             },
                         ]}
-                        columns={4}
                     />
                 </div>
 

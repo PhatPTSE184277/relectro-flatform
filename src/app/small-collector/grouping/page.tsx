@@ -18,7 +18,6 @@ const GroupingPage: React.FC = () => {
         loading,
         vehicles,
         pendingProducts,
-        pendingProductsData,
         preAssignResult,
         fetchVehicles,
         fetchPendingProducts,
@@ -56,7 +55,12 @@ const GroupingPage: React.FC = () => {
         vehicleId: string;
         productIds: string[];
     }) => {
-        await createGrouping(payload);
+        // Ensure vehicleId is string
+        const formattedPayload = {
+            ...payload,
+            vehicleId: String(payload.vehicleId)
+        };
+        await createGrouping(formattedPayload);
     };
 
     const handleDateChange = (date: string) => {
@@ -79,60 +83,31 @@ const GroupingPage: React.FC = () => {
     return (
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
             {/* Header */}
-            <div className='flex items-center gap-3 mb-6'>
-                <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
-                    <GitBranch className='text-white' size={20} />
-                </div>
-                <h1 className='text-3xl font-bold text-gray-900'>
-                    Gom nhóm thu gom
-                </h1>
-                <button
-                    onClick={() => router.push('/small-collector/grouping/list')}
-                    className='ml-auto px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors cursor-pointer'
-                >
-                    Xem danh sách nhóm
-                </button>
-            </div>
-
-            {/* Date Picker và Thông tin tổng quan */}
-            {activeStep === 1 && (
-                <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6'>
-                    <div className='flex items-center justify-between mb-4'>
-                        <div className='flex-1 max-w-xs'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                Chọn ngày làm việc
-                            </label>
-                            <CustomDatePicker
-                                value={selectedDate}
-                                onChange={handleDateChange}
-                                placeholder='Chọn ngày'
-                            />
-                        </div>
-                        {pendingProductsData && (
-                            <div className='flex gap-6'>
-                                <div className='text-center'>
-                                    <p className='text-sm text-gray-600'>Tổng sản phẩm</p>
-                                    <p className='text-2xl font-bold text-primary-600'>
-                                        {pendingProductsData.total}
-                                    </p>
-                                </div>
-                                <div className='text-center'>
-                                    <p className='text-sm text-gray-600'>Tổng khối lượng</p>
-                                    <p className='text-2xl font-bold text-primary-600'>
-                                        {pendingProductsData.totalWeightKg} kg
-                                    </p>
-                                </div>
-                                <div className='text-center'>
-                                    <p className='text-sm text-gray-600'>Tổng thể tích</p>
-                                    <p className='text-2xl font-bold text-primary-600'>
-                                        {pendingProductsData.totalVolumeM3.toFixed(2)} m³
-                                    </p>
-                                </div>
-                            </div>
-                        )}
+            <div className='flex justify-between items-center mb-6'>
+                <div className='flex items-center gap-3'>
+                    <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
+                        <GitBranch className='text-white' size={20} />
                     </div>
+                    <h1 className='text-3xl font-bold text-gray-900'>
+                        Gom nhóm thu gom
+                    </h1>
                 </div>
-            )}
+                <div className='flex gap-4 items-center flex-1 justify-end'>
+                    <div className='w-64'>
+                        <CustomDatePicker
+                            value={selectedDate}
+                            onChange={handleDateChange}
+                            placeholder='Chọn ngày làm việc'
+                        />
+                    </div>
+                    <button
+                        onClick={() => router.push('/small-collector/grouping/list')}
+                        className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors cursor-pointer'
+                    >
+                        Xem danh sách nhóm
+                    </button>
+                </div>
+            </div>
 
             {/* Steps */}
             <div className='mb-8'>

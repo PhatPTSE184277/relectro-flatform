@@ -28,7 +28,7 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
     allProducts = [],
     loading
 }) => {
-    const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
+    const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
     const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
 
     useEffect(() => {
@@ -69,7 +69,7 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
         if (selectedVehicleId && selectedProductIds.length > 0) {
             onConfirm({
                 workDate: day.workDate,
-                vehicleId: String(selectedVehicleId),
+                vehicleId: selectedVehicleId,
                 productIds: selectedProductIds
             });
         }
@@ -83,7 +83,7 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
 
     if (!open || !day || !Array.isArray(allProducts)) return null;
 
-    const selectedVehicle = vehicles.find((v) => v.id === selectedVehicleId);
+    const selectedVehicle = vehicles.find((v) => v.vehicleId === selectedVehicleId);
 
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
@@ -125,10 +125,10 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
                         <div className='flex flex-col gap-3'>
                             {vehicles.map((vehicle) => (
                                 <div
-                                    key={vehicle.id}
-                                    onClick={() => setSelectedVehicleId(vehicle.id)}
+                                    key={vehicle.vehicleId}
+                                    onClick={() => setSelectedVehicleId(vehicle.vehicleId)}
                                     className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                                        selectedVehicleId === vehicle.id
+                                        selectedVehicleId === vehicle.vehicleId
                                             ? 'border-primary-500 bg-primary-50 shadow-md'
                                             : 'border-gray-200 hover:border-primary-300'
                                     }`}
@@ -136,7 +136,7 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
                                     <div className='flex items-center gap-6'>
                                         <Truck
                                             className={
-                                                selectedVehicleId === vehicle.id
+                                                selectedVehicleId === vehicle.vehicleId
                                                     ? 'text-primary-600'
                                                     : 'text-gray-400'
                                             }

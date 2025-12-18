@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, User, CheckCircle, XCircle } from 'lucide-react';
+import { X, Calendar, CheckCircle } from 'lucide-react';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
+import CustomDatePicker from '@/components/ui/CustomDatePicker';
 
 interface ReassignDriverModalProps {
     open: boolean;
@@ -24,9 +25,14 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
 
     useEffect(() => {
         if (open && grouping) {
-            // Set ngày mặc định là ngày của nhóm
-            const groupDate = new Date(grouping.groupDate).toISOString().split('T')[0];
-            setSelectedDate(groupDate);
+            // Set ngày mặc định là ngày của nhóm hoặc ngày hiện tại nếu không có
+            const groupDate = grouping.groupDate ? new Date(grouping.groupDate) : new Date();
+            if (!isNaN(groupDate.getTime())) {
+                setSelectedDate(groupDate.toISOString().split('T')[0]);
+            } else {
+                console.error('Invalid groupDate:', grouping.groupDate);
+                setSelectedDate(new Date().toISOString().split('T')[0]);
+            }
             setSelectedDriverId('');
         }
     }, [open, grouping]);
@@ -84,31 +90,28 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
 
                 {/* Body */}
                 <div className='flex-1 overflow-y-auto p-6 bg-white space-y-6'>
-                    {/* Current Driver Info */}
-                    <div className='bg-gray-50 rounded-xl p-4 border border-gray-200'>
-                        <h3 className='text-sm font-medium text-gray-700 mb-2'>
-                            Tài xế hiện tại
-                        </h3>
-                        <div className='flex items-center gap-2'>
-                            <User className='text-gray-500' size={18} />
-                            <span className='font-semibold text-gray-900'>
-                                {grouping.collector}
-                            </span>
+                    {/* Current Driver Info and Date Picker */}
+                    <div className='bg-gray-50 rounded-xl p-4 border border-gray-200 flex items-center justify-between gap-4'>
+                        <div className='flex-1'>
+                            <h3 className='text-sm font-medium text-gray-700 mb-2'>
+                                Tài xế hiện tại
+                            </h3>
+                            <div className='flex items-center gap-2'>
+                                <span className='font-semibold text-gray-900'>
+                                    {grouping.collector}
+                                </span>
+                            </div>
                         </div>
-                    </div>
-
-                    {/* Date Picker */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
-                        <label className='block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2'>
-                            <Calendar size={16} className='text-primary-600' />
-                            Ngày thu gom
-                        </label>
-                        <input
-                            type='date'
-                            value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
-                            className='w-full px-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900'
-                        />
+                        <div className='flex-1'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                Ngày thu gom
+                            </label>
+                            <CustomDatePicker
+                                value={selectedDate}
+                                onChange={setSelectedDate}
+                                placeholder='Chọn ngày thu gom'
+                            />
+                        </div>
                     </div>
 
                     {/* Driver List */}
@@ -145,20 +148,10 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                                             >
                                                 <td className='py-3 px-4 font-medium'>{idx + 1}</td>
                                                 <td className='py-3 px-4 font-medium text-gray-900'>
-                                                    <div className='flex items-center gap-2'>
-                                                        <User size={18} className='text-gray-500' />
-                                                        {driver.name}
-                                                    </div>
+                                                    {driver.name}
                                                 </td>
                                                 <td className='py-3 px-4'>
-                                                    <div className='flex items-center gap-2'>
-                                                        {driver.isAvailable ? (
-                                                            <CheckCircle className='text-green-600' size={20} />
-                                                        ) : (
-                                                            <XCircle className='text-red-600' size={20} />
-                                                        )}
-                                                        <span className={`text-xs ${driver.isAvailable ? 'text-green-600' : 'text-red-600'}`}>{driver.statusText}</span>
-                                                    </div>
+                                                    <span className={`text-xs ${driver.isAvailable ? 'text-green-600' : 'text-red-600'}`}>{driver.statusText}</span>
                                                 </td>
                                                 <td className='py-3 px-4 text-center'>
                                                     {selectedDriverId === driver.userId && (

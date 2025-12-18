@@ -4,10 +4,11 @@ export interface UserProfile {
     email: string;
     phone: string;
     avatar: string;
-    role: 'AdminWarehouse' | 'Collector' | 'User' | 'Admin' | 'AdminCompany';
+    role: 'AdminWarehouse' | 'Collector' | 'User' | 'Admin' | 'AdminCompany' | 'Shipper' | 'Recycler';
     points: number;
     smallCollectionPointId?: string;
     collectionCompanyId?: string;
+    isFirstLogin?: boolean;
 }
 
 export interface AuthState {
@@ -16,6 +17,7 @@ export interface AuthState {
     isAuthenticated: boolean;
     loading: boolean;
     error: string | null;
+    isFirstLogin: boolean;
 }
 
 export interface LoginCredentials {
@@ -24,5 +26,6 @@ export interface LoginCredentials {
 }
 
 export interface LoginResponse {
-    token: string;
+    accessToken: string;
+    isFirstLogin: boolean;
 }

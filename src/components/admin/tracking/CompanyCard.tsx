@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, MapPin, Phone, Mail } from 'lucide-react';
+import { Building2, MapPin, Phone } from 'lucide-react';
 
 interface CompanyCardProps {
     company: any;

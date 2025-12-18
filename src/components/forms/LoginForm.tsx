@@ -9,10 +9,13 @@ import {
 import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { login, clearError } from '@/redux/reducers/authReducer';
+import FirstLoginChangePasswordModal from './FirstLoginChangePasswordModal';
+import { changePasswordFirstLogin } from '@/services/AuthService';
 
 const LoginForm = () => {
     const [formData, setFormData] = useState({ username: '', password: '' });
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [showFirstLoginChangePassword, setShowFirstLoginChangePassword] = useState(false);
     const router = useRouter();
     const dispatch = useAppDispatch();
     const { loading, error, isAuthenticated, user } = useAppSelector((state) => state.auth);
@@ -28,6 +31,13 @@ const LoginForm = () => {
         if (isAuthenticated && user) {
             toast.success('Đăng nhập thành công!');
             
+            // Check if first login
+            if (user.isFirstLogin) {
+                // Use setTimeout to avoid setState in effect
+                setTimeout(() => setShowFirstLoginChangePassword(true), 0);
+                return;
+            }
+            
             // Route based on user role (backend enum)
             switch (user.role) {
                 case 'AdminWarehouse':
@@ -38,6 +48,12 @@ const LoginForm = () => {
                     break;
                 case 'AdminCompany':
                     router.push('/company/dashboard');
+                    break;
+                case 'Shipper':
+                    router.push('/shipper/package');
+                    break;
+                case 'Recycler':
+                    router.push('/recycle/package');
                     break;
                 default:
                     router.push('/admin/dashboard');
@@ -64,8 +80,37 @@ const LoginForm = () => {
         dispatch(login({ username: formData.username, password: formData.password }));
     };
 
+    const handleChangePasswordFirstLogin = async (oldPassword: string, newPassword: string, confirmPassword: string) => {
+        await changePasswordFirstLogin(oldPassword, newPassword, confirmPassword);
+        setShowFirstLoginChangePassword(false);
+        
+        // Redirect based on role after password change
+        if (user) {
+            switch (user.role) {
+                case 'AdminWarehouse':
+                    router.push('/small-collector/dashboard');
+                    break;
+                case 'Admin':
+                    router.push('/admin/dashboard');
+                    break;
+                case 'AdminCompany':
+                    router.push('/company/dashboard');
+                    break;
+                case 'Shipper':
+                    router.push('/shipper/package');
+                    break;
+                case 'Recycler':
+                    router.push('/recycle/package');
+                    break;
+                default:
+                    router.push('/admin/dashboard');
+            }
+        }
+    };
+
     return (
         <div className='bg-white rounded-2xl shadow-xl p-8 animate-slide-in-right border border-gray-100'>
+
             <form onSubmit={handleSubmit} className='space-y-6'>
                 <div>
                     <label
@@ -76,7 +121,7 @@ const LoginForm = () => {
                     </label>
                     <div className='relative'>
                         <IoPersonOutline className='absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400 text-lg' />
-                                            <IoPersonOutline className='absolute top-1/2 left-3 transform -translate-y-1/2 text-primary-400 text-lg' />
+                        <IoPersonOutline className='absolute top-1/2 left-3 transform -translate-y-1/2 text-primary-400 text-lg' />
                         <input
                             id='username'
                             name='username'
@@ -100,7 +145,7 @@ const LoginForm = () => {
                     </label>
                     <div className='relative'>
                         <IoLockClosedOutline className='absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400 text-lg' />
-                                            <IoLockClosedOutline className='absolute top-1/2 left-3 transform -translate-y-1/2 text-primary-400 text-lg' />
+                        <IoLockClosedOutline className='absolute top-1/2 left-3 transform -translate-y-1/2 text-primary-400 text-lg' />
                         <input
                             id='password'
                             name='password'
@@ -124,6 +169,16 @@ const LoginForm = () => {
                             )}
                         </button>
                     </div>
+                </div>
+
+                <div className='flex justify-end mb-2'>
+                    <button
+                        type='button'
+                        onClick={() => router.push('/forgot-password')}
+                        className='text-primary-600 hover:text-primary-700 font-medium transition cursor-pointer text-sm'
+                    >
+                        Quên mật khẩu?
+                    </button>
                 </div>
 
                 <button
@@ -168,6 +223,12 @@ const LoginForm = () => {
                     </span>
                 </p>
             </div>
+
+            {/* First Login Change Password Modal */}
+            <FirstLoginChangePasswordModal
+                open={showFirstLoginChangePassword}
+                onConfirm={handleChangePasswordFirstLogin}
+            />
         </div>
     );
 };

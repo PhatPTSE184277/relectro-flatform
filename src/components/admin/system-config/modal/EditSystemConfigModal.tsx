@@ -110,7 +110,6 @@ const EditSystemConfigModal: React.FC<EditSystemConfigModalProps> = ({
                                 ),
                             },
                         ]}
-                        columns={4}
                     />
                 </div>
 

@@ -16,7 +16,6 @@ export const filterPackages = async ({
     status?: string;
 }): Promise<FilterPackagesResponse> => {
     const params: Record<string, any> = { page, limit };
-    if (smallCollectionPointId) params.smallCollectionPointId = "2";
     if (status && status.trim()) params.status = status.trim();
 
     const response = await axios.get<FilterPackagesResponse>(

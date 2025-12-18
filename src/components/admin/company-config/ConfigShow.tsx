@@ -1,17 +1,17 @@
 import React from 'react';
-import { Edit } from 'lucide-react';
+import { Eye } from 'lucide-react';
 
 interface ConfigShowProps {
     company: any;
-    onEdit: (company: any) => void;
     index?: number;
+    onView?: (company: any) => void;
 }
 
 const ConfigShow: React.FC<ConfigShowProps & { isLast?: boolean }> = ({
     company,
-    onEdit,
     isLast = false,
-    index
+    index,
+    onView
 }) => {
     const activePoints = company.smallPoints.filter(
         (sp: any) => sp.active
@@ -34,26 +34,27 @@ const ConfigShow: React.FC<ConfigShowProps & { isLast?: boolean }> = ({
                 </div>
             </td>
 
-            <td className='py-3 px-4 text-gray-700'>
-                <span className='font-medium'>{company.ratioPercent}%</span>
+            <td className='py-3 px-4 text-gray-700 text-center'>
+                <span className='font-medium'>{company.ratioPercent}</span>
             </td>
 
             <td className='py-3 px-4 text-gray-700'>
                 <div className='flex flex-wrap gap-1'>
-                    {company.smallPoints.map((sp: any, idx: number) => {
-                        return (
-                            <span
-                                key={idx}
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    sp.active
-                                        ? 'bg-green-100 text-green-700'
-                                        : 'bg-gray-100 text-gray-600'
-                                }`}
-                            >
-                                {sp.name || `Point ${sp.smallPointId}`}
-                            </span>
-                        );
-                    })}
+                    {company.smallPoints.slice(0, 3).map((sp: any, idx: number) => (
+                        <span
+                            key={idx}
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                sp.active
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-gray-100 text-gray-600'
+                            }`}
+                        >
+                            {sp.name || `Point ${sp.smallPointId}`}
+                        </span>
+                    ))}
+                    {company.smallPoints.length > 3 && (
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-700">+{company.smallPoints.length - 3}</span>
+                    )}
                 </div>
             </td>
 
@@ -63,16 +64,14 @@ const ConfigShow: React.FC<ConfigShowProps & { isLast?: boolean }> = ({
                 </span>
             </td>
 
-            <td className='py-3 px-4'>
-                <div className='flex justify-center gap-2'>
-                    <button
-                        onClick={() => onEdit(company)}
-                        className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
-                        title='Chỉnh sửa'
-                    >
-                        <Edit size={16} />
-                    </button>
-                </div>
+            <td className='py-3 px-4 text-center'>
+                <button
+                    onClick={() => onView?.(company)}
+                    className='text-primary-600 hover:text-primary-800 flex items-center justify-center transition cursor-pointer mx-auto'
+                    title='Xem chi tiết'
+                >
+                    <Eye size={16} />
+                </button>
             </td>
         </tr>
     );

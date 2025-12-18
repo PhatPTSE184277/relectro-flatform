@@ -1,4 +1,3 @@
-
 /* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import PostApprove from './PostApprove';
@@ -17,8 +16,7 @@ import {
     Tag,
     CheckCircle
 } from 'lucide-react';
-import InfoCard from '@/components/ui/InfoCard';
-import Section from '@/components/ui/Section';
+import SummaryCard from '@/components/ui/SummaryCard';
 import UserInfo from '@/components/ui/UserInfo';
 
 interface PostDetailProps {
@@ -31,9 +29,10 @@ interface PostDetailProps {
 // Normalize status for display and badge
 function normalizeStatus(status: string = ''): string {
     const s = status.trim().toLowerCase();
-    if (s.includes('duyệt') || s === 'approved') return 'Đã duyệt';
-    if (s.includes('từ chối') || s === 'rejected') return 'Đã từ chối';
-    if (s.includes('chờ') || s === 'pending' || s === '') return 'Chờ duyệt';
+    if (s.includes('chờ') || s === 'pending' || s === 'chờ duyệt') return 'Chờ duyệt';
+    if (s.includes('từ chối') || s === 'rejected' || s === 'đã từ chối') return 'Đã từ chối';
+    if (s.includes('duyệt') && !s.includes('chờ') && !s.includes('từ chối') || s === 'approved' || s === 'đã duyệt') return 'Đã duyệt';
+    if (s === '') return 'Chờ duyệt';
     return status;
 }
 
@@ -87,45 +86,46 @@ const PostDetail: React.FC<PostDetailProps> = ({
             ></div>
 
             {/* Modal */}
-            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
+            <div className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl overflow-y-auto z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
-                    <div>
+                    <div className='flex flex-col gap-1'>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Chi tiết bài đăng
                         </h2>
-                        <p className='text-sm text-gray-600 mt-1'>
+                        <p className='text-sm text-gray-600'>
                             Thông tin chi tiết về bài đăng sản phẩm
                         </p>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
-                        aria-label='Đóng'
-                    >
-                        &times;
-                    </button>
+                    <div className='flex items-center gap-4'>
+                        {/* Status Badge - moved to header */}
+                        <span
+                            className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(post.status)}`}
+                        >
+                            {normalizeStatus(post.status)}
+                        </span>
+                        <button
+                            onClick={onClose}
+                            className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
+                            aria-label='Đóng'
+                        >
+                            &times;
+                        </button>
+                    </div>
                 </div>
 
                 {/* Body */}
-                <div className='flex flex-col md:flex-row flex-1 overflow-hidden'>
+                <div className='flex flex-col md:flex-row flex-1 overflow-y-auto'>
                     {/* LEFT - IMAGES + STATUS BADGE */}
-                    <div className='md:w-1/3 bg-gray-50 flex flex-col items-center p-6 border-r border-primary-100 overflow-y-auto'>
+                    <div className='md:w-1/3 bg-white flex flex-col items-center p-6 border-r border-primary-100 overflow-y-auto'>
                         <div className='relative w-full flex flex-col items-center gap-4'>
-                            {/* Status Badge - left, above image */}
-                            <span
-                                className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-2 ${getStatusBadgeClass(post.status)}`}
-                                style={{marginLeft: 0}}
-                            >
-                                {normalizeStatus(post.status)}
-                            </span>
                             <img
                                 src={
                                     post.imageUrls?.[selectedImg] ||
                                     '/placeholder.png'
                                 }
                                 alt='Ảnh sản phẩm'
-                                className='w-full max-w-xs h-72 object-contain rounded-xl border border-primary-200 bg-white cursor-zoom-in shadow-sm'
+                                className='w-full max-w-[180px] h-40 object-contain rounded-xl border border-primary-200 bg-white cursor-zoom-in shadow-sm'
                                 onClick={() =>
                                     setZoomImg(post.imageUrls?.[selectedImg])
                                 }
@@ -148,16 +148,11 @@ const PostDetail: React.FC<PostDetailProps> = ({
                                 )}
                             </div>
                         </div>
-                    </div>
 
-                    {/* RIGHT - INFO */}
-                    <div className='md:w-2/3 p-6 space-y-5 overflow-y-auto'>
-                        {/* Status Badge removed from right info section */}
-
-                        {/* AI Labels */}
+                        {/* AI Labels - moved to left */}
                         {Array.isArray(post.aggregatedAiLabels) &&
                             post.aggregatedAiLabels.length > 0 && (
-                                <div className='p-4 bg-primary-50 rounded-lg border border-primary-100'>
+                                <div className='p-4 bg-primary-50 rounded-lg border border-primary-100 w-full'>
                                     <div className='flex items-center gap-2 mb-2'>
                                         <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                             <Tag className='text-primary-500' size={18} />
@@ -184,168 +179,138 @@ const PostDetail: React.FC<PostDetailProps> = ({
                                 </div>
                             )}
 
-                        {/* Product Info Grid */}
-                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                            <InfoCard
-                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><List className="w-4 h-4 text-primary-500" /></span>}
-                                label="Danh mục chính"
-                                value={post.parentCategory}
-                            />
-                            <InfoCard
-                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><List className="w-4 h-4 text-primary-500" /></span>}
-                                label="Danh mục phụ"
-                                value={post.subCategory}
-                            />
-                            <InfoCard
-                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Star className="w-4 h-4 text-primary-500" /></span>}
-                                label="Điểm ước tính"
-                                value={post.estimatePoint || 0}
-                            />
-                            <InfoCard
-                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Calendar className="w-4 h-4 text-primary-500" /></span>}
-                                label="Ngày đăng"
-                                value={formatDate(post.date)}
-                            />
-                        </div>
+                        {/* Approve/Reject Buttons under AI Labels */}
+                        {isPending && (
+                            <div className='flex justify-center gap-3 mt-6'>
+                                <button
+                                    onClick={() => setIsApproveModalOpen(true)}
+                                    className='bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg font-medium transition cursor-pointer shadow-sm flex items-center gap-2'
+                                >
+                                    <CheckCircle size={18} />
+                                    Duyệt
+                                </button>
+                                <button
+                                    onClick={() => setIsRejectModalOpen(true)}
+                                    className='bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-medium transition cursor-pointer shadow-sm'
+                                >
+                                    Từ chối
+                                </button>
+                            </div>
+                        )}
+                    </div>
 
+                    {/* RIGHT - INFO */}
+                    <div className='md:w-2/3 p-6 space-y-1 overflow-y-visible max-h-full'>
                         {/* Product Details */}
+
                         {post.product && (
-                            <Section
-                                title='Thông tin sản phẩm'
-                                icon={
+                            <>
+                                <div className='flex items-center gap-2 mb-1 -mt-3'>
                                     <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                         <Package className='text-primary-500' size={18} />
                                     </span>
-                                }
-                            >
-                                <div className='space-y-2 text-sm text-gray-700'>
-                                    {post.product.brandName && (
-                                        <p>
-                                            <b>Thương hiệu:</b>{' '}
-                                            {post.product.brandName}
-                                        </p>
-                                    )}
-                                    {post.product.sizeTierName && (
-                                        <p>
-                                            <b>Kích thước:</b>{' '}
-                                            {post.product.sizeTierName}
-                                        </p>
-                                    )}
-                                    {post.product.description && (
-                                        <p>
-                                            <b>Mô tả:</b>{' '}
-                                            {post.product.description}
-                                        </p>
-                                    )}
+                                    <h3 className='text-base font-semibold text-gray-800'>Thông tin sản phẩm</h3>
                                 </div>
-                            </Section>
+                                <SummaryCard
+                                    singleRow={false}
+                                    items={[
+                                        {
+                                            icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><List className="w-4 h-4 text-primary-500" /></span>,
+                                            label: 'Danh mục chính',
+                                            value: post.parentCategory || ''
+                                        },
+                                        {
+                                            icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><List className="w-4 h-4 text-primary-500" /></span>,
+                                            label: 'Danh mục phụ',
+                                            value: post.subCategory || ''
+                                        },
+                                        post.product.brandName && {
+                                            icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><User className="w-4 h-4 text-primary-500" /></span>,
+                                            label: 'Thương hiệu',
+                                            value: post.product.brandName
+                                        },
+                                        post.product.description && {
+                                            icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Info className="w-4 h-4 text-primary-500" /></span>,
+                                            label: 'Mô tả',
+                                            value: post.product.description
+                                        },
+                                        post.product.sizeTierName && {
+                                            icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Package className="w-4 h-4 text-primary-500" /></span>,
+                                            label: 'Kích thước',
+                                            value: post.product.sizeTierName
+                                        }
+                                    ].filter(Boolean)}
+                                />
+                            </>
                         )}
 
+                        {/* Product Info SummaryCard */}
+                        <SummaryCard
+                            singleRow={false}
+                            items={[
+                                {
+                                    icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Star className="w-4 h-4 text-primary-500" /></span>,
+                                    label: 'Điểm ước tính',
+                                    value: post.estimatePoint != null ? post.estimatePoint : ''
+                                },
+                                {
+                                    icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Calendar className="w-4 h-4 text-primary-500" /></span>,
+                                    label: 'Ngày đăng',
+                                    value: post.date ? formatDate(post.date) : ''
+                                },
+                                ...(Array.isArray(post.schedule) && post.schedule.length > 0
+                                    ? [{
+                                        icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Clock className="w-4 h-4 text-primary-500" /></span>,
+                                        label: 'Lịch thu gom',
+                                        value: groupScheduleByTimeRange(post.schedule)
+                                            .map(({ dateStr, range }) => `${range} | ${dateStr}`)
+                                            .join(', '),
+                                        colSpan: 2
+                                    }]
+                                    : []),
+                                ...(post.address
+                                    ? [{
+                                        icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><MapPin className="w-4 h-4 text-primary-500" /></span>,
+                                        label: 'Địa chỉ',
+                                        value: <span className="block w-full wrap-break-word">{post.address}</span>,
+                                        colSpan: 2
+                                    }]
+                                    : []),
+                                ...(post.postNote
+                                    ? [{
+                                        icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-yellow-50 border border-yellow-200"><Info className="w-4 h-4 text-yellow-500" /></span>,
+                                        label: 'Ghi chú',
+                                        value: <span className="block w-full wrap-break-word text-yellow-700">{post.postNote}</span>,
+                                        colSpan: 2
+                                    }]
+                                    : []),
+                                ...(post.rejectMessage
+                                    ? [{
+                                        icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-red-50 border border-red-200"><Info className="w-4 h-4 text-red-500" /></span>,
+                                        label: 'Lý do từ chối',
+                                        value: <span className="block w-full wrap-break-word text-red-700">{post.rejectMessage}</span>,
+                                        colSpan: 2
+                                    }]
+                                    : [])
+                            ]}
+                        />
+
                         {/* Sender Info */}
-                        <Section
-                            title='Người đăng'
-                            icon={
+                        <div>
+                            <div className='flex items-center gap-2 mb-1 -mt-3'>
                                 <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                     <User className='text-primary-500' size={18} />
                                 </span>
-                            }
-                        >
+                                <h3 className='text-base font-semibold text-gray-800'>Người đăng</h3>
+                            </div>
                             <UserInfo user={post.sender} />
-                        </Section>
+                        </div>
 
-                        {/* Schedule */}
-                        {Array.isArray(post.schedule) &&
-                            post.schedule.length > 0 && (
-                                <Section
-                                    title='Lịch thu gom'
-                                    icon={
-                                        <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                            <Clock className='text-primary-500' size={18} />
-                                        </span>
-                                    }
-                                >
-                                    <div className='text-sm text-gray-700 space-y-2'>
-                                        {groupScheduleByTimeRange(post.schedule).map(({ dateStr, range }) => (
-                                            <div key={range + dateStr} className='border-b last:border-b-0 pb-2 last:pb-0'>
-                                                <p><b>Ngày:</b> {dateStr}</p>
-                                                <p><b>Thời gian:</b> {range}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </Section>
-                            )}
-
-                        {/* Address */}
-                        {post.address && (
-                            <div className='p-4 bg-gray-50 rounded-lg border border-primary-100 flex gap-3'>
-                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200 mt-0.5">
-                                    <MapPin className='text-primary-500' size={20} />
-                                </span>
-                                <div>
-                                    <p className='text-sm text-gray-600'>
-                                        Địa chỉ
-                                    </p>
-                                    <p className='text-gray-900 text-sm font-medium'>
-                                        {post.address}
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Reject Message */}
-                        {post.rejectMessage && (
-                            <div className='p-4 bg-red-50 rounded-lg border border-red-200'>
-                                <div className='flex items-center gap-2 mb-2'>
-                                    <span className="w-7 h-7 flex items-center justify-center rounded-full bg-red-50 border border-red-200">
-                                        <Info className='text-red-500' size={18} />
-                                    </span>
-                                    <p className='text-sm font-semibold text-red-900'>
-                                        Lý do từ chối
-                                    </p>
-                                </div>
-                                <p className='text-sm text-red-700'>
-                                    {post.rejectMessage}
-                                </p>
-                            </div>
-                        )}
-
-                        {/* Post Note */}
-                        {post.postNote && (
-                            <div className='p-4 bg-yellow-50 rounded-lg border border-yellow-200'>
-                                <div className='flex items-center gap-2 mb-2'>
-                                    <span className="w-7 h-7 flex items-center justify-center rounded-full bg-yellow-50 border border-yellow-200">
-                                        <Info className='text-yellow-500' size={18} />
-                                    </span>
-                                    <p className='text-sm font-semibold text-yellow-900'>
-                                        Ghi chú
-                                    </p>
-                                </div>
-                                <p className='text-sm text-yellow-700'>
-                                    {post.postNote}
-                                </p>
-                            </div>
-                        )}
+                        {/* Reject Message & Post Note moved to SummaryCard */}
                     </div>
                 </div>
 
-                {/* Footer - Actions */}
-                {isPending && (
-                    <div className='flex justify-end gap-3 p-5 border-t border-gray-100 bg-white'>
-                        <button
-                            onClick={() => setIsApproveModalOpen(true)}
-                            className='bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg font-medium transition cursor-pointer shadow-sm flex items-center gap-2'
-                        >
-                            <CheckCircle size={18} />
-                            Duyệt
-                        </button>
-                        <button
-                            onClick={() => setIsRejectModalOpen(true)}
-                            className='bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-medium transition cursor-pointer shadow-sm'
-                        >
-                            Từ chối
-                        </button>
-                    </div>
-                )}
+
             </div>
 
             {/* Modals */}

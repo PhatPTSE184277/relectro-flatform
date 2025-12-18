@@ -63,7 +63,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         // Cập nhật lại ngày đang chỉnh sửa
         setDaySuggestions((prev) => prev.map((day) => {
             if (day.workDate === data.workDate) {
-                const selectedVehicle = vehicles.find(v => v.id === data.vehicleId);
+                const selectedVehicle = vehicles.find(v => v.vehicleId === data.vehicleId || v.id === data.vehicleId);
                 const updatedProducts = data.productIds.map(productId => {
                     const found = products.find(p => p.productId === productId)
                     return found ? { ...found } : { productId };

@@ -23,7 +23,8 @@ const ShiftList: React.FC<ShiftListProps> = ({
                             <th className='py-3 px-4 text-left'>Nhân viên</th>
                             <th className='py-3 px-4 text-left'>Biển số xe</th>
                             {/* <th className='py-3 px-4 text-left'>Ngày làm việc</th> */}
-                            <th className='py-3 px-4 text-left'>Giờ làm việc</th>
+                            <th className='py-3 px-4 text-left'>Bắt đầu</th>
+                            <th className='py-3 px-4 text-left'>Kết thúc</th>
                             <th className='py-3 px-4 text-center'>Hành động</th>
                         </tr>
                     </thead>
@@ -41,6 +42,7 @@ const ShiftList: React.FC<ShiftListProps> = ({
                                     onView={() => onViewDetail(shift)}
                                     isLast={idx === shifts.length - 1}
                                     index={idx}
+                                    showSplitTime
                                 />
                             ))
                         ) : (

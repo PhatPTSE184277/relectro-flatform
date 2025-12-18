@@ -54,7 +54,7 @@ const Pagination: React.FC<PaginationProps> = ({
             {p}
           </button>
         ) : (
-          <span key={idx} className="w-7 h-7 flex items-center justify-center text-xs text-gray-400">...</span>
+          <span key={`ellipsis-${idx}`} className="w-7 h-7 flex items-center justify-center text-xs text-gray-400">...</span>
         )
       )}
       <button

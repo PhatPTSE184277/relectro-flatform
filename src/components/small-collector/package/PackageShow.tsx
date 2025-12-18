@@ -4,13 +4,16 @@ import type { PackageType } from '@/types/Package';
 
 interface PackageShowProps {
     package: PackageType;
+    stt?: number;
     onView: () => void;
     onUpdate?: (pkg: PackageType) => void;
     onUpdateStatus?: (packageId: string) => void;
+    isLast?: boolean;
 }
 
-const PackageShow: React.FC<PackageShowProps & { isLast?: boolean }> = ({
+const PackageShow: React.FC<PackageShowProps> = ({
     package: pkg,
+    stt,
     onView,
     onUpdate,
     onUpdateStatus,
@@ -18,6 +21,11 @@ const PackageShow: React.FC<PackageShowProps & { isLast?: boolean }> = ({
 }) => {
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
+            <td className="py-3 px-4 text-center">
+                <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
+                    {stt}
+                </span>
+            </td>
             <td className='py-3 px-4 font-medium'>
                 <div className='text-gray-900'>{pkg.packageId}</div>
             </td>

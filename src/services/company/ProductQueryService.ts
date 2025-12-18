@@ -10,3 +10,10 @@ export const getProductsByCompany = async (
   );
   return response.data;
 };
+
+export const getSmallPoints = async (companyId: string): Promise<any> => {
+  const response = await axios.get(
+    `/product-query/${companyId}/smallpoints`
+  );
+  return response.data;
+};

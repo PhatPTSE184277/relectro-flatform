@@ -108,7 +108,6 @@ const SmallCollectionDetail: React.FC<SmallCollectionDetailProps> = ({
                                 ),
                             },
                         ]}
-                        columns={4}
                     />
                 </div>
 

@@ -1,35 +1,41 @@
-import React from 'react';
+    import React from 'react';
 
-interface SummaryCardItem {
-    icon: React.ReactNode;
+export interface SummaryCardItem {
+    icon?: React.ReactNode;
     label: React.ReactNode;
     value: React.ReactNode;
+    colSpan?: number; // Optional: for items that should span multiple columns
 }
 
 interface SummaryCardProps {
     items: SummaryCardItem[];
-    columns?: 3 | 4;
+    singleRow?: boolean;
 }
 
-const SummaryCard: React.FC<SummaryCardProps> = ({ items, columns = 3 }) => {
-    const gridClass = columns === 4 
-        ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6'
-        : 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-6';
+const SummaryCard: React.FC<SummaryCardProps> = ({ items, singleRow = false }) => {
+    const gridClass = singleRow
+        ? 'flex overflow-x-auto gap-x-8 gap-y-4 whitespace-nowrap pb-1'
+        : 'grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4';
 
     return (
         <div className='bg-white rounded-xl p-6 mb-6 shadow-sm border border-gray-100'>
             <div className={gridClass}>
                 {items.map((item, idx) => (
-                    <div className='flex flex-col' key={idx}>
-                        <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
-                            <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                    <div
+                        className={`flex items-center gap-2 min-w-[220px] ${item.colSpan === 2 ? 'col-span-2' : ''}`}
+                        key={idx}
+                    >
+                        {item.icon && (
+                            <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200 mr-2">
                                 {item.icon}
                             </span>
-                            {item.label}
-                        </div>
-                        <div className='text-sm font-medium text-gray-900 break-all'>
+                        )}
+                        <span className='text-xs font-semibold uppercase text-gray-700 mr-2'>
+                            {item.label}:
+                        </span>
+                        <span className='text-sm font-medium text-gray-900 break-all'>
                             {item.value}
-                        </div>
+                        </span>
                     </div>
                 ))}
             </div>

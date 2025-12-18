@@ -24,6 +24,7 @@ const PackageList: React.FC<PackageListProps> = ({
                 <table className='w-full text-sm text-gray-800'>
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                         <tr>
+                            <th className='py-3 px-4 text-center w-12'>STT</th>
                             <th className='py-3 px-4 text-left'>Mã Package</th>
                             <th className='py-3 px-4 text-left'>Tên Package</th>
                             <th className='py-3 px-4 text-left'>Số sản phẩm</th>
@@ -41,6 +42,7 @@ const PackageList: React.FC<PackageListProps> = ({
                                 <PackageShow
                                     key={pkg.packageId}
                                     package={pkg}
+                                    stt={idx + 1}
                                     onView={() => onViewDetail(pkg)}
                                     onUpdate={onUpdate}
                                     onUpdateStatus={onUpdateStatus}
@@ -49,7 +51,7 @@ const PackageList: React.FC<PackageListProps> = ({
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={5} className='text-center py-8 text-gray-400'>
+                                <td colSpan={6} className='text-center py-8 text-gray-400'>
                                     Không có package nào.
                                 </td>
                             </tr>

@@ -7,13 +7,16 @@ import React, {
   ReactNode,
   useCallback,
 } from 'react';
-import { getProductsByCompany } from '@/services/company/ProductQueryService';
+import { getProductsByCompany, getSmallPoints } from '@/services/company/ProductQueryService';
 
 interface ProductQueryContextType {
   loading: boolean;
   products: any;
   error: string | null;
+  smallPoints: any[];
+  loadingPoints: boolean;
   fetchProducts: (companyId: string, workDate: string) => Promise<void>;
+  fetchSmallPoints: (companyId: string) => Promise<void>;
   clearProducts: () => void;
 }
 
@@ -23,6 +26,8 @@ export const ProductQueryProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [smallPoints, setSmallPoints] = useState<any[]>([]);
+  const [loadingPoints, setLoadingPoints] = useState(false);
 
   const fetchProducts = useCallback(async (companyId: string, workDate: string) => {
     setLoading(true);
@@ -38,13 +43,26 @@ export const ProductQueryProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+  const fetchSmallPoints = useCallback(async (companyId: string) => {
+    setLoadingPoints(true);
+    try {
+      const data = await getSmallPoints(companyId);
+      setSmallPoints(Array.isArray(data) ? data : []);
+    } catch (err: any) {
+      console.error('Error fetching small points:', err);
+      setSmallPoints([]);
+    } finally {
+      setLoadingPoints(false);
+    }
+  }, []);
+
   const clearProducts = useCallback(() => {
     setProducts(null);
     setError(null);
   }, []);
 
   return (
-    <ProductQueryContext.Provider value={{ loading, products, error, fetchProducts, clearProducts }}>
+    <ProductQueryContext.Provider value={{ loading, products, error, smallPoints, loadingPoints, fetchProducts, fetchSmallPoints, clearProducts }}>
       {children}
     </ProductQueryContext.Provider>
   );

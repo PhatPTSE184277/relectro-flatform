@@ -34,7 +34,7 @@ const SystemConfigShow: React.FC<SystemConfigShowProps> = ({
                 <div>{config.displayName || 'N/A'}</div>
             </td>
 
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-right'>
                 <span className='font-medium'>{config.value}</span>
             </td>
 

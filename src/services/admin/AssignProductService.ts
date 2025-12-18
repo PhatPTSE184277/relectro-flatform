@@ -2,6 +2,7 @@ import axios from '@/lib/axios';
 import { AssignedProduct, AssignProductsRequest } from '@/types/AssignProduct';
 
 export const assignProducts = async (data: AssignProductsRequest): Promise<any> => {
+	console.log('Sending assign products request:', data);
 	const response = await axios.post('/assign/products', data);
 	return response.data;
 };

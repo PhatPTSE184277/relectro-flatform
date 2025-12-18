@@ -28,7 +28,7 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]'>
+            <div className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
@@ -88,7 +88,6 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
                                 ),
                             },
                         ]}
-                        columns={4}
                     />
 
                     {/* Timeline */}
@@ -103,45 +102,81 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
                                 Chưa có lịch sử di chuyển
                             </div>
                         ) : (
-                            <div className='relative'>
-                                {/* Vertical line */}
-                                <div className='absolute left-4 top-0 bottom-0 w-0.5 bg-primary-200'></div>
+                            <div className='relative py-8'>
+                                {/* Timeline with vertical connector */}
+                                <div className='space-y-'>
+                                    {timeline.map((item, index) => {
+                                        const isLeft = index % 2 === 0;
+                                        return (
+                                            <div key={index} className='relative flex'>
+                                                {/* Rope/curved connector between dots */}
+                                                {index < timeline.length - 1 && (
+                                                    <svg
+                                                        className='absolute z-0 pointer-events-none'
+                                                        style={{
+                                                            top: '2.5rem', // below the dot
+                                                            left: '50%',
+                                                            transform: 'translateX(-50%)',
+                                                            height: '5.5rem',
+                                                            width: '60px',
+                                                        }}
+                                                        width='60'
+                                                        height='88'
+                                                        viewBox='0 0 60 88'
+                                                        fill='none'
+                                                        xmlns='http://www.w3.org/2000/svg'
+                                                    >
+                                                        <path
+                                                            d={isLeft
+                                                                ? 'M30 0 Q60 44 30 88'
+                                                                : 'M30 0 Q0 44 30 88'}
+                                                            stroke='#cbd5e1'
+                                                            strokeWidth='3'
+                                                            fill='none'
+                                                            strokeDasharray='6,6'
+                                                        />
+                                                    </svg>
+                                                )}
 
-                                {/* Timeline items */}
-                                <div className='space-y-6'>
-                                    {timeline.map((item, index) => (
-                                        <div key={index} className='relative pl-12'>
-                                            {/* Dot */}
-                                            <div className='absolute left-0 top-0 w-8 h-8 rounded-full bg-primary-500 border-4 border-white flex items-center justify-center shadow-md'>
-                                                <CheckCircle size={16} className='text-white' />
-                                            </div>
-
-                                            {/* Content */}
-                                            <div className='bg-white rounded-lg p-4 shadow-sm border border-gray-200'>
-                                                <div className='flex justify-between items-start mb-2'>
-                                                    <h4 className='font-semibold text-gray-900'>
-                                                        {item.status || item.event || 'Cập nhật trạng thái'}
-                                                    </h4>
-                                                    <span className='text-xs text-gray-500'>
-                                                        {item.date && item.time
-                                                            ? `${item.date} - ${item.time}`
-                                                            : item.timestamp || item.time || item.date || 'N/A'}
-                                                    </span>
+                                                <div className={`flex items-center w-full ${isLeft ? 'justify-start' : 'justify-end'}`} style={{position: 'relative', zIndex: 1}}>
+                                                    <div className='w-5/12 relative'>
+                                                        {/* Horizontal connector line from dot to card */}
+                                                        <div className={`absolute top-6 ${isLeft ? '-right-4' : '-left-4'} ${isLeft ? 'left-full' : 'right-full'} w-4 h-0.5 bg-primary-300 z-0`}></div>
+                                                        
+                                                        {/* Dot */}
+                                                        <div className={`absolute top-3 ${isLeft ? '-right-4' : '-left-4'} w-8 h-8 rounded-full bg-primary-500 border-4 border-white flex items-center justify-center shadow-lg z-10`}>
+                                                            <CheckCircle size={14} className='text-white' />
+                                                        </div>
+                                                        {/* Card */}
+                                                        <div className='bg-linear-to-br from-white to-primary-50 rounded-xl p-4 shadow-md border border-primary-100 hover:shadow-lg transition-shadow'>
+                                                            <div className='flex flex-col gap-2'>
+                                                                <h4 className='font-semibold text-gray-900 text-sm'>
+                                                                    {item.status || item.event || 'Cập nhật trạng thái'}
+                                                                </h4>
+                                                                <span className='text-xs text-gray-500 flex items-center gap-1'>
+                                                                    <Clock size={12} />
+                                                                    {item.date && item.time
+                                                                        ? `${item.date} - ${item.time}`
+                                                                        : item.timestamp || item.time || item.date || 'N/A'}
+                                                                </span>
+                                                                {item.location && (
+                                                                    <p className='text-xs text-gray-600 flex items-center gap-1'>
+                                                                        <MapPin size={12} className='text-gray-400' />
+                                                                        {item.location}
+                                                                    </p>
+                                                                )}
+                                                                {item.description && (
+                                                                    <p className='text-xs text-gray-600 mt-1 line-clamp-2'>
+                                                                        {item.description}
+                                                                    </p>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                {item.location && (
-                                                    <p className='text-sm text-gray-600 flex items-center gap-2'>
-                                                        <MapPin size={14} className='text-gray-400' />
-                                                        {item.location}
-                                                    </p>
-                                                )}
-                                                {item.description && (
-                                                    <p className='text-sm text-gray-600 mt-2'>
-                                                        {item.description}
-                                                    </p>
-                                                )}
                                             </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}

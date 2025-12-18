@@ -68,7 +68,6 @@ const VehicleDetail: React.FC<VehicleDetailProps> = ({ vehicle, onClose }) => {
                     </h3>
                     {/* Summary section */}
                     <SummaryCard
-                        columns={4}
                         items={[
                             {   
                                 icon: <Truck size={14} className='text-primary-500' />,

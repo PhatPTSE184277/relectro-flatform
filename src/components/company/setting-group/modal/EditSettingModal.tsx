@@ -20,12 +20,13 @@ const EditSettingModal: React.FC<EditSettingModalProps> = ({
     const [serviceTimeMinutes, setServiceTimeMinutes] = useState(0);
     const [avgTravelTimeMinutes, setAvgTravelTimeMinutes] = useState(0);
 
+    // Chỉ reset state khi modal vừa mở (open chuyển từ false sang true)
     useEffect(() => {
-        if (open && point) {
-            setServiceTimeMinutes(point.serviceTimeMinutes || 0);
-            setAvgTravelTimeMinutes(point.avgTravelTimeMinutes || 0);
-        }
-    }, [open, point]);
+        if (!open) return;
+        setServiceTimeMinutes(point?.serviceTimeMinutes || 0);
+        setAvgTravelTimeMinutes(point?.avgTravelTimeMinutes || 0);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
 
     const handleSave = () => {
         onSave(point.smallPointId, serviceTimeMinutes, avgTravelTimeMinutes);
@@ -87,7 +88,7 @@ const EditSettingModal: React.FC<EditSettingModalProps> = ({
 
                         {/* Avg Travel Time */}
                         <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2 items-center gap-2'>
                                 <Clock size={16} className='text-primary-600' />
                                 Thời gian di chuyển TB (phút){' '}
                                 <span className='text-red-500'>*</span>
@@ -97,7 +98,7 @@ const EditSettingModal: React.FC<EditSettingModalProps> = ({
                                 onChange={setAvgTravelTimeMinutes}
                                 placeholder='Nhập thời gian di chuyển...'
                                 min={1}
-                                className='w-full px-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400'
+                                className='w-full px-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:border-primary-400 text-gray-900 placeholder-gray-400'
                             />
                             <p className='text-xs text-gray-500 mt-2'>
                                 Thời gian trung bình để di chuyển đến điểm tiếp theo

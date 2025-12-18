@@ -10,12 +10,13 @@ import {
     User,
     List,
     Clock,
-    MapPin
+    MapPin,
+    Calendar,
+    FileText
 } from 'lucide-react';
-import { formatDate } from '@/utils/FormateDate';
 import UserInfo from '@/components/ui/UserInfo';
-import InfoCard from '@/components/ui/InfoCard';
-import Section from '@/components/ui/Section';
+import SummaryCard from '@/components/ui/SummaryCard';
+import { groupScheduleByTimeRange } from '@/utils/groupScheduleByTimeRange';
 
 interface ProductDetailProps {
     product: Product;
@@ -79,129 +80,147 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
             ></div>
 
             {/* Modal */}
-            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
+            <div className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
-                    <div>
+                    <div className='flex flex-col gap-1'>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Chi tiết sản phẩm
                         </h2>
-                        <p className='text-sm text-gray-600 mt-1'>
+                        <p className='text-sm text-gray-600'>
                             Thông tin chi tiết về sản phẩm và lịch sử thu gom
                         </p>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
-                        aria-label='Đóng'
-                    >
-                        &times;
-                    </button>
+                    <div className='flex items-center gap-4'>
+                        <span
+                            className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(product.status)}`}
+                        >
+                            {product.status}
+                        </span>
+                        <button
+                            onClick={onClose}
+                            className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
+                            aria-label='Đóng'
+                        >
+                            &times;
+                        </button>
+                    </div>
                 </div>
 
                 {/* Content */}
                 <div className='flex flex-col md:flex-row flex-1 overflow-hidden'>
-                    {/* LEFT - IMAGE */}
-                    <div className='md:w-1/3 p-6 bg-gray-50 flex flex-col items-center border-r border-primary-100 overflow-y-auto'>
+                    {/* LEFT - IMAGE + PICKUP SCHEDULE */}
+                    <div className='md:w-1/3 bg-gray-50 flex flex-col items-center p-6 border-r border-primary-100 overflow-y-auto'>
                         <div className='relative w-full flex flex-col items-center gap-4'>
-                            {/* Badge trạng thái trên ảnh lớn - đồng bộ CollectorRouteDetail */}
-                            <span
-                                className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-2 ${getStatusBadgeClass(
-                                    product.status
-                                )}`}
-                            >
-                                {product.status}
-                            </span>
                             <img
-                                src={product.productImages?.[selectedImg]}
-                                alt='main'
-                                className='w-full max-w-xs h-72 object-contain rounded-xl border border-primary-200 bg-white cursor-zoom-in shadow-sm'
-                                onClick={() =>
-                                    setZoomImg(
-                                        product.productImages?.[selectedImg]
-                                    )
-                                }
+                                src={product.productImages?.[selectedImg] || '/placeholder.png'}
+                                alt='Ảnh sản phẩm'
+                                className='w-full max-w-[180px] h-40 object-contain rounded-xl border border-primary-200 bg-white cursor-zoom-in shadow-sm'
+                                onClick={() => setZoomImg(product.productImages?.[selectedImg])}
                             />
-
-                            {product.productImages?.length > 1 && (
-                                <div className='flex gap-2 flex-wrap justify-center'>
-                                    {product.productImages.map(
-                                        (img: string, i: number) => (
-                                            <img
-                                                key={i}
-                                                src={img}
-                                                alt={`Ảnh ${i + 1}`}
-                                                className={`w-14 h-14 object-cover rounded-lg border cursor-pointer transition-all ${
-                                                    i === selectedImg
-                                                        ? 'border-2 border-primary-500 ring-2 ring-primary-200 scale-105'
-                                                        : 'border border-primary-100 hover:border-primary-200'
-                                                }`}
-                                                onClick={() =>
-                                                    setSelectedImg(i)
-                                                }
-                                            />
-                                        )
-                                    )}
-                                </div>
-                            )}
+                            <div className='flex gap-2 flex-wrap justify-center'>
+                                {(product.productImages ?? []).map((img: string, idx: number) => (
+                                    <img
+                                        key={idx}
+                                        src={img}
+                                        alt={`Ảnh ${idx + 1}`}
+                                        className={`w-14 h-14 object-cover rounded-lg border cursor-pointer transition-all ${
+                                            selectedImg === idx
+                                                ? 'border-primary-500 ring-2 ring-primary-200 scale-105'
+                                                : 'border-primary-100 hover:border-primary-200'
+                                        }`}
+                                        onClick={() => setSelectedImg(idx)}
+                                    />
+                                ))}
+                            </div>
                         </div>
+                        {/* Pickup schedule moved here */}
+                        {Array.isArray(product.schedule) && product.schedule.length > 0 && (() => {
+                            const scheduleGroups = groupScheduleByTimeRange(product.schedule);
+                            const displayText = scheduleGroups.length > 0 
+                                ? `${scheduleGroups[0].range} | ${scheduleGroups[0].dateStr}`
+                                : 'Không có thông tin';
+                            return (
+                                <div className='w-full mt-6'>
+                                    <div className='flex items-center gap-2 mb-3'>
+                                        <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                            <Clock className='text-primary-500' size={18} />
+                                        </span>
+                                        <h3 className='text-base font-semibold text-gray-800'>
+                                            Lịch thu gom
+                                        </h3>
+                                    </div>
+                                    <SummaryCard
+                                        singleRow={false}
+                                        items={[
+                                            {
+                                                label: <span className="whitespace-nowrap">Ngày</span>,
+                                                icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Calendar className="w-4 h-4 text-primary-500" /></span>,
+                                                value: <span className="whitespace-nowrap">{displayText}</span>
+                                            },
+                                            product.address && {
+                                                icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><MapPin className="w-4 h-4 text-primary-500" /></span>,
+                                                label: 'Địa chỉ',
+                                                value: <span className="block w-full wrap-break-word">{product.address}</span>,
+                                                colSpan: 2
+                                            }
+                                        ].filter(Boolean) as import("@/components/ui/SummaryCard").SummaryCardItem[]}
+                                    />
+                                </div>
+                            );
+                        })()}
                     </div>
 
                     {/* RIGHT - INFO */}
                     <div className='md:w-2/3 p-6 space-y-5 overflow-y-auto'>
-                        {/* Đã di chuyển badge trạng thái sang bên trái trên ảnh lớn */}
 
-                        {/* GRID INFO */}
-                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                            <InfoCard
-                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><List className="w-4 h-4 text-primary-500" /></span>}
-                                label="Danh mục"
-                                value={product.categoryName}
-                            />
-                            <InfoCard
-                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Package className="w-4 h-4 text-primary-500" /></span>}
-                                label="Mã QR"
-                                value={product.qrCode ? (
-                                    <span className="text-xs font-mono text-gray-700">{product.qrCode}</span>
-                                ) : (
-                                    <span className="text-xs text-gray-400 font-normal">Chưa có mã</span>
-                                )}
-                            />
-                            <InfoCard
-                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Star className="w-4 h-4 text-primary-500" /></span>}
-                                label="Điểm ước tính"
-                                value={product.estimatePoint}
-                            />
-                        </div>
-
-                        {/* Product Details */}
-                        <Section
-                            title='Thông tin sản phẩm'
-                            icon={
+                    
+                        {/* Product Info (all in one SummaryCard) */}
+                        <div>
+                            <div className='flex items-center gap-2 mb-3'>
                                 <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                     <Package className='text-primary-500' size={18} />
                                 </span>
-                            }
-                        >
-                            <div className='space-y-2 text-sm text-gray-700'>
-                                {product.brandName && (
-                                    <p>
-                                        <b>Thương hiệu:</b> {product.brandName}
-                                    </p>
-                                )}
-                                {product.sizeTierName && (
-                                    <p>
-                                        <b>Kích thước:</b>{' '}
-                                        {product.sizeTierName}
-                                    </p>
-                                )}
-                                {product.description && (
-                                    <p>
-                                        <b>Mô tả:</b> {product.description}
-                                    </p>
-                                )}
+                                <h3 className='text-base font-semibold text-gray-800'>
+                                    Thông tin sản phẩm
+                                </h3>
                             </div>
-                        </Section>
+                            <SummaryCard
+                                singleRow={false}
+                                items={[
+                                    product.brandName && {
+                                        icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><User className="w-4 h-4 text-primary-500" /></span>,
+                                        label: 'Thương hiệu',
+                                        value: product.brandName
+                                    },
+                                    {
+                                        icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><List className="w-4 h-4 text-primary-500" /></span>,
+                                        label: 'Danh mục',
+                                        value: product.categoryName || 'Không rõ'
+                                    },
+                                    product.qrCode && {
+                                        icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Package className="w-4 h-4 text-primary-500" /></span>,
+                                        label: 'Mã QR',
+                                        value: product.qrCode
+                                    },
+                                    {
+                                        icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Star className="w-4 h-4 text-primary-500" /></span>,
+                                        label: 'Điểm ước tính',
+                                        value: product.estimatePoint || 0
+                                    },
+                                    product.sizeTierName && {
+                                        icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Package className="w-4 h-4 text-primary-500" /></span>,
+                                        label: 'Kích thước',
+                                        value: product.sizeTierName
+                                    },
+                                    product.description && {
+                                        icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><FileText className="w-4 h-4 text-primary-500" /></span>,
+                                        label: 'Mô tả',
+                                        value: product.description
+                                    }
+                                ].filter(Boolean) as import("@/components/ui/SummaryCard").SummaryCardItem[]}
+                            />
+                        </div>
 
                         {/* Đã thu gom (realPoint) */}
                         {isReceived && (
@@ -219,86 +238,36 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                         )}
 
                         {/* Sender Info */}
-                        <Section
-                            title='Người gửi'
-                            icon={
+                        <div>
+                            <div className='flex items-center gap-2 mb-3'>
                                 <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                     <User className='text-primary-500' size={18} />
                                 </span>
-                            }
-                        >
+                                <h3 className='text-base font-semibold text-gray-800'>
+                                    Người gửi
+                                </h3>
+                            </div>
                             <UserInfo user={product.sender} />
-                        </Section>
+                        </div>
 
                         {/* Collector Info */}
                         {product.collector && (
-                            <Section
-                                title='Nhân viên thu gom'
-                                icon={
+                            <div>
+                                <div className='flex items-center gap-2 mb-3'>
                                     <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                         <UserCheck
                                             className='text-primary-500'
                                             size={18}
                                         />
                                     </span>
-                                }
-                            >
+                                    <h3 className='text-base font-semibold text-gray-800'>
+                                        Nhân viên thu gom
+                                    </h3>
+                                </div>
                                 <UserInfo user={product.collector} />
-                            </Section>
+                            </div>
                         )}
 
-                        {/* Pickup schedule */}
-                        {Array.isArray(product.schedule) &&
-                            product.schedule.length > 0 && (
-                                <Section
-                                    title='Lịch thu gom'
-                                    icon={
-                                        <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                            <Clock
-                                                className='text-primary-500'
-                                                size={18}
-                                            />
-                                        </span>
-                                    }
-                                >
-                                    <div className='space-y-2 text-sm text-gray-700'>
-                                        <div className='flex justify-between'>
-                                            <span className='font-medium'>
-                                                Ngày:
-                                            </span>
-                                            <span>
-                                                {formatDate(
-                                                    product.schedule?.[0]
-                                                        ?.pickUpDate
-                                                ) || 'Không có thông tin'}
-                                            </span>
-                                        </div>
-                                        <div className='flex justify-between'>
-                                            <span className='font-medium'>
-                                                Khung giờ:
-                                            </span>
-                                            <span>
-                                                {product.schedule?.[0]?.slots
-                                                    ?.startTime || '-'}{' '}
-                                                -{' '}
-                                                {product.schedule?.[0]?.slots
-                                                    ?.endTime || '-'}
-                                            </span>
-                                        </div>
-                                        <div className='pt-2 border-t'>
-                                            <div className='flex items-start gap-2'>
-                                                <MapPin
-                                                    size={16}
-                                                    className='text-gray-600 mt-0.5'
-                                                />
-                                                <span className='flex-1'>
-                                                    {product.address}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Section>
-                            )}
                     </div>
                 </div>
             </div>

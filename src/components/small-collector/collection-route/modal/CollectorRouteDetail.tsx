@@ -2,11 +2,17 @@
 'use client';
 import React, { useState } from 'react';
 import { formatTime } from '@/utils/FormatTime';
-import { formatDate } from '@/utils/FormateDate';
-import { User, Package, MapPin, Clock, Calendar, Truck, Tag, UserCheck } from 'lucide-react';
-import InfoCard from '@/components/ui/InfoCard';
-import Section from '@/components/ui/Section';
+import SummaryCard from '@/components/ui/SummaryCard';
 import UserInfo from '@/components/ui/UserInfo';
+import {
+    User,
+    Package,
+    UserCheck,
+    Calendar,
+    Clock,
+    MapPin,
+    Truck
+} from 'lucide-react';
 
 interface CollectorRouteDetailProps {
     route: any;
@@ -57,186 +63,195 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
             ></div>
 
             {/* Modal */}
-            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
+            <div className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
-                    <div className='flex-1'>
+                    <div className='flex flex-col gap-1'>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Chi tiết tuyến thu gom
                         </h2>
-                        <p className='text-sm text-gray-600 mt-1'>
+                        <p className='text-sm text-gray-600'>
                             Thông tin chi tiết về tuyến thu gom và lịch sử
                         </p>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
-                        aria-label='Đóng'
-                    >
-                        &times;
-                    </button>
+                    <div className='flex items-center gap-4'>
+                        <span
+                            className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(
+                                route.status
+                            )}`}
+                        >
+                            {normalizeStatus(route.status)}
+                        </span>
+                        <button
+                            onClick={onClose}
+                            className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
+                            aria-label='Đóng'
+                        >
+                            &times;
+                        </button>
+                    </div>
                 </div>
 
                 {/* Content */}
-                <div className='flex flex-col md:flex-row flex-1 overflow-hidden'>
-                    {/* LEFT - IMAGE */}
-                    <div className='md:w-1/3 p-6 bg-gray-50 flex flex-col items-center border-r border-primary-100 overflow-y-auto'>
-                        <div className='w-full flex flex-col items-center gap-4'>
-                            {/* Badge Status */}
-                            <span
-                                className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-2 ${getStatusBadgeClass(
-                                    route.status
-                                )}`}
-                            >
-                                {normalizeStatus(route.status)}
-                            </span>
-
-                            {/* Main Image */}
+                <div className='flex flex-col md:flex-row flex-1'>
+                    {/* LEFT - IMAGE (match ProductDetail style) */}
+                    <div className='md:w-1/3 bg-gray-50 flex flex-col items-center p-6 border-r border-primary-100 overflow-y-auto'>
+                        <div className='relative w-full flex flex-col items-center gap-4'>
                             <img
-                                src={
-                                    route.pickUpItemImages?.[selectedImg] ||
-                                    '/placeholder.png'
-                                }
+                                src={route.pickUpItemImages?.[selectedImg] || '/placeholder.png'}
                                 alt='Ảnh chính'
-                                className='w-full max-w-xs h-72 object-contain rounded-xl border border-primary-200 bg-white cursor-zoom-in shadow-sm'
-                                onClick={() =>
-                                    setZoomImg(
-                                        route.pickUpItemImages?.[selectedImg]
-                                    )
-                                }
+                                className='w-full max-w-[180px] h-40 object-contain rounded-xl border border-primary-200 bg-white cursor-zoom-in shadow-sm'
+                                onClick={() => setZoomImg(route.pickUpItemImages?.[selectedImg])}
                             />
-
-                            {/* Thumbnails */}
-                            {Array.isArray(route.pickUpItemImages) &&
-                                route.pickUpItemImages.length > 1 && (
-                                    <div className='flex gap-2 flex-wrap justify-center'>
-                                        {route.pickUpItemImages.map(
-                                            (img: string, idx: number) => (
-                                                <img
-                                                    key={idx}
-                                                    src={img}
-                                                    alt={`Ảnh ${idx + 1}`}
-                                                    onClick={() =>
-                                                        setSelectedImg(idx)
-                                                    }
-                                                    className={`w-16 h-16 object-cover rounded-lg cursor-pointer transition-all ${
-                                                        idx === selectedImg
-                                                            ? 'border-2 border-primary-500 ring-2 ring-primary-200 scale-105'
-                                                            : 'border border-primary-100 hover:border-primary-200'
-                                                    }`}
-                                                />
-                                            )
-                                        )}
-                                    </div>
-                                )}
+                            <div className='flex gap-2 flex-wrap justify-center'>
+                                {(route.pickUpItemImages ?? []).map((img: string, idx: number) => (
+                                    <img
+                                        key={idx}
+                                        src={img}
+                                        alt={`Ảnh ${idx + 1}`}
+                                        className={`w-14 h-14 object-cover rounded-lg border cursor-pointer transition-all ${
+                                            selectedImg === idx
+                                                ? 'border-primary-500 ring-2 ring-primary-200 scale-105'
+                                                : 'border-primary-100 hover:border-primary-200'
+                                        }`}
+                                        onClick={() => setSelectedImg(idx)}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </div>
 
                     {/* RIGHT - INFO */}
-                    <div className='md:w-2/3 p-6 space-y-5 overflow-y-auto'>
-                        {/* Thông tin tuyến thu gom */}
-                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                            <InfoCard
-                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Package className="w-4 h-4 text-primary-500" /></span>}
-                                label="Thương hiệu"
-                                value={route.brandName || 'Không rõ'}
-                            />
-                            <InfoCard
-                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Tag className="w-4 h-4 text-primary-500" /></span>}
-                                label="Danh mục"
-                                value={route.subCategoryName || 'Không rõ'}
-                            />
-                            <InfoCard
-                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Truck className="w-4 h-4 text-primary-500" /></span>}
-                                label="Biển số xe"
-                                value={route.licensePlate || 'Không rõ'}
-                            />
-                            <InfoCard
-                                icon={<span className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-primary-100"><Calendar className="w-4 h-4 text-primary-500" /></span>}
-                                label="Ngày thu gom"
-                                value={route.collectionDate ? new Date(route.collectionDate).toLocaleDateString('vi-VN') : 'Không rõ'}
-                            />
+                    <div className='md:w-2/3 p-6 space-y-5'>
+                        {/* Thông tin sản phẩm */}
+                        <div className='flex items-center gap-2 mb-3'>
+                            <span className='w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                <Package
+                                    className='text-primary-500'
+                                    size={18}
+                                />
+                            </span>
+                            <h3 className='text-base font-semibold text-gray-800'>
+                                Thông tin sản phẩm
+                            </h3>
                         </div>
+                        {/* Thông tin tuyến thu gom */}
+                        <SummaryCard
+                            singleRow={false}
+                            items={[
+                                {
+                                    icon: (
+                                        <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                            <User className='w-4 h-4 text-primary-500' />
+                                        </span>
+                                    ),
+                                    label: 'Thương hiệu',
+                                    value: route.brandName || 'Không rõ'
+                                },
+                                {
+                                    icon: (
+                                        <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                            <Package className='w-4 h-4 text-primary-500' />
+                                        </span>
+                                    ),
+                                    label: 'Danh mục',
+                                    value: route.subCategoryName || 'Không rõ'
+                                },
+                                {
+                                    icon: (
+                                        <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                            <Truck className='w-4 h-4 text-primary-500' />
+                                        </span>
+                                    ),
+                                    label: 'Biển số xe',
+                                    value: route.licensePlate || 'Không rõ'
+                                },
+                                {
+                                    icon: (
+                                        <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                            <Calendar className='w-4 h-4 text-primary-500' />
+                                        </span>
+                                    ),
+                                    label: 'Ngày thu gom',
+                                    value: route.collectionDate
+                                        ? new Date(
+                                              route.collectionDate
+                                          ).toLocaleDateString('vi-VN')
+                                        : 'Không rõ'
+                                },
+                                {
+                                    icon: (
+                                        <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                            <Clock className='w-4 h-4 text-primary-500' />
+                                        </span>
+                                    ),
+                                    label: 'Thời gian dự kiến',
+                                    value: formatTime(route.estimatedTime)
+                                },
+                                {
+                                    icon: (
+                                        <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                            <MapPin className='w-4 h-4 text-primary-500' />
+                                        </span>
+                                    ),
+                                    label: 'Địa chỉ',
+                                    value: (
+                                        <span className='block w-full wrap-break-word'>
+                                            {route.address}
+                                        </span>
+                                    ),
+                                    colSpan: 2
+                                }
+                            ]}
+                        />
 
                         {/* Người gửi */}
-                        <Section
-                            title='Người gửi'
-                            icon={
-                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                    <User className='text-primary-500' size={18} />
+                        <div>
+                            <div className='flex items-center gap-2 mb-3'>
+                                <span className='w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                    <User
+                                        className='text-primary-500'
+                                        size={18}
+                                    />
                                 </span>
-                            }
-                        >
+                                <h3 className='text-base font-semibold text-gray-800'>
+                                    Người gửi
+                                </h3>
+                            </div>
                             <UserInfo user={route.sender} />
-                        </Section>
+                        </div>
 
                         {/* Nhân viên thu gom */}
-                        <Section
-                            title='Nhân viên thu gom'
-                            icon={
-                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                        <div>
+                            <div className='flex items-center gap-2 mb-3'>
+                                <span className='w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
                                     <UserCheck
                                         className='text-primary-500'
                                         size={18}
                                     />
                                 </span>
-                            }
-                        >
-                            <UserInfo user={route.collector} />
-                        </Section>
-
-                        {/* Lịch thu gom */}
-                        <Section
-                            title='Lịch thu gom'
-                            icon={
-                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                    <Clock className='text-primary-500' size={18} />
-                                </span>
-                            }
-                        >
-                            <div className='space-y-2 text-sm text-gray-700'>
-                                <div className='flex justify-between'>
-                                    <span className='font-medium'>Ngày:</span>
-                                    <span>
-                                        {formatDate(route.collectionDate) ||
-                                            'Chưa thu gom'}
-                                    </span>
-                                </div>
-                                <div className='flex justify-between'>
-                                    <span className='font-medium'>
-                                        Thời gian dự kiến:
-                                    </span>
-                                    <span>
-                                        {formatTime(route.estimatedTime)}
-                                    </span>
-                                </div>
-
-                                <div className='pt-2 border-t'>
-                                    <div className='flex items-start gap-2'>
-                                        <MapPin
-                                            size={16}
-                                            className='text-gray-600 mt-0.5'
-                                        />
-                                        <span>{route.address}</span>
-                                    </div>
-                                </div>
+                                <h3 className='text-base font-semibold text-gray-800'>
+                                    Nhân viên thu gom
+                                </h3>
                             </div>
-                        </Section>
+                            <UserInfo user={route.collector} />
+                        </div>
 
                         {/* Ảnh xác nhận */}
                         {Array.isArray(route.confirmImages) &&
                             route.confirmImages.length > 0 && (
-                                <Section
-                                    title='Ảnh xác nhận'
-                                    icon={
-                                        <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                <div className='p-4 bg-primary-50 rounded-lg border border-primary-100'>
+                                    <div className='flex items-center gap-2 mb-3'>
+                                        <span className='w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
                                             <Package
                                                 className='text-primary-500'
                                                 size={18}
                                             />
                                         </span>
-                                    }
-                                >
+                                        <p className='text-base font-semibold text-gray-800'>
+                                            Ảnh xác nhận
+                                        </p>
+                                    </div>
                                     <div className='flex gap-2 flex-wrap'>
                                         {route.confirmImages.map(
                                             (img: string, idx: number) => (
@@ -254,7 +269,7 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                                             )
                                         )}
                                     </div>
-                                </Section>
+                                </div>
                             )}
                     </div>
                 </div>
@@ -282,6 +297,5 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
         </div>
     );
 };
-
 
 export default CollectorRouteDetail;

@@ -9,7 +9,7 @@ import {
     User,
     Navigation
 } from 'lucide-react';
-import { formatDimensionText } from '@/utils/formatDimensionText';
+import SummaryCard, { SummaryCardItem } from '@/components/ui/SummaryCard';
 
 interface Route {
     pickupOrder: number;
@@ -52,6 +52,30 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
     if (!grouping) return null;
     const routes = grouping.routes ?? [];
 
+    // Generate summary items
+    const summaryItems: SummaryCardItem[] = [
+        {
+            label: 'Ngày thu gom',
+            value: new Date(grouping.groupDate).toLocaleDateString('vi-VN'),
+            icon: <Calendar size={14} className='text-primary-400' />,
+        },
+        {
+            label: 'Phương tiện',
+            value: grouping.vehicle,
+            icon: <Truck size={14} className='text-primary-400' />,
+        },
+        {
+            label: 'Người thu gom',
+            value: grouping.collector,
+            icon: <User size={14} className='text-primary-400' />,
+        },
+        {
+            label: 'Điểm thu gom',
+            value: grouping.collectionPoint,
+            icon: <MapPin size={14} className='text-primary-400' />,
+        },
+    ];
+
     return (
         <div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
             {/* Overlay */}
@@ -89,72 +113,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                         </span>
                         Thông tin nhóm
                     </h3>
-                    <div className='bg-white rounded-xl p-6 mb-6 shadow-sm border border-gray-100'>
-                        <div className='grid grid-cols-4 gap-6'>
-                            {/* Ngày thu gom */}
-                            <div className='flex flex-col'>
-                                <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
-                                    <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
-                                        <Calendar
-                                            size={14}
-                                            className='text-primary-400'
-                                        />
-                                    </span>
-                                    Ngày thu gom
-                                </div>
-                                <div className='text-sm font-medium text-gray-900'>
-                                    {new Date(
-                                        grouping.groupDate
-                                    ).toLocaleDateString('vi-VN')}
-                                </div>
-                            </div>
-                            {/* Phương tiện */}
-                            <div className='flex flex-col'>
-                                <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
-                                    <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
-                                        <Truck
-                                            size={14}
-                                            className='text-primary-400'
-                                        />
-                                    </span>
-                                    Phương tiện
-                                </div>
-                                <div className='text-sm font-medium text-gray-900'>
-                                    {grouping.vehicle}
-                                </div>
-                            </div>
-                            {/* Người thu gom */}
-                            <div className='flex flex-col'>
-                                <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
-                                    <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
-                                        <User
-                                            size={14}
-                                            className='text-primary-400'
-                                        />
-                                    </span>
-                                    Người thu gom
-                                </div>
-                                <div className='text-sm font-medium text-gray-900'>
-                                    {grouping.collector}
-                                </div>
-                            </div>
-                            {/* Điểm thu gom */}
-                            <div className='flex flex-col'>
-                                <div className='text-xs font-semibold uppercase text-gray-700 mb-2 flex items-center gap-1'>
-                                    <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
-                                        <MapPin
-                                            size={14}
-                                            className='text-primary-400'
-                                        />
-                                    </span>
-                                    Điểm thu gom
-                                </div>
-                                <div className='text-sm font-medium text-gray-900'>
-                                    {grouping.collectionPoint}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <SummaryCard items={summaryItems} />
 
                     {/* Statistics */}
                     <div className='grid grid-cols-3 gap-4 mb-6'>
@@ -234,13 +193,13 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                                 >
                                                     <td className='py-3 px-4 font-medium'>
                                                         <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold'>
-                                                            {route.pickupOrder}
+                                                            {idx + 1}
                                                         </span>
                                                     </td>
                                                     <td className='py-3 px-4 font-medium text-gray-900'>
                                                         <div>{route.userName}</div>
                                                         <div className='text-xs text-gray-500 mt-1'>
-                                                            {route.categoryName ? route.categoryName : 'Không rõ'}{' - '}{route.brandName ? route.brandName : 'Không rõ'}
+                                                            {route.categoryName} - {route.brandName}
                                                         </div>
                                                     </td>
                                                     <td className='py-3 px-4 text-gray-700 max-w-xs'>
@@ -251,30 +210,20 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                                     <td className='py-3 px-4 text-gray-700'>
                                                         <div className='flex flex-col gap-1'>
                                                             <span className='text-xs'>
-                                                                <span className='font-medium'>{route.weightKg || 0}</span> kg
+                                                                <span className='font-medium'>{route.weightKg}</span> kg
                                                             </span>
                                                             <span className='text-xs text-gray-500'>
-                                                                {route.volumeM3 || 0} m³
+                                                                {route.volumeM3} m³
                                                             </span>
                                                         </div>
                                                     </td>
                                                     <td className='py-3 px-4 text-gray-700'>
                                                         <span className='flex items-center gap-1'>
-                                                            <span className='w-5 h-5 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
-                                                                <Navigation
-                                                                    size={12}
-                                                                    className='text-primary-400'
-                                                                />
-                                                            </span>
                                                             {route.distanceKm} km
                                                         </span>
                                                     </td>
                                                     <td className='py-3 px-4'>
-                                                        <div className='flex justify-center'>
-                                                            <span className='px-2 py-1 bg-green-100 text-green-700 rounded-md text-xs font-medium'>
-                                                                {route.estimatedArrival}
-                                                            </span>
-                                                        </div>
+                                                        {route.estimatedArrival}
                                                     </td>
                                                 </tr>
                                             );

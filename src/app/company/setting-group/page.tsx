@@ -109,7 +109,6 @@ const SettingGroupPage: React.FC = () => {
                                 value: `${companySetting.points?.length || 0} điểm`,
                             },
                         ]}
-                        columns={3}
                     />
                 </div>
             )}

@@ -6,6 +6,7 @@ interface CustomNumberInputProps {
   placeholder?: string;
   min?: number;
   max?: number;
+  step?: number;
   className?: string;
 }
 
@@ -15,14 +16,22 @@ const CustomNumberInput: React.FC<CustomNumberInputProps> = ({
   placeholder = '',
   min = 0,
   max,
+  step,
   className = '',
 }) => {
-  // Chỉ cho nhập số, loại bỏ ký tự không phải số và số 0 đầu
+  // Chỉ cho nhập số (bao gồm số thập phân nếu có step)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/[^0-9]/g, '');
-    // Cho phép nhập số 0, 1, 2, 3... không ép min khi nhập
-    let num = raw === '' ? 0 : Number(raw);
-    onChange(num);
+    if (step && step < 1) {
+      // Cho phép nhập số thập phân
+      const raw = e.target.value.replace(/[^0-9.]/g, '');
+      const num = raw === '' ? 0 : parseFloat(raw) || 0;
+      onChange(num);
+    } else {
+      // Chỉ cho nhập số nguyên
+      const raw = e.target.value.replace(/[^0-9]/g, '');
+      const num = raw === '' ? 0 : Number(raw);
+      onChange(num);
+    }
   };
 
   // Clamp giá trị khi blur
@@ -38,11 +47,11 @@ const CustomNumberInput: React.FC<CustomNumberInputProps> = ({
       type='text'
       inputMode='numeric'
       pattern='[0-9]*'
-      value={value === 0 ? '' : String(value)}
+      value={String(value)}
       onChange={handleChange}
       onBlur={handleBlur}
       placeholder={placeholder}
-      className={`placeholder-gray-400 placeholder:font-medium ${className}`}
+      className={`placeholder-gray-400 placeholder:font-medium text-right ${className}`}
     />
   );
 };

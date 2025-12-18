@@ -3,8 +3,8 @@
 
 import React from 'react';
 import { User, Calendar, Clock, Truck } from 'lucide-react';
-import InfoCard from '@/components/ui/InfoCard';
-import { formatTimeWithDate } from '@/utils/FormatTime';
+import SummaryCard from '@/components/ui/SummaryCard';
+import RenderTimeCell from '@/utils/RenderTimeCell';
 
 interface ShiftDetailProps {
     shift: any | null;
@@ -30,6 +30,7 @@ const ShiftDetail: React.FC<ShiftDetailProps> = ({ shift, onClose }) => {
             </div>
         );
     }
+
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -69,33 +70,30 @@ const ShiftDetail: React.FC<ShiftDetailProps> = ({ shift, onClose }) => {
                         </span>
                         Thông tin ca làm việc
                     </h3>
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                        <div className="flex flex-col gap-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <InfoCard 
-                                    icon={<User className="w-4 h-4 text-primary-500" />} 
-                                    label="Nhân viên" 
-                                    value={shift.collectorName || 'Chưa có'} 
-                                />
-                                <InfoCard 
-                                    icon={<Truck className="w-4 h-4 text-primary-500" />} 
-                                    label="Biển số xe" 
-                                    value={shift.plate_Number || 'Chưa có'} 
-                                />
-                            </div>
-                            <div className="grid grid-cols-1 gap-4">
-                                <InfoCard 
-                                    icon={<Clock className="w-4 h-4 text-primary-500" />} 
-                                    label="Giờ làm việc" 
-                                    value={
-                                        shift.shift_Start_Time && shift.shift_End_Time ? (
-                                            `${formatTimeWithDate(shift.shift_Start_Time)} - ${formatTimeWithDate(shift.shift_End_Time)}`
-                                        ) : 'Chưa có'
-                                    } 
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    <SummaryCard
+                        items={[
+                            {
+                                icon: <User className="w-4 h-4 text-primary-500" />,
+                                label: 'Nhân viên',
+                                value: shift.collectorName || 'Chưa có',
+                            },
+                            {
+                                icon: <Truck className="w-4 h-4 text-primary-500" />,
+                                label: 'Biển số xe',
+                                value: shift.plate_Number || 'Chưa có',
+                            },
+                            {
+                                icon: <Clock className="w-4 h-4 text-primary-500" />,
+                                label: 'Bắt đầu',
+                                value: RenderTimeCell(shift.shift_Start_Time),
+                            },
+                            {
+                                icon: <Clock className="w-4 h-4 text-primary-500" />,
+                                label: 'Kết thúc',
+                                value: RenderTimeCell(shift.shift_End_Time),
+                            },
+                        ]}
+                    />
                 </div>
 
                 {/* Animation */}

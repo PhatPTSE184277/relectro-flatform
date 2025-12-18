@@ -155,15 +155,29 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                 {/* Main content */}
                 <div className='flex-1 overflow-y-auto p-6 bg-gray-50'>
                     <div className='space-y-6'>
-                        <div className='border border-primary-200 rounded-lg p-4 mb-6 bg-primary-50/30'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                Chọn ngày phân công
-                            </label>
-                            <CustomDatePicker
-                                value={workDate}
-                                onChange={handleDateChange}
-                                placeholder="Chọn ngày"
-                            />
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                            <div className='border border-primary-200 rounded-lg p-4 bg-primary-50/30 w-full md:w-1/2'>
+                                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                    Chọn ngày phân công
+                                </label>
+                                <CustomDatePicker
+                                    value={workDate}
+                                    onChange={handleDateChange}
+                                    placeholder="Chọn ngày"
+                                />
+                            </div>
+                            <div className='bg-primary-50 border border-primary-200 rounded-lg p-4 w-full md:w-1/2 flex items-center justify-start'>
+                                <p className='text-sm text-primary-800 m-0'>
+                                    <span className='font-semibold'>Tổng kết:</span> Bạn đã chọn{' '}
+                                    <span className='font-bold'>{selectedProductIds.length}</span> sản phẩm
+                                    {workDate && (
+                                        <>
+                                            {' '}cho ngày{' '}
+                                            <span className='font-bold'>{formatDate(workDate)}</span>
+                                        </>
+                                    )}
+                                </p>
+                            </div>
                         </div>
                         <div className='border border-primary-200 rounded-lg p-4 bg-primary-50/30'>
                             <div className='flex items-center mb-4 gap-2'>
@@ -189,18 +203,7 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                                 />
                             </div>
                         </div>
-                        <div className='bg-primary-50 border border-primary-200 rounded-lg p-4'>
-                            <p className='text-sm text-primary-800'>
-                                <span className='font-semibold'>Tổng kết:</span> Bạn đã chọn{' '}
-                                <span className='font-bold'>{selectedProductIds.length}</span> sản phẩm
-                                {workDate && (
-                                    <>
-                                        {' '}cho ngày{' '}
-                                        <span className='font-bold'>{formatDate(workDate)}</span>
-                                    </>
-                                )}
-                            </p>
-                        </div>
+
                     </div>
                 </div>
 

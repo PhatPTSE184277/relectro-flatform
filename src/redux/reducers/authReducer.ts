@@ -9,6 +9,7 @@ const initialState: AuthState = {
     isAuthenticated: false,
     loading: false,
     error: null,
+    isFirstLogin: false,
 };
 
 // Async thunk for login
@@ -17,15 +18,15 @@ export const login = createAsyncThunk(
     async ({ username, password }: LoginCredentials, { rejectWithValue }) => {
         try {
             const response = await loginService(username, password);
-            const { token } = response;
+            const { accessToken, isFirstLogin } = response;
             
             // Save token to localStorage
-            localStorage.setItem('token', token);
+            localStorage.setItem('token', accessToken);
             
             // Get user profile
             const userProfile = await getUserProfile();
             
-            return { token, user: userProfile };
+            return { token: accessToken, user: userProfile, isFirstLogin };
         } catch (error: any) {
             return rejectWithValue(error?.response?.data?.message || 'Đăng nhập thất bại');
         }
@@ -73,12 +74,13 @@ const authSlice = createSlice({
             state.loading = true;
             state.error = null;
         });
-        builder.addCase(login.fulfilled, (state, action: PayloadAction<{ token: string; user: UserProfile }>) => {
+        builder.addCase(login.fulfilled, (state, action: PayloadAction<{ token: string; user: UserProfile; isFirstLogin: boolean }>) => {
             state.loading = false;
             state.isAuthenticated = true;
             state.token = action.payload.token;
             state.user = action.payload.user;
             state.error = null;
+            state.isFirstLogin = action.payload.isFirstLogin;
         });
         builder.addCase(login.rejected, (state, action) => {
             state.loading = false;
@@ -112,6 +114,7 @@ const authSlice = createSlice({
             state.token = null;
             state.user = null;
             state.error = null;
+            state.isFirstLogin = false;
         });
     },
 });

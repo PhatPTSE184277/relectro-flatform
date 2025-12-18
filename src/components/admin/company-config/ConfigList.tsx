@@ -5,13 +5,13 @@ import ConfigTableSkeleton from './ConfigTableSkeleton';
 interface ConfigListProps {
     companies: any[];
     loading: boolean;
-    onEdit: (company: any) => void;
+    onViewDetail?: (company: any) => void;
 }
 
 const ConfigList: React.FC<ConfigListProps> = ({
     companies,
     loading,
-    onEdit
+    onViewDetail
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -24,7 +24,7 @@ const ConfigList: React.FC<ConfigListProps> = ({
                             <th className='py-3 px-4 text-left'>Tỷ lệ (%)</th>
                             <th className='py-3 px-4 text-left'>Điểm thu gom</th>
                             <th className='py-3 px-4 text-left'>Số điểm thu gom</th>
-                            <th className='py-3 px-4 text-center'>Hành động</th>
+                            <th className='py-3 px-4 text-center w-24'>Hành động</th>
                         </tr>
                     </thead>
 
@@ -38,14 +38,14 @@ const ConfigList: React.FC<ConfigListProps> = ({
                                 <ConfigShow
                                     key={company.companyId}
                                     company={company}
-                                    onEdit={onEdit}
                                     isLast={idx === companies.length - 1}
                                     index={idx}
+                                    onView={onViewDetail}
                                 />
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={5} className='text-center py-8 text-gray-400'>
+                                <td colSpan={6} className='text-center py-8 text-gray-400'>
                                     Không có cấu hình nào.
                                 </td>
                             </tr>

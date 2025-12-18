@@ -1,23 +1,28 @@
 import React from 'react';
 import { Eye } from 'lucide-react';
 import { formatTimeWithDate } from '@/utils/FormatTime';
+import RenderTimeCell from '@/utils/RenderTimeCell';
 
 interface ShiftShowProps {
     shift: any;
     onView: () => void;
     isLast?: boolean;
     index?: number;
+    showSplitTime?: boolean;
 }
 
 const ShiftShow: React.FC<ShiftShowProps> = ({
     shift,
     onView,
     isLast = false,
-    index
+    index,
+    showSplitTime = false
 }) => {
+
+
     return (
         <tr
-            className={`${
+            className={`$
                 !isLast ? 'border-b border-primary-100' : ''
             } hover:bg-primary-50/40 transition-colors`}
         >
@@ -38,19 +43,28 @@ const ShiftShow: React.FC<ShiftShowProps> = ({
                 )}
             </td>
 
-            {/* <td className='py-3 px-4 text-gray-700'>
-                {shift.workDate ? new Date(shift.workDate).toLocaleDateString('vi-VN') : (
-                    <span className='text-gray-400'>Chưa có</span>
-                )}
-            </td> */}
-
-            <td className='py-3 px-4 text-gray-700'>
-                {shift.shift_Start_Time && shift.shift_End_Time ? (
-                    `${formatTimeWithDate(shift.shift_Start_Time)} - ${formatTimeWithDate(shift.shift_End_Time)}`
-                ) : (
-                    <span className='text-gray-400'>Chưa có</span>
-                )}
-            </td>
+            {showSplitTime ? (
+                <>
+                    <td className='py-3 px-4 text-gray-700'>
+                        <div className='flex flex-col items-start'>
+                            {RenderTimeCell(shift.shift_Start_Time)}
+                        </div>
+                    </td>
+                    <td className='py-3 px-4 text-gray-700'>
+                        <div className='flex flex-col items-start'>
+                            {RenderTimeCell(shift.shift_End_Time)}
+                        </div>
+                    </td>
+                </>
+            ) : (
+                <td className='py-3 px-4 text-gray-700' colSpan={2}>
+                    {shift.shift_Start_Time && shift.shift_End_Time ? (
+                        `${formatTimeWithDate(shift.shift_Start_Time)} - ${formatTimeWithDate(shift.shift_End_Time)}`
+                    ) : (
+                        <span className='text-gray-400'>Chưa có</span>
+                    )}
+                </td>
+            )}
 
             <td className='py-3 px-4'>
                 <div className='flex justify-center gap-2'>

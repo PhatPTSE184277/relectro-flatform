@@ -22,30 +22,21 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
     }
 
     return (
-        <div className='flex gap-3 items-center'>
+        <div className="bg-white rounded-xl p-3 mb-3 shadow-sm border border-gray-100 flex gap-2 items-center">
             {user.avatar && (
-                user.avatar.startsWith('http') && user.avatar.includes('googleusercontent.com') ? (
-                    <img
-                        src={user.avatar}
-                        width={56}
-                        height={56}
-                        className='w-14 h-14 rounded-xl object-cover shrink-0'
-                        alt='Avatar người dùng'
-                    />
-                ) : (
-                    <Image
-                        src={user.avatar}
-                        width={56}
-                        height={56}
-                        className='w-14 h-14 rounded-xl object-cover shrink-0'
-                        alt='Avatar người dùng'
-                    />
-                )
+                <Image
+                    src={user.avatar}
+                    width={40}
+                    height={40}
+                    className='w-10 h-10 rounded-full object-cover shrink-0'
+                    alt='Avatar người dùng'
+                />
             )}
             <div className='flex flex-col justify-center w-full'>
-                <div className='flex flex-wrap items-center gap-x-2 gap-y-1 text-sm'>
-                    <span className='font-semibold text-gray-900'>{user.name || 'Không có tên'}</span>
-                    <span className='mx-1 text-gray-400'>•</span>
+                <div className='text-sm font-semibold text-gray-900'>
+                    {user.name || 'Không có tên'}
+                </div>
+                <div className='flex flex-wrap items-center gap-x-2 gap-y-1 text-sm mt-1'>
                     <span className='text-gray-700'>{user.phone || 'Không có số điện thoại'}</span>
                     <span className='mx-1 text-gray-400'>•</span>
                     <span className='text-gray-700'>{user.email || 'Không có email'}</span>

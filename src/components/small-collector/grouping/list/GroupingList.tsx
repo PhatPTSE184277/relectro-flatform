@@ -40,7 +40,7 @@ const GroupingList: React.FC<GroupingListProps> = ({
                             groupings.map((group, idx) => (
                                 <GroupingShow
                                     key={group.groupId}
-                                    grouping={group}
+                                    grouping={{ ...group, groupDate: group.date, totalPosts: group.totalOrders }}
                                     onViewDetail={onViewDetail}
                                     onReassignDriver={onReassignDriver}
                                     isLast={idx === groupings.length - 1}

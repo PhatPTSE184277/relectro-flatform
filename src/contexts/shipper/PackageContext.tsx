@@ -57,8 +57,7 @@ export const ShipperPackageProvider: React.FC<Props> = ({ children }) => {
     const [filter, setFilterState] = useState<PackageFilter>({
         page: 1,
         limit: 10,
-        status: PackageStatus.Closed,
-        smallCollectionPointId: "2"
+        status: PackageStatus.Closed
     });
 
     const setFilter = (newFilter: Partial<PackageFilter>) => {
@@ -73,12 +72,10 @@ export const ShipperPackageProvider: React.FC<Props> = ({ children }) => {
                     ...filter,
                     ...customFilter
                 };
-                // Remove undefined values first
+                // Remove undefined values
                 Object.keys(params).forEach(
                     (key) => params[key] === undefined && delete params[key]
                 );
-                // Then ensure smallCollectionPointId is always set
-                params.smallCollectionPointId = "2";
                 
                 const response: FilterPackagesResponse = await filterPackages(params);
                 setPackages(response.data || []);
@@ -98,10 +95,9 @@ export const ShipperPackageProvider: React.FC<Props> = ({ children }) => {
     // Fetch stats for all statuses
     const fetchAllStats = useCallback(async () => {
         try {
-            const baseParams = { page: 1, limit: 1, smallCollectionPointId: "2" };
             const [closedRes, shippingRes] = await Promise.all([
-                filterPackages({ ...baseParams, status: PackageStatus.Closed }),
-                filterPackages({ ...baseParams, status: PackageStatus.Shipping })
+                filterPackages({ page: 1, limit: 1, status: PackageStatus.Closed }),
+                filterPackages({ page: 1, limit: 1, status: PackageStatus.Shipping })
             ]);
             setAllStats({
                 closed: closedRes.totalItems,
