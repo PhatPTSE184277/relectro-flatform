@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { formatDate } from '@/utils/FormateDate';
+import { formatDate } from '@/utils/FormatDate';
 import Pagination from '@/components/ui/Pagination';
 import { Eye } from 'lucide-react';
 

@@ -1,4 +1,3 @@
-
 const formatTimeTo24h = (timeStr: string) => {
     if (!timeStr) return '';
     if (/^\d{2}:\d{2}$/.test(timeStr)) return timeStr;
@@ -35,12 +34,17 @@ const formatTime = (timeStr: string) => {
 }
 
 // Helper to format time and date if needed
-const formatTimeWithDate = (isoStr: string) => {
+const formatTimeWithDate = (isoStr: string, includeDate: boolean = true) => {
     if (!isoStr) return '';
     const date = new Date(isoStr);
     if (isNaN(date.getTime())) return '';
     const hour = date.getHours().toString().padStart(2, '0');
     const minute = date.getMinutes().toString().padStart(2, '0');
+
+    if (!includeDate) {
+        return `${hour}:${minute}`;
+    }
+
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();

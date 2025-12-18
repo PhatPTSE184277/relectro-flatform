@@ -1,4 +1,4 @@
-import { formatDate } from '@/utils/FormateDate';
+import { formatDate } from '@/utils/FormatDate';
 import { formatTimeTo24h } from '@/utils/FormatTime';
 
 export interface GroupedSchedule {

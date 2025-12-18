@@ -5,7 +5,7 @@ import { getUnassignedProducts } from '@/services/admin/AssignProductService';
 import AssignProductSelectList from './AssignProductSelectList';
 import Pagination from '@/components/ui/Pagination';
 import { toast } from 'react-toastify';
-import { formatDate } from '@/utils/FormateDate';
+import { formatDate } from '@/utils/FormatDate';
 
 interface Product {
     productId: string;

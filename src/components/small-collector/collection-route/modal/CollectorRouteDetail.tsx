@@ -2,6 +2,7 @@
 'use client';
 import React, { useState } from 'react';
 import { formatTime } from '@/utils/FormatTime';
+import { formatDate } from '@/utils/FormatDate';
 import SummaryCard from '@/components/ui/SummaryCard';
 import UserInfo from '@/components/ui/UserInfo';
 import {
@@ -9,7 +10,6 @@ import {
     Package,
     UserCheck,
     Calendar,
-    Clock,
     MapPin,
     Truck
 } from 'lucide-react';
@@ -172,21 +172,10 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                                             <Calendar className='w-4 h-4 text-primary-500' />
                                         </span>
                                     ),
-                                    label: 'Ngày thu gom',
+                                    label: 'Ngày và thời gian thu gom',
                                     value: route.collectionDate
-                                        ? new Date(
-                                              route.collectionDate
-                                          ).toLocaleDateString('vi-VN')
+                                        ? `${formatTime(route.estimatedTime)} - ${formatDate(route.collectionDate)}`
                                         : 'Không rõ'
-                                },
-                                {
-                                    icon: (
-                                        <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
-                                            <Clock className='w-4 h-4 text-primary-500' />
-                                        </span>
-                                    ),
-                                    label: 'Thời gian dự kiến',
-                                    value: formatTime(route.estimatedTime)
                                 },
                                 {
                                     icon: (

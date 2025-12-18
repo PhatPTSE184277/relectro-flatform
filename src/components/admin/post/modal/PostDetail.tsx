@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import PostApprove from './PostApprove';
 import PostReject from './PostReject';
-import { formatDate } from '@/utils/FormateDate';
+import { formatDate } from '@/utils/FormatDate';
 import { groupScheduleByTimeRange } from '@/utils/groupScheduleByTimeRange';
 import {
     Package,

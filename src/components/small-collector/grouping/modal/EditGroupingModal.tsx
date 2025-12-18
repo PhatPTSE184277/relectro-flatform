@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Truck, Package } from 'lucide-react';
-import { formatDate } from '@/utils/FormateDate';
+import { formatDate } from '@/utils/FormatDate';
 import ProductList from './ProductList';
 
 interface EditGroupingModalProps {
