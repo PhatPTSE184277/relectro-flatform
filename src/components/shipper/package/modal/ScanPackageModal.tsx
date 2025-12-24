@@ -183,18 +183,8 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                     )}
                 </div>
 
-                {/* Footer */}
-                <div className='flex justify-between items-center gap-3 p-5 border-t border-gray-100 bg-white'>
-                    <div className='flex justify-end w-full'>
-                        <button
-                            onClick={handleSubmit}
-                            disabled={!scannedPackage || loading}
-                            className='px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium cursor-pointer shadow-lg shadow-primary-500/30 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none'
-                        >
-                            {confirmText}
-                        </button>
-                    </div>
-                </div>
+                {/* Footer intentionally left blank (button removed) */}
+                <div className='flex justify-between items-center gap-3 p-5 border-t border-gray-100 bg-white'></div>
             </div>
 
             {/* Animation */}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, CheckCircle } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
@@ -70,7 +70,7 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Phân lại tài xế
@@ -132,34 +132,32 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                                 <table className='w-full text-sm text-gray-800'>
                                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                                         <tr>
-                                            <th className='py-3 px-4 text-left'>STT</th>
+                                            <th className='py-3 px-4 text-center'>STT</th>
                                             <th className='py-3 px-4 text-left'>Tên tài xế</th>
-                                            <th className='py-3 px-4 text-left'>Trạng thái</th>
-                                            <th className='py-3 px-4 text-center'>Chọn</th>
+                                            <th className='py-3 px-4 text-left'>Số điện thoại</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {driverCandidates.map((driver, idx) => (
                                             <tr
                                                 key={driver.userId}
-                                                className={`hover:bg-primary-50 transition-colors ${!driver.isAvailable ? 'bg-gray-50 opacity-60 cursor-not-allowed' : ''}`}
+                                                className={`transition-colors ${selectedDriverId === driver.userId ? 'bg-primary-50 border-primary-500!' : ''} ${!driver.isAvailable ? 'bg-gray-50 opacity-60 cursor-not-allowed' : 'hover:bg-primary-50 cursor-pointer'}`}
                                                 onClick={() => driver.isAvailable && setSelectedDriverId(driver.userId)}
-                                                style={{ cursor: driver.isAvailable ? 'pointer' : 'not-allowed' }}
+                                                style={{ cursor: driver.isAvailable ? 'pointer' : 'not-allowed', borderLeft: selectedDriverId === driver.userId ? '4px solid #2563eb' : undefined }}
                                             >
-                                                <td className='py-3 px-4 font-medium'>{idx + 1}</td>
+                                                <td className='py-3 px-4 text-center'>
+                                                    <span className='w-6 h-6 rounded-full bg-primary-600 text-white text-xs flex items-center justify-center font-semibold mx-auto'>
+                                                        {idx + 1}
+                                                    </span>
+                                                </td>
                                                 <td className='py-3 px-4 font-medium text-gray-900'>
                                                     {driver.name}
                                                 </td>
-                                                <td className='py-3 px-4'>
-                                                    <span className={`text-xs ${driver.isAvailable ? 'text-green-600' : 'text-red-600'}`}>{driver.statusText}</span>
+                                                <td className='py-3 px-4 font-medium text-gray-900'>
+                                                    {driver.phone || '-'}
                                                 </td>
-                                                <td className='py-3 px-4 text-center'>
-                                                    {selectedDriverId === driver.userId && (
-                                                        <div className='w-5 h-5 rounded-full bg-primary-600 flex items-center justify-center mx-auto'>
-                                                            <CheckCircle className='text-white' size={16} />
-                                                        </div>
-                                                    )}
-                                                </td>
+                                                {/* Khung giờ làm cell removed */}
+                                                {/* Trạng thái cell removed */}
                                             </tr>
                                         ))}
                                     </tbody>

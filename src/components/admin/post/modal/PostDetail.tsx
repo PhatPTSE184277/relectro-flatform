@@ -152,7 +152,7 @@ const PostDetail: React.FC<PostDetailProps> = ({
                         {/* AI Labels - moved to left */}
                         {Array.isArray(post.aggregatedAiLabels) &&
                             post.aggregatedAiLabels.length > 0 && (
-                                <div className='p-4 bg-primary-50 rounded-lg border border-primary-100 w-full'>
+                                <div className='p-4 bg-primary-50 rounded-lg border border-primary-100 w-full mt-4'>
                                     <div className='flex items-center gap-2 mb-2'>
                                         <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                             <Tag className='text-primary-500' size={18} />
@@ -181,20 +181,22 @@ const PostDetail: React.FC<PostDetailProps> = ({
 
                         {/* Approve/Reject Buttons under AI Labels */}
                         {isPending && (
-                            <div className='flex justify-center gap-3 mt-6'>
-                                <button
-                                    onClick={() => setIsApproveModalOpen(true)}
-                                    className='bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg font-medium transition cursor-pointer shadow-sm flex items-center gap-2'
-                                >
-                                    <CheckCircle size={18} />
-                                    Duyệt
-                                </button>
-                                <button
-                                    onClick={() => setIsRejectModalOpen(true)}
-                                    className='bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-medium transition cursor-pointer shadow-sm'
-                                >
-                                    Từ chối
-                                </button>
+                            <div className='flex justify-center mt-6'>
+                                <div className='flex gap-3'>
+                                    <button
+                                        onClick={() => setIsRejectModalOpen(true)}
+                                        className='bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-medium transition cursor-pointer shadow-sm order-1'
+                                    >
+                                        Từ chối
+                                    </button>
+                                    <button
+                                        onClick={() => setIsApproveModalOpen(true)}
+                                        className='bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg font-medium transition cursor-pointer shadow-sm flex items-center gap-2 order-2'
+                                    >
+                                        <CheckCircle size={18} />
+                                        Duyệt
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>

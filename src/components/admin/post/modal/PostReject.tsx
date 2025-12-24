@@ -18,11 +18,11 @@ const PostReject: React.FC<PostRejectProps> = ({
     "Nội dung không phù hợp quy định",
     "Khác"
   ];
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [customReason, setCustomReason] = useState("");
 
   const handleClose = () => {
-    setSelectedTag(null);
+    setSelectedTags([]);
     setCustomReason("");
     onClose();
   };
@@ -54,19 +54,29 @@ const PostReject: React.FC<PostRejectProps> = ({
               Lý do từ chối <span className="text-red-500">*</span>
             </label>
             <div className="flex flex-wrap gap-2 mb-2">
-              {REASON_TAGS.map((tag) => (
-                <button
-                  type="button"
-                  key={tag}
-                  className={`px-3 py-1 rounded-full border text-sm font-medium transition-colors cursor-pointer
-                    ${selectedTag === tag ? "bg-primary-100 border-primary-500 text-primary-700" : "bg-gray-100 border-gray-200 text-gray-600 hover:bg-primary-50"}`}
-                  onClick={() => setSelectedTag(tag)}
-                >
-                  {tag}
-                </button>
-              ))}
+              {REASON_TAGS.map((tag) => {
+                const isSelected = selectedTags.includes(tag);
+                return (
+                  <button
+                    type="button"
+                    key={tag}
+                    className={`px-3 py-1 rounded-full border text-sm font-medium transition-colors cursor-pointer
+                      ${isSelected ? "bg-primary-100 border-primary-500 text-primary-700" : "bg-gray-100 border-gray-200 text-gray-600 hover:bg-primary-50"}`}
+                    onClick={() => {
+                      if (isSelected) {
+                        setSelectedTags(selectedTags.filter(t => t !== tag));
+                        if (tag === "Khác") setCustomReason("");
+                      } else {
+                        setSelectedTags([...selectedTags, tag]);
+                      }
+                    }}
+                  >
+                    {tag}
+                  </button>
+                );
+              })}
             </div>
-            {selectedTag === "Khác" && (
+            {selectedTags.includes("Khác") && (
               <textarea
                 className="w-full border border-gray-200 rounded-xl p-3 text-gray-800 placeholder-gray-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-100 outline-none resize-none transition-all duration-200 bg-white"
                 rows={4}
@@ -77,17 +87,7 @@ const PostReject: React.FC<PostRejectProps> = ({
             )}
           </div>
 
-          <div className="bg-white rounded-xl p-4 border border-gray-100 text-gray-600 text-sm shadow-inner">
-            <p>
-              Vui lòng mô tả chi tiết lý do để người đăng có thể chỉnh sửa và gửi lại
-              bài phù hợp hơn. Ví dụ:
-            </p>
-            <ul className="list-disc list-inside mt-2 space-y-1 text-gray-500">
-              <li>Ảnh sản phẩm không rõ ràng</li>
-              <li>Mô tả thiếu thông tin liên hệ</li>
-              <li>Nội dung không phù hợp quy định</li>
-            </ul>
-          </div>
+          {/* Đã xoá hướng dẫn mô tả lý do từ chối */}
         </div>
 
         {/* Footer */}
@@ -100,19 +100,23 @@ const PostReject: React.FC<PostRejectProps> = ({
           </button>
           <button
             disabled={
-              !selectedTag || (selectedTag === "Khác" && !customReason.trim())
+              selectedTags.length === 0 || (selectedTags.includes("Khác") && !customReason.trim())
             }
             onClick={() => {
-              const finalReason = selectedTag === "Khác" ? customReason : selectedTag;
-              onConfirm(finalReason || "");
-              setSelectedTag(null);
+              const reasons = selectedTags.filter(t => t !== "Khác");
+              if (selectedTags.includes("Khác")) {
+                if (customReason.trim()) reasons.push(customReason.trim());
+              }
+              onConfirm(reasons.join("; "));
+              setSelectedTags([]);
               setCustomReason("");
             }}
-            className={`px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 ${
-              selectedTag && (selectedTag !== "Khác" || customReason.trim())
-                ? "bg-primary-500 hover:bg-primary-600"
-                : "bg-primary-300 cursor-not-allowed"
-            }`}
+            className={`px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200
+              ${selectedTags.length === 0 || (selectedTags.includes("Khác") && !customReason.trim())
+                ? "bg-primary-300 cursor-not-allowed"
+                : "bg-primary-500"}
+              ${selectedTags.length !== 0 && (!(selectedTags.includes("Khác")) || customReason.trim()) ? "hover:bg-primary-600" : ""}
+            `}
           >
             Xác nhận từ chối
           </button>

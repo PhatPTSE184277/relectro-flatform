@@ -22,7 +22,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ items, singleRow = false }) =
             <div className={gridClass}>
                 {items.map((item, idx) => (
                     <div
-                        className={`flex items-center gap-2 min-w-[220px] ${item.colSpan === 2 ? 'col-span-2' : ''}`}
+                        className={`flex items-center min-w-[220px] ${item.colSpan === 2 ? 'col-span-2' : ''}`}
                         key={idx}
                     >
                         {item.icon && (
@@ -30,12 +30,14 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ items, singleRow = false }) =
                                 {item.icon}
                             </span>
                         )}
-                        <span className='text-xs font-semibold uppercase text-gray-700 mr-2'>
-                            {item.label}:
-                        </span>
-                        <span className='text-sm font-medium text-gray-900 break-all'>
-                            {item.value}
-                        </span>
+                        <div style={{display: 'flex', alignItems: 'center', minWidth: 0}}>
+                            <span className='text-xs font-semibold uppercase text-gray-700 mr-2' style={{minWidth: 110, textAlign: 'left', whiteSpace: 'nowrap', flexShrink: 0}}>
+                                {item.label}
+                            </span>
+                            <span className='text-sm font-medium text-gray-900 break-all' style={{minWidth: 0}}>
+                                {item.value}
+                            </span>
+                        </div>
                     </div>
                 ))}
             </div>
