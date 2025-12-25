@@ -34,20 +34,6 @@ const PackageShow: React.FC<PackageShowProps & { isLast?: boolean }> = ({
             </td>
 
             <td className='py-3 px-4'>
-                <span
-                    className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                        pkg.status === PackageStatus.Shipping
-                            ? 'bg-blue-100 text-blue-700'
-                            : pkg.status === PackageStatus.Recycling
-                            ? 'bg-purple-100 text-purple-700'
-                            : 'bg-gray-100 text-gray-600'
-                    }`}
-                >
-                    {pkg.status}
-                </span>
-            </td>
-
-            <td className='py-3 px-4'>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}

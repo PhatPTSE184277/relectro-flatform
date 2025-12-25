@@ -25,7 +25,6 @@ const PackageList: React.FC<PackageListProps> = ({
                             <th className='py-3 px-4 text-left'>Mã Package</th>
                             <th className='py-3 px-4 text-left'>Tên Package</th>
                             <th className='py-3 px-4 text-left'>Số sản phẩm</th>
-                            <th className='py-3 px-4 text-left'>Trạng thái</th>
                             <th className='py-3 px-4 text-center'>Hành động</th>
                         </tr>
                     </thead>

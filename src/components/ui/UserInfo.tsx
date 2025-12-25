@@ -36,11 +36,19 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
                 <div className='text-sm font-semibold text-gray-900'>
                     {user.name || 'Không có tên'}
                 </div>
-                <div className='flex flex-wrap items-center gap-x-2 gap-y-1 text-sm mt-1'>
-                    <span className='text-gray-700'>{user.phone || 'Không có số điện thoại'}</span>
-                    <span className='mx-1 text-gray-400'>•</span>
-                    <span className='text-gray-700'>{user.email || 'Không có email'}</span>
-                </div>
+                {(user.phone || user.email) && (
+                    <div className='flex flex-wrap items-center gap-x-2 gap-y-1 text-sm mt-1'>
+                        {user.phone && (
+                            <span className='text-gray-700'>{user.phone}</span>
+                        )}
+                        {user.phone && user.email && (
+                            <span className='mx-1 text-gray-400'>•</span>
+                        )}
+                        {user.email && (
+                            <span className='text-gray-700'>{user.email}</span>
+                        )}
+                    </div>
+                )}
                 {user.address && (
                     <p className='mt-1 text-gray-600 text-sm'>{user.address}</p>
                 )}

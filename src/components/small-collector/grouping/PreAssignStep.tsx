@@ -34,32 +34,18 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 </p>
             </div>
 
-            {/* Load Threshold Setting */}
-            <div className='bg-gray-50 rounded-lg p-6 mb-4'>
-                <label className='block text-sm font-medium text-gray-700 mb-3'>
-                    Ngưỡng tải (%)
-                </label>
-                <div className='flex items-center gap-4'>
-                    <input
-                        type='range'
-                        min='50'
-                        max='100'
-                        value={loadThreshold}
-                        onChange={(e) =>
-                            setLoadThreshold(Number(e.target.value))
-                        }
-                        className='flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-500'
-                    />
-                    <div className='w-16 text-center'>
-                        <span className='text-2xl font-bold text-primary-600'>
-                            {loadThreshold}
-                        </span>
-                        <span className='text-sm text-gray-500'>%</span>
-                    </div>
-                </div>
-                <p className='text-xs text-gray-500 mt-2'>
-                    Phương tiện sẽ được gợi ý sử dụng khi đạt mức tải này
-                </p>
+            {/* Load Threshold Setting - Compact */}
+            <div className='bg-gray-50 rounded-lg px-4 py-3 mb-4 flex items-center gap-4'>
+                <label className='text-sm font-medium text-gray-700 whitespace-nowrap mr-2'>Ngưỡng tải:</label>
+                <input
+                    type='range'
+                    min='50'
+                    max='100'
+                    value={loadThreshold}
+                    onChange={(e) => setLoadThreshold(Number(e.target.value))}
+                    className='flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-500 mx-2'
+                />
+                <span className='text-xl font-bold text-primary-600'>{loadThreshold}%</span>
             </div>
 
             {/* Action Button */}

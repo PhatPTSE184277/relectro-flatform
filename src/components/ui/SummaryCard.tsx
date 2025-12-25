@@ -1,4 +1,4 @@
-    import React from 'react';
+import React from 'react';
 
 export interface SummaryCardItem {
     icon?: React.ReactNode;
@@ -22,7 +22,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ items, singleRow = false }) =
             <div className={gridClass}>
                 {items.map((item, idx) => (
                     <div
-                        className={`flex items-center min-w-[220px] ${item.colSpan === 2 ? 'col-span-2' : ''}`}
+                        className={`flex items-center ${singleRow ? 'flex-1' : ''} min-w-[220px] ${item.colSpan === 2 ? 'col-span-2' : ''}`}
                         key={idx}
                     >
                         {item.icon && (
@@ -30,11 +30,14 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ items, singleRow = false }) =
                                 {item.icon}
                             </span>
                         )}
-                        <div style={{display: 'flex', alignItems: 'center', minWidth: 0}}>
+                        <div style={{display: 'flex', alignItems: 'center', minWidth: 0, width: '100%'}}>
                             <span className='text-xs font-semibold uppercase text-gray-700 mr-2' style={{minWidth: 110, textAlign: 'left', whiteSpace: 'nowrap', flexShrink: 0}}>
-                                {item.label}
+                                {item.label}{singleRow ? ':' : ''}
                             </span>
-                            <span className='text-sm font-medium text-gray-900 break-all' style={{minWidth: 0}}>
+                            <span 
+                                className={`text-sm font-medium text-gray-900 wrap-break-word ${typeof item.value === 'number' ? 'text-right flex-1' : ''}`} 
+                                style={{minWidth: 0, wordBreak: 'break-word', overflowWrap: 'break-word', whiteSpace: 'normal'}}
+                            >
                                 {item.value}
                             </span>
                         </div>

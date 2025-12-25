@@ -93,12 +93,6 @@ const PostReject: React.FC<PostRejectProps> = ({
         {/* Footer */}
         <div className="flex justify-end gap-3 p-5 border-t border-gray-100 bg-gray-50">
           <button
-            onClick={handleClose}
-            className="px-5 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium transition cursor-pointer"
-          >
-            Hủy
-          </button>
-          <button
             disabled={
               selectedTags.length === 0 || (selectedTags.includes("Khác") && !customReason.trim())
             }
@@ -115,7 +109,7 @@ const PostReject: React.FC<PostRejectProps> = ({
               ${selectedTags.length === 0 || (selectedTags.includes("Khác") && !customReason.trim())
                 ? "bg-primary-300 cursor-not-allowed"
                 : "bg-primary-500"}
-              ${selectedTags.length !== 0 && (!(selectedTags.includes("Khác")) || customReason.trim()) ? "hover:bg-primary-600" : ""}
+              ${selectedTags.length !== 0 && (!(selectedTags.includes("Khác")) || customReason.trim()) ? "bg-primary-600" : ""}
             `}
           >
             Xác nhận từ chối

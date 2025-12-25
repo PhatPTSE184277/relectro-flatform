@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, Building2, MapPin, Target, Route } from 'lucide-react';
+import { X, Building2, MapPin, Target } from 'lucide-react';
 import SummaryCard from '@/components/ui/SummaryCard';
 
 interface CompanyDetailModalProps {
@@ -29,7 +29,7 @@ const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]'>
+               <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
@@ -69,14 +69,9 @@ const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({
                                 icon: <Target size={18} className='text-primary-600' />,
                                 label: 'Tỷ lệ phân bổ',
                                 value: <span className='text-primary-600 font-semibold'>{company.ratioPercent}%</span>,
-                            },
-                            {
-                                icon: <MapPin size={18} className='text-primary-600' />,
-                                label: 'Tổng số điểm thu gom',
-                                value: `${company.smallPoints?.length || 0} điểm`,
-                            },
+                            }
                         ]}
-                        singleRow={false}
+                        singleRow={true}
                     />
 
                     {/* Active Collection Points */}

@@ -2,10 +2,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { PackageType } from '@/types/Package';
-import { X, QrCode, Info, List } from 'lucide-react';
+import { X, QrCode, List, Tag, Box, ListCheck, Truck } from 'lucide-react';
 import { toast } from 'react-toastify';
-import PackageInfoCard from './PackageInfoCard';
+import SummaryCard from '@/components/ui/SummaryCard';
 import ProductList from './ProductList';
+import { PackageStatus } from '@/enums/PackageStatus';
 
 interface ScanProductModalProps {
     open: boolean;
@@ -103,99 +104,116 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh] animate-fadeIn'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
+                <div className='flex justify-between items-center p-4 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
-                        <h2 className='text-2xl font-bold text-gray-900'>
+                        <h2 className='text-xl font-bold text-gray-900'>
                             Quét kiểm tra sản phẩm
                         </h2>
-                        <p className='text-sm text-gray-500 mt-1'>
-                            Quét mã QR từng sản phẩm để xác nhận
-                        </p>
                     </div>
                     <button
                         onClick={handleClose}
-                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
+                        className='text-gray-400 hover:text-red-500 text-2xl font-light cursor-pointer transition'
                     >
-                        <X size={28} />
+                        <X size={24} />
                     </button>
                 </div>
 
                 {/* Body */}
-                <div className='flex-1 overflow-y-auto p-6'>
+                <div className='flex-1 overflow-y-auto p-4 space-y-4'>
                     {/* Package Info */}
-                    <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-                        <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                            <Info className='w-5 h-5 text-primary-500' />
-                        </span>
-                        Thông tin package
-                    </h3>
-                    <PackageInfoCard pkg={pkg} />
+                    <SummaryCard 
+                        items={[
+                            {
+                                icon: <Tag size={14} className='text-primary-400' />,
+                                label: 'Mã package',
+                                value: pkg.packageId,
+                            },
+                            {
+                                icon: <Box size={14} className='text-primary-400' />,
+                                label: 'Tên package',
+                                value: pkg.packageName,
+                            },
+                            {
+                                icon: <ListCheck size={14} className='text-primary-400' />,
+                                label: 'Số sản phẩm',
+                                value: pkg.products.length,
+                            },
+                            {
+                                icon: <Truck size={14} className='text-primary-400' />,
+                                label: 'Trạng thái',
+                                value: (
+                                    <span
+                                        className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
+                                            pkg.status === PackageStatus.Packing
+                                                ? 'bg-yellow-100 text-yellow-700'
+                                                : pkg.status === PackageStatus.Closed
+                                                ? 'bg-green-100 text-green-700'
+                                                : pkg.status === PackageStatus.Shipping
+                                                ? 'bg-blue-100 text-blue-700'
+                                                : pkg.status === PackageStatus.Recycling
+                                                ? 'bg-purple-100 text-purple-700'
+                                                : 'bg-gray-100 text-gray-600'
+                                        }`}
+                                    >
+                                        {pkg.status}
+                                    </span>
+                                ),
+                            },
+                        ]}
+                        singleRow={true}
+                    />
 
                     {/* Scan Input & Progress */}
-                    <div className='bg-primary-50 rounded-xl p-4 shadow-sm border border-primary-200 mb-6'>
-                        <div className='flex items-center gap-2 mb-3'>
-                            <QrCode className='text-primary-600' size={20} />
-                            <label className='text-sm font-semibold text-gray-700'>
-                                Quét mã QR sản phẩm
-                            </label>
-                        </div>
-                        <form onSubmit={handleScanQR} className='flex gap-2 mb-4'>
-                            <input
-                                ref={inputRef}
-                                type='text'
-                                value={qrCode}
-                                onChange={(e) => setQrCode(e.target.value)}
-                                placeholder='Quét hoặc nhập mã QR...'
-                                className='flex-1 px-4 py-2 border border-primary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-gray-900 placeholder-gray-400'
-                                autoFocus
-                            />
-                            <button
-                                type='submit'
-                                className='px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium cursor-pointer'
-                            >
-                                Quét
-                            </button>
-                        </form>
-
-                        {/* Progress */}
-                        <div className='flex justify-between items-center mb-2'>
-                            <span className='text-sm font-semibold text-gray-700'>
-                                Tiến độ kiểm tra
+                    <div className='bg-primary-50 rounded-xl p-3 shadow-sm border border-primary-200'>
+                        <div className='flex items-center gap-2 justify-between'>
+                            <form onSubmit={handleScanQR} className='flex gap-2 items-center'>
+                                <div className='relative w-72'>
+                                    <input
+                                        ref={inputRef}
+                                        type='text'
+                                        value={qrCode}
+                                        onChange={(e) => setQrCode(e.target.value)}
+                                        placeholder='Nhập mã QR...'
+                                        className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-gray-900 placeholder-gray-400'
+                                        autoFocus
+                                    />
+                                    <QrCode className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400' size={18} />
+                                </div>
+                                <button
+                                    type='submit'
+                                    className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium cursor-pointer'
+                                >
+                                    Quét
+                                </button>
+                            </form>
+                            <span className='text-sm font-semibold text-gray-700 whitespace-nowrap'>
+                                Tiến độ kiểm tra: <span className='text-primary-600 font-bold'>{totalChecked} / {pkg.products.length}</span>
                             </span>
-                            <span className='text-sm font-bold text-primary-600'>
-                                {totalChecked} / {pkg.products.length}
-                            </span>
-                        </div>
-                        <div className='w-full bg-gray-200 rounded-full h-2.5'>
-                            <div
-                                className='bg-primary-600 h-2.5 rounded-full transition-all duration-300'
-                                style={{
-                                    width: ((totalChecked / pkg.products.length) * 100) + '%'
-                                }}
-                            ></div>
                         </div>
                     </div>
 
                     {/* Products List */}
                     <div>
-                        <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
+                        <h3 className='text-lg font-semibold text-gray-900 mb-2 flex items-center gap-2'>
                             <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                 <List className='w-5 h-5 text-primary-500' />
                             </span>
                             Danh sách sản phẩm
                         </h3>
-                        <ProductList
-                            products={pkg.products}
-                            showStatus={true}
-                            checkedProducts={checkedProducts}
-                        />
+                        <div className='overflow-y-auto max-h-[40vh]'>
+                            <ProductList
+                                products={pkg.products}
+                                showStatus={true}
+                                checkedProducts={checkedProducts}
+                            />
+                        </div>
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className='flex justify-end items-center gap-3 p-5 border-t border-primary-100 bg-white'>
+                <div className='flex justify-end items-center gap-3 p-4 border-t border-primary-100 bg-white'>
                     <button
                         onClick={handleSubmit}
                         disabled={checkedProducts.size === 0}

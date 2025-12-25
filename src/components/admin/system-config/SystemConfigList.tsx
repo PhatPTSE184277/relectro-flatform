@@ -21,10 +21,8 @@ const SystemConfigList: React.FC<SystemConfigListProps> = ({
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                         <tr>
                             <th className='py-3 px-4 text-center w-12'>STT</th>
-                            <th className='py-3 px-4 text-left'>Key</th>
                             <th className='py-3 px-4 text-left'>Tên hiển thị</th>
-                            <th className='py-3 px-4 text-left'>Giá trị</th>
-                            <th className='py-3 px-4 text-left'>Nhóm</th>
+                            <th className='py-3 px-4 text-right'>Giá trị</th>
                             <th className='py-3 px-4 text-center'>Hành động</th>
                         </tr>
                     </thead>

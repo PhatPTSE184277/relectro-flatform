@@ -56,12 +56,6 @@ const ConfirmStatusChange: React.FC<ConfirmStatusChangeProps> = ({
 
                     <div className='space-y-2'>
                         <p className='text-sm text-gray-600'>
-                            <span className='font-medium text-gray-700'>
-                                Package:
-                            </span>{' '}
-                            {packageName}
-                        </p>
-                        <p className='text-sm text-gray-600'>
                             Bạn có chắc chắn muốn tiếp tục?
                         </p>
                     </div>

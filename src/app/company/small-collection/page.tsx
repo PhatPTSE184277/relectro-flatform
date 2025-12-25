@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import { MapPin } from 'lucide-react';
 import { useSmallCollectionContext } from '@/contexts/company/SmallCollectionContext';

@@ -71,38 +71,36 @@ const ProductQueryPage: React.FC = () => {
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
             {/* Header */}
             <div className='flex items-center justify-between gap-6 mb-6'>
-                <div className='flex items-center gap-3'>
-                    <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
-                        <Package className='text-white' size={20} />
-                    </div>
-                    <h1 className='text-3xl font-bold text-gray-900'>
-                        Tra cứu sản phẩm
-                    </h1>
-                </div>
-
-                {/* Date Picker and Point Selection Button */}
-                <div className='flex items-center gap-6'>
-                    <div className='w-full sm:max-w-md'>
-                        <CustomDatePicker
-                            value={selectedDate}
-                            onChange={handleDateChange}
-                            placeholder='Chọn ngày'
-                        />
-                    </div>
-                    <button
-                        onClick={() => setShowPointModal(true)}
-                        className='w-full px-10 py-3 bg-white border-2 border-primary-200 rounded-xl hover:border-primary-400 transition-all shadow-sm cursor-pointer flex items-center gap-6 text-center'
-                    >
-                        <MapPin className='text-primary-600' size={20} />
-                        <div className='text-left flex-1'>
-                            <div className='font-semibold text-gray-900'>
-                                {selectedPoint ? (selectedPoint.name || selectedPoint.smallPointName || 'N/A') : 'Chọn điểm thu gom'}
-                            </div>
+                <div className='flex flex-col w-full gap-4 sm:flex-row sm:items-center sm:justify-between'>
+                    <div className='flex items-center gap-3 justify-center sm:justify-start'>
+                        <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
+                            <Package className='text-white' size={20} />
                         </div>
-                        <svg className='w-5 h-5 text-gray-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
-                        </svg>
-                    </button>
+                        <h1 className='text-3xl font-bold text-gray-900'>
+                            Tra cứu sản phẩm
+                        </h1>
+                    </div>
+                    <div className='flex items-center gap-4 justify-center sm:justify-end w-full sm:w-auto'>
+                        <div className='w-[280px]'>
+                            <CustomDatePicker
+                                value={selectedDate}
+                                onChange={handleDateChange}
+                                placeholder='Chọn ngày'
+                            />
+                        </div>
+                        <button
+                            onClick={() => setShowPointModal(true)}
+                            className='px-8 py-2 bg-white border-2 border-primary-200 rounded-lg hover:border-primary-400 transition-all shadow-sm cursor-pointer flex items-center gap-3 w-[280px] text-center'
+                        >
+                            <MapPin className='text-primary-600 flex-shrink-0' size={20} />
+                            <span className='font-semibold text-gray-900 truncate block max-w-[180px] mx-auto'>
+                                {selectedPoint ? (selectedPoint.name || selectedPoint.smallPointName || 'N/A') : 'Chọn điểm thu gom'}
+                            </span>
+                            <svg className='w-5 h-5 text-gray-400 flex-shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 

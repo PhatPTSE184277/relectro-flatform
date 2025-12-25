@@ -4,7 +4,6 @@ import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import { getUnassignedProducts } from '@/services/admin/AssignProductService';
 import AssignProductSelectList from './AssignProductSelectList';
 import Pagination from '@/components/ui/Pagination';
-import { toast } from 'react-toastify';
 import { formatDate } from '@/utils/FormatDate';
 
 interface Product {
@@ -60,7 +59,6 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                 setSelectedProductIds(prev => prev.filter(id => data.some(p => p.productId === id)));
             }
         } catch (error) {
-            toast.error('Lỗi khi tải danh sách sản phẩm');
             setProducts([]);
             setAllProducts([]);
             setSelectedProductIds([]);

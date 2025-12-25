@@ -17,7 +17,7 @@ const SystemConfigShow: React.FC<SystemConfigShowProps> = ({
 }) => {
     return (
         <tr
-            className={`${
+            className={`$
                 !isLast ? 'border-b border-primary-100' : ''
             } hover:bg-primary-50/40 transition-colors`}
         >
@@ -26,22 +26,13 @@ const SystemConfigShow: React.FC<SystemConfigShowProps> = ({
                     {index !== undefined ? index + 1 : ''}
                 </span>
             </td>
-            <td className='py-3 px-4 font-medium'>
-                <div className='text-gray-900'>{config.key}</div>
-            </td>
 
             <td className='py-3 px-4 text-gray-700'>
                 <div>{config.displayName || 'N/A'}</div>
             </td>
 
-            <td className='py-3 px-4 text-right'>
+            <td className='py-3 px-2 text-right'>
                 <span className='font-medium'>{config.value}</span>
-            </td>
-
-            <td className='py-3 px-4 text-gray-700'>
-                <span className='px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700'>
-                    {config.groupName}
-                </span>
             </td>
 
             <td className='py-3 px-4'>

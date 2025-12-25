@@ -88,6 +88,7 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
                                 ),
                             },
                         ]}
+                        singleRow={true}
                     />
 
                     {/* Timeline */}
@@ -150,15 +151,19 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
                                                         {/* Card */}
                                                         <div className='bg-linear-to-br from-white to-primary-50 rounded-xl p-4 shadow-md border border-primary-100 hover:shadow-lg transition-shadow'>
                                                             <div className='flex flex-col gap-2'>
-                                                                <h4 className='font-semibold text-gray-900 text-sm'>
-                                                                    {item.status || item.event || 'Cập nhật trạng thái'}
-                                                                </h4>
-                                                                <span className='text-xs text-gray-500 flex items-center gap-1'>
-                                                                    <Clock size={12} />
-                                                                    {item.date && item.time
-                                                                        ? `${item.date} - ${item.time}`
-                                                                        : item.timestamp || item.time || item.date || 'N/A'}
-                                                                </span>
+                                                                <div className='flex justify-between items-center gap-2'>
+                                                                    <h4 className='font-semibold text-gray-900 text-sm'>
+                                                                        {item.status || item.event || 'Cập nhật trạng thái'}
+                                                                    </h4>
+                                                                    <span className='text-xs text-gray-500 flex items-center gap-1 whitespace-nowrap'>
+                                                                        <Clock size={12} />
+                                                                        {item.date && item.time
+                                                                            ? `${item.time} - ${item.date}`
+                                                                            : item.time && item.date
+                                                                            ? `${item.time} - ${item.date}`
+                                                                            : item.timestamp || item.time || item.date || 'N/A'}
+                                                                    </span>
+                                                                </div>
                                                                 {item.location && (
                                                                     <p className='text-xs text-gray-600 flex items-center gap-1'>
                                                                         <MapPin size={12} className='text-gray-400' />

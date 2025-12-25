@@ -1,10 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Info, List } from 'lucide-react';
+import { Info, List, Tag, Box, ListCheck, Truck } from 'lucide-react';
 import { PackageType } from '@/types/Package';
-import PackageInfoCard from './PackageInfoCard';
+import SummaryCard from '@/components/ui/SummaryCard';
 import ProductList from './ProductList';
+import { PackageStatus } from '@/enums/PackageStatus';
 
 interface PackageDetailProps {
     package: PackageType;
@@ -16,6 +17,46 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
     onClose
 }) => {
     if (!pkg) return null;
+
+    // Summary items for consistency with small-collector
+    const summaryItems = [
+        {
+            icon: <Tag size={14} className='text-primary-400' />,
+            label: 'Mã package',
+            value: pkg.packageId,
+        },
+        {
+            icon: <Box size={14} className='text-primary-400' />,
+            label: 'Tên package',
+            value: pkg.packageName,
+        },
+        {
+            icon: <ListCheck size={14} className='text-primary-400' />,
+            label: 'Số sản phẩm',
+            value: pkg.products.length,
+        },
+        {
+            icon: <Truck size={14} className='text-primary-400' />,
+            label: 'Trạng thái',
+            value: (
+                <span
+                    className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
+                        pkg.status === PackageStatus.Packing
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : pkg.status === PackageStatus.Closed
+                            ? 'bg-green-100 text-green-700'
+                            : pkg.status === PackageStatus.Shipping
+                            ? 'bg-blue-100 text-blue-700'
+                            : pkg.status === PackageStatus.Recycling
+                            ? 'bg-purple-100 text-purple-700'
+                            : 'bg-gray-100 text-gray-600'
+                    }`}
+                >
+                    {pkg.status}
+                </span>
+            ),
+        },
+    ];
 
     return (
         <div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
@@ -33,9 +74,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                         <h2 className='text-2xl font-bold text-gray-900'>
                             Chi tiết Package
                         </h2>
-                        <p className='text-sm text-gray-500 mt-1'>
-                            Thông tin chi tiết về package và danh sách sản phẩm
-                        </p>
                     </div>
                     <button
                         onClick={onClose}
@@ -48,15 +86,8 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
 
                 {/* Main content */}
                 <div className='flex-1 overflow-y-auto p-6'>
-                    {/* Package Info Title */}
-                    <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
-                        <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                            <Info className='w-5 h-5 text-primary-500' />
-                        </span>
-                        Thông tin package
-                    </h3>
-                    {/* Package Info Card */}
-                    <PackageInfoCard pkg={pkg} />
+                    {/* Package Info Card (SummaryCard) */}
+                    <SummaryCard items={summaryItems} singleRow={true} />
 
                     {/* Products List */}
                     <div>

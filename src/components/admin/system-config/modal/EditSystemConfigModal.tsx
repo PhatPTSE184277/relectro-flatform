@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Settings, X, KeyRound, Tag, Layers } from 'lucide-react';
+import { Settings, X } from 'lucide-react';
 import { SystemConfig } from '@/services/admin/SystemConfigService';
-import SummaryCard from '@/components/ui/SummaryCard';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
 
 interface EditSystemConfigModalProps {
@@ -51,19 +50,10 @@ const EditSystemConfigModal: React.FC<EditSystemConfigModalProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
+            <div className='relative w-full bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn' style={{maxWidth: Math.max(400, Math.min(900, (config?.displayName?.length || 0) * 14 + 400))}}>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
-                    <div className='flex items-center gap-3'>
-                        <div>
-                            <h2 className='text-2xl font-bold text-gray-800 flex items-center gap-2'>
-                                Chỉnh sửa cấu hình
-                            </h2>
-                            <p className='text-sm text-gray-600 mt-1'>
-                                Thay đổi giá trị cấu hình hệ thống
-                            </p>
-                        </div>
-                    </div>
+                    <h2 className='text-2xl font-bold text-gray-800'>Chỉnh sửa cấu hình</h2>
                     <button
                         onClick={handleClose}
                         className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
@@ -74,43 +64,32 @@ const EditSystemConfigModal: React.FC<EditSystemConfigModalProps> = ({
                 </div>
 
                 {/* Main content */}
-                <div className='flex-1 overflow-y-auto p-6 space-y-6 bg-white'>
-                    <SummaryCard
-                        items={[
-                            {
-                                icon: <KeyRound size={14} className='text-primary-400' />,
-                                label: 'Key',
-                                value: config.key,
-                            },
-                            {
-                                icon: <Tag size={14} className='text-primary-400' />,
-                                label: 'Tên hiển thị',
-                                value: config.displayName,
-                            },
-                            {
-                                icon: <Layers size={14} className='text-primary-400' />,
-                                label: 'Nhóm',
-                                value: config.groupName,
-                            },
-                            {
-                                icon: <Settings size={14} className='text-primary-400' />,
-                                label: (
-                                    <span>
-                                        Giá trị <span className='text-red-500'>*</span>
-                                    </span>
-                                ),
-                                value: (
-                                    <CustomNumberInput
-                                        value={value}
-                                        onChange={setValue}
-                                        placeholder='Nhập giá trị mới'
-                                        min={0}
-                                        className='w-full px-2 py-1 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 text-sm'
-                                    />
-                                ),
-                            },
-                        ]}
-                    />
+                <div className='flex-1 overflow-y-auto p-6 space-y-4 bg-white'>
+                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-200'>
+                        <div className='flex items-center gap-2 mb-3'>
+                            <Settings className='text-primary-600' size={20} />
+                            <h3 className='text-lg font-semibold text-gray-900'>Thông tin cấu hình</h3>
+                        </div>
+                        <div className='flex gap-4 items-start'>
+                            <div className='flex-1 space-y-2'>
+                                <div className='flex items-center gap-8'>
+                                    <div className='flex items-center w-1/2'>
+                                        <span className='text-sm text-gray-500 w-28 block'>Tên hiển thị:</span>
+                                        <span className='text-base font-semibold text-gray-900 flex-1 wrap-break-word' style={{wordBreak: 'keep-all', minWidth: 200, maxWidth: 600}}>{config.displayName}</span>
+                                    </div>
+                                    <div className='flex items-center w-1/2'>
+                                        <span className='text-sm text-gray-500 w-24 block'>Giá trị:</span>
+                                        <CustomNumberInput
+                                            value={value}
+                                            onChange={setValue}
+                                            min={0}
+                                            className='w-24 px-2 py-1 border border-primary-300 rounded-lg text-primary-700 font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent'
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Footer */}

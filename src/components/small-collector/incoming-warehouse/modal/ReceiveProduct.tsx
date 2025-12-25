@@ -159,9 +159,6 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Nhận Sản Phẩm Nhập Kho
                         </h2>
-                        <p className='text-sm text-gray-600 mt-1'>
-                            Quét mã QR để nhận sản phẩm đã thu gom vào kho
-                        </p>
                     </div>
                     <button
                         onClick={handleClose}
@@ -176,7 +173,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                 <div className='flex-1 overflow-y-auto p-6 space-y-4 bg-white'>
                     {/* Mã sản phẩm - chỉ hiện khi chưa quét */}
                     {!scannedProduct && (
-                        <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
+                        <>
                             <label className='block text-sm font-medium text-gray-700 mb-2'>
                                 Mã sản phẩm{' '}
                                 <span className='text-red-500'>*</span>
@@ -206,7 +203,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                     {loading ? 'Đang tìm...' : <ArrowRight className='w-5 h-5' />}
                                 </button>
                             </form>
-                        </div>
+                        </>
                     )}
 
                     {/* Scanned Product Info */}
@@ -296,18 +293,20 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                     )}
                 </div>
 
-                {/* Footer */}
-                <div className='flex justify-between items-center gap-3 p-5 border-t border-primary-100 bg-white'>
-                    <div className='flex justify-end w-full'>
-                        <button
-                            onClick={handleSubmit}
-                            disabled={!scannedProduct || loading}
-                            className='px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
-                        >
-                            Xác nhận nhập kho
-                        </button>
+                {/* Footer: chỉ hiện nút xác nhận khi đã quét sản phẩm */}
+                {scannedProduct && (
+                    <div className='flex justify-between items-center gap-3 p-5 border-t border-primary-100 bg-white'>
+                        <div className='flex justify-end w-full'>
+                            <button
+                                onClick={handleSubmit}
+                                disabled={loading}
+                                className='px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
+                            >
+                                Xác nhận nhập kho
+                            </button>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* Animation */}
