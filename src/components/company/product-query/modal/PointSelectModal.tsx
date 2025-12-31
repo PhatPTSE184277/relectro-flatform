@@ -44,14 +44,11 @@ const PointSelectModal: React.FC<PointSelectModalProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[80vh]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Chọn điểm thu gom
                         </h2>
-                        <p className='text-sm text-gray-600 mt-1'>
-                            Chọn điểm thu gom để xem danh sách sản phẩm
-                        </p>
                     </div>
                     <button
                         onClick={onClose}

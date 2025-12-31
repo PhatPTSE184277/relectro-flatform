@@ -16,32 +16,32 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
     onToDateChange
 }) => {
     return (
-        <div className='flex items-center gap-3 bg-white rounded-xl shadow-md border border-primary-200 p-4'>
-            <Calendar className='text-primary-500' size={20} />
-            
-            <div className='flex items-center gap-3 flex-1'>
-                <div className='flex-1'>
-                    <label className='text-xs text-gray-500 font-medium mb-1 block'>
-                        Từ ngày
-                    </label>
+        <div
+            className='
+                flex items-center gap-2 bg-white rounded-xl border border-primary-100 px-3 py-2 min-h-[44px]
+                transition-all duration-200
+                focus-within:ring-2 focus-within:ring-primary-300
+                hover:shadow-md
+                w-full
+            '
+        >
+            <div className='flex items-center gap-2 flex-1'>
+                <div className='flex-1 min-w-[110px]'>
+                    <label className='text-xs text-gray-500 font-medium mb-1 block leading-none'>Từ ngày</label>
                     <CustomDatePicker
                         value={fromDate}
                         onChange={onFromDateChange}
-                        placeholder='Chọn từ ngày'
+                        placeholder='Từ ngày'
                         showIcon={false}
                     />
                 </div>
-
-                <div className='text-gray-400 mt-5'>→</div>
-
-                <div className='flex-1'>
-                    <label className='text-xs text-gray-500 font-medium mb-1 block'>
-                        Đến ngày
-                    </label>
+                <span className='text-gray-300 text-lg px-1 select-none'>–</span>
+                <div className='flex-1 min-w-[110px]'>
+                    <label className='text-xs text-gray-500 font-medium mb-1 block leading-none'>Đến ngày</label>
                     <CustomDatePicker
                         value={toDate}
                         onChange={onToDateChange}
-                        placeholder='Chọn đến ngày'
+                        placeholder='Đến ngày'
                         showIcon={false}
                     />
                 </div>

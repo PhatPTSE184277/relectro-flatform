@@ -21,12 +21,13 @@ const GroupingList: React.FC<GroupingListProps> = ({
                 <table className='w-full text-sm text-gray-800'>
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                         <tr>
+                            <th className='py-3 px-4 text-center w-16'>STT</th>
                             <th className='py-3 px-4 text-left'>Mã nhóm</th>
                             <th className='py-3 px-4 text-left'>Ngày thu gom</th>
                             <th className='py-3 px-4 text-left'>Phương tiện</th>
                             <th className='py-3 px-4 text-left'>Người thu gom</th>
                             <th className='py-3 px-4 text-left'>Số sản phẩm</th>
-                            <th className='py-3 px-4 text-left'>Khối lượng</th>
+                            <th className='py-3 px-4 text-right'>Khối lượng (kg/m³)</th>
                             <th className='py-3 px-4 text-center'>Hành động</th>
                         </tr>
                     </thead>
@@ -44,6 +45,7 @@ const GroupingList: React.FC<GroupingListProps> = ({
                                     onViewDetail={onViewDetail}
                                     onReassignDriver={onReassignDriver}
                                     isLast={idx === groupings.length - 1}
+                                    stt={idx + 1}
                                 />
                             ))
                         ) : (

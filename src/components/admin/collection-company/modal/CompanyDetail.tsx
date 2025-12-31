@@ -43,9 +43,6 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onClose }) => {
                         <h2 className="text-2xl font-bold text-gray-900">
                             Chi tiết công ty
                         </h2>
-                        <p className="text-sm text-gray-500 mt-1">
-                            Thông tin chi tiết về công ty
-                        </p>
                     </div>
                     <button
                         onClick={onClose}
@@ -57,15 +54,14 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onClose }) => {
                 </div>
 
                 {/* Main content */}
-                <div className="flex-1 overflow-y-auto p-6">
-                    {/* Thông tin công ty */}
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <span className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                            <Building2 className='w-5 h-5 text-primary-500' />
-                        </span>
-                        Thông tin công ty
-                    </h3>
+                <div className="flex-1 overflow-y-auto p-6 pt-10">
                     <SummaryCard
+                        label={
+                            <span className="flex items-center gap-2">
+                                <Building2 className="w-4 h-4 text-primary-500" />
+                                Thông tin công ty
+                            </span>
+                        }
                         items={[
                             {
                                 icon: <Building2 className="w-4 h-4 text-primary-500" />, 

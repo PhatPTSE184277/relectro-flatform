@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useIWProductContext } from '@/contexts/small-collector/IWProductContext';
 import IWProductFilter from '@/components/small-collector/incoming-warehouse/IWProductFilter';
 import IWProductList from '@/components/small-collector/incoming-warehouse/IWProductList';
@@ -23,7 +23,8 @@ const IncomingWarehousePage: React.FC = () => {
         selectedProduct,
         setSelectedProduct,
         createProduct,
-        getProductById
+        getProductById,
+        allStats
     } = useIWProductContext() as any;
 
     const [search, setSearch] = useState('');
@@ -44,23 +45,6 @@ const IncomingWarehousePage: React.FC = () => {
         const day = String(today.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     });
-
-    useEffect(() => {
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const firstDay = `${year}-${month}-01`;
-        const currentDay = `${year}-${month}-${String(today.getDate()).padStart(
-            2,
-            '0'
-        )}`;
-
-        setFilter({
-            fromDate: firstDay,
-            toDate: currentDay,
-            page: 1
-        });
-    }, []);
 
     const handleFilterChange = (status: string) => {
         setFilter({ status, page: 1 });
@@ -169,6 +153,7 @@ const IncomingWarehousePage: React.FC = () => {
                 {/* Status Filter */}
                 <IWProductFilter
                     status={filter.status as any}
+                    stats={allStats}
                     onFilterChange={handleFilterChange}
                 />
             </div>
@@ -180,6 +165,8 @@ const IncomingWarehousePage: React.FC = () => {
                     loading={loading}
                     onViewDetail={handleViewDetail}
                     status={filter.status}
+                    currentPage={filter.page}
+                    pageSize={filter.limit}
                 />
             </div>
 

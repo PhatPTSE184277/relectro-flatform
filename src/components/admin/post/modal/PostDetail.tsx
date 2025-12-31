@@ -180,12 +180,18 @@ const PostDetail: React.FC<PostDetailProps> = ({
                     </div>
 
                     {/* RIGHT - INFO */}
-                    <div className='md:w-2/3 p-6 space-y-1 overflow-y-visible max-h-full'>
+                    <div className='md:w-2/3 p-6 pt-10 space-y-1 overflow-y-visible max-h-full'>
                         {/* Product Details */}
 
                         {post.product && (
                             <>
                                 <SummaryCard
+                                    label={
+                                        <span className="flex items-center gap-2">
+                                            <List className="w-4 h-4 text-primary-500" />
+                                            Thông tin bài đăng
+                                        </span>
+                                    }
                                     singleRow={false}
                                     items={[
                                         {

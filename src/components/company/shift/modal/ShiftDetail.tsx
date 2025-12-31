@@ -41,16 +41,13 @@ const ShiftDetail: React.FC<ShiftDetailProps> = ({ shift, onClose }) => {
             ></div>
 
             {/* Modal container */}
-            <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]">
+            <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]">
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900">
                             Chi tiết ca làm việc
                         </h2>
-                        <p className="text-sm text-gray-500 mt-1">
-                            Thông tin chi tiết về ca làm việc
-                        </p>
                     </div>
                     <button
                         onClick={onClose}
@@ -63,15 +60,16 @@ const ShiftDetail: React.FC<ShiftDetailProps> = ({ shift, onClose }) => {
 
                 {/* Main content */}
                 <div className="flex-1 overflow-y-auto p-6">
-                    {/* Thông tin ca làm việc */}
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <span className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                            <Calendar className='w-5 h-5 text-primary-500' />
-                        </span>
-                        Thông tin ca làm việc
-                    </h3>
                     <SummaryCard
-                        items={[
+                        label={
+                            <span className="flex items-center gap-2">
+                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                    <Calendar className='w-4 h-4 text-primary-500' />
+                                </span>
+                                Thông tin ca làm việc
+                            </span>
+                        }
+                        items={[ 
                             {
                                 icon: <User className="w-4 h-4 text-primary-500" />,
                                 label: 'Nhân viên',

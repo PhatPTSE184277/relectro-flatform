@@ -7,9 +7,14 @@ interface GroupingShowProps {
     onReassignDriver: (grouping: any) => void;
 }
 
-const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean }> = ({ grouping, onViewDetail, onReassignDriver, isLast = false }) => {
+const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean; stt?: number }> = ({ grouping, onViewDetail, onReassignDriver, isLast = false, stt }) => {
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
+            <td className='py-3 px-4 text-center'>
+                <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
+                    {stt}
+                </span>
+            </td>
             <td className='py-3 px-4 font-medium'>
                 <div className='text-gray-900'>{grouping.groupCode}</div>
             </td>
@@ -35,13 +40,13 @@ const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean }> = ({ grou
                 </span>
             </td>
 
-            <td className='py-3 px-4 text-gray-700'>
-                <div className='flex flex-col gap-1'>
+            <td className='py-3 px-4 text-gray-700 text-right'>
+                <div className='flex flex-col gap-1 items-end'>
                     <span className='text-xs'>
-                        <span className='font-medium'>{grouping.totalWeightKg}</span> kg
+                        <span className='font-medium'>{grouping.totalWeightKg}</span>
                     </span>
                     <span className='text-xs text-gray-500'>
-                        {grouping.totalVolumeM3} m³
+                        {grouping.totalVolumeM3}
                     </span>
                 </div>
             </td>

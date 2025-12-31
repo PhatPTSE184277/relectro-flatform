@@ -36,7 +36,7 @@ const PostReject: React.FC<PostRejectProps> = ({
         onClick={handleClose}
       ></div>
 
-      <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-fadeIn">
+      <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-fadeIn">
         
         <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-red-50 to-primary-100">
           <h2 className="text-2xl font-bold text-gray-800">Từ chối bài đăng</h2>
@@ -53,8 +53,9 @@ const PostReject: React.FC<PostRejectProps> = ({
             <label className="block text-sm font-medium text-gray-700">
               Lý do từ chối <span className="text-red-500">*</span>
             </label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {REASON_TAGS.map((tag) => {
+            <div className="flex flex-wrap gap-2 mb-2 items-center">
+              {/* 3 tag đầu cùng hàng label */}
+              {REASON_TAGS.slice(0, 3).map((tag) => {
                 const isSelected = selectedTags.includes(tag);
                 return (
                   <button
@@ -65,7 +66,6 @@ const PostReject: React.FC<PostRejectProps> = ({
                     onClick={() => {
                       if (isSelected) {
                         setSelectedTags(selectedTags.filter(t => t !== tag));
-                        if (tag === "Khác") setCustomReason("");
                       } else {
                         setSelectedTags([...selectedTags, tag]);
                       }
@@ -75,6 +75,31 @@ const PostReject: React.FC<PostRejectProps> = ({
                   </button>
                 );
               })}
+            </div>
+            {/* Tag 'Khác' xuống dòng dưới */}
+            <div className="flex gap-2 mb-2">
+              {(() => {
+                const tag = REASON_TAGS[3];
+                const isSelected = selectedTags.includes(tag);
+                return (
+                  <button
+                    type="button"
+                    key={tag}
+                    className={`px-3 py-1 rounded-full border text-sm font-medium transition-colors cursor-pointer
+                      ${isSelected ? "bg-primary-100 border-primary-500 text-primary-700" : "bg-gray-100 border-gray-200 text-gray-600 hover:bg-primary-50"}`}
+                    onClick={() => {
+                      if (isSelected) {
+                        setSelectedTags(selectedTags.filter(t => t !== tag));
+                        setCustomReason("");
+                      } else {
+                        setSelectedTags([...selectedTags, tag]);
+                      }
+                    }}
+                  >
+                    {tag}
+                  </button>
+                );
+              })()}
             </div>
             {selectedTags.includes("Khác") && (
               <textarea

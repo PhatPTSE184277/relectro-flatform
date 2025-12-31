@@ -70,9 +70,6 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Chi tiết tuyến thu gom
                         </h2>
-                        <p className='text-sm text-gray-600'>
-                            Thông tin chi tiết về tuyến thu gom và lịch sử
-                        </p>
                     </div>
                     <div className='flex items-center gap-4'>
                         <span
@@ -124,19 +121,13 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                     {/* RIGHT - INFO */}
                     <div className='md:w-2/3 p-6 space-y-5'>
                         {/* Thông tin sản phẩm */}
-                        <div className='flex items-center gap-2 mb-3'>
-                            <span className='w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
-                                <Package
-                                    className='text-primary-500'
-                                    size={18}
-                                />
-                            </span>
-                            <h3 className='text-base font-semibold text-gray-800'>
-                                Thông tin sản phẩm
-                            </h3>
-                        </div>
-                        {/* Thông tin tuyến thu gom */}
                         <SummaryCard
+                            label={
+                                <span className="flex items-center gap-2">
+                                    <Package className="w-4 h-4 text-primary-500" />
+                                    Thông tin sản phẩm
+                                </span>
+                            }
                             singleRow={false}
                             items={[
                                 {
@@ -195,36 +186,28 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                         />
 
                         {/* Người gửi */}
-                        <div>
-                            <div className='flex items-center gap-2 mb-3'>
-                                <span className='w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
-                                    <User
-                                        className='text-primary-500'
-                                        size={18}
-                                    />
-                                </span>
-                                <h3 className='text-base font-semibold text-gray-800'>
-                                    Người gửi
-                                </h3>
-                            </div>
-                            <UserInfo user={route.sender} />
+                        <div className="mb-4">
+                            <UserInfo
+                                user={route.sender}
+                                label={
+                                    <span className='flex items-center gap-2'>
+                                        <User className='text-primary-500' size={18} />
+                                        Người gửi
+                                    </span>
+                                }
+                            />
                         </div>
 
                         {/* Nhân viên thu gom */}
-                        <div>
-                            <div className='flex items-center gap-2 mb-3'>
-                                <span className='w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
-                                    <UserCheck
-                                        className='text-primary-500'
-                                        size={18}
-                                    />
-                                </span>
-                                <h3 className='text-base font-semibold text-gray-800'>
+                        <UserInfo
+                            user={route.collector}
+                            label={
+                                <span className='flex items-center gap-2'>
+                                    <UserCheck className='text-primary-500' size={18} />
                                     Nhân viên thu gom
-                                </h3>
-                            </div>
-                            <UserInfo user={route.collector} />
-                        </div>
+                                </span>
+                            }
+                        />
 
                         {/* Ảnh xác nhận */}
                         {Array.isArray(route.confirmImages) &&

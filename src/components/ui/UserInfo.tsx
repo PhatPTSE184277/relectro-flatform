@@ -10,9 +10,10 @@ interface UserInfoProps {
         avatar?: string;
         [key: string]: any;
     };
+    label?: React.ReactNode;
 }
 
-const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
+const UserInfo: React.FC<UserInfoProps> = ({ user, label }) => {
     const hasValidData = user && (user.name || user.phone || user.email || user.avatar);
 
     if (!hasValidData) {
@@ -22,7 +23,15 @@ const UserInfo: React.FC<UserInfoProps> = ({ user }) => {
     }
 
     return (
-        <div className="bg-white rounded-xl p-3 mb-3 shadow-sm border border-gray-100 flex gap-2 items-center">
+        <div className={`relative bg-white rounded-xl p-6 mb-3 shadow-sm border border-gray-100 flex gap-2 items-center${label ? ' mt-10' : ''}`}>
+            {label && (
+                <div
+                    className="absolute -top-3 left-4 bg-white px-3 py-0.5 text-sm font-bold text-primary-700 border border-primary-300 rounded-full shadow-sm z-10 select-none"
+                    style={{transform: 'translateY(-50%)', minHeight: 28, lineHeight: '20px'}}
+                >
+                    {label}
+                </div>
+            )}
             {user.avatar && (
                 <Image
                     src={user.avatar}

@@ -67,26 +67,7 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
                                 icon: <MapPin size={14} className='text-primary-400' />,
                                 label: 'Người gửi',
                                 value: product.sender?.name || 'N/A',
-                            },
-                            {
-                                icon: <Clock size={14} className='text-primary-400' />,
-                                label: 'Trạng thái',
-                                value: (
-                                    <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                                        product.status === 'Đã thu gom'
-                                            ? 'bg-green-100 text-green-700'
-                                            : product.status === 'Đang vận chuyển'
-                                            ? 'bg-blue-100 text-blue-700'
-                                            : product.status === 'Chờ thu gom'
-                                            ? 'bg-yellow-100 text-yellow-700'
-                                            : product.status === 'Hủy bỏ'
-                                            ? 'bg-red-100 text-red-600'
-                                            : 'bg-gray-100 text-gray-700'
-                                    }`}>
-                                        {product.status}
-                                    </span>
-                                ),
-                            },
+                            }
                         ]}
                         singleRow={true}
                     />
@@ -110,40 +91,18 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
                                         const isLeft = index % 2 === 0;
                                         return (
                                             <div key={index} className='relative flex'>
-                                                {/* Rope/curved connector between dots */}
+                                                {/* Vertical straight connector between dots */}
                                                 {index < timeline.length - 1 && (
-                                                    <svg
-                                                        className='absolute z-0 pointer-events-none'
-                                                        style={{
-                                                            top: '2.5rem', // below the dot
-                                                            left: '50%',
-                                                            transform: 'translateX(-50%)',
-                                                            height: '5.5rem',
-                                                            width: '60px',
-                                                        }}
-                                                        width='60'
-                                                        height='88'
-                                                        viewBox='0 0 60 88'
-                                                        fill='none'
-                                                        xmlns='http://www.w3.org/2000/svg'
-                                                    >
-                                                        <path
-                                                            d={isLeft
-                                                                ? 'M30 0 Q60 44 30 88'
-                                                                : 'M30 0 Q0 44 30 88'}
-                                                            stroke='#cbd5e1'
-                                                            strokeWidth='3'
-                                                            fill='none'
-                                                            strokeDasharray='6,6'
-                                                        />
-                                                    </svg>
+                                                    <div
+                                                        className='absolute left-1/2 transform -translate-x-1/2 top-11 w-1 h-20 bg-primary-200 z-0'
+                                                        style={{}}
+                                                    ></div>
                                                 )}
 
                                                 <div className={`flex items-center w-full ${isLeft ? 'justify-start' : 'justify-end'}`} style={{position: 'relative', zIndex: 1}}>
                                                     <div className='w-5/12 relative'>
                                                         {/* Horizontal connector line from dot to card */}
                                                         <div className={`absolute top-6 ${isLeft ? '-right-4' : '-left-4'} ${isLeft ? 'left-full' : 'right-full'} w-4 h-0.5 bg-primary-300 z-0`}></div>
-                                                        
                                                         {/* Dot */}
                                                         <div className={`absolute top-3 ${isLeft ? '-right-4' : '-left-4'} w-8 h-8 rounded-full bg-primary-500 border-4 border-white flex items-center justify-center shadow-lg z-10`}>
                                                             <CheckCircle size={14} className='text-white' />
@@ -168,11 +127,6 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
                                                                     <p className='text-xs text-gray-600 flex items-center gap-1'>
                                                                         <MapPin size={12} className='text-gray-400' />
                                                                         {item.location}
-                                                                    </p>
-                                                                )}
-                                                                {item.description && (
-                                                                    <p className='text-xs text-gray-600 mt-1 line-clamp-2'>
-                                                                        {item.description}
                                                                     </p>
                                                                 )}
                                                             </div>

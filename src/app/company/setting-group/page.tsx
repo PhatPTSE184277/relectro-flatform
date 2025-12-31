@@ -87,12 +87,15 @@ const SettingGroupPage: React.FC = () => {
 
             {/* Company Info with SummaryCard */}
             {companySetting && (
-                <div className='mb-6'>
-                    <h2 className='text-lg font-semibold text-gray-900 mb-4'>
-                        Thông tin công ty
-                    </h2>
+                <div className='mb-6 mt-10'>
                     <SummaryCard
-                        items={[
+                        label={
+                            <span className="flex items-center gap-2">
+                                <Building2 size={18} className='text-primary-500' />
+                                Thông tin công ty
+                            </span>
+                        }
+                        items={[ 
                             {
                                 icon: <Building2 size={16} className='text-primary-400' />,
                                 label: 'Tên công ty',

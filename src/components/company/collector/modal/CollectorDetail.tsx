@@ -1,8 +1,11 @@
 'use client';
 
+
 import React from 'react';
 import { User, Mail, Phone, MapPin } from 'lucide-react';
 import { Collector } from '@/types';
+import SummaryCard from '@/components/ui/SummaryCard';
+import Image from 'next/image';
 
 interface CollectorDetailProps {
     collector: Collector | null;
@@ -36,16 +39,13 @@ const CollectorDetail: React.FC<CollectorDetailProps> = ({ collector, onClose })
             ></div>
 
             {/* Modal container */}
-            <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]">
+            <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]">
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900">
                             Chi tiết nhân viên thu gom
                         </h2>
-                        <p className="text-sm text-gray-500 mt-1">
-                            Thông tin chi tiết về nhân viên
-                        </p>
                     </div>
                     <button
                         onClick={onClose}
@@ -60,7 +60,7 @@ const CollectorDetail: React.FC<CollectorDetailProps> = ({ collector, onClose })
                 <div className="flex-1 overflow-y-auto p-6">
                     {/* Avatar và thông tin cơ bản */}
                     <div className="flex items-center gap-6 mb-6 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                        <img
+                        <Image
                             src={collector.avatar || 'https://via.placeholder.com/100'}
                             alt={collector.name}
                             className="w-24 h-24 rounded-full object-cover border-4 border-primary-200 shadow-md"
@@ -73,35 +73,32 @@ const CollectorDetail: React.FC<CollectorDetailProps> = ({ collector, onClose })
                         </div>
                     </div>
 
-                    {/* Thông tin liên hệ */}
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                            <User className='w-5 h-5 text-primary-500' />
-                        </span>
-                        Thông tin liên hệ
-                    </h3>
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                        <div className="flex flex-col gap-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <InfoCard 
-                                    icon={<Mail className="w-5 h-5 text-primary-500" />}
-                                    label="Email" 
-                                    value={collector.email || 'Chưa có'} 
-                                />
-                                <InfoCard 
-                                    icon={<Phone className="w-5 h-5 text-primary-500" />}
-                                    label="Số điện thoại" 
-                                    value={collector.phone || 'Chưa có'} 
-                                />
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <InfoCard 
-                                    icon={<MapPin className="w-5 h-5 text-primary-500" />}
-                                    label="Điểm thu gom" 
-                                    value={`Điểm thu gom số ${collector.smallCollectionPointId}`} 
-                                />
-                            </div>
-                        </div>
+                    <div className="mt-10">
+                        <SummaryCard
+                            label={
+                                <span className="flex items-center gap-2">
+                                    <User className="w-4 h-4 text-primary-500" />
+                                    Thông tin liên hệ
+                                </span>
+                            }
+                            items={[
+                                {
+                                    icon: <Mail className="w-5 h-5 text-primary-500" />,
+                                    label: 'Email',
+                                    value: collector.email || 'Chưa có',
+                                },
+                                {
+                                    icon: <Phone className="w-5 h-5 text-primary-500" />,
+                                    label: 'Số điện thoại',
+                                    value: collector.phone || 'Chưa có',
+                                },
+                                {
+                                    icon: <MapPin className="w-5 h-5 text-primary-500" />,
+                                    label: 'Điểm thu gom',
+                                    value: `Điểm thu gom số ${collector.smallCollectionPointId}`,
+                                },
+                            ]}
+                        />
                     </div>
                 </div>
 
@@ -115,22 +112,5 @@ const CollectorDetail: React.FC<CollectorDetailProps> = ({ collector, onClose })
     );
 };
 
-// InfoCard Component
-interface InfoCardProps {
-    icon: React.ReactNode;
-    label: string;
-    value: React.ReactNode;
-}
-const InfoCard: React.FC<InfoCardProps> = ({ icon, label, value }) => (
-    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-primary-100">
-            {icon}
-        </div>
-        <div>
-            <div className="text-sm font-bold text-gray-700 mb-1">{label}</div>
-            <div className="text-sm text-gray-900">{value}</div>
-        </div>
-    </div>
-);
 
 export default CollectorDetail;

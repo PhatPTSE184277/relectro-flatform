@@ -9,14 +9,10 @@ import {
     UserCheck,
     User,
     List,
-    Clock,
-    MapPin,
-    Calendar,
     FileText
 } from 'lucide-react';
 import UserInfo from '@/components/ui/UserInfo';
 import SummaryCard from '@/components/ui/SummaryCard';
-import { groupScheduleByTimeRange } from '@/utils/groupScheduleByTimeRange';
 
 interface ProductDetailProps {
     product: Product;
@@ -87,9 +83,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Chi tiết sản phẩm
                         </h2>
-                        <p className='text-sm text-gray-600'>
-                            Thông tin chi tiết về sản phẩm và lịch sử thu gom
-                        </p>
                     </div>
                     <div className='flex items-center gap-4'>
                         <span
@@ -135,7 +128,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                             </div>
                         </div>
                         {/* Pickup schedule moved here */}
-                        {Array.isArray(product.schedule) && product.schedule.length > 0 && (() => {
+                        {/* {Array.isArray(product.schedule) && product.schedule.length > 0 && (() => {
                             const scheduleGroups = groupScheduleByTimeRange(product.schedule);
                             const displayText = scheduleGroups.length > 0 
                                 ? `${scheduleGroups[0].range} | ${scheduleGroups[0].dateStr}`
@@ -168,7 +161,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                                     />
                                 </div>
                             );
-                        })()}
+                        })()} */}
                     </div>
 
                     {/* RIGHT - INFO */}
@@ -176,18 +169,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
 
                     
                         {/* Product Info (all in one SummaryCard) */}
-                        <div>
-                            <div className='flex items-center gap-2 mb-3'>
-                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                    <Package className='text-primary-500' size={18} />
-                                </span>
-                                <h3 className='text-base font-semibold text-gray-800'>
+                        <SummaryCard
+                            label={
+                                <span className="flex items-center gap-2">
+                                    <Package className="w-4 h-4 text-primary-500" />
                                     Thông tin sản phẩm
-                                </h3>
-                            </div>
-                            <SummaryCard
-                                singleRow={false}
-                                items={[
+                                </span>
+                            }
+                            singleRow={false}
+                            items={[ 
                                     product.brandName && {
                                         icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><User className="w-4 h-4 text-primary-500" /></span>,
                                         label: 'Thương hiệu',
@@ -219,8 +209,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                                         value: product.description
                                     }
                                 ].filter(Boolean) as import("@/components/ui/SummaryCard").SummaryCardItem[]}
-                            />
-                        </div>
+                        />
 
                         {/* Đã thu gom (realPoint) */}
                         {isReceived && (
@@ -237,35 +226,18 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                             </div>
                         )}
 
-                        {/* Sender Info */}
-                        <div>
-                            <div className='flex items-center gap-2 mb-3'>
-                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                    <User className='text-primary-500' size={18} />
-                                </span>
-                                <h3 className='text-base font-semibold text-gray-800'>
-                                    Người gửi
-                                </h3>
-                            </div>
-                            <UserInfo user={product.sender} />
-                        </div>
-
                         {/* Collector Info */}
+
                         {product.collector && (
-                            <div>
-                                <div className='flex items-center gap-2 mb-3'>
-                                    <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                        <UserCheck
-                                            className='text-primary-500'
-                                            size={18}
-                                        />
-                                    </span>
-                                    <h3 className='text-base font-semibold text-gray-800'>
+                            <UserInfo
+                                user={product.collector}
+                                label={
+                                    <span className='flex items-center gap-2'>
+                                        <UserCheck className='text-primary-500' size={18} />
                                         Nhân viên thu gom
-                                    </h3>
-                                </div>
-                                <UserInfo user={product.collector} />
-                            </div>
+                                    </span>
+                                }
+                            />
                         )}
 
                     </div>
@@ -279,7 +251,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                     onClick={() => setZoomImg(null)}
                 >
                     <img
-                        src={zoomImg}
+                        src={zoomImg || ''}
                         alt='Ảnh phóng to sản phẩm'
                         className='max-w-[90vw] max-h-[90vh] shadow-2xl rounded-xl object-contain border-4 border-white'
                     />

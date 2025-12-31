@@ -22,13 +22,13 @@ const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({ produc
             <td className='py-3 px-4 text-gray-700 max-w-xs'>
                 <div className='line-clamp-2'>{product.address || 'N/A'}</div>
             </td>
-            <td className='py-3 px-4 text-gray-700'>
-                <div className='flex flex-col gap-1'>
+            <td className='py-3 pl-4 pr-16 text-gray-700 text-right'>
+                <div className='flex flex-col gap-1 items-end'>
                     <span className='text-xs'>
-                        <span className='font-medium'>{product.weight || product.weightKg || 0}</span> kg
+                        <span className='font-medium'>{product.weight || product.weightKg || 0}</span>
                     </span>
                     <span className='text-xs text-gray-500'>
-                        {product.volume || product.volumeM3 || 0} m³
+                        {product.volume || product.volumeM3 || 0}
                     </span>
                 </div>
             </td>

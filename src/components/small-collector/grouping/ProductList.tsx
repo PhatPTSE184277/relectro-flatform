@@ -20,7 +20,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                             <th className='py-3 px-4 text-center w-16'>STT</th>
                             <th className='py-3 px-4 text-left'>Người gửi</th>
                             <th className='py-3 px-4 text-left'>Địa chỉ</th>
-                            <th className='py-3 px-4 text-left'>Khối lượng</th>
+                            <th className='py-3 pl-4 pr-16 text-right'>Khối lượng(kg/m³)</th>
                         </tr>
                     </thead>
                     <tbody>

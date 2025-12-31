@@ -10,15 +10,29 @@ export interface SummaryCardItem {
 interface SummaryCardProps {
     items: SummaryCardItem[];
     singleRow?: boolean;
+    label?: React.ReactNode;
 }
 
-const SummaryCard: React.FC<SummaryCardProps> = ({ items, singleRow = false }) => {
+const formatValue = (value: React.ReactNode): React.ReactNode => {
+    return value;
+};
+
+
+const SummaryCard: React.FC<SummaryCardProps> = ({ items, singleRow = false, label }) => {
     const gridClass = singleRow
         ? 'flex overflow-x-auto gap-x-8 gap-y-4 whitespace-nowrap pb-1'
         : 'grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4';
 
     return (
-        <div className='bg-white rounded-xl p-6 mb-6 shadow-sm border border-gray-100'>
+        <div className={`relative bg-white rounded-xl p-6 mb-6 shadow-sm border border-gray-100 ${label ? 'mt-2' : ''}`}>
+            {label && (
+                <div
+                    className="absolute -top-3 left-4 bg-white px-3 py-0.5 text-sm font-bold text-primary-700 border border-primary-300 rounded-full shadow-sm z-10 select-none"
+                    style={{transform: 'translateY(-50%)', minHeight: 28, lineHeight: '20px'}}
+                >
+                    {label}
+                </div>
+            )}
             <div className={gridClass}>
                 {items.map((item, idx) => (
                     <div
@@ -34,11 +48,17 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ items, singleRow = false }) =
                             <span className='text-xs font-semibold uppercase text-gray-700 mr-2' style={{minWidth: 110, textAlign: 'left', whiteSpace: 'nowrap', flexShrink: 0}}>
                                 {item.label}{singleRow ? ':' : ''}
                             </span>
-                            <span 
-                                className={`text-sm font-medium text-gray-900 wrap-break-word ${typeof item.value === 'number' ? 'text-right flex-1' : ''}`} 
-                                style={{minWidth: 0, wordBreak: 'break-word', overflowWrap: 'break-word', whiteSpace: 'normal'}}
+                            <span
+                                className='text-sm font-medium text-gray-900 wrap-break-word'
+                                style={{
+                                    minWidth: 0,
+                                    wordBreak: 'break-word',
+                                    overflowWrap: 'break-word',
+                                    whiteSpace: 'normal',
+                                    ...(typeof item.value === 'number' ? { paddingLeft: '2.5em' } : {})
+                                }}
                             >
-                                {item.value}
+                                {formatValue(item.value)}
                             </span>
                         </div>
                     </div>

@@ -7,15 +7,21 @@ interface IWProductListProps {
     loading: boolean;
     onViewDetail: (product: any) => void;
     status?: string;
+    currentPage?: number;
+    pageSize?: number;
 }
 
 const IWProductList: React.FC<IWProductListProps> = ({
     products,
     loading,
     onViewDetail,
-    status
+    status,
+    currentPage = 1,
+    pageSize = 10
 }) => {
     const isReceived = status === 'Nhập kho';
+    const startIndex = (currentPage - 1) * pageSize;
+    
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>
@@ -45,7 +51,7 @@ const IWProductList: React.FC<IWProductListProps> = ({
                                     onView={() => onViewDetail(product)}
                                     status={status}
                                     isLast={idx === products.length - 1}
-                                    stt={idx + 1}
+                                    stt={startIndex + idx + 1}
                                 />
                             ))
                         ) : (

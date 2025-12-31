@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Package } from 'lucide-react';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import { getUnassignedProducts } from '@/services/admin/AssignProductService';
@@ -36,6 +36,8 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const pageSize = 10;
+    // Ref for scrollable product list
+    const productListRef = useRef<HTMLDivElement>(null);
     const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
@@ -43,6 +45,13 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
             fetchProducts(workDate, page, pageSize, page === 1);
         }
     }, [open, workDate, page]);
+
+    // Scroll to top of product list when page changes
+    useEffect(() => {
+        if (productListRef.current) {
+            productListRef.current.scrollTop = 0;
+        }
+    }, [page]);
 
     const fetchProducts = async (date: string, pageArg: number, pageSizeArg: number, resetSelection: boolean = false) => {
         setLoading(true);
@@ -58,6 +67,7 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                 // Giữ lại các id còn tồn tại trong danh sách mới
                 setSelectedProductIds(prev => prev.filter(id => data.some(p => p.productId === id)));
             }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             setProducts([]);
             setAllProducts([]);
@@ -137,9 +147,6 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                             <Package className='text-primary-600' />
                             Phân công sản phẩm
                         </h2>
-                        <p className='text-sm text-gray-600 mt-1'>
-                            Chọn sản phẩm cần phân công cho ngày làm việc
-                        </p>
                     </div>
                     <button
                         onClick={handleClose}
@@ -151,20 +158,17 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                 </div>
 
                 {/* Main content */}
-                <div className='flex-1 overflow-y-auto p-6 bg-gray-50'>
-                    <div className='space-y-6'>
+                <div className='flex-1 flex flex-col p-6 bg-gray-50 min-h-0'>
+                    <div className='space-y-6 flex-1 flex flex-col min-h-0'>
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                            <div className='border border-primary-200 rounded-lg p-4 bg-primary-50/30 w-full md:w-1/2'>
-                                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                    Chọn ngày phân công
-                                </label>
+                            <div className="w-64">
                                 <CustomDatePicker
                                     value={workDate}
                                     onChange={handleDateChange}
                                     placeholder="Chọn ngày"
                                 />
                             </div>
-                            <div className='bg-primary-50 border border-primary-200 rounded-lg p-4 w-full md:w-1/2 flex items-center justify-start'>
+                            <div className='bg-primary-50 border border-primary-200 rounded-lg px-4 py-3 w-full md:w-auto flex items-center justify-start mt-2 md:mt-0'>
                                 <p className='text-sm text-primary-800 m-0'>
                                     <span className='font-semibold'>Tổng kết:</span> Bạn đã chọn{' '}
                                     <span className='font-bold'>{selectedProductIds.length}</span> sản phẩm
@@ -177,22 +181,24 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                                 </p>
                             </div>
                         </div>
-                        <div className='border border-primary-200 rounded-lg p-4 bg-primary-50/30'>
+                        <div className='border border-primary-200 rounded-lg p-4 bg-primary-50/30 flex-1 min-h-0 flex flex-col'>
                             <div className='flex items-center mb-4 gap-2'>
                                 <span className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
                                     <Package size={20} className='text-primary-500' />
                                 </span>
                                 <span className='text-lg font-semibold text-gray-900'>Chọn sản phẩm ({selectedProductIds.length}/{allProducts.length})</span>
                             </div>
-                            <AssignProductSelectList
-                                products={products}
-                                selectedProductIds={selectedProductIds}
-                                loading={loading}
-                                onToggleProduct={handleToggleProduct}
-                                onToggleAllCurrentPage={handleToggleAllCurrentPage}
-                                page={page}
-                                pageSize={pageSize}
-                            />
+                            <div ref={productListRef} className='flex-1 min-h-0 overflow-y-auto'>
+                                <AssignProductSelectList
+                                    products={products}
+                                    selectedProductIds={selectedProductIds}
+                                    loading={loading}
+                                    onToggleProduct={handleToggleProduct}
+                                    onToggleAllCurrentPage={handleToggleAllCurrentPage}
+                                    page={page}
+                                    pageSize={pageSize}
+                                />
+                            </div>
                             <div className='flex justify-end mt-4'>
                                 <Pagination
                                     page={page}
@@ -201,7 +207,6 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                                 />
                             </div>
                         </div>
-
                     </div>
                 </div>
 

@@ -13,7 +13,7 @@ import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
 
 const TrackingPage: React.FC = () => {
-    const { companies, products, loadingCompanies, loadingProducts, fetchProducts } = useTrackingContext();
+    const { companies, products, loadingProducts, fetchProducts } = useTrackingContext();
     const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
     const [showModal, setShowModal] = useState(false);
@@ -40,7 +40,7 @@ const TrackingPage: React.FC = () => {
         if (selectedCompanyId && fromDate && toDate) {
             fetchProducts(selectedCompanyId, fromDate, toDate); // Removed the fourth argument 'search' to match expected parameters
         }
-    }, [selectedCompanyId, fromDate, toDate]);
+    }, [selectedCompanyId, fromDate, toDate, fetchProducts]);
 
     const handleCompanySelect = (companyId: string) => {
         setSelectedCompanyId(companyId);

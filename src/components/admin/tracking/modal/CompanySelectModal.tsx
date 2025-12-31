@@ -44,7 +44,7 @@ const CompanySelectModal: React.FC<CompanySelectModalProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[80vh]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Chọn công ty

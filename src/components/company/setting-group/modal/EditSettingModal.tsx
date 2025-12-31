@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Clock, Save } from 'lucide-react';
+import { X, Clock } from 'lucide-react';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
 
 interface EditSettingModalProps {
@@ -43,9 +43,9 @@ const EditSettingModal: React.FC<EditSettingModalProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-fadeIn'>
+            <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-fadeIn'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-gradient-to-r from-primary-50 to-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Chỉnh sửa cấu hình
@@ -69,7 +69,7 @@ const EditSettingModal: React.FC<EditSettingModalProps> = ({
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                         {/* Service Time */}
                         <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2 items-center gap-2'>
                                 <Clock size={16} className='text-primary-600' />
                                 Thời gian phục vụ (phút){' '}
                                 <span className='text-red-500'>*</span>

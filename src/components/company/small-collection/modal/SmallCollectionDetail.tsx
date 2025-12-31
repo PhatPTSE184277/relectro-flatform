@@ -50,9 +50,6 @@ const SmallCollectionDetail: React.FC<SmallCollectionDetailProps> = ({
                         <h2 className="text-2xl font-bold text-gray-900">
                             Chi tiết điểm thu gom nhỏ
                         </h2>
-                        <p className="text-sm text-gray-500 mt-1">
-                            Thông tin chi tiết về điểm thu gom
-                        </p>
                     </div>
                     <button
                         onClick={onClose}
@@ -65,17 +62,18 @@ const SmallCollectionDetail: React.FC<SmallCollectionDetailProps> = ({
 
                 {/* Main content */}
                 <div className="flex-1 overflow-y-auto p-6">
-                    {/* Thông tin điểm thu gom nhỏ */}
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <span className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                            <MapPin className='w-5 h-5 text-primary-500' />
-                        </span>
-                        Thông tin điểm thu gom
-                    </h3>
                     <SummaryCard
+                        label={
+                            <span className="flex items-center gap-2">
+                                <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
+                                    <MapPin className='w-4 h-4 text-primary-500' />
+                                </span>
+                                Thông tin điểm thu gom
+                            </span>
+                        }
                         items={[
                             {
-                                icon: <MapPin className="w-4 h-4 text-primary-500" />,
+                                icon: <Building className="w-4 h-4 text-primary-500" />,
                                 label: 'Tên điểm thu gom',
                                 value: point.name || 'Chưa có',
                             },
@@ -93,19 +91,6 @@ const SmallCollectionDetail: React.FC<SmallCollectionDetailProps> = ({
                                 icon: <Clock className="w-4 h-4 text-primary-500" />,
                                 label: 'Giờ mở cửa',
                                 value: point.openTime || 'Chưa có',
-                            },
-                            {
-                                icon: <MapPin className="w-4 h-4 text-primary-500" />,
-                                label: 'Trạng thái',
-                                value: (
-                                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                                        point.status === 'Active'
-                                            ? 'bg-green-100 text-green-700'
-                                            : 'bg-red-100 text-red-700'
-                                    }`}>
-                                        {point.status === 'Active' ? 'Hoạt động' : 'Không hoạt động'}
-                                    </span>
-                                ),
                             },
                         ]}
                     />

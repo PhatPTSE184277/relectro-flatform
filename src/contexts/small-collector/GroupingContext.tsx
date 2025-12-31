@@ -23,7 +23,6 @@ import {
     AutoGroupPayload,
     PendingProductsResponse
 } from '@/services/small-collector/GroupingService';
-import { toast } from 'react-toastify';
 import { useAuth } from '@/hooks/useAuth';
 
 interface SuggestedVehicle {
@@ -121,7 +120,6 @@ export function GroupingProvider({ children }: Props) {
             setGroups(data);
         } catch (err) {
             console.error('fetchGroups error', err);
-            toast.error('Lỗi khi tải danh sách nhóm thu gom');
         } finally {
             setLoading(false);
         }
@@ -135,7 +133,6 @@ export function GroupingProvider({ children }: Props) {
             setVehicles(data);
         } catch (err) {
             console.error('fetchVehicles error', err);
-            toast.error('Lỗi khi tải danh sách phương tiện');
         } finally {
             setLoading(false);
         }
@@ -156,16 +153,14 @@ export function GroupingProvider({ children }: Props) {
             setPendingProducts(data.products || []);
         } catch (err) {
             console.error('fetchPendingProducts error', err);
-            toast.error('Lỗi khi tải danh sách sản phẩm chờ gom nhóm');
         } finally {
             setLoading(false);
         }
-    }, [user?.smallCollectionPointId]);
+    }, [user]);
 
     const getPreAssignSuggestion = useCallback(
         async (loadThresholdPercent: number) => {
             if (!user?.smallCollectionPointId) {
-                toast.error('Không tìm thấy thông tin điểm thu gom');
                 return;
             }
             setLoading(true);
@@ -177,12 +172,8 @@ export function GroupingProvider({ children }: Props) {
                 console.log('PreAssign result:', data);
                 console.log('Days structure:', data?.days);
                 setPreAssignResult(data);
-                toast.success('Đã tải gợi ý gom nhóm thành công');
             } catch (err: any) {
                 console.error('getPreAssignSuggestion error', err);
-                toast.error(
-                    err?.response?.data?.message || 'Lỗi khi tải gợi ý gom nhóm'
-                );
             } finally {
                 setLoading(false);
             }
@@ -193,20 +184,15 @@ export function GroupingProvider({ children }: Props) {
     const createGrouping = useCallback(
         async (payload: AssignDayGroupingPayload) => {
             if (!user?.smallCollectionPointId) {
-                toast.error('Không tìm thấy thông tin điểm thu gom');
                 return;
             }
             setLoading(true);
             try {
                 await assignDayGrouping(payload, user.smallCollectionPointId);
-                toast.success('Tạo nhóm thu gom thành công');
                 // Refresh pending products after creating grouping
                 await fetchPendingProducts();
             } catch (err: any) {
                 console.error('createGrouping error', err);
-                toast.error(
-                    err?.response?.data?.message || 'Lỗi khi tạo nhóm thu gom'
-                );
                 throw err;
             } finally {
                 setLoading(false);
@@ -217,7 +203,6 @@ export function GroupingProvider({ children }: Props) {
 
     const calculateRoute = useCallback(async (saveResult: boolean) => {
         if (!user?.smallCollectionPointId) {
-            toast.error('Không tìm thấy thông tin điểm thu gom');
             return;
         }
         setLoading(true);
@@ -225,12 +210,8 @@ export function GroupingProvider({ children }: Props) {
             const payload: AutoGroupPayload = { saveResult };
             const data = await autoGroup(payload, user.smallCollectionPointId);
             setAutoGroupResult(data);
-            toast.success('Tính toán đoạn đường thành công');
         } catch (err: any) {
             console.error('calculateRoute error', err);
-            toast.error(
-                err?.response?.data?.message || 'Lỗi khi tính toán đoạn đường'
-            );
         } finally {
             setLoading(false);
         }
@@ -243,7 +224,6 @@ export function GroupingProvider({ children }: Props) {
             setGroupDetail(data);
         } catch (err) {
             console.error('fetchGroupDetail error', err);
-            toast.error('Lỗi khi tải chi tiết nhóm');
         } finally {
             setGroupDetailLoading(false);
         }
@@ -267,10 +247,8 @@ export function GroupingProvider({ children }: Props) {
         try {
             await confirmReassignDriver(groupId, newCollectorId);
             await fetchGroups();
-            toast.success('Phân lại tài xế thành công');
         } catch (error: any) {
             console.error('Error reassigning driver:', error);
-            toast.error(error?.response?.data?.message || 'Lỗi khi phân lại tài xế');
         } finally {
             setReassignLoading(false);
         }
