@@ -10,7 +10,7 @@ interface ProductListProps {
 const ProductList: React.FC<ProductListProps> = ({ products }) => {
     return (
         <div className='bg-white rounded-xl shadow-sm border border-primary-100'>
-            <div className='overflow-x-auto'>
+            <div className='overflow-y-auto max-h-64'>
                 <table className='w-full text-sm text-gray-800'>
                     <thead className='bg-primary-50 text-gray-700 uppercase text-xs font-semibold border-b border-primary-100'>
                         <tr>

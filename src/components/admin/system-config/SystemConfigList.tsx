@@ -7,12 +7,14 @@ interface SystemConfigListProps {
     configs: SystemConfig[];
     loading: boolean;
     onEdit: (config: SystemConfig) => void;
+    onViewFile?: (config: SystemConfig) => void;
 }
 
 const SystemConfigList: React.FC<SystemConfigListProps> = ({
     configs,
     loading,
-    onEdit
+    onEdit,
+    onViewFile
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -38,6 +40,7 @@ const SystemConfigList: React.FC<SystemConfigListProps> = ({
                                     key={config.systemConfigId}
                                     config={config}
                                     onEdit={onEdit}
+                                    onViewFile={onViewFile}
                                     isLast={idx === configs.length - 1}
                                     index={idx}
                                 />

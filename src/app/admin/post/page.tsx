@@ -5,6 +5,7 @@ import type { Post } from '@/types/post';
 import PostList from '@/components/admin/post/PostList';
 import PostFilter from '@/components/admin/post/PostFilter';
 import PostDetail from '@/components/admin/post/modal/PostDetail';
+import PostReject from '@/components/admin/post/modal/PostReject';
 import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
 import { usePostContext } from '@/contexts/admin/PostContext';
@@ -28,6 +29,8 @@ const PostPage: React.FC = () => {
         fetchPostById,
         handleApprove,
         handleReject,
+        handleBulkApprove,
+        handleBulkReject,
         filter,
         totalPages,
     } = usePostContext();
@@ -41,6 +44,8 @@ const PostPage: React.FC = () => {
     });
     const [isShowModalOpen, setIsShowModalOpen] = useState(false);
     const [search, setSearch] = useState<string>("");
+    const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
+    const [isBulkRejectModalOpen, setIsBulkRejectModalOpen] = useState(false);
 
   useEffect(() => {
     const loadStats = async () => {
@@ -74,6 +79,7 @@ const PostPage: React.FC = () => {
 
     const handleFilter = (status: PostStatus) => {
         setFilterStatus(status);
+        setSelectedPostIds([]);
     };
 
     const handleView = async (post: Post) => {
@@ -88,6 +94,44 @@ const PostPage: React.FC = () => {
 
     const handlePageChange = (page: number) => {
         fetchPosts({ page, search, status: filterStatus });
+        // Không clear selectedPostIds khi chuyển trang để giữ lại các bài đã chọn
+    };
+
+    const handleToggleSelect = (postId: string) => {
+        setSelectedPostIds(prev => 
+            prev.includes(postId) 
+                ? prev.filter(id => id !== postId)
+                : [...prev, postId]
+        );
+    };
+
+    const handleToggleSelectAll = () => {
+        const currentPagePostIds = posts.map(p => p.id);
+        const allSelected = currentPagePostIds.every(id => selectedPostIds.includes(id));
+        
+        if (allSelected) {
+            setSelectedPostIds(prev => prev.filter(id => !currentPagePostIds.includes(id)));
+        } else {
+            setSelectedPostIds(prev => {
+                const newIds = currentPagePostIds.filter(id => !prev.includes(id));
+                return [...prev, ...newIds];
+            });
+        }
+    };
+
+    const handleBulkApproveClick = async () => {
+        await handleBulkApprove(selectedPostIds);
+        setSelectedPostIds([]);
+    };
+
+    const handleBulkRejectModalOpen = () => {
+        setIsBulkRejectModalOpen(true);
+    };
+
+    const handleBulkRejectConfirm = async (reason: string) => {
+        await handleBulkReject(selectedPostIds, reason);
+        setSelectedPostIds([]);
+        setIsBulkRejectModalOpen(false);
     };
 
     return (
@@ -122,6 +166,11 @@ const PostPage: React.FC = () => {
                     onApprove={handleApprove}
                     onReject={handleReject}
                     onView={handleView}
+                    selectedPostIds={selectedPostIds}
+                    onToggleSelect={handleToggleSelect}
+                    onToggleSelectAll={handleToggleSelectAll}
+                    onBulkApprove={handleBulkApproveClick}
+                    onBulkReject={handleBulkRejectModalOpen}
                 />
             </div>
 
@@ -137,6 +186,14 @@ const PostPage: React.FC = () => {
                     onClose={handleCloseShow}
                     onApprove={handleApprove}
                     onReject={handleReject}
+                />
+            )}
+
+            {isBulkRejectModalOpen && (
+                <PostReject
+                    open={isBulkRejectModalOpen}
+                    onClose={() => setIsBulkRejectModalOpen(false)}
+                    onConfirm={handleBulkRejectConfirm}
                 />
             )}
         </div>

@@ -24,7 +24,6 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/30 backdrop-blur-sm'
-                onClick={onClose}
             ></div>
 
             {/* Modal container */}

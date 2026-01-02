@@ -21,7 +21,7 @@ interface SystemConfigContextType {
   error: string | null;
   fetchConfigs: () => Promise<void>;
   fetchConfigByKey: (key: string) => Promise<SystemConfig | null>;
-  updateConfig: (id: string, value: string) => Promise<SystemConfig | null>;
+  updateConfig: (id: string, value?: string | null, file?: File | null) => Promise<SystemConfig | null>;
   clearConfigs: () => void;
 }
 
@@ -58,9 +58,9 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
     }
   }, []);
 
-  const updateConfig = useCallback(async (id: string, value: string) => {
+  const updateConfig = useCallback(async (id: string, value?: string | null, file?: File | null) => {
     try {
-      const updated = await updateSystemConfig(id, value);
+      const updated = await updateSystemConfig(id, value, file);
       await fetchConfigs(); // Refresh configs after update
       return updated;
     } catch (err: any) {

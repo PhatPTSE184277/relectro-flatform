@@ -20,9 +20,24 @@ export const getSystemConfigByKey = async (key: string): Promise<SystemConfig> =
 };
 
 // Cập nhật giá trị system config theo id
-export const updateSystemConfig = async (id: string, value: string): Promise<SystemConfig> => {
-  const response = await axios.put(`/system-config/${id}`, {
-    value,
+export const updateSystemConfig = async (
+  id: string, 
+  value?: string | null,
+  file?: File | null
+): Promise<SystemConfig> => {
+  const formData = new FormData();
+  
+  if (file) {
+    formData.append('ExcelFile', file);
+    formData.append('Value', '');
+  } else if (value !== null && value !== undefined) {
+    formData.append('Value', value);
+  }
+  
+  const response = await axios.put(`/system-config/${id}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
   return response.data;
 };

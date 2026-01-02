@@ -1,47 +1,36 @@
 import React from 'react';
 import { Eye, QrCode } from 'lucide-react';
 import { PackageType } from '@/types/Package';
-import { PackageStatus } from '@/enums/PackageStatus';
 
 interface PackageShowProps {
     package: PackageType;
+    stt: number;
     onView: () => void;
     onScan?: () => void;
 }
 
 const PackageShow: React.FC<PackageShowProps & { isLast?: boolean }> = ({
     package: pkg,
+    stt,
     onView,
     onScan,
     isLast = false
 }) => {
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
-            <td className='py-3 px-4 font-medium'>
-                <div className='text-gray-900'>{pkg.packageId}</div>
+            <td className='py-3 px-4 text-center'>
+                <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
+                    {stt}
+                </span>
             </td>
 
             <td className='py-3 px-4 font-medium'>
-                <div className='text-gray-900'>{pkg.packageName}</div>
+                <div className='text-gray-900'>{pkg.packageId}</div>
             </td>
 
             <td className='py-3 px-4 text-gray-700'>
                 <span className='px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700'>
                     {pkg.products.length} sản phẩm
-                </span>
-            </td>
-
-            <td className='py-3 px-4'>
-                <span
-                    className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                        pkg.status === PackageStatus.Closed
-                            ? 'bg-purple-100 text-purple-700'
-                            : pkg.status === PackageStatus.Shipping
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'bg-gray-100 text-gray-600'
-                    }`}
-                >
-                    {pkg.status}
                 </span>
             </td>
 

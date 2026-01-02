@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { PackageType } from '@/types/Package';
-import { X, QrCode, List, Tag, Box, ListCheck, Truck } from 'lucide-react';
+import { X, QrCode, List, Tag, ListCheck, Truck } from 'lucide-react';
 import { toast } from 'react-toastify';
 import SummaryCard from '@/components/ui/SummaryCard';
 import ProductList from './ProductList';
@@ -100,7 +100,6 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/30 backdrop-blur-sm'
-                onClick={handleClose}
             ></div>
 
             {/* Modal container */}
@@ -130,11 +129,7 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
                                 label: 'Mã package',
                                 value: pkg.packageId,
                             },
-                            {
-                                icon: <Box size={14} className='text-primary-400' />,
-                                label: 'Tên package',
-                                value: pkg.packageName,
-                            },
+
                             {
                                 icon: <ListCheck size={14} className='text-primary-400' />,
                                 label: 'Số sản phẩm',

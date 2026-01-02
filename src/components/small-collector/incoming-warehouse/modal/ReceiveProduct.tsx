@@ -148,7 +148,6 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/30 backdrop-blur-sm'
-                onClick={handleClose}
             ></div>
 
             {/* Modal container */}

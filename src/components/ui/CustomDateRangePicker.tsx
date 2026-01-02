@@ -1,5 +1,4 @@
 import React from 'react';
-import { Calendar } from 'lucide-react';
 import CustomDatePicker from './CustomDatePicker';
 
 interface CustomDateRangePickerProps {
@@ -18,7 +17,7 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
     return (
         <div
             className='
-                flex items-center gap-2 bg-white rounded-xl border border-primary-100 px-3 py-2 min-h-[44px]
+                flex items-center gap-2 bg-white rounded-xl border border-primary-100 px-3 py-2 min-h-11
                 transition-all duration-200
                 focus-within:ring-2 focus-within:ring-primary-300
                 hover:shadow-md

@@ -8,11 +8,9 @@ interface UpdatePackageProps {
     open: boolean;
     onClose: () => void;
     onConfirm: (packageData: {
-        packageName: string;
         productsQrCode: string[];
     }) => void;
     initialData: {
-        packageName: string;
         productsQrCode: string[];
     };
 }
@@ -31,7 +29,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
     onConfirm,
     initialData
 }) => {
-    const [packageName, setPackageName] = useState('');
+    // const [packageName, setPackageName] = useState('');
     const [qrCodeInput, setQrCodeInput] = useState('');
     const [scannedProducts, setScannedProducts] = useState<ScannedProduct[]>([]);
     const [loading, setLoading] = useState(false);
@@ -41,7 +39,6 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
 
     useEffect(() => {
         if (open && initialData) {
-            setPackageName(initialData.packageName);
             // Load existing products
             const loadExistingProducts = async () => {
                 const products: ScannedProduct[] = [];
@@ -148,21 +145,13 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
     };
 
     const handleSubmit = () => {
-        if (!packageName.trim()) {
-            toast.warning('Vui lòng nhập tên package');
-            return;
-        }
-
         if (scannedProducts.length === 0) {
             toast.warning('Vui lòng thêm ít nhất một sản phẩm');
             return;
         }
-
         onConfirm({
-            packageName: packageName.trim(),
             productsQrCode: scannedProducts.map((p) => p.qrCode)
         });
-
         handleClose();
     };
 
@@ -173,7 +162,6 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
     }, [scannedProducts]);
 
     const handleClose = () => {
-        setPackageName('');
         setQrCodeInput('');
         setScannedProducts([]);
         onClose();
@@ -186,7 +174,6 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/30 backdrop-blur-sm'
-                onClick={handleClose}
             ></div>
 
             {/* Modal container */}
@@ -211,19 +198,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
 
                 {/* Body */}
                 <div className='flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50'>
-                    {/* Package Name */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
-                        <label className='block text-sm font-medium text-gray-700 mb-2'>
-                            Tên Package <span className='text-red-500'>*</span>
-                        </label>
-                        <input
-                            type='text'
-                            value={packageName}
-                            onChange={(e) => setPackageName(e.target.value)}
-                            placeholder='Nhập tên package...'
-                            className='w-full px-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900'
-                        />
-                    </div>
+
 
                     {/* QR Scanner */}
                     <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
@@ -258,32 +233,34 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
 
                     {/* Scanned Products List */}
                     <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
-                        <div className='p-4 border-b border-gray-100 flex justify-between items-center'>
-                            <h3 className='text-sm font-medium text-gray-700'>
+                        <div className='p-4 border-b border-gray-100'>
+                            <h3 className='text-lg font-semibold text-gray-900'>
                                 Danh sách sản phẩm ({scannedProducts.length})
                             </h3>
                         </div>
 
-                        <div className='overflow-x-auto max-h-[300px]'>
-                            {scannedProducts.length > 0 ? (
-                                <table className='w-full text-sm'>
-                                    <thead className='bg-gray-50 sticky top-0'>
+                        <div className='overflow-y-auto max-h-64'>
+                            {scannedProducts.length === 0 ? (
+                                <div className='text-center py-8 text-gray-400'>
+                                    <Package
+                                        size={48}
+                                        className='mx-auto mb-2 opacity-50'
+                                    />
+                                    <p>Chưa có sản phẩm nào</p>
+                                    <p className='text-sm'>
+                                        Quét QR code để thêm sản phẩm
+                                    </p>
+                                </div>
+                            ) : (
+                                <table className='w-full text-sm text-gray-800'>
+                                    <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                                         <tr>
-                                            <th className='py-2 px-3 text-center text-xs font-medium text-gray-500'>
-                                                STT
-                                            </th>
-                                            <th className='py-2 px-3 text-left text-xs font-medium text-gray-500'>
-                                                Danh mục
-                                            </th>
-                                            <th className='py-2 px-3 text-left text-xs font-medium text-gray-500'>
-                                                Thương hiệu
-                                            </th>
-                                            <th className='py-2 px-3 text-left text-xs font-medium text-gray-500'>
-                                                QR Code
-                                            </th>
-                                            <th className='py-2 px-3 text-center text-xs font-medium text-gray-500'>
-                                                Xóa
-                                            </th>
+                                            <th className='py-3 px-4 text-center'>STT</th>
+                                            <th className='py-3 px-4 text-left'>Danh mục</th>
+                                            <th className='py-3 px-4 text-left'>Thương hiệu</th>
+                                            <th className='py-3 px-4 text-left'>Ghi chú</th>
+                                            <th className='py-3 px-4 text-left'>QR Code</th>
+                                            <th className='py-3 px-4 text-center'>Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -332,10 +309,6 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                                         ))}
                                     </tbody>
                                 </table>
-                            ) : (
-                                <div className='py-12 text-center text-gray-400'>
-                                    Chưa có sản phẩm nào. Quét QR để thêm sản phẩm.
-                                </div>
                             )}
                         </div>
                     </div>
@@ -352,7 +325,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                     <div className='flex gap-3'>
                         <button
                             onClick={handleSubmit}
-                            disabled={!packageName.trim() || scannedProducts.length === 0}
+                            disabled={scannedProducts.length === 0}
                             className='p-2 rounded-lg text-white cursor-pointer shadow-md transition-all duration-200 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-primary-200'
                             title='Cập nhật Package'
                         >

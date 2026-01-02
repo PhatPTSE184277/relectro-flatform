@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Package as PackageIcon, X, Info, List, ArrowRight } from 'lucide-react';
+import { Package as PackageIcon, X, List, ArrowRight } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { getPackageById } from '@/services/recycle/PackageService';
 import { PackageType } from '@/types/Package';
@@ -99,7 +99,6 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/30 backdrop-blur-sm'
-                onClick={handleClose}
             ></div>
 
             {/* Modal container */}
@@ -173,11 +172,7 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                                         label: 'Mã package',
                                         value: scannedPackage.packageId,
                                     },
-                                    {
-                                        icon: <Info size={14} className='text-primary-400' />,
-                                        label: 'Tên package',
-                                        value: scannedPackage.packageName,
-                                    },
+
                                     {
                                         icon: <List size={14} className='text-primary-400' />,
                                         label: 'Số sản phẩm',

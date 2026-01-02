@@ -1,19 +1,17 @@
 'use client';
 import React from 'react';
-import { Truck, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
 interface ConfirmStatusChangeProps {
     open: boolean;
     onClose: () => void;
     onConfirm: () => void;
-    packageName: string;
 }
 
 const ConfirmStatusChange: React.FC<ConfirmStatusChangeProps> = ({
     open,
     onClose,
-    onConfirm,
-    packageName
+    onConfirm
 }) => {
     if (!open) return null;
 

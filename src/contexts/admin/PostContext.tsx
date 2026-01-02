@@ -26,6 +26,8 @@ interface PostContextType {
     fetchPostById: (postId: string) => Promise<void>;
     handleApprove: (postId: string) => Promise<void>;
     handleReject: (postId: string, reason: string) => Promise<void>;
+    handleBulkApprove: (postIds: string[]) => Promise<void>;
+    handleBulkReject: (postIds: string[], reason: string) => Promise<void>;
     filter: {
         page: number;
         limit: number;
@@ -106,7 +108,7 @@ export const PostProvider: React.FC<Props> = ({ children }) => {
         async (postId: string) => {
             setLoading(true);
             try {
-                await approvePost(postId);
+                await approvePost([postId]);
                 toast.success('Duyệt bài đăng thành công');
                 await fetchPosts();
                 if (selectedPost?.id === postId) await fetchPostById(postId);
@@ -126,7 +128,7 @@ export const PostProvider: React.FC<Props> = ({ children }) => {
         async (postId: string, reason: string) => {
             setLoading(true);
             try {
-                await rejectPost(postId, reason);
+                await rejectPost([postId], reason);
                 toast.success('Từ chối bài đăng thành công');
                 await fetchPosts();
                 if (selectedPost?.id === postId) await fetchPostById(postId);
@@ -142,6 +144,52 @@ export const PostProvider: React.FC<Props> = ({ children }) => {
         [fetchPosts, selectedPost, fetchPostById]
     );
 
+    const handleBulkApprove = useCallback(
+        async (postIds: string[]) => {
+            if (postIds.length === 0) {
+                toast.warning('Vui lòng chọn ít nhất một bài đăng');
+                return;
+            }
+            setLoading(true);
+            try {
+                await approvePost(postIds);
+                toast.success(`Duyệt thành công ${postIds.length} bài đăng`);
+                await fetchPosts();
+            } catch (err: any) {
+                console.error('bulkApprove error', err);
+                toast.error(
+                    err?.response?.data?.message || 'Lỗi khi duyệt nhiều bài đăng'
+                );
+            } finally {
+                setLoading(false);
+            }
+        },
+        [fetchPosts]
+    );
+
+    const handleBulkReject = useCallback(
+        async (postIds: string[], reason: string) => {
+            if (postIds.length === 0) {
+                toast.warning('Vui lòng chọn ít nhất một bài đăng');
+                return;
+            }
+            setLoading(true);
+            try {
+                await rejectPost(postIds, reason);
+                toast.success(`Từ chối thành công ${postIds.length} bài đăng`);
+                await fetchPosts();
+            } catch (err: any) {
+                console.error('bulkReject error', err);
+                toast.error(
+                    err?.response?.data?.message || 'Lỗi khi từ chối nhiều bài đăng'
+                );
+            } finally {
+                setLoading(false);
+            }
+        },
+        [fetchPosts]
+    );
+
     useEffect(() => {
         void fetchPosts();
     }, []);
@@ -155,6 +203,8 @@ export const PostProvider: React.FC<Props> = ({ children }) => {
         fetchPostById,
         handleApprove,
         handleReject,
+        handleBulkApprove,
+        handleBulkReject,
         filter,
         setFilter,
         totalPages,

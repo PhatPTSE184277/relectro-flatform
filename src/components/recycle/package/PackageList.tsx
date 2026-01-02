@@ -23,7 +23,6 @@ const PackageList: React.FC<PackageListProps> = ({
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                         <tr>
                             <th className='py-3 px-4 text-left'>Mã Package</th>
-                            <th className='py-3 px-4 text-left'>Tên Package</th>
                             <th className='py-3 px-4 text-left'>Số sản phẩm</th>
                             <th className='py-3 px-4 text-center'>Hành động</th>
                         </tr>
@@ -46,7 +45,7 @@ const PackageList: React.FC<PackageListProps> = ({
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={5} className='text-center py-8 text-gray-400'>
+                                <td colSpan={3} className='text-center py-8 text-gray-400'>
                                     Không có package nào.
                                 </td>
                             </tr>

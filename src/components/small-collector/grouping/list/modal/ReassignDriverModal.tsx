@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import CustomDatePicker from '@/components/ui/CustomDatePicker';
+import CompactDatePicker from '@/components/ui/CompactDatePicker';
 
 interface ReassignDriverModalProps {
     open: boolean;
@@ -64,7 +64,6 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/30 backdrop-blur-sm'
-                onClick={handleClose}
             ></div>
 
             {/* Modal container */}
@@ -106,7 +105,7 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                             <label className='block text-sm font-medium text-gray-700 mb-2'>
                                 Ngày thu gom
                             </label>
-                            <CustomDatePicker
+                            <CompactDatePicker
                                 value={selectedDate}
                                 onChange={setSelectedDate}
                                 placeholder='Chọn ngày thu gom'
@@ -132,34 +131,36 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                                 <table className='w-full text-sm text-gray-800'>
                                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                                         <tr>
-                                            <th className='py-3 px-4 text-center'>STT</th>
+                                            <th className='py-3 px-4 text-center'>Chọn</th>
                                             <th className='py-3 px-4 text-left'>Tên tài xế</th>
                                             <th className='py-3 px-4 text-left'>Số điện thoại</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {driverCandidates.map((driver, idx) => (
-                                            <tr
-                                                key={driver.userId}
-                                                className={`transition-colors ${selectedDriverId === driver.userId ? 'bg-primary-50 border-primary-500!' : ''} ${!driver.isAvailable ? 'bg-gray-50 opacity-60 cursor-not-allowed' : 'hover:bg-primary-50 cursor-pointer'}`}
-                                                onClick={() => driver.isAvailable && setSelectedDriverId(driver.userId)}
-                                                style={{ cursor: driver.isAvailable ? 'pointer' : 'not-allowed', borderLeft: selectedDriverId === driver.userId ? '4px solid #2563eb' : undefined }}
-                                            >
-                                                <td className='py-3 px-4 text-center'>
-                                                    <span className='w-6 h-6 rounded-full bg-primary-600 text-white text-xs flex items-center justify-center font-semibold mx-auto'>
-                                                        {idx + 1}
-                                                    </span>
-                                                </td>
-                                                <td className='py-3 px-4 font-medium text-gray-900'>
-                                                    {driver.name}
-                                                </td>
-                                                <td className='py-3 px-4 font-medium text-gray-900'>
-                                                    {driver.phone || '-'}
-                                                </td>
-                                                {/* Khung giờ làm cell removed */}
-                                                {/* Trạng thái cell removed */}
-                                            </tr>
-                                        ))}
+                                        {driverCandidates.map((driver) => {
+                                            const isSelected = selectedDriverId === driver.userId;
+                                            return (
+                                                <tr
+                                                    key={driver.userId}
+                                                    className={`cursor-pointer transition-colors ${
+                                                        isSelected ? 'bg-primary-50 border-primary-500' : 'hover:bg-primary-50'
+                                                    }`}
+                                                    onClick={() => driver.isAvailable && setSelectedDriverId(driver.userId)}
+                                                >
+                                                    <td className='py-3 px-4 text-center'>
+                                                        <input
+                                                            type='radio'
+                                                            checked={isSelected}
+                                                            onChange={() => setSelectedDriverId(driver.userId)}
+                                                            className='w-4 h-4 text-primary-600 rounded-full cursor-pointer'
+                                                            onClick={(e) => e.stopPropagation()}
+                                                        />
+                                                    </td>
+                                                    <td className='py-3 px-4 font-medium text-gray-900'>{driver.name}</td>
+                                                    <td className='py-3 px-4 text-gray-700'>{driver.phone || '-'}</td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>

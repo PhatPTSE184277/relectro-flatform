@@ -22,11 +22,6 @@ const PackageShow: React.FC<PackageShowProps & { isLast?: boolean }> = ({
             <td className='py-3 px-4 font-medium'>
                 <div className='text-gray-900'>{pkg.packageId}</div>
             </td>
-
-            <td className='py-3 px-4 font-medium'>
-                <div className='text-gray-900'>{pkg.packageName}</div>
-            </td>
-
             <td className='py-3 px-4 text-gray-700'>
                 <span className='px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700'>
                     {pkg.products.length} sản phẩm

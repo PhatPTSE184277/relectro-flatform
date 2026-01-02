@@ -82,7 +82,6 @@ const PostDetail: React.FC<PostDetailProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/60 backdrop-blur-sm'
-                onClick={onClose}
             ></div>
 
             {/* Modal */}

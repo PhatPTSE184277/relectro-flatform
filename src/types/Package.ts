@@ -20,7 +20,6 @@ export interface PackageProduct {
 
 export interface PackageType {
     packageId: string;
-    packageName: string;
     smallCollectionPointsId: string;
     status?: string;
     products: PackageProduct[];
@@ -36,13 +35,11 @@ export interface FilterPackagesResponse {
 
 export interface CreatePackagePayload {
     packageId: string;
-    packageName: string;
     smallCollectionPointsId: string;
     productsQrCode: string[];
 }
 
 export interface UpdatePackagePayload {
-    packageName: string;
     smallCollectionPointsId: string;
     productsQrCode: string[];
 }

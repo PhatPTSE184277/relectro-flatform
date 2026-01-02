@@ -1,18 +1,18 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import StatCard from '@/components/ui/StateCard';
-import StatCardSkeleton from '@/components/ui/StatCardSkeleton';
 import LineChart from '@/components/charts/LineChart';
-import BarChart from '@/components/charts/BarChart';
+import LineChartSkeleton from '@/components/charts/LineChartSkeleton';
+import ProductCategoryChart from '@/components/charts/ProductCategoryChart';
+import DashboardStats from '@/components/admin/dashboard/DashboardStats';
+import { DashboardProvider, useDashboardContext } from '@/contexts/admin/DashboardContext';
+import { Calendar } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
+
 const BarChartSkeleton = dynamic(
     () => import('@/components/charts/BarChartSkereton'),
     { ssr: false }
 );
-
-import LineChartSkeleton from '@/components/charts/LineChartSkeleton';
-import PieChart from '@/components/charts/PieChart';
-import PieChartSkeleton from '@/components/charts/PieChartSkeleton';
-import dynamic from 'next/dynamic';
 
 const chartTabs = [
     { key: 'user', label: 'Người dùng' },
@@ -20,60 +20,44 @@ const chartTabs = [
     { key: 'shipping', label: 'Vận chuyển' }
 ];
 
-const DashboardPage = () => {
-    const [loading, setLoading] = useState(true);
+const DashboardContent = () => {
+    const { summary, loading, fetchSummary } = useDashboardContext();
     const [activeTab, setActiveTab] = useState('user');
     const [year, setYear] = useState('2025');
+    const [fromDate, setFromDate] = useState('2025-12-01');
+    const [toDate, setToDate] = useState('2025-12-31');
 
     useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 1000);
-        return () => clearTimeout(timer);
-    }, []);
+        fetchSummary(fromDate, toDate);
+    }, [fromDate, toDate, fetchSummary]);
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-16">
-            {/* Card thống kê */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                {loading ? (
-                    <>
-                        <StatCardSkeleton />
-                        <StatCardSkeleton />
-                        <StatCardSkeleton />
-                        <StatCardSkeleton />
-                    </>
-                ) : (
-                    <>
-                        <StatCard
-                            title="Yêu cầu"
-                            value="7,265"
-                            change="+11.01%"
-                            isPositive={true}
-                            variant="blue"
-                        />
-                        <StatCard
-                            title="Người dùng"
-                            value="3,671"
-                            change="-0.03%"
-                            isPositive={false}
-                            variant="dark"
-                        />
-                        <StatCard
-                            title="Sản phẩm"
-                            value="256"
-                            change="+15.03%"
-                            isPositive={true}
-                            variant="blue"
-                        />
-                        <StatCard
-                            title="Vận chuyển"
-                            value="2,318"
-                            change="+6.08%"
-                            isPositive={true}
-                            variant="dark"
-                        />
-                    </>
-                )}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-4">
+            {/* Date Range Picker - style giống tracking, căn phải trên desktop */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center">
+                        <Calendar className="text-white" size={20} />
+                    </div>
+                    <h1 className="text-2xl font-bold text-gray-900">Thống kê tổng quan</h1>
+                </div>
+                <div className="flex-1 flex justify-end max-w-xl w-full">
+                    <CustomDateRangePicker
+                        fromDate={fromDate}
+                        toDate={toDate}
+                        onFromDateChange={setFromDate}
+                        onToDateChange={setToDate}
+                    />
+                </div>
             </div>
+
+            {/* Card thống kê */}
+            <DashboardStats
+                totalUsers={summary?.totalUsers || 0}
+                totalCompanies={summary?.totalCompanies || 0}
+                totalProducts={summary?.totalProducts || 0}
+                loading={loading}
+            />
             
             <div className="bg-white rounded-xl shadow p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -109,17 +93,22 @@ const DashboardPage = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white rounded-xl shadow p-6">
-                    <div className="font-semibold text-blue-600 mb-2">Sản phẩm</div>
-                    {loading ? <BarChartSkeleton /> : <BarChart />}
-                </div>
-                <div className="bg-white rounded-xl shadow p-6">
-                    <div className="font-semibold text-green-600 mb-2">Địa điểm thu mua</div>
-                    {loading ? <PieChartSkeleton /> : <PieChart />}
-                </div>
+            <div>
+                {loading ? (
+                    <BarChartSkeleton />
+                ) : (
+                    <ProductCategoryChart data={summary?.productCategories || []} />
+                )}
             </div>
         </div>
+    );
+};
+
+const DashboardPage = () => {
+    return (
+        <DashboardProvider>
+            <DashboardContent />
+        </DashboardProvider>
     );
 };
 

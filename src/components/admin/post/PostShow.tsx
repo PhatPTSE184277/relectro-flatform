@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { Eye, CheckCircle, XCircle } from 'lucide-react';
 import type { Post } from '@/types/post';
 import { PostStatus } from '@/enums/PostStatus';
@@ -20,6 +19,8 @@ interface PostShowProps {
     onApprove?: (postId: string) => void;
     onReject?: (postId: string) => void;
     hideImage?: boolean;
+    isSelected?: boolean;
+    onToggleSelect?: (postId: string) => void;
 }
 
 const PostShow: React.FC<PostShowProps & { isLast?: boolean }> = ({
@@ -28,12 +29,31 @@ const PostShow: React.FC<PostShowProps & { isLast?: boolean }> = ({
     onView,
     onApprove,
     onReject,
-    isLast = false
+    isLast = false,
+    isSelected = false,
+    onToggleSelect
 }) => {
     const isPending = normalizeStatus(post.status) === PostStatus.Pending;
 
     return (
-        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
+        <tr className={`${
+            !isLast ? 'border-b border-primary-100' : ''
+        } ${
+            isSelected ? 'bg-primary-50' : ''
+        } hover:bg-primary-50/40 transition-colors`}>
+            <td className="py-3 px-4 text-center">
+                {isPending && onToggleSelect ? (
+                    <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => onToggleSelect(post.id)}
+                        className="w-4 h-4 text-primary-600 bg-white rounded focus:ring-2 focus:ring-primary-500 cursor-pointer border-0 shadow-none outline-none"
+                        style={{ boxShadow: 'none', outline: 'none', border: 'none' }}
+                    />
+                ) : (
+                    <div className="w-4 h-4"></div>
+                )}
+            </td>
             <td className="py-3 px-4 text-center">
                 <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
                     {stt}

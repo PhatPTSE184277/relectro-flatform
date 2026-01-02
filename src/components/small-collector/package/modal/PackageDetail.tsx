@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import type { PackageType } from '@/types/Package';
-import { Tag, Box, ListCheck, Truck } from 'lucide-react';
+import { Tag, ListCheck, Truck } from 'lucide-react';
 import SummaryCard from '@/components/ui/SummaryCard';
 import { PackageStatus } from '@/enums/PackageStatus';
 
@@ -22,11 +22,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             icon: <Tag size={14} className='text-primary-400' />,
             label: 'Mã package',
             value: pkg.packageId,
-        },
-        {
-            icon: <Box size={14} className='text-primary-400' />,
-            label: 'Tên package',
-            value: pkg.packageName,
         },
         {
             icon: <ListCheck size={14} className='text-primary-400' />,
@@ -61,7 +56,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/50 backdrop-blur-sm'
-                onClick={onClose}
             ></div>
 
             {/* Modal container */}
@@ -85,7 +79,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                 {/* Main content */}
                 <div className='flex-1 p-6 flex flex-col gap-6'>
                     {/* Package Info Row */}
-                    <div className='flex flex-row gap-6 mb-2 w-full'>
+                    <div className='w-full mb-2'>
                         <SummaryCard
                             items={summaryItems}
                             singleRow={true}
@@ -93,25 +87,15 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                     </div>
                     {/* Products List */}
                     <div className='bg-white rounded-xl shadow-sm border border-gray-100 flex-1 min-h-0'>
-                        <div className='overflow-x-auto overflow-y-auto max-h-[45vh]'>
+                        <div className='overflow-y-auto max-h-[45vh]'>
                             <table className='w-full text-sm text-gray-800'>
                                 <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                                     <tr>
-                                        <th className='py-3 px-4 text-left'>
-                                            STT
-                                        </th>
-                                        <th className='py-3 px-4 text-left'>
-                                            Danh mục
-                                        </th>
-                                        <th className='py-3 px-4 text-left'>
-                                            Thương hiệu
-                                        </th>
-                                        <th className='py-3 px-4 text-left'>
-                                            Ghi chú
-                                        </th>
-                                        <th className='py-3 px-4 text-left'>
-                                            QR Code
-                                        </th>
+                                        <th className='py-3 px-4 text-left'>STT</th>
+                                        <th className='py-3 px-4 text-left'>Danh mục</th>
+                                        <th className='py-3 px-4 text-left'>Thương hiệu</th>
+                                        <th className='py-3 px-4 text-left'>Ghi chú</th>
+                                        <th className='py-3 px-4 text-left'>QR Code</th>
                                     </tr>
                                 </thead>
                                 <tbody>

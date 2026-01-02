@@ -27,11 +27,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             label: 'Mã package',
             value: pkg.packageId,
         },
-        {
-            icon: <Box size={14} className='text-primary-400' />,
-            label: 'Tên package',
-            value: pkg.packageName,
-        },
+
         {
             icon: <ListCheck size={14} className='text-primary-400' />,
             label: 'Số sản phẩm',
@@ -65,7 +61,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/50 backdrop-blur-sm'
-                onClick={onClose}
             ></div>
 
             {/* Modal container */}

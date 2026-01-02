@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Package as PackageIcon, X, List, ArrowRight, Tag, Box, ListCheck, Truck } from 'lucide-react';
+import { Package as PackageIcon, X, List, ArrowRight, Tag, ListCheck, Truck } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { getPackageById } from '@/services/shipper/PackageService';
 import { PackageType } from '@/types/Package';
@@ -85,7 +85,6 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/30 backdrop-blur-sm'
-                onClick={handleClose}
             ></div>
 
             {/* Modal container */}
@@ -153,13 +152,7 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                                         icon: <span className="w-8 h-8 flex items-center justify-center rounded-full border border-primary-200 bg-primary-50"><Tag size={14} className='text-primary-400' /></span>,
                                         label: 'Mã package',
                                         value: scannedPackage.packageId,
-                                    },
-                                    {
-                                        icon: <span className="w-8 h-8 flex items-center justify-center rounded-full border border-primary-200 bg-primary-50"><Box size={14} className='text-primary-400' /></span>,
-                                        label: 'Tên package',
-                                        value: scannedPackage.packageName,
-                                    },
-                                    {
+                                    },{
                                         icon: <span className="w-8 h-8 flex items-center justify-center rounded-full border border-primary-200 bg-primary-50"><ListCheck size={14} className='text-primary-400' /></span>,
                                         label: 'Số sản phẩm',
                                         value: scannedPackage.products.length,
@@ -197,7 +190,9 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                                     </span>
                                     Danh sách sản phẩm
                                 </h3>
-                                <ProductList products={scannedPackage.products} />
+                                <div className='overflow-y-auto max-h-64'>
+                                    <ProductList products={scannedPackage.products} />
+                                </div>
                             </div>
                         </>
                     )}

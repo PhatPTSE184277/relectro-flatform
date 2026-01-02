@@ -40,12 +40,12 @@ export const getPostById = async (postId: string): Promise<any> => {
     return response.data;
 };
 
-export const approvePost = async (postId: string) => {
-    const response = await axios.put(`/posts/approve/${postId}`, {});
+export const approvePost = async (postIds: string[]) => {
+    const response = await axios.put('/posts/approve', { postIds });
     return response.data;
 };
 
-export const rejectPost = async (postId: string, rejectMessage: string) => {
-    const response = await axios.put(`/posts/reject/${postId}`, { rejectMessage });
+export const rejectPost = async (postIds: string[], rejectMessage: string) => {
+    const response = await axios.put('/posts/reject', { postIds, rejectMessage });
     return response.data;
 };

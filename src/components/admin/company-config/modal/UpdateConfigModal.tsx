@@ -111,13 +111,6 @@ const UpdateConfigModal: React.FC<UpdateConfigModalProps> = ({
         ? companiesData.find(c => c.companyId === selectedCompanyId)
         : null;
 
-    // Validate detail tab: tất cả smallPoints phải có radiusKm > 0 và maxRoadDistanceKm > 0
-    const isValidDetail = currentCompany 
-        ? currentCompany.smallPoints?.every((sp: any) => 
-                (sp.radiusKm || 0) > 0 && (sp.maxRoadDistanceKm || 0) > 0
-          ) 
-        : false;
-
     if (!open) return null;
 
     return (
@@ -125,7 +118,6 @@ const UpdateConfigModal: React.FC<UpdateConfigModalProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/50 backdrop-blur-sm'
-                onClick={handleClose}
             ></div>
 
             {/* Modal container */}

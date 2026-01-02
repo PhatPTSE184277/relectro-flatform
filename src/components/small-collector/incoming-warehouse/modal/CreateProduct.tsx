@@ -240,7 +240,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/30 backdrop-blur-sm'
-                onClick={handleClose}
             ></div>
 
             {/* Modal container */}
@@ -252,9 +251,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                             <h2 className='text-2xl font-bold text-gray-800'>
                                 Tạo Sản Phẩm Mới
                             </h2>
-                            <p className='text-sm text-gray-600 mt-1'>
-                                Nhận hàng từ người gửi tại kho
-                            </p>
                         </div>
                     </div>
                     <button

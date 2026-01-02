@@ -13,7 +13,7 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onClose }) => {
     if (!company) {
         return (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose}></div>
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
                 <div className="relative bg-white rounded-2xl p-6 max-w-md shadow-xl z-10">
                     <p className="text-gray-500">Không có dữ liệu công ty</p>
                     <button
@@ -32,7 +32,6 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, onClose }) => {
             {/* Overlay */}
             <div
                 className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-                onClick={onClose}
             ></div>
 
             {/* Modal container */}

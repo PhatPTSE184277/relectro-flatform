@@ -10,7 +10,6 @@ interface CreatePackageProps {
     onClose: () => void;
     onConfirm: (packageData: {
         packageId: string;
-        packageName: string;
         productsQrCode: string[];
     }) => void;
 }
@@ -29,14 +28,13 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     onConfirm
 }) => {
     const [packageId, setPackageId] = useState('');
-    const [packageName, setPackageName] = useState('');
     const [qrCodeInput, setQrCodeInput] = useState('');
     const [scannedProducts, setScannedProducts] = useState<ScannedProduct[]>(
         []
     );
     const [loading, setLoading] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
-    const packageNameRef = useRef<HTMLInputElement>(null);
+    // const packageNameRef = useRef<HTMLInputElement>(null);
     const lastProductRef = useRef<HTMLTableRowElement>(null);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -44,7 +42,6 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
         if (open) {
             // Reset form when modal opens
             setPackageId('');
-            setPackageName('');
             setQrCodeInput('');
             setScannedProducts([]);
             // Auto focus on QR input
@@ -137,23 +134,14 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
             toast.warning('Vui lòng nhập mã package');
             return;
         }
-
-        if (!packageName.trim()) {
-            toast.warning('Vui lòng nhập tên package');
-            return;
-        }
-
         if (scannedProducts.length === 0) {
             toast.warning('Vui lòng thêm ít nhất một sản phẩm');
             return;
         }
-
         onConfirm({
             packageId: packageId.trim(),
-            packageName: packageName.trim(),
             productsQrCode: scannedProducts.map((p) => p.qrCode)
         });
-
         handleClose();
     };
 
@@ -165,7 +153,6 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
 
     const handleClose = () => {
         setPackageId('');
-        setPackageName('');
         setQrCodeInput('');
         setScannedProducts([]);
         onClose();
@@ -178,7 +165,6 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/30 backdrop-blur-sm'
-                onClick={handleClose}
             ></div>
 
             {/* Modal container */}
@@ -189,9 +175,6 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                         <h2 className='text-2xl font-bold text-gray-900'>
                             Tạo Package Mới
                         </h2>
-                        <p className='text-sm text-gray-500 mt-1'>
-                            Quét QR code để thêm sản phẩm vào package
-                        </p>
                     </div>
                     <button
                         onClick={handleClose}
@@ -203,12 +186,12 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
 
                 {/* Body */}
                 <div className='flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50'>
-                    {/* Package ID & Name on one row */}
-                    <div className='flex gap-4'>
+                    {/* Package ID & QR Scanner in one row */}
+                    <div className='flex flex-col md:flex-row gap-4'>
+                        {/* Mã Package */}
                         <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1'>
                             <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                Mã Package{' '}
-                                <span className='text-red-500'>*</span>
+                                Mã Package <span className='text-red-500'>*</span>
                             </label>
                             <div className='relative'>
                                 <input
@@ -219,12 +202,6 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                     disabled={loading}
                                     className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
                                     autoComplete='off'
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            packageNameRef.current?.focus();
-                                        }
-                                    }}
                                 />
                                 <ScanLine
                                     className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
@@ -232,55 +209,38 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                 />
                             </div>
                         </div>
+                        {/* QR Scanner */}
                         <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1'>
                             <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                Tên Package{' '}
-                                <span className='text-red-500'>*</span>
+                                Quét QR Code Sản Phẩm
                             </label>
-                            <input
-                                ref={packageNameRef}
-                                type='text'
-                                value={packageName}
-                                onChange={(e) => setPackageName(e.target.value)}
-                                placeholder='Nhập tên package...'
-                                  className='w-full px-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-gray-900'
-                            />
+                            <form onSubmit={handleScanQR} className='flex gap-2'>
+                                <div className='relative flex-1'>
+                                    <input
+                                        ref={inputRef}
+                                        type='text'
+                                        value={qrCodeInput}
+                                        onChange={(e) => setQrCodeInput(e.target.value)}
+                                        placeholder='Quét hoặc nhập mã QR...'
+                                        disabled={loading}
+                                        className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
+                                        autoComplete='off'
+                                    />
+                                    <ScanLine
+                                        className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
+                                        size={18}
+                                    />
+                                </div>
+                                <button
+                                    type='submit'
+                                    disabled={!qrCodeInput.trim() || loading}
+                                    className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-medium flex items-center gap-2 border border-primary-200 shadow-md'
+                                >
+                                    <Plus size={18} />
+                                    Thêm
+                                </button>
+                            </form>
                         </div>
-                    </div>
-
-                    {/* QR Scanner */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
-                        <label className='block text-sm font-medium text-gray-700 mb-2'>
-                            Quét QR Code Sản Phẩm
-                        </label>
-                        <form onSubmit={handleScanQR} className='flex gap-2'>
-                            <div className='relative flex-1'>
-                                <input
-                                    ref={inputRef}
-                                    type='text'
-                                    value={qrCodeInput}
-                                    onChange={(e) =>
-                                        setQrCodeInput(e.target.value)
-                                    }
-                                    placeholder='Quét hoặc nhập mã QR...'
-                                    disabled={loading}
-                                    className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
-                                    autoComplete='off'
-                                />
-                                <ScanLine
-                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
-                                    size={18}
-                                />
-                            </div>
-                            <button
-                                type='submit'
-                                disabled={!qrCodeInput.trim() || loading}
-                                className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition font-medium flex items-center gap-2 border border-primary-200 shadow-md'
-                            >
-                                <Plus size={18} />
-                                Thêm
-                            </button>
-                        </form>
                     </div>
 
                     {/* Scanned Products List */}
@@ -291,7 +251,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                             </h3>
                         </div>
 
-                        <div className='overflow-x-auto'>
+                        <div className='overflow-y-auto max-h-64'>
                             {scannedProducts.length === 0 ? (
                                 <div className='text-center py-8 text-gray-400'>
                                     <Package
@@ -315,7 +275,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                             <th className='py-3 px-4 text-center'>Hành động</th>
                                         </tr>
                                     </thead>
-                                    <tbody className='max-h-64 overflow-y-auto'>
+                                    <tbody>
                                         {scannedProducts.map((product, index) => (
                                             <tr
                                                 key={product.qrCode}
@@ -378,10 +338,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                     <div className='flex gap-3'>
                         <button
                             onClick={handleSubmit}
-                            disabled={
-                                !packageName.trim() ||
-                                scannedProducts.length === 0
-                            }
+                            disabled={scannedProducts.length === 0}
                             className='px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 border border-primary-200'
                         >
                             Tạo Package

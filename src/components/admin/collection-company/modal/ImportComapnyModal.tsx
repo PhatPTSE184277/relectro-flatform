@@ -59,7 +59,6 @@ const ImportExcelModal: React.FC<ImportExcelModalProps> = ({ open, onClose, onIm
             {/* Overlay */}
             <div
                 className="absolute inset-0 bg-black/30 backdrop-blur-sm"
-                onClick={handleClose}
             ></div>
 
             {/* Modal container */}

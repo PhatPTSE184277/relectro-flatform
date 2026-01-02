@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Info, List, Tag, Box, ListCheck, Truck } from 'lucide-react';
+import { List, Tag, ListCheck, Truck } from 'lucide-react';
 import { PackageType } from '@/types/Package';
 import SummaryCard from '@/components/ui/SummaryCard';
 import ProductList from './ProductList';
@@ -25,11 +25,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             label: 'Mã package',
             value: pkg.packageId,
         },
-        {
-            icon: <Box size={14} className='text-primary-400' />,
-            label: 'Tên package',
-            value: pkg.packageName,
-        },
+
         {
             icon: <ListCheck size={14} className='text-primary-400' />,
             label: 'Số sản phẩm',
@@ -63,7 +59,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/50 backdrop-blur-sm'
-                onClick={onClose}
             ></div>
 
             {/* Modal container */}
@@ -97,7 +92,9 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                             </span>
                             Danh sách sản phẩm
                         </h3>
-                        <ProductList products={pkg.products} />
+                        <div className='overflow-y-auto max-h-64'>
+                            <ProductList products={pkg.products} />
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FileSpreadsheet, Upload, X } from 'lucide-react';
+import { FileSpreadsheet, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 interface ImportVehicleModalProps {
@@ -59,7 +59,6 @@ const ImportVehicleModal: React.FC<ImportVehicleModalProps> = ({ open, onClose, 
             {/* Overlay */}
             <div
                 className="absolute inset-0 bg-black/30 backdrop-blur-sm"
-                onClick={handleClose}
             ></div>
 
             {/* Modal container */}

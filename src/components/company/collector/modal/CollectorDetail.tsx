@@ -16,7 +16,7 @@ const CollectorDetail: React.FC<CollectorDetailProps> = ({ collector, onClose })
     if (!collector) {
         return (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose}></div>
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
                 <div className="relative bg-white rounded-2xl p-6 max-w-md shadow-xl z-10">
                     <p className="text-gray-500">Không có dữ liệu nhân viên</p>
                     <button
@@ -35,7 +35,6 @@ const CollectorDetail: React.FC<CollectorDetailProps> = ({ collector, onClose })
             {/* Overlay */}
             <div
                 className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-                onClick={onClose}
             ></div>
 
             {/* Modal container */}
@@ -63,6 +62,8 @@ const CollectorDetail: React.FC<CollectorDetailProps> = ({ collector, onClose })
                         <Image
                             src={collector.avatar || 'https://via.placeholder.com/100'}
                             alt={collector.name}
+                            width={100} // Added width property
+                            height={100} // Added height property
                             className="w-24 h-24 rounded-full object-cover border-4 border-primary-200 shadow-md"
                         />
                         <div>

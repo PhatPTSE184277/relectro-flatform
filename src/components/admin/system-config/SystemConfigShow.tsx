@@ -1,10 +1,11 @@
 import React from 'react';
-import { Edit } from 'lucide-react';
+import { Edit, Download } from 'lucide-react';
 import { SystemConfig } from '@/services/admin/SystemConfigService';
 
 interface SystemConfigShowProps {
     config: SystemConfig;
     onEdit: (config: SystemConfig) => void;
+    onViewFile?: (config: SystemConfig) => void;
     index?: number;
     isLast?: boolean;
 }
@@ -12,9 +13,21 @@ interface SystemConfigShowProps {
 const SystemConfigShow: React.FC<SystemConfigShowProps> = ({
     config,
     onEdit,
-    isLast = false,
     index
 }) => {
+    const isUrl = config.value?.startsWith('http://') || config.value?.startsWith('https://');
+    
+    const handleDownload = () => {
+        if (config.value) {
+            const link = document.createElement('a');
+            link.href = config.value;
+            link.download = config.displayName + '.xlsx';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+    
     return (
         <tr
             className={`$
@@ -32,7 +45,18 @@ const SystemConfigShow: React.FC<SystemConfigShowProps> = ({
             </td>
 
             <td className='py-3 px-2 text-right'>
-                <span className='font-medium'>{config.value}</span>
+                {isUrl ? (
+                    <button
+                        onClick={handleDownload}
+                        className="inline-flex items-center gap-1 text-primary-600 hover:text-primary-800 font-medium transition cursor-pointer"
+                        title="Tải file về máy"
+                    >
+                        <Download size={14} />
+                        <span className="underline">Tải file</span>
+                    </button>
+                ) : (
+                    <span className='font-medium'>{config.value}</span>
+                )}
             </td>
 
             <td className='py-3 px-4'>

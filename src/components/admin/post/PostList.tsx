@@ -4,6 +4,8 @@ import PostShow from "./PostShow";
 import PostRowSkeleton from "./PostTableSkeleton";
 import PostReject from "./modal/PostReject";
 import PostApprove from "./modal/PostApprove";
+import { CheckSquare, Square, CheckCircle, XCircle } from 'lucide-react';
+import { PostStatus } from '@/enums/PostStatus';
 
 interface PostListProps {
   posts: Post[];
@@ -12,14 +14,25 @@ interface PostListProps {
   onApprove: (postId: string) => void;
   onReject: (postId: string, reason: string) => void;
   onView: (post: Post) => void;
+  selectedPostIds: string[];
+  onToggleSelect: (postId: string) => void;
+  onToggleSelectAll: () => void;
+  onBulkApprove: () => void;
+  onBulkReject: () => void;
 }
 
 const PostList: React.FC<PostListProps> = ({
   posts,
   loading,
+  status,
   onApprove,
   onReject,
   onView,
+  selectedPostIds,
+  onToggleSelect,
+  onToggleSelectAll,
+  onBulkApprove,
+  onBulkReject,
 }) => {
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [rejectingPostId, setRejectingPostId] = useState<string | null>(null);
@@ -52,12 +65,54 @@ const PostList: React.FC<PostListProps> = ({
     setApprovingPostId(null);
   };
 
+  const handleBulkRejectClick = () => {
+    onBulkReject(); // Mở modal từ page.tsx
+  };
+
+  const isPending = status === PostStatus.Pending || status === 'Chờ duyệt';
+  const allCurrentPageSelected = posts.length > 0 && posts.every(p => selectedPostIds.includes(p.id));
+
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
+      {/* Bulk Actions Bar */}
+      {isPending && selectedPostIds.length > 0 && (
+        <div className="bg-primary-50 border-b border-primary-200 px-4 py-3 flex items-center justify-between">
+          <span className="text-sm font-medium text-primary-700">
+            Đã chọn {selectedPostIds.length} bài đăng
+          </span>
+          <div className="flex gap-2">
+            <button
+              onClick={onBulkApprove}
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition flex items-center gap-2"
+            >
+              <CheckCircle size={16} />
+              Duyệt {selectedPostIds.length} bài
+            </button>
+            <button
+              onClick={handleBulkRejectClick}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition flex items-center gap-2"
+            >
+              <XCircle size={16} />
+              Từ chối {selectedPostIds.length} bài
+            </button>
+          </div>
+        </div>
+      )}
+      
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-gray-800">
           <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold">
             <tr>
+              <th className="py-3 px-4 text-center w-12">
+                {isPending && (
+                  <button
+                    onClick={onToggleSelectAll}
+                    className="text-primary-600 hover:text-primary-800"
+                  >
+                    {allCurrentPageSelected ? <CheckSquare size={18} /> : <Square size={18} />}
+                  </button>
+                )}
+              </th>
               <th className="py-3 px-4 text-center w-12">STT</th>
               {/* <th className="py-3 px-4 text-left">Ảnh</th> */}
               <th className="py-3 px-4 text-left">Người gửi</th>
@@ -84,11 +139,13 @@ const PostList: React.FC<PostListProps> = ({
                   onReject={() => handleReject(p.id)}
                   hideImage
                   isLast={idx === posts.length - 1}
+                  isSelected={selectedPostIds.includes(p.id)}
+                  onToggleSelect={onToggleSelect}
                 />
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="text-center py-8 text-gray-400">
+                <td colSpan={7} className="text-center py-8 text-gray-400">
                   Không có bài đăng nào.
                 </td>
               </tr>

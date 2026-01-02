@@ -30,8 +30,8 @@ const SystemConfigPage: React.FC = () => {
         setShowEditModal(true);
     };
 
-    const handleUpdateConfig = async (id: string, value: string) => {
-        const result = await updateConfig(id, value);
+    const handleUpdateConfig = async (id: string, value?: string | null, file?: File | null) => {
+        const result = await updateConfig(id, value, file);
         if (result) {
             toast.success('Cập nhật cấu hình thành công');
         } else {
