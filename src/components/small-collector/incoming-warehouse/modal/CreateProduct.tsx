@@ -7,7 +7,6 @@ import {
     Brand
 } from '@/services/small-collector/BrandService';
 import { X, ScanLine, Upload, Trash2, User } from 'lucide-react';
-import { toast } from 'react-toastify';
 import { useCategoryContext } from '@/contexts/small-collector/CategoryContext';
 import { useUserContext } from '@/contexts/UserContext';
 import CustomSelect from '@/components/ui/CustomSelect';
@@ -75,7 +74,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         const phoneNumber = phone.trim();
 
         if (!phoneNumber) {
-            toast.warning('Vui lòng nhập số điện thoại');
             return;
         }
 
@@ -88,7 +86,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({
 
         // Validate số lượng ảnh
         if (images.length + files.length > 5) {
-            toast.warning('Tối đa 5 ảnh/video cho sản phẩm!');
             return;
         }
 
@@ -98,7 +95,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         Array.from(files).forEach((file) => {
             // Validate dung lượng từng file
             if (file.size > 10 * 1024 * 1024) {
-                toast.warning(`File ${file.name} quá lớn! Tối đa 10MB.`);
                 return;
             }
 
@@ -123,39 +119,30 @@ const CreateProduct: React.FC<CreateProductProps> = ({
 
     const handleSubmit = async () => {
         if (!user) {
-            toast.warning('Vui lòng tìm người gửi trước');
-            phoneInputRef.current?.focus();
             return;
         }
 
         if (!(qrCode || '').trim()) {
-            toast.warning('Vui lòng nhập mã QR sản phẩm');
-            qrInputRef.current?.focus();
             return;
         }
 
         if (!(parentCategoryId || '').trim()) {
-            toast.warning('Vui lòng chọn danh mục cha');
             return;
         }
 
         if (!(subCategoryId || '').trim()) {
-            toast.warning('Vui lòng chọn danh mục con');
             return;
         }
 
         if (!(brandId || '').trim()) {
-            toast.warning('Vui lòng chọn thương hiệu');
             return;
         }
 
         if (imageFiles.length === 0) {
-            toast.warning('Vui lòng thêm ít nhất một ảnh sản phẩm');
             return;
         }
 
         if (imageFiles.length > 5) {
-            toast.warning('Tối đa 5 ảnh/video cho sản phẩm!');
             return;
         }
 
@@ -181,7 +168,6 @@ const CreateProduct: React.FC<CreateProductProps> = ({
 
             handleClose();
         } catch (error) {
-            toast.error('Lỗi khi upload ảnh lên Cloudinary');
             console.error('Upload error:', error);
         } finally {
             setUploading(false);

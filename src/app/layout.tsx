@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import ReduxProvider from "@/components/providers/ReduxProvider";
 import AuthInitializer from "@/components/auth/AuthInitializer";
 
@@ -34,18 +32,6 @@ export default function RootLayout({
         <ReduxProvider>
           <AuthInitializer />
           {children}
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="colored"
-          />
         </ReduxProvider>
       </body>
     </html>

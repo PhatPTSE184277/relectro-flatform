@@ -13,7 +13,6 @@ import {
     getSubCategories,
     Category
 } from '@/services/small-collector/CategoryService';
-import { toast } from 'react-toastify';
 
 interface CategoryContextType {
     parentCategories: Category[];
@@ -41,7 +40,6 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
             const data = await getParentCategories();
             setParentCategories(data || []);
         } catch (err) {
-            toast.error('Lỗi khi tải danh mục cha');
             setParentCategories([]);
         } finally {
             setLoading(false);
@@ -54,7 +52,6 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
             const data = await getSubCategories(parentId);
             setSubCategories(data || []);
         } catch (err) {
-            toast.error('Lỗi khi tải danh mục con');
             setSubCategories([]);
         } finally {
             setLoading(false);

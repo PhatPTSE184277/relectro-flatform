@@ -6,7 +6,6 @@ import { useCollectorContext } from '@/contexts/company/CollectorContext';
 import CollectorList from '@/components/company/collector/CollectorList';
 import CollectorDetail from '@/components/company/collector/modal/CollectorDetail';
 import SearchBox from '@/components/ui/SearchBox';
-import { toast } from 'react-toastify';
 import { Collector } from '@/types';
 import { Users } from 'lucide-react';
 import ImportCollectorModal from '@/components/company/collector/modal/ImportCollectorModal';
@@ -40,16 +39,13 @@ const CollectorPage: React.FC = () => {
 
     const handleImportExcel = async (file: File) => {
         if (!companyId) {
-            toast.error('Không tìm thấy thông tin công ty');
             return;
         }
         try {
             await importCollectors(file);
-            toast.success('Import thành công');
             await fetchCollectors(companyId);
         } catch (error) {
             console.log(error);
-            toast.error('Import thất bại');
         }
     };
 

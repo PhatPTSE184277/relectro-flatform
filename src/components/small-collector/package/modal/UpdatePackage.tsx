@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { X, ScanLine, Trash2, Package } from 'lucide-react';
-import { toast } from 'react-toastify';
 import { getProductByQRCode } from '@/services/small-collector/IWProductService';
 
 interface UpdatePackageProps {
@@ -80,13 +79,11 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
         const qrCode = qrCodeInput.trim();
 
         if (!qrCode) {
-            toast.warning('Vui lòng nhập mã QR');
             return;
         }
 
         // Check if already scanned
         if (scannedProducts.some((p) => p.qrCode === qrCode)) {
-            toast.warning('Sản phẩm này đã được quét');
             setQrCodeInput('');
             inputRef.current?.focus();
             return;
@@ -102,7 +99,6 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                 !normalizedStatus.includes('nhập') &&
                 normalizedStatus !== 'received'
             ) {
-                toast.error('Sản phẩm này chưa được nhập kho');
                 setQrCodeInput('');
                 inputRef.current?.focus();
                 return;
@@ -123,15 +119,10 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                 return updated;
             });
 
-            toast.success(`Đã thêm ${product.categoryName}`);
             setQrCodeInput('');
             inputRef.current?.focus();
         } catch (err: any) {
             console.error('Scan QR error', err);
-            toast.error(
-                err?.response?.data?.message ||
-                    'Không tìm thấy sản phẩm với mã QR này'
-            );
             setQrCodeInput('');
             inputRef.current?.focus();
         } finally {
@@ -141,12 +132,10 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
 
     const handleRemoveProduct = (qrCode: string) => {
         setScannedProducts((prev) => prev.filter((p) => p.qrCode !== qrCode));
-        toast.info('Đã xóa sản phẩm khỏi package');
     };
 
     const handleSubmit = () => {
         if (scannedProducts.length === 0) {
-            toast.warning('Vui lòng thêm ít nhất một sản phẩm');
             return;
         }
         onConfirm({

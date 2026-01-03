@@ -7,7 +7,6 @@ import SearchBox from '@/components/ui/SearchBox';
 import SystemConfigList from '@/components/admin/system-config/SystemConfigList';
 import EditSystemConfigModal from '@/components/admin/system-config/modal/EditSystemConfigModal';
 import { SystemConfig } from '@/services/admin/SystemConfigService';
-import { toast } from 'react-toastify';
 
 const SystemConfigPage: React.FC = () => {
     const { configs, loading, updateConfig } = useSystemConfigContext();
@@ -31,12 +30,7 @@ const SystemConfigPage: React.FC = () => {
     };
 
     const handleUpdateConfig = async (id: string, value?: string | null, file?: File | null) => {
-        const result = await updateConfig(id, value, file);
-        if (result) {
-            toast.success('Cập nhật cấu hình thành công');
-        } else {
-            toast.error('Lỗi khi cập nhật cấu hình');
-        }
+        await updateConfig(id, value, file);
         setShowEditModal(false);
         setSelectedConfig(null);
     };

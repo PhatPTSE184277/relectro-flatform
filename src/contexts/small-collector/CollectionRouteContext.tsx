@@ -12,7 +12,6 @@ import {
     getCollectionRoutesByDate,
     getCollectionRouteDetail
 } from '@/services/small-collector/CollectionRouteService';
-import { toast } from 'react-toastify';
 import type { CollectionRoute } from '@/types/CollectionRoute';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -125,7 +124,7 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
             void fetchAllStats();
         } catch (err) {
             console.error('fetchRoutes error', err);
-            toast.error('Lỗi khi tải tuyến thu gom');
+            // ...existing code...
             setRoutes([]);
             setTotalPages(1);
             setTotalItems(0);
@@ -143,7 +142,6 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
             }
             setRouteDetail(data || null);
         } catch {
-            toast.error('Lỗi khi tải chi tiết tuyến thu gom');
             setRouteDetail(null);
         } finally {
             setLoading(false);

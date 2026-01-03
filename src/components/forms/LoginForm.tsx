@@ -6,7 +6,6 @@ import {
     IoEyeOffOutline,
     IoEyeOutline
 } from 'react-icons/io5';
-import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { login, clearError } from '@/redux/reducers/authReducer';
 import FirstLoginChangePasswordModal from './FirstLoginChangePasswordModal';
@@ -22,22 +21,17 @@ const LoginForm = () => {
 
     useEffect(() => {
         if (error) {
-            toast.error(error);
             dispatch(clearError());
         }
     }, [error, dispatch]);
 
     useEffect(() => {
         if (isAuthenticated && user) {
-            toast.success('Đăng nhập thành công!');
-            
             // Check if first login
             if (user.isFirstLogin) {
-                // Use setTimeout to avoid setState in effect
                 setTimeout(() => setShowFirstLoginChangePassword(true), 0);
                 return;
             }
-            
             // Route based on user role (backend enum)
             switch (user.role) {
                 case 'AdminWarehouse':
@@ -73,7 +67,6 @@ const LoginForm = () => {
         e.preventDefault();
 
         if (!formData.username || !formData.password) {
-            toast.error('Vui lòng nhập đầy đủ thông tin');
             return;
         }
 

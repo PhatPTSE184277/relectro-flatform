@@ -15,7 +15,6 @@ import {
 } from '@/services/shipper/PackageService';
 import { PackageType, FilterPackagesResponse } from '@/types/Package';
 import { PackageStatus } from '@/enums/PackageStatus';
-import { toast } from 'react-toastify';
 
 interface PackageFilter {
     page?: number;
@@ -83,7 +82,7 @@ export const ShipperPackageProvider: React.FC<Props> = ({ children }) => {
                 setTotalItems(response.totalItems);
             } catch (err) {
                 console.error('fetchPackages error', err);
-                toast.error('Lỗi khi tải danh sách package');
+                // ...existing code...
                 setPackages([]);
             } finally {
                 setLoading(false);
@@ -116,7 +115,7 @@ export const ShipperPackageProvider: React.FC<Props> = ({ children }) => {
                 setSelectedPackage(pkg);
             } catch (err) {
                 console.error('fetchPackageDetail error', err);
-                toast.error('Không tìm thấy package này');
+                // ...existing code...
                 setSelectedPackage(null);
             } finally {
                 setLoading(false);
@@ -130,12 +129,12 @@ export const ShipperPackageProvider: React.FC<Props> = ({ children }) => {
             setLoading(true);
             try {
                 await deliverPackage(packageId);
-                toast.success('Giao hàng thành công');
+                // ...existing code...
                 await fetchPackages();
                 await fetchAllStats();
             } catch (err) {
                 console.error('handleDeliverPackage error', err);
-                toast.error('Lỗi khi giao hàng');
+                // ...existing code...
             } finally {
                 setLoading(false);
             }

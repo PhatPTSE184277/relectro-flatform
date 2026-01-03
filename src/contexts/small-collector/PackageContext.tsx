@@ -23,7 +23,6 @@ import {
     CreatePackagePayload,
     UpdatePackagePayload
 } from '@/types/Package';
-import { toast } from 'react-toastify';
 import { useAuth } from '@/redux';
 
 interface PackageFilter {
@@ -116,7 +115,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 setTotalItems(response.totalItems);
             } catch (err) {
                 console.error('fetchPackages error', err);
-                toast.error('Lỗi khi tải danh sách package');
+                // ...existing code...
                 setPackages([]);
             } finally {
                 setLoading(false);
@@ -159,7 +158,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 setSelectedPackage(pkg);
             } catch (err) {
                 console.error('fetchPackageDetail error', err);
-                toast.error('Không tìm thấy package này');
+                // ...existing code...
                 setSelectedPackage(null);
             } finally {
                 setLoading(false);
@@ -173,12 +172,12 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
             setLoading(true);
             try {
                 await createPackage(payload);
-                toast.success('Tạo package thành công');
+                // ...existing code...
                 await fetchPackages();
                 await fetchAllStats();
             } catch (err: any) {
                 console.error('createNewPackage error', err);
-                toast.error(err?.response?.data?.message || 'Lỗi khi tạo package');
+                // ...existing code...
                 throw err;
             } finally {
                 setLoading(false);
@@ -192,11 +191,11 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
             setLoading(true);
             try {
                 await updatePackage(packageId, payload);
-                toast.success('Cập nhật package thành công');
+                // ...existing code...
                 await fetchPackages();
             } catch (err: any) {
                 console.error('updateExistingPackage error', err);
-                toast.error(err?.response?.data?.message || 'Lỗi khi cập nhật package');
+                // ...existing code...
                 throw err;
             } finally {
                 setLoading(false);
@@ -211,12 +210,12 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
             setLoading(true);
             try {
                 await updatePackageStatus(packageId);
-                toast.success('Cập nhật trạng thái thành công');
+                // ...existing code...
                 await fetchPackages();
                 await fetchAllStats();
             } catch (err) {
                 console.error('updateStatus error', err);
-                toast.error('Lỗi khi cập nhật trạng thái package');
+                // ...existing code...
             } finally {
                 setLoading(false);
             }
@@ -230,12 +229,12 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
             setLoading(true);
             try {
                 await deliverPackage(packageId);
-                toast.success('Giao hàng thành công');
+                // ...existing code...
                 await fetchPackages();
                 await fetchAllStats();
             } catch (err) {
                 console.error('handleDeliverPackage error', err);
-                toast.error('Lỗi khi giao hàng');
+                // ...existing code...
             } finally {
                 setLoading(false);
             }
@@ -249,12 +248,12 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
             setLoading(true);
             try {
                 await sendPackageToRecycler(packageId);
-                toast.success('Xác nhận nhận hàng tại nơi tái chế thành công');
+                // ...existing code...
                 await fetchPackages();
                 await fetchAllStats();
             } catch (err) {
                 console.error('handleSendPackageToRecycler error', err);
-                toast.error('Lỗi khi xác nhận nhận hàng tại nơi tái chế');
+                // ...existing code...
             } finally {
                 setLoading(false);
             }

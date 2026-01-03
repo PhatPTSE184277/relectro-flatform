@@ -16,7 +16,6 @@ import {
 } from '@/services/recycle/PackageService';
 import { PackageType, FilterPackagesResponse } from '@/types/Package';
 import { PackageStatus } from '@/enums/PackageStatus';
-import { toast } from 'react-toastify';
 
 interface PackageFilter {
     page?: number;
@@ -97,7 +96,6 @@ export const RecyclerPackageProvider: React.FC<Props> = ({ children }) => {
                 setTotalItems(response.totalItems);
             } catch (err) {
                 console.error('fetchPackages error', err);
-                toast.error('Lỗi khi tải danh sách package');
                 setPackages([]);
             } finally {
                 setLoading(false);
@@ -114,7 +112,6 @@ export const RecyclerPackageProvider: React.FC<Props> = ({ children }) => {
                 setSelectedPackage(pkg);
             } catch (err) {
                 console.error('fetchPackageDetail error', err);
-                toast.error('Không tìm thấy package này');
                 setSelectedPackage(null);
             } finally {
                 setLoading(false);
@@ -128,12 +125,10 @@ export const RecyclerPackageProvider: React.FC<Props> = ({ children }) => {
             setLoading(true);
             try {
                 await sendPackageToRecycler(packageId);
-                toast.success('Xác nhận nhận hàng thành công');
                 await fetchPackages();
                 await fetchAllStats();
             } catch (err) {
                 console.error('handleSendPackageToRecycler error', err);
-                toast.error('Lỗi khi xác nhận nhận hàng');
             } finally {
                 setLoading(false);
             }
@@ -146,12 +141,10 @@ export const RecyclerPackageProvider: React.FC<Props> = ({ children }) => {
             setLoading(true);
             try {
                 await markProductsAsChecked({ packageId, productQrCode });
-                toast.success('Đã đánh dấu sản phẩm thành công');
                 await fetchPackages();
                 await fetchAllStats();
             } catch (err) {
                 console.error('handleMarkProductsAsChecked error', err);
-                toast.error('Lỗi khi đánh dấu sản phẩm');
             } finally {
                 setLoading(false);
             }

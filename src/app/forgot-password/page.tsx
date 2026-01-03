@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, Key, ArrowLeft } from 'lucide-react';
-import { toast } from 'react-toastify';
 import { saveForgotPasswordOtp, checkForgotPasswordOtp, resetForgotPassword } from '@/services/AuthService';
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 import Header from '@/components/ui/Header';
@@ -23,23 +22,20 @@ const ForgotPasswordPage: React.FC = () => {
 
     const handleSendOtp = async () => {
         if (!email) {
-            toast.error('Vui lòng nhập email');
             return;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            toast.error('Email không hợp lệ');
             return;
         }
 
         setLoading(true);
         try {
             await saveForgotPasswordOtp(email);
-            toast.success('Mã OTP đã được gửi đến email của bạn');
             setStep('otp');
         } catch (error: any) {
-            toast.error(error?.response?.data?.message || 'Không thể gửi OTP');
+            console.log(error);
         } finally {
             setLoading(false);
         }
@@ -47,17 +43,15 @@ const ForgotPasswordPage: React.FC = () => {
 
     const handleVerifyOtp = async () => {
         if (!otp) {
-            toast.error('Vui lòng nhập mã OTP');
             return;
         }
 
         setLoading(true);
         try {
             await checkForgotPasswordOtp(email, otp);
-            toast.success('Xác thực OTP thành công');
             setStep('password');
         } catch (error: any) {
-            toast.error(error?.response?.data?.message || 'Mã OTP không đúng');
+            console.log(error);
         } finally {
             setLoading(false);
         }
@@ -65,27 +59,23 @@ const ForgotPasswordPage: React.FC = () => {
 
     const handleResetPassword = async () => {
         if (!newPassword || !confirmPassword) {
-            toast.error('Vui lòng nhập đầy đủ thông tin');
             return;
         }
 
         if (newPassword.length < 6) {
-            toast.error('Mật khẩu phải có ít nhất 6 ký tự');
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            toast.error('Mật khẩu xác nhận không khớp');
             return;
         }
 
         setLoading(true);
         try {
             await resetForgotPassword(email, newPassword, confirmPassword);
-            toast.success('Đổi mật khẩu thành công');
             router.push('/');
         } catch (error: any) {
-            toast.error(error?.response?.data?.message || 'Không thể đổi mật khẩu');
+            console.log(error);
         } finally {
             setLoading(false);
         }

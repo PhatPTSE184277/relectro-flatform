@@ -8,7 +8,6 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - React 19
 - TypeScript
 - Tailwind CSS
-- React Toastify
 - Recharts
 - Lucide React Icons
 

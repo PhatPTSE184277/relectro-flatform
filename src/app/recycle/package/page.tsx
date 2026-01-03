@@ -35,7 +35,6 @@ const RecyclePackagePage: React.FC = () => {
     const filteredPackages = packages.filter((pkg) => {
         const matchSearch =
             pkg.packageId.toLowerCase().includes(search.toLowerCase()) ||
-            pkg.packageName.toLowerCase().includes(search.toLowerCase()) ||
             pkg.products.some(
                 (p) =>
                     p.categoryName

@@ -10,7 +10,6 @@ import SmallCollectionDetail from '@/components/company/small-collection/modal/S
 import SearchBox from '@/components/ui/SearchBox';
 import ImportExcelModal from '@/components/admin/collection-company/modal/ImportComapnyModal';
 import SmallCollectionFilter from '@/components/company/small-collection/SmallCollectionFilter';
-import { toast } from 'react-toastify';
 import { SmallCollectionPoint } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -44,14 +43,12 @@ const SmallCollectionPage: React.FC = () => {
 
     const handleImportExcel = async (file: File) => {
         if (!companyId) {
-            toast.error('Không tìm thấy thông tin công ty');
             return;
         }
         try {
             await importSmallCollection(file);
-            toast.success('Import thành công');
         } catch (error) {
-            toast.error('Import thất bại');
+            console.log(error);
         }
     };
 

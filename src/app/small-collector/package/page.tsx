@@ -39,7 +39,6 @@ const PackagePage: React.FC = () => {
     const filteredPackages = packages.filter((pkg) => {
         const matchSearch =
             pkg.packageId.toLowerCase().includes(search.toLowerCase()) ||
-            pkg.packageName.toLowerCase().includes(search.toLowerCase()) ||
             pkg.products.some(
                 (p) =>
                     p.categoryName.toLowerCase().includes(search.toLowerCase()) ||
@@ -64,17 +63,15 @@ const PackagePage: React.FC = () => {
 
     const handleCreatePackage = async (packageData: {
         packageId: string;
-        packageName: string;
+        // packageName: string; // Removed, not in PackageType
         productsQrCode: string[];
     }) => {
         try {
             const payload = {
                 packageId: packageData.packageId,
-                packageName: packageData.packageName,
-                    smallCollectionPointsId: String(filter.smallCollectionPointId || 1),
+                smallCollectionPointsId: String(filter.smallCollectionPointId || 1),
                 productsQrCode: packageData.productsQrCode
             };
-            
             await createNewPackage(payload);
             setShowCreateModal(false);
         } catch (error) {
@@ -83,17 +80,15 @@ const PackagePage: React.FC = () => {
     };
 
     const handleUpdatePackage = async (packageData: {
-        packageName: string;
+        // packageName: string; // Removed, not in PackageType
         productsQrCode: string[];
     }) => {
         if (!selectedPackage) return;
         try {
             const payload = {
-                packageName: packageData.packageName,
-                    smallCollectionPointsId: String(filter.smallCollectionPointId || 1),
+                smallCollectionPointsId: String(filter.smallCollectionPointId || 1),
                 productsQrCode: packageData.productsQrCode
             };
-            
             await updateExistingPackage(selectedPackage.packageId, payload);
             setShowUpdateModal(false);
             setShowDetailModal(false);
@@ -208,7 +203,6 @@ const PackagePage: React.FC = () => {
                     }}
                     onConfirm={handleUpdatePackage}
                     initialData={{
-                        packageName: selectedPackage.packageName,
                         productsQrCode: selectedPackage.products.map(p => p.qrCode).filter(Boolean) as string[]
                     }}
                 />
@@ -222,7 +216,6 @@ const PackagePage: React.FC = () => {
                     setPackageToUpdateStatus(null);
                 }}
                 onConfirm={handleConfirmUpdateStatus}
-                packageName={selectedPackage?.packageName || ''}
             />
         </div>
     );

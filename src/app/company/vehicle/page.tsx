@@ -10,7 +10,6 @@ import SearchBox from '@/components/ui/SearchBox';
 import { Truck } from 'lucide-react';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'react-toastify';
 
 const VehiclePage: React.FC = () => {
     const { user } = useAuth();
@@ -44,19 +43,16 @@ const VehiclePage: React.FC = () => {
 
     const handleImportExcel = async (file: File) => {
         if (!companyId) {
-            toast.error('Không tìm thấy thông tin công ty');
             return;
         }
         try {
             await importVehicles(file);
-            toast.success('Import thành công');
             await fetchVehicles({
                 collectionCompanyId: companyId,
                 status: filterStatus,
             });
         } catch (error) {
             console.log(error);
-            toast.error('Import thất bại');
         }
     };
 

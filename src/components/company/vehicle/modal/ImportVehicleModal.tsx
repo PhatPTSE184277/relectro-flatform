@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { FileSpreadsheet, X } from 'lucide-react';
-import { toast } from 'react-toastify';
 
 interface ImportVehicleModalProps {
     open: boolean;
@@ -24,7 +23,6 @@ const ImportVehicleModal: React.FC<ImportVehicleModalProps> = ({ open, onClose, 
         ];
 
         if (!validTypes.includes(file.type)) {
-            toast.error('Vui lòng chọn file Excel (.xls hoặc .xlsx)');
             e.target.value = '';
             return;
         }
@@ -34,7 +32,6 @@ const ImportVehicleModal: React.FC<ImportVehicleModalProps> = ({ open, onClose, 
 
     const handleImport = async () => {
         if (!selectedFile) {
-            toast.warning('Vui lòng chọn file để import');
             return;
         }
         setUploading(true);

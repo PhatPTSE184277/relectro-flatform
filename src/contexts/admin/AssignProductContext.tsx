@@ -12,7 +12,6 @@ import {
     getAssignedProductsByDate
 } from '@/services/admin/AssignProductService';
 import { AssignedProduct, AssignProductsRequest } from '@/types/AssignProduct';
-import { toast } from 'react-toastify';
 
 interface AssignProductContextType {
     assignedProducts: AssignedProduct[];
@@ -55,7 +54,7 @@ export const AssignProductProvider: React.FC<Props> = ({ children }) => {
                 setTotalPages(1);
             }
         } catch (err) {
-            toast.error('Lỗi khi tải danh sách sản phẩm đã phân công');
+            console.log(err);
             setAssignedProducts([]);
             setTotalPages(1);
         } finally {
@@ -68,10 +67,9 @@ export const AssignProductProvider: React.FC<Props> = ({ children }) => {
             setLoading(true);
             try {
                 const res = await assignProducts(data);
-                toast.success('Phân công sản phẩm thành công');
                 return res;
             } catch (err) {
-                toast.error('Lỗi khi phân công sản phẩm');
+                console.log(err);
                 return null;
             } finally {
                 setLoading(false);

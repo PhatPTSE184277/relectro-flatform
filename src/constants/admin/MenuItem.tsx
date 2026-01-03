@@ -6,7 +6,8 @@ import {
     Package,
     ClipboardList,
     Wrench,
-    MapPin
+    MapPin,
+    Recycle
 } from 'lucide-react';
 
 export const adminMenuItems = [
@@ -27,6 +28,12 @@ export const adminMenuItems = [
         label: 'Phân công sản phẩm',
         path: '/admin/assign-company',
         icon: <Package size={20} />
+    },
+    {
+        id: 'assign-recycling',
+        label: 'Phân công tái chế',
+        path: '/admin/assign-recycling',
+        icon: <Recycle size={20} />
     },
     {
         id: 'collection-company',

@@ -8,7 +8,6 @@ import ShiftDetail from '@/components/company/shift/modal/ShiftDetail';
 import ShiftFilter, { ShiftStatus } from '@/components/company/shift/ShiftFilter';
 import SearchBox from '@/components/ui/SearchBox';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
-import { toast } from 'react-toastify';
 import { CalendarClock } from 'lucide-react';
 import ImportShiftModal from '@/components/company/shift/modal/ImportShiftModal';
 import { useAuth } from '@/hooks/useAuth';
@@ -66,12 +65,10 @@ const ShiftPage: React.FC = () => {
 
     const handleImportExcel = async (file: File) => {
         if (!companyId) {
-            toast.error('Không tìm thấy thông tin công ty');
             return;
         }
         try {
             await importShifts(file);
-            toast.success('Import thành công');
             await fetchShifts({ 
                 collectionCompanyId: companyId,
                 fromDate,
@@ -80,7 +77,6 @@ const ShiftPage: React.FC = () => {
             });
         } catch (error) {
             console.log(error);
-            toast.error('Import thất bại');
         }
     };
 

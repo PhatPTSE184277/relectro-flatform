@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Lock } from 'lucide-react';
-import { toast } from 'react-toastify';
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 
 interface FirstLoginChangePasswordModalProps {
@@ -19,34 +18,27 @@ const FirstLoginChangePasswordModal: React.FC<FirstLoginChangePasswordModalProps
 
     const handleSubmit = async () => {
         if (!oldPassword || !newPassword || !confirmPassword) {
-            toast.error('Vui lòng nhập đầy đủ thông tin');
             return;
         }
 
         if (newPassword.length < 6) {
-            toast.error('Mật khẩu mới phải có ít nhất 6 ký tự');
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            toast.error('Mật khẩu xác nhận không khớp');
             return;
         }
 
         if (oldPassword === newPassword) {
-            toast.error('Mật khẩu mới không được trùng với mật khẩu cũ');
             return;
         }
 
         setLoading(true);
         try {
             await onConfirm(oldPassword, newPassword, confirmPassword);
-            toast.success('Đổi mật khẩu thành công');
             setOldPassword('');
             setNewPassword('');
             setConfirmPassword('');
-        } catch (error: any) {
-            toast.error(error?.response?.data?.message || 'Không thể đổi mật khẩu');
         } finally {
             setLoading(false);
         }

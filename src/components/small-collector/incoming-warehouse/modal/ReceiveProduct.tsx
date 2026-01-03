@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
 import { X, Package as PackageIcon, ArrowRight } from 'lucide-react';
-import { toast } from 'react-toastify';
 import { getProductByQRCode } from '@/services/small-collector/IWProductService';
 
 interface ReceiveProductProps {
@@ -61,7 +60,6 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
         const code = qrCode.trim();
 
         if (!code) {
-            toast.warning('Vui lòng nhập mã QR sản phẩm');
             return;
         }
 
@@ -75,7 +73,6 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                 !normalizedStatus.includes('đã thu') &&
                 normalizedStatus !== 'collected'
             ) {
-                toast.error('Sản phẩm này chưa được thu gom hoặc không hợp lệ');
                 setQrCode('');
                 qrInputRef.current?.focus();
                 return;
@@ -94,13 +91,8 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
 
             setPoint(product.estimatePoint || 0);
             setReasonForChange('');
-            toast.success('Đã quét sản phẩm thành công');
         } catch (err: any) {
             console.error('Scan QR error', err);
-            toast.error(
-                err?.response?.data?.message ||
-                    'Không tìm thấy sản phẩm với mã QR này'
-            );
             setQrCode('');
             qrInputRef.current?.focus();
         } finally {
@@ -110,7 +102,6 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
 
     const handleSubmit = () => {
         if (!scannedProduct) {
-            toast.warning('Vui lòng quét mã QR sản phẩm trước');
             return;
         }
 
@@ -118,7 +109,6 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
         
         // Nếu admin sửa điểm thì phải nhập lý do
         if (isPointChanged && !reasonForChange.trim()) {
-            toast.warning('Vui lòng nhập lý do đổi điểm');
             return;
         }
 

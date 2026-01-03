@@ -15,7 +15,6 @@ import {
     rejectPost
 } from '@/services/admin/PostService';
 import type { Post } from '@/types/post';
-import { toast } from 'react-toastify';
 
 interface PostContextType {
     posts: Post[];
@@ -78,7 +77,7 @@ export const PostProvider: React.FC<Props> = ({ children }) => {
                 setFilter(params);
             } catch (err) {
                 console.error('fetchPosts error', err);
-                toast.error('Lỗi khi tải danh sách bài đăng');
+                // ...existing code...
                 setPosts([]);
             } finally {
                 setLoading(false);
@@ -99,7 +98,7 @@ export const PostProvider: React.FC<Props> = ({ children }) => {
             });
         } catch (err) {
             console.error('fetchPostById error', err);
-            toast.error('Lỗi khi tải bài đăng');
+            // ...existing code...
             setSelectedPost(null);
         }
     }, []);
@@ -109,14 +108,12 @@ export const PostProvider: React.FC<Props> = ({ children }) => {
             setLoading(true);
             try {
                 await approvePost([postId]);
-                toast.success('Duyệt bài đăng thành công');
+                // ...existing code...
                 await fetchPosts();
                 if (selectedPost?.id === postId) await fetchPostById(postId);
             } catch (err: any) {
                 console.error('approvePost error', err);
-                toast.error(
-                    err?.response?.data?.message || 'Lỗi khi duyệt bài đăng'
-                );
+                // ...existing code...
             } finally {
                 setLoading(false);
             }
@@ -129,14 +126,12 @@ export const PostProvider: React.FC<Props> = ({ children }) => {
             setLoading(true);
             try {
                 await rejectPost([postId], reason);
-                toast.success('Từ chối bài đăng thành công');
+                // ...existing code...
                 await fetchPosts();
                 if (selectedPost?.id === postId) await fetchPostById(postId);
             } catch (err: any) {
                 console.error('rejectPost error', err);
-                toast.error(
-                    err?.response?.data?.message || 'Lỗi khi từ chối bài đăng'
-                );
+                // ...existing code...
             } finally {
                 setLoading(false);
             }
@@ -147,19 +142,17 @@ export const PostProvider: React.FC<Props> = ({ children }) => {
     const handleBulkApprove = useCallback(
         async (postIds: string[]) => {
             if (postIds.length === 0) {
-                toast.warning('Vui lòng chọn ít nhất một bài đăng');
+                // ...existing code...
                 return;
             }
             setLoading(true);
             try {
                 await approvePost(postIds);
-                toast.success(`Duyệt thành công ${postIds.length} bài đăng`);
+                // ...existing code...
                 await fetchPosts();
             } catch (err: any) {
                 console.error('bulkApprove error', err);
-                toast.error(
-                    err?.response?.data?.message || 'Lỗi khi duyệt nhiều bài đăng'
-                );
+                // ...existing code...
             } finally {
                 setLoading(false);
             }
@@ -170,19 +163,17 @@ export const PostProvider: React.FC<Props> = ({ children }) => {
     const handleBulkReject = useCallback(
         async (postIds: string[], reason: string) => {
             if (postIds.length === 0) {
-                toast.warning('Vui lòng chọn ít nhất một bài đăng');
+                // ...existing code...
                 return;
             }
             setLoading(true);
             try {
                 await rejectPost(postIds, reason);
-                toast.success(`Từ chối thành công ${postIds.length} bài đăng`);
+                // ...existing code...
                 await fetchPosts();
             } catch (err: any) {
                 console.error('bulkReject error', err);
-                toast.error(
-                    err?.response?.data?.message || 'Lỗi khi từ chối nhiều bài đăng'
-                );
+                // ...existing code...
             } finally {
                 setLoading(false);
             }

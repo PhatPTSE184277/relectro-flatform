@@ -12,7 +12,6 @@ import {
 	AssignCompanyConfigPostResponse
 } from '@/types';
 import { CompanyConfigDetail } from '@/types/CompanyConfig';
-import { toast } from 'react-toastify';
 
 interface CompanyConfigContextType {
 	config: AssignCompanyConfigResponse | null;
@@ -40,7 +39,6 @@ export const CompanyConfigProvider: React.FC<Props> = ({ children }) => {
 			setConfig(res);
 			setCompaniesWithPoints(res.companies || []);
 		} catch (err) {
-			toast.error('Lỗi khi tải cấu hình công ty');
 			setConfig(null);
 			setCompaniesWithPoints([]);
 		} finally {
@@ -52,11 +50,9 @@ export const CompanyConfigProvider: React.FC<Props> = ({ children }) => {
 		setLoading(true);
 		try {
 			const res = await postAssignCompanyConfig(data);
-			toast.success('Cập nhật cấu hình thành công');
 			await fetchConfig();
 			return res;
 		} catch (err) {
-			toast.error('Lỗi khi cập nhật cấu hình');
 			return null;
 		} finally {
 			setLoading(false);
@@ -86,7 +82,6 @@ export const CompanyConfigProvider: React.FC<Props> = ({ children }) => {
 		try {
 			return await getCompanyConfigDetail(String(companyId));
 		} catch (err) {
-			toast.error('Lỗi khi tải chi tiết cấu hình công ty');
 			return null;
 		}
 	}, []);

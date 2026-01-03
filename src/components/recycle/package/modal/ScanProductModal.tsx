@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PackageType } from '@/types/Package';
 import { X, QrCode, List, Tag, ListCheck, Truck } from 'lucide-react';
-import { toast } from 'react-toastify';
 import SummaryCard from '@/components/ui/SummaryCard';
 import ProductList from './ProductList';
 import { PackageStatus } from '@/enums/PackageStatus';
@@ -40,7 +39,6 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
         const trimmedQr = qrCode.trim();
 
         if (!trimmedQr) {
-            toast.warning('Vui lòng nhập mã QR sản phẩm');
             return;
         }
 
@@ -48,7 +46,6 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
         const product = pkg.products.find((p) => p.qrCode === trimmedQr);
         
         if (!product) {
-            toast.error('Không tìm thấy sản phẩm với mã QR này trong package');
             setQrCode('');
             inputRef.current?.focus();
             return;
@@ -56,7 +53,6 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
 
         // Check if already checked from API
         if (product.isChecked) {
-            toast.warning('Sản phẩm này đã được kiểm tra rồi');
             setQrCode('');
             inputRef.current?.focus();
             return;
@@ -64,7 +60,6 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
 
         // Check if already scanned in this session
         if (checkedProducts.has(trimmedQr)) {
-            toast.warning('Sản phẩm này đã được quét rồi trong phiên này');
             setQrCode('');
             inputRef.current?.focus();
             return;
@@ -72,14 +67,12 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
 
         // Add to checked list
         setCheckedProducts((prev) => new Set([...prev, trimmedQr]));
-        toast.success('Đã quét: ' + product.categoryName + ' - ' + product.brandName);
         setQrCode('');
         inputRef.current?.focus();
     };
 
     const handleSubmit = () => {
         if (checkedProducts.size === 0) {
-            toast.warning('Vui lòng quét ít nhất một sản phẩm');
             return;
         }
 

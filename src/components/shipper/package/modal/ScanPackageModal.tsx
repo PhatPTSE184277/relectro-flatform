@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Package as PackageIcon, X, List, ArrowRight, Tag, ListCheck, Truck } from 'lucide-react';
-import { toast } from 'react-toastify';
 import { getPackageById } from '@/services/shipper/PackageService';
 import { PackageType } from '@/types/Package';
 import { PackageStatus } from '@/enums/PackageStatus';
@@ -40,7 +39,6 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
         const trimmedId = packageId.trim();
 
         if (!trimmedId) {
-            toast.warning('Vui lòng nhập mã package');
             setTimeout(() => inputRef.current?.focus(), 0);
             return;
         }
@@ -50,20 +48,14 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
             const pkg = await getPackageById(trimmedId);
             // Check if package status is valid for delivery
             if (pkg.status !== PackageStatus.Closed) {
-                toast.error('Package này chưa được đóng gói');
                 setPackageId('');
                 setTimeout(() => inputRef.current?.focus(), 0);
                 return;
             }
 
             setScannedPackage(pkg);
-            toast.success('Đã quét package thành công');
         } catch (err: any) {
             console.error('Scan QR error', err);
-            toast.error(
-                err?.response?.data?.message ||
-                    'Không tìm thấy package với mã này'
-            );
             setPackageId('');
             setTimeout(() => inputRef.current?.focus(), 0);
         } finally {

@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { getDashboardSummary, DashboardSummaryResponse } from '@/services/admin/DashboardService';
-import { toast } from 'react-toastify';
 
 interface DashboardContextType {
 	summary: DashboardSummaryResponse | null;
@@ -24,7 +23,6 @@ export const DashboardProvider: React.FC<Props> = ({ children }) => {
 			const res = await getDashboardSummary(fromDate, toDate);
 			setSummary(res);
 		} catch (err) {
-			toast.error('Lỗi khi tải dữ liệu dashboard');
 			setSummary(null);
 		} finally {
 			setLoading(false);

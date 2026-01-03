@@ -5,7 +5,6 @@ import { Settings2, Building2, KeyRound, MapPin } from 'lucide-react';
 import { useSettingGroupContext } from '@/contexts/company/SettingGroupContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import { toast } from 'react-toastify';
 import EditSettingModal from '@/components/company/setting-group/modal/EditSettingModal';
 import SettingGroupList from '@/components/company/setting-group/SettingGroupList';
 import SearchBox from '@/components/ui/SearchBox';
@@ -31,7 +30,6 @@ const SettingGroupPage: React.FC = () => {
 
     const handleSave = async (pointId: string, serviceTime: number, travelTime: number) => {
         if (serviceTime <= 0 || travelTime <= 0) {
-            toast.error('Thời gian phải lớn hơn 0');
             return;
         }
 
@@ -40,11 +38,8 @@ const SettingGroupPage: React.FC = () => {
             serviceTimeMinutes: serviceTime,
             avgTravelTimeMinutes: travelTime
         });
-
-        toast.success('Cập nhật cấu hình thành công');
         setShowModal(false);
         setSelectedPoint(null);
-        
         // Refresh data
         if (user?.collectionCompanyId) {
             fetchCompanySetting(String(user.collectionCompanyId));

@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { X, ScanLine, Package, Trash2, Plus } from 'lucide-react';
-import { toast } from 'react-toastify';
 import { getProductByQRCode } from '@/services/small-collector/IWProductService';
 
 interface CreatePackageProps {
@@ -65,13 +64,11 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
         const qrCode = qrCodeInput.trim();
 
         if (!qrCode) {
-            toast.warning('Vui lòng nhập mã QR');
             return;
         }
 
         // Check if already scanned
         if (scannedProducts.some((p) => p.qrCode === qrCode)) {
-            toast.warning('Sản phẩm này đã được quét');
             setQrCodeInput('');
             inputRef.current?.focus();
             return;
@@ -87,7 +84,6 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                 !normalizedStatus.includes('nhập') &&
                 normalizedStatus !== 'received'
             ) {
-                toast.error('Sản phẩm này chưa được nhập kho');
                 setQrCodeInput('');
                 inputRef.current?.focus();
                 return;
@@ -108,15 +104,10 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                 return updated;
             });
 
-            toast.success(`Đã thêm ${product.categoryName}`);
             setQrCodeInput('');
             inputRef.current?.focus();
         } catch (err: any) {
             console.error('Scan QR error', err);
-            toast.error(
-                err?.response?.data?.message ||
-                    'Không tìm thấy sản phẩm với mã QR này'
-            );
             setQrCodeInput('');
             inputRef.current?.focus();
         } finally {
@@ -126,16 +117,13 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
 
     const handleRemoveProduct = (qrCode: string) => {
         setScannedProducts((prev) => prev.filter((p) => p.qrCode !== qrCode));
-        toast.info('Đã xóa sản phẩm khỏi package');
     };
 
     const handleSubmit = () => {
         if (!packageId.trim()) {
-            toast.warning('Vui lòng nhập mã package');
             return;
         }
         if (scannedProducts.length === 0) {
-            toast.warning('Vui lòng thêm ít nhất một sản phẩm');
             return;
         }
         onConfirm({

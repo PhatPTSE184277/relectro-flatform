@@ -14,7 +14,6 @@ import {
     importCollectionCompaniesFromExcel,
     CollectionCompany
 } from '@/services/admin/CollectionCompanyService';
-import { toast } from 'react-toastify';
 import { useAuth } from '@/hooks/useAuth';
 
 interface CollectionCompanyContextType {
@@ -87,12 +86,10 @@ export const CollectionCompanyProvider: React.FC<Props> = ({ children }) => {
             setError(null);
             try {
                 const res = await importCollectionCompaniesFromExcel(file);
-                toast.success('Import thành công');
                 await fetchCompanies();
                 return res;
             } catch (err: any) {
                 setError(err?.response?.data?.message || 'Lỗi khi import file');
-                toast.error('Import thất bại');
                 return null;
             } finally {
                 setLoading(false);
