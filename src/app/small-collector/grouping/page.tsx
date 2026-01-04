@@ -75,10 +75,10 @@ const GroupingPage: React.FC = () => {
         page * itemsPerPage
     ) || [];
 
-    const steps = [
-        { id: 1, name: 'Gợi ý gom nhóm', icon: <Users size={20} /> },
-        { id: 2, name: 'Tạo nhóm thu gom', icon: <Calendar size={20} /> }
-    ];
+    // const steps = [
+    //     { id: 1, name: 'Gợi ý gom nhóm', icon: <Users size={20} /> },
+    //     { id: 2, name: 'Tạo nhóm thu gom', icon: <Calendar size={20} /> }
+    // ];
 
     return (
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
@@ -109,78 +109,37 @@ const GroupingPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Steps */}
-            <div className='mb-8'>
-                <div className='flex items-center justify-center'>
-                    {steps.map((step, index) => (
-                        <React.Fragment key={step.id}>
-                            <div className='flex flex-col items-center'>
-                                <div
-                                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
-                                        activeStep >= step.id
-                                            ? 'bg-primary-600 text-white'
-                                            : 'bg-gray-200 text-gray-400'
-                                    }`}
-                                >
-                                    {step.icon}
-                                </div>
-                                <span
-                                    className={`mt-2 text-sm font-medium ${
-                                        activeStep >= step.id
-                                            ? 'text-primary-600'
-                                            : 'text-gray-400'
-                                    }`}
-                                >
-                                    {step.name}
-                                </span>
-                            </div>
-                            {index < steps.length - 1 && (
-                                <div
-                                    className={`w-24 h-1 mx-4 transition-all ${
-                                        activeStep > step.id
-                                            ? 'bg-primary-600'
-                                            : 'bg-gray-200'
-                                    }`}
-                                />
-                            )}
-                        </React.Fragment>
-                    ))}
-                </div>
-            </div>
-
-            {/* Content */}
-            <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-6'>
-                {activeStep === 1 && (
-                    <>
-                        <PreAssignStep
-                            loading={loading}
-                            products={paginatedProducts}
-                            loadThreshold={loadThreshold}
-                            setLoadThreshold={setLoadThreshold}
-                            onGetSuggestion={handleGetSuggestion}
-                            page={page}
-                            itemsPerPage={itemsPerPage}
-                        />
-                        <Pagination
-                            page={page}
-                            totalPages={totalPages}
-                            onPageChange={setPage}
-                        />
-                    </>
-                )}
-
-                {activeStep === 2 && preAssignResult && (
-                    <AssignDayStep
+            {/* Content (no white box) */}
+            {activeStep === 1 && (
+                <>
+                    <PreAssignStep
                         loading={loading}
-                        preAssignResult={preAssignResult}
-                        vehicles={vehicles}
-                        products={pendingProducts}
-                        onCreateGrouping={handleCreateGrouping}
-                        onBack={() => setActiveStep(1)}
-                        calculateRoute={calculateRoute}
+                        products={paginatedProducts}
+                        loadThreshold={loadThreshold}
+                        setLoadThreshold={setLoadThreshold}
+                        onGetSuggestion={handleGetSuggestion}
+                        page={page}
+                        itemsPerPage={itemsPerPage}
                     />
-                )}
-            </div>
+                    <Pagination
+                        page={page}
+                        totalPages={totalPages}
+                        onPageChange={setPage}
+                    />
+                </>
+            )}
+
+            {activeStep === 2 && preAssignResult && (
+                <AssignDayStep
+                    loading={loading}
+                    preAssignResult={preAssignResult}
+                    vehicles={vehicles}
+                    products={pendingProducts}
+                    onCreateGrouping={handleCreateGrouping}
+                    onBack={() => setActiveStep(1)}
+                    calculateRoute={calculateRoute}
+                />
+            )}
         </div>
     );
 };

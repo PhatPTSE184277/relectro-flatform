@@ -239,32 +239,36 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                             </h3>
                         </div>
 
-                        <div className='overflow-y-auto max-h-64'>
-                            {scannedProducts.length === 0 ? (
-                                <div className='text-center py-8 text-gray-400'>
-                                    <Package
-                                        size={48}
-                                        className='mx-auto mb-2 opacity-50'
-                                    />
-                                    <p>Chưa có sản phẩm nào</p>
-                                    <p className='text-sm'>
-                                        Quét QR code để thêm sản phẩm
-                                    </p>
-                                </div>
-                            ) : (
-                                <table className='w-full text-sm text-gray-800'>
-                                    <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
+                        <table className='w-full text-sm text-gray-800 table-fixed'>
+                            <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
+                                <tr>
+                                    <th className='py-3 px-4 text-center w-16'>STT</th>
+                                    <th className='py-3 px-4 text-left w-40'>Danh mục</th>
+                                    <th className='py-3 px-4 text-left w-32'>Thương hiệu</th>
+                                    <th className='py-3 px-4 text-left w-56'>Ghi chú</th>
+                                    <th className='py-3 px-4 text-left w-40'>QR Code</th>
+                                    <th className='py-3 px-4 text-center w-24'>Hành động</th>
+                                </tr>
+                            </thead>
+                        </table>
+                        <div className='max-h-64 overflow-y-auto'>
+                            <table className='w-full text-sm text-gray-800 table-fixed'>
+                                <tbody>
+                                    {scannedProducts.length === 0 ? (
                                         <tr>
-                                            <th className='py-3 px-4 text-center'>STT</th>
-                                            <th className='py-3 px-4 text-left'>Danh mục</th>
-                                            <th className='py-3 px-4 text-left'>Thương hiệu</th>
-                                            <th className='py-3 px-4 text-left'>Ghi chú</th>
-                                            <th className='py-3 px-4 text-left'>QR Code</th>
-                                            <th className='py-3 px-4 text-center'>Hành động</th>
+                                            <td colSpan={6} className='text-center py-8 text-gray-400'>
+                                                <Package
+                                                    size={48}
+                                                    className='mx-auto mb-2 opacity-50'
+                                                />
+                                                <p>Chưa có sản phẩm nào</p>
+                                                <p className='text-sm'>
+                                                    Quét QR code để thêm sản phẩm
+                                                </p>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        {scannedProducts.map((product, index) => (
+                                    ) : (
+                                        scannedProducts.map((product, index) => (
                                             <tr
                                                 key={product.qrCode}
                                                 ref={
@@ -274,24 +278,24 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                                 }
                                                 className={`border-b border-primary-100 hover:bg-primary-50/40 transition-colors`}
                                             >
-                                                <td className='py-3 px-4 font-medium text-center'>
+                                                <td className='py-3 px-4 font-medium text-center w-16'>
                                                     <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold mx-auto'>
                                                         {index + 1}
                                                     </span>
                                                 </td>
-                                                <td className='py-3 px-4 font-medium'>
+                                                <td className='py-3 px-4 font-medium w-40'>
                                                     <div className='text-gray-900'>{product.categoryName}</div>
                                                 </td>
-                                                <td className='py-3 px-4 text-gray-700'>
+                                                <td className='py-3 px-4 text-gray-700 w-32'>
                                                     {product.brandName}
                                                 </td>
-                                                <td className='py-3 px-4 text-gray-600 text-xs max-w-xs truncate'>
+                                                <td className='py-3 px-4 text-gray-600 text-xs w-56 truncate'>
                                                     {product.description || '-'}
                                                 </td>
-                                                <td className='py-3 px-4 text-gray-400 font-mono text-xs'>
+                                                <td className='py-3 px-4 text-gray-400 font-mono text-xs w-40'>
                                                     {product.qrCode}
                                                 </td>
-                                                <td className='py-3 px-4'>
+                                                <td className='py-3 px-4 w-24'>
                                                     <div className='flex justify-center gap-2'>
                                                         <button
                                                             onClick={() =>
@@ -307,10 +311,10 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                                     </div>
                                                 </td>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            )}
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

@@ -110,9 +110,6 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                     <h2 className='text-2xl font-bold text-gray-900 mb-2'>
                         Bước 2: Tạo nhóm thu gom
                     </h2>
-                    <p className='text-gray-600'>
-                        Chọn ngày, phương tiện và sản phẩm để tạo nhóm thu gom
-                    </p>
                 </div>
                 <button
                     onClick={onBack}

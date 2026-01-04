@@ -8,12 +8,14 @@ import React, {
     ReactNode
 } from 'react';
 import {
-    getRecyclingCompanies,
     assignSmallCollectionPoints,
     updateSmallCollectionPointAssignment,
     listSmallCollectionPoints,
-    getRecyclingTasks
+    getRecyclingTasks,
+    getScpAssignmentDetail as fetchScpAssignmentDetail,
+    getRecyclingCompanies
 } from '@/services/admin/AssignRecyclingService';
+import { getCollectionCompanies } from '@/services/admin/CollectionCompanyService';
 
 interface AssignRecyclingContextType {
     recyclingCompanies: any[];
@@ -21,15 +23,14 @@ interface AssignRecyclingContextType {
     loading: boolean;
     fetchRecyclingCompanies: () => Promise<void>;
     fetchSmallCollectionPoints: () => Promise<void>;
-    assignSmallPoints: (data: {
-        recyclingCompanyId: string;
-        smallCollectionPointIds: string[];
-    }) => Promise<any>;
+    assignSmallPoints: (data: Array<{ recyclingCompanyId: string; smallCollectionPointIds: string[] }>) => Promise<any>;
     updateSmallPointAssignment: (
         scpId: string,
         data: { newRecyclingCompanyId: string }
     ) => Promise<any>;
     fetchRecyclingTasks: (recyclingCompanyId: string) => Promise<any>;
+    getScpAssignmentDetail: (id: string) => Promise<any>;
+    getCollectionCompanies: typeof getCollectionCompanies;
 }
 
 const AssignRecyclingContext = createContext<AssignRecyclingContextType | undefined>(undefined);
@@ -65,10 +66,7 @@ export const AssignRecyclingProvider: React.FC<Props> = ({ children }) => {
         }
     }, []);
 
-    const assignSmallPoints = useCallback(async (data: {
-        recyclingCompanyId: string;
-        smallCollectionPointIds: string[];
-    }) => {
+    const assignSmallPoints = useCallback(async (data: Array<{ recyclingCompanyId: string; smallCollectionPointIds: string[] }>) => {
         setLoading(true);
         try {
             const res = await assignSmallCollectionPoints(data);
@@ -107,6 +105,18 @@ export const AssignRecyclingProvider: React.FC<Props> = ({ children }) => {
         }
     }, []);
 
+    const getScpAssignmentDetail = useCallback(async (id: string) => {
+        setLoading(true);
+        try {
+            const data = await fetchScpAssignmentDetail(id);
+            return data;
+        } catch (err) {
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     const value: AssignRecyclingContextType = {
         recyclingCompanies,
         smallCollectionPoints,
@@ -115,7 +125,9 @@ export const AssignRecyclingProvider: React.FC<Props> = ({ children }) => {
         fetchSmallCollectionPoints,
         assignSmallPoints,
         updateSmallPointAssignment,
-        fetchRecyclingTasks
+        fetchRecyclingTasks,
+        getScpAssignmentDetail,
+        getCollectionCompanies
     };
 
     return (

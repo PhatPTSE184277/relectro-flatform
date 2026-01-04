@@ -1,8 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import CustomSelect from '@/components/ui/CustomSelect';
+import SearchableSelect from '@/components/ui/SearchableSelect';
 import { X } from 'lucide-react';
+import { getCollectionCompanies } from '@/services/admin/CollectionCompanyService';
+import { getScpAssignmentDetail, getRecyclingCompanies } from '@/services/admin/AssignRecyclingService';
+import AssignRecyclingPointList from './AssignRecyclingPointList';
+import RecyclingCompanySelectModal from './RecyclingSelectModal';
 
 interface SmallCollectionPoint {
     smallPointId: string;
@@ -14,7 +18,7 @@ interface SmallCollectionPoint {
 interface AssignRecyclingModalProps {
     open: boolean;
     onClose: () => void;
-    onConfirm: (data: { recyclingCompanyId: string; smallCollectionPointIds: string[] }) => void;
+    onConfirm: (data: Array<{ recyclingCompanyId: string; smallCollectionPointIds: string[] }>) => void;
     companies: any[];
     smallPoints: SmallCollectionPoint[];
 }
@@ -23,76 +27,127 @@ const AssignRecyclingModal: React.FC<AssignRecyclingModalProps> = ({
     open,
     onClose,
     onConfirm,
-    companies,
-    smallPoints
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    companies: _companies,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    smallPoints: _smallPoints
 }) => {
+    const [companies, setCompanies] = useState<any[]>([]);
     const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
-    const [selectedPointIds, setSelectedPointIds] = useState<string[]>([]);
+    const [companySmallPoints, setCompanySmallPoints] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [loadingPoints, setLoadingPoints] = useState(false);
+    const [recyclingCompanies, setRecyclingCompanies] = useState<any[]>([]);
+    const [showRecyclingModal, setShowRecyclingModal] = useState(false);
+    const [selectedPointForAssignment, setSelectedPointForAssignment] = useState<string | null>(null);
+    const [pointRecyclingAssignments, setPointRecyclingAssignments] = useState<Record<string, string>>({});
 
     useEffect(() => {
         if (open) {
-            setSelectedCompanyId('');
-            setSelectedPointIds([]);
+            // Gọi API lấy danh sách công ty thu gom
+            getCollectionCompanies().then((data) => {
+                // Chuẩn hóa: luôn có companyId là string duy nhất
+                const normalized = data.map((c: any) => ({
+                    ...c,
+                    companyId: c.id?.toString() || c.companyId
+                }));
+                setCompanies(normalized);
+                const firstCompany = normalized.length > 0 ? normalized[0].companyId : '';
+                setSelectedCompanyId(firstCompany);
+            });
+            // Gọi API lấy danh sách công ty tái chế
+            getRecyclingCompanies().then((data) => {
+                setRecyclingCompanies(data);
+            });
         }
     }, [open]);
 
-    const handleTogglePoint = (pointId: string) => {
-        if (selectedPointIds.includes(pointId)) {
-            setSelectedPointIds(selectedPointIds.filter(id => id !== pointId));
+    // Gọi API lấy danh sách điểm thu gom khi chọn công ty
+    useEffect(() => {
+        if (selectedCompanyId) {
+            setLoadingPoints(true);
+            getScpAssignmentDetail(selectedCompanyId)
+                .then((data) => {
+                    setCompanySmallPoints(data?.smallPoints || []);
+                })
+                .catch(() => {
+                    setCompanySmallPoints([]);
+                })
+                .finally(() => {
+                    setLoadingPoints(false);
+                });
         } else {
-            setSelectedPointIds([...selectedPointIds, pointId]);
+            setCompanySmallPoints([]);
         }
-    };
-
-    const handleToggleAll = () => {
-        const unassignedPoints = smallPoints.filter(p => !p.recyclingCompany);
-        const allSelected = unassignedPoints.every(p => selectedPointIds.includes(p.smallPointId));
-        
-        if (allSelected) {
-            setSelectedPointIds([]);
-        } else {
-            setSelectedPointIds(unassignedPoints.map(p => p.smallPointId));
-        }
-    };
+    }, [selectedCompanyId]);
 
     const handleConfirm = async () => {
         if (!selectedCompanyId) {
             return;
         }
-        if (selectedPointIds.length === 0) {
+        // Kiểm tra có assignment nào không
+        if (Object.keys(pointRecyclingAssignments).length === 0) {
             return;
         }
-
         setLoading(true);
         try {
-            await onConfirm({
-                recyclingCompanyId: selectedCompanyId,
-                smallCollectionPointIds: selectedPointIds
-            });
+            // Gom các points theo recyclingCompanyId
+            const groupedByCompany: Record<string, string[]> = {};
+            for (const [pointId, recyclingCompanyId] of Object.entries(pointRecyclingAssignments)) {
+                if (!groupedByCompany[recyclingCompanyId]) {
+                    groupedByCompany[recyclingCompanyId] = [];
+                }
+                groupedByCompany[recyclingCompanyId].push(pointId);
+            }
+            
+            // Chuyển thành array format đúng
+            const assignments: Array<{ recyclingCompanyId: string; smallCollectionPointIds: string[] }> = [];
+            for (const [recyclingCompanyId, pointIds] of Object.entries(groupedByCompany)) {
+                assignments.push({
+                    recyclingCompanyId,
+                    smallCollectionPointIds: pointIds
+                });
+            }
+            
+            // Gọi API với array format
+            await onConfirm(assignments);
         } finally {
             setLoading(false);
         }
     };
 
+    const handleOpenCompanyModal = (pointId: string) => {
+        setSelectedPointForAssignment(pointId);
+        setShowRecyclingModal(true);
+    };
+
+    const handleSelectRecyclingCompany = (recyclingCompanyId: string) => {
+        if (selectedPointForAssignment) {
+            // Lưu lại mapping giữa điểm và công ty tái chế
+            setPointRecyclingAssignments(prev => ({
+                ...prev,
+                [selectedPointForAssignment]: recyclingCompanyId
+            }));
+            setSelectedPointForAssignment(null);
+        }
+    };
+
     const handleClose = () => {
         setSelectedCompanyId('');
-        setSelectedPointIds([]);
+        setShowRecyclingModal(false);
+        setSelectedPointForAssignment(null);
+        setPointRecyclingAssignments({});
         onClose();
     };
 
     if (!open) return null;
 
-    const unassignedPoints = smallPoints.filter(p => !p.recyclingCompany);
-    const allSelected = unassignedPoints.length > 0 && unassignedPoints.every(p => selectedPointIds.includes(p.smallPointId));
-
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
             <div className='absolute inset-0 bg-black/30 backdrop-blur-sm'></div>
-
-            <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]'>
+            <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-visible z-10 max-h-[90vh]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
+                <div className='flex justify-between items-center p-6 bg-linear-to-r from-primary-50 to-primary-100 rounded-t-2xl'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-900'>Phân công điểm thu gom</h2>
                     </div>
@@ -103,92 +158,62 @@ const AssignRecyclingModal: React.FC<AssignRecyclingModalProps> = ({
                         <X size={28} />
                     </button>
                 </div>
-
                 {/* Body */}
-                <div className='flex-1 overflow-y-auto p-6 space-y-6'>
+                <div className='flex-1 overflow-visible p-6 space-y-6'>
                     {/* Company Selection */}
                     <div className='space-y-2'>
                         <label className='block text-sm font-medium text-gray-700'>
-                            Công ty tái chế <span className='text-red-500'>*</span>
+                            Công ty thu gom <span className='text-red-500'>*</span>
                         </label>
-                        <CustomSelect
+                        <SearchableSelect
                             options={companies}
                             value={selectedCompanyId}
                             onChange={setSelectedCompanyId}
                             getLabel={(company) => company.companyName || company.name}
                             getValue={(company) => company.companyId}
-                            placeholder='-- Chọn công ty tái chế --'
+                            placeholder='-- Chọn công ty thu gom --'
                         />
                     </div>
-
-                    {/* Small Collection Points */}
-                    <div className='space-y-2'>
-                        <label className='block text-sm font-medium text-gray-700'>
-                            Điểm thu gom nhỏ <span className='text-red-500'>*</span>
-                        </label>
-                        <div className='bg-white rounded-xl shadow-sm border border-gray-100 max-h-96 overflow-y-auto'>
-                            <table className='w-full text-sm text-gray-800'>
-                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
-                                    <tr>
-                                        <th className='py-3 px-4 text-center w-12'>
-                                            <input
-                                                type='checkbox'
-                                                checked={selectedPointIds.length === smallPoints.length && smallPoints.length > 0}
-                                                onChange={handleToggleAll}
-                                            />
-                                        </th>
-                                        <th className='py-3 px-4 text-left'>Tên điểm</th>
-                                        <th className='py-3 px-4 text-left'>Địa chỉ</th>
-                                        <th className='py-3 px-4 text-left'>Trạng thái</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {smallPoints.length > 0 ? (
-                                        smallPoints.map((point) => (
-                                            <tr key={point.smallPointId}>
-                                                <td className='py-3 px-4 text-center'>
-                                                    <input
-                                                        type='checkbox'
-                                                        checked={selectedPointIds.includes(point.smallPointId)}
-                                                        onChange={() => handleTogglePoint(point.smallPointId)}
-                                                    />
-                                                </td>
-                                                <td className='py-3 px-4'>{point.name}</td>
-                                                <td className='py-3 px-4'>{point.address}</td>
-                                                <td className='py-3 px-4'>
-                                                    <span className='px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs'>
-                                                        {point.recyclingCompany ? 'Đã phân công' : 'Chưa phân công'}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan={4} className='text-center py-6 text-gray-400'>
-                                                Không có điểm thu gom nào.
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                    {/* Small Collection Points of selected company */}
+                    {selectedCompanyId && (
+                        <div className='space-y-2'>
+                            <label className='block text-sm font-medium text-gray-700'>
+                                Điểm thu gom nhỏ <span className='text-red-500'>*</span>
+                            </label>
+                            <AssignRecyclingPointList
+                                points={companySmallPoints}
+                                loading={loadingPoints}
+                                onSelectCompany={handleOpenCompanyModal}
+                                pointRecyclingAssignments={pointRecyclingAssignments}
+                                recyclingCompanies={recyclingCompanies}
+                                isAssignMode={true}
+                            />
                         </div>
-                        <p className='text-xs text-gray-500 mt-1'>
-                            Đã chọn: {selectedPointIds.length} điểm thu gom
-                        </p>
-                    </div>
+                    )}
                 </div>
-
                 {/* Footer */}
-                <div className='flex justify-end items-center gap-3 p-5 border-t border-primary-100 bg-white'>
+                <div className='flex justify-end items-center gap-3 p-5 border-t border-primary-100 bg-white rounded-b-2xl'>
                     <button
                         onClick={handleConfirm}
-                        disabled={loading || !selectedCompanyId || selectedPointIds.length === 0}
+                        disabled={loading || !selectedCompanyId || Object.keys(pointRecyclingAssignments).length === 0}
                         className='px-5 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-medium transition disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
                     >
                         {loading ? 'Đang xử lý...' : 'Xác nhận'}
                     </button>
                 </div>
             </div>
+
+            {/* Recycling Company Select Modal */}
+            <RecyclingCompanySelectModal
+                open={showRecyclingModal}
+                companies={recyclingCompanies}
+                selectedCompanyId={selectedPointForAssignment ? pointRecyclingAssignments[selectedPointForAssignment] : undefined}
+                onClose={() => {
+                    setShowRecyclingModal(false);
+                    setSelectedPointForAssignment(null);
+                }}
+                onSelect={handleSelectRecyclingCompany}
+            />
         </div>
     );
 }

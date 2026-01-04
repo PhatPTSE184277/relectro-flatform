@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import CustomNumberInput from '@/components/ui/CustomNumberInput';
 import ProductList from './ProductList';
 
 interface PreAssignStepProps {
@@ -23,37 +24,27 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     itemsPerPage = 10
 }) => {
     return (
-        <div className='space-y-6'>
-            <div className='text-center'>
-                <h2 className='text-2xl font-bold text-gray-900 mb-2'>
-                    Bước 1: Gợi ý gom nhóm
+        <div className='space-y-4'>
+            {/* Top controls: label, threshold, button all in one row */}
+            <div className='flex flex-col md:flex-row md:items-center md:gap-4 gap-2 bg-gray-50 rounded-lg px-4 py-3 mb-2'>
+                <h2 className='text-lg font-bold text-gray-900 mb-0 md:mb-0 md:mr-4 whitespace-nowrap'>
+                    Bước 1: Hệ thống sẽ tự động gợi ý cách gom nhóm
                 </h2>
-                <p className='text-gray-600'>
-                    Hệ thống sẽ tự động gợi ý cách gom nhóm các bưu phẩm dựa
-                    trên khả năng tải của phương tiện
-                </p>
-            </div>
-
-            {/* Load Threshold Setting - Compact */}
-            <div className='bg-gray-50 rounded-lg px-4 py-3 mb-4 flex items-center gap-4'>
-                <label className='text-sm font-medium text-gray-700 whitespace-nowrap mr-2'>Ngưỡng tải:</label>
-                <input
-                    type='range'
-                    min='50'
-                    max='100'
-                    value={loadThreshold}
-                    onChange={(e) => setLoadThreshold(Number(e.target.value))}
-                    className='flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-500 mx-2'
-                />
-                <span className='text-xl font-bold text-primary-600'>{loadThreshold}%</span>
-            </div>
-
-            {/* Action Button */}
-            <div className='flex justify-center mb-4'>
+                <div className='flex items-center gap-2'>
+                    <label className='text-sm font-medium text-gray-700 whitespace-nowrap'>Ngưỡng tải:</label>
+                    <CustomNumberInput
+                        value={loadThreshold}
+                        onChange={setLoadThreshold}
+                        min={0}
+                        max={100}
+                        className='w-16 px-2 py-1 border border-primary-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-primary-600 font-bold bg-white'
+                    />
+                    <span className='text-primary-600 font-semibold'>%</span>
+                </div>
                 <button
                     onClick={onGetSuggestion}
                     disabled={loading || (products?.length || 0) === 0}
-                    className='py-2 px-6 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer'
+                    className='py-2 px-4 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer ml-0 md:ml-4'
                 >
                     {loading ? 'Đang xử lý...' : 'Lấy gợi ý gom nhóm'}
                 </button>

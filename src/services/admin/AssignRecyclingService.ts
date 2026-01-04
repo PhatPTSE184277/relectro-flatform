@@ -5,10 +5,10 @@ export const getRecyclingCompanies = async (): Promise<any> => {
 	return response.data;
 };
 
-export const assignSmallCollectionPoints = async (data: {
+export const assignSmallCollectionPoints = async (data: Array<{
 	recyclingCompanyId: string;
 	smallCollectionPointIds: string[];
-}): Promise<any> => {
+}>): Promise<any> => {
 	const response = await axios.post('/RecyclingAssign/assign-scp', data);
 	return response.data;
 };
@@ -30,5 +30,11 @@ export const getRecyclingTasks = async (recyclingCompanyId: string): Promise<any
 	const response = await axios.get('/RecyclingQuery/tasks', {
 		params: { recyclingCompanyId },
 	});
+	return response.data;
+};
+
+// Lấy chi tiết phân công điểm thu gom nhỏ (SCP) theo id
+export const getScpAssignmentDetail = async (id: string): Promise<any> => {
+	const response = await axios.get(`/RecyclingAssign/scp-assignment-detail/${id}`);
 	return response.data;
 };

@@ -6,12 +6,14 @@ interface AssignedRecyclingListProps {
     companies: any[];
     loading: boolean;
     onViewTasks: (companyId: string) => void;
+    onViewDetail: (companyId: string) => void;
 }
 
 const AssignedRecyclingList: React.FC<AssignedRecyclingListProps> = ({ 
     companies, 
     loading,
-    onViewTasks
+    onViewTasks,
+    onViewDetail
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -22,7 +24,9 @@ const AssignedRecyclingList: React.FC<AssignedRecyclingListProps> = ({
                             <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                                 <tr>
                                     <th className='py-3 px-4 text-center' style={{ width: '60px' }}>STT</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Công ty tái chế</th>
+                                    <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Tên công ty</th>
+                                    <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Email</th>
+                                    <th className='py-3 px-4 text-left' style={{ width: '140px' }}>SĐT</th>
                                     <th className='py-3 px-4 text-left' style={{ width: '200px' }}>Địa chỉ</th>
                                     <th className='py-3 px-4 text-center' style={{ width: '140px' }}>Hành động</th>
                                 </tr>
@@ -39,17 +43,18 @@ const AssignedRecyclingList: React.FC<AssignedRecyclingListProps> = ({
                                 ) : companies.length > 0 ? (
                                     companies.map((company, idx) => (
                                         <AssignedRecyclingShow
-                                            key={company.companyId}
+                                            key={company.id ? company.id : `company-${idx}`}
                                             company={company}
                                             isLast={idx === companies.length - 1}
                                             index={idx}
                                             onViewTasks={onViewTasks}
+                                            onViewDetail={onViewDetail}
                                         />
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={4} className='text-center py-8 text-gray-400'>
-                                            Không có công ty tái chế nào.
+                                        <td colSpan={6} className='text-center py-8 text-gray-400'>
+                                            Không có công ty thu gom nào.
                                         </td>
                                     </tr>
                                 )}

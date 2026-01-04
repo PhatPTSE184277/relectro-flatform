@@ -4,52 +4,67 @@ import React, { useState, useEffect } from 'react';
 import { Recycle, Plus } from 'lucide-react';
 import AssignedRecyclingList from '@/components/admin/assign-recycling/AssignedRecyclingList';
 import AssignRecyclingModal from '@/components/admin/assign-recycling/modal/AssignRecyclingModal';
-import TasksModal from '@/components/admin/assign-recycling/modal/TasksModal';
+import UpdateRecyclingModal from '@/components/admin/assign-recycling/modal/UpdateRecyclingModal';
 import SearchBox from '@/components/ui/SearchBox';
 import { useAssignRecyclingContext } from '@/contexts/admin/AssignRecyclingContext';
 
 const AssignRecyclingPage: React.FC = () => {
     const {
         recyclingCompanies,
+        getCollectionCompanies,
         smallCollectionPoints,
         loading,
         fetchRecyclingCompanies,
         fetchSmallCollectionPoints,
         assignSmallPoints,
-        fetchRecyclingTasks
+        updateSmallPointAssignment,
+        getScpAssignmentDetail,
     } = useAssignRecyclingContext();
 
     const [search, setSearch] = useState('');
     const [showAssignModal, setShowAssignModal] = useState(false);
-    const [showTasksModal, setShowTasksModal] = useState(false);
-    const [selectedTasks, setSelectedTasks] = useState<any>(null);
-    const [selectedCompanyName, setSelectedCompanyName] = useState('');
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedCompany, setSelectedCompany] = useState<any>(null);
+    const [companySmallPoints, setCompanySmallPoints] = useState<any[]>([]);
+    const [collectionCompanies, setCollectionCompanies] = useState<any[]>([]);
 
     useEffect(() => {
+        getCollectionCompanies().then(setCollectionCompanies);
         fetchRecyclingCompanies();
         fetchSmallCollectionPoints();
-    }, [fetchRecyclingCompanies, fetchSmallCollectionPoints]);
+    }, [getCollectionCompanies, fetchRecyclingCompanies, fetchSmallCollectionPoints]);
 
-    const filteredCompanies = recyclingCompanies.filter((company) => {
+    const filteredCompanies = collectionCompanies.filter((company) => {
         const companyName = company.companyName || company.name || '';
         const matchSearch = companyName.toLowerCase().includes(search.toLowerCase());
         return matchSearch;
     });
 
-    const handleAssignPoints = async (data: { recyclingCompanyId: string; smallCollectionPointIds: string[] }) => {
+    const handleAssignPoints = async (data: Array<{ recyclingCompanyId: string; smallCollectionPointIds: string[] }>) => {
         await assignSmallPoints(data);
         await fetchRecyclingCompanies();
         await fetchSmallCollectionPoints();
         setShowAssignModal(false);
     };
 
-    const handleViewTasks = async (companyId: string) => {
-        const company = recyclingCompanies.find(c => c.companyId === companyId);
+    const handleViewDetail = async (companyId: string) => {
+        const company = collectionCompanies.find(c => (c.companyId || c.id) === companyId);
         if (company) {
-            setSelectedCompanyName(company.companyName || company.name || '');
-            const tasks = await fetchRecyclingTasks(companyId);
-            setSelectedTasks(tasks);
-            setShowTasksModal(true);
+            setSelectedCompany(company);
+            const data = await getScpAssignmentDetail(companyId);
+            setCompanySmallPoints(data?.smallPoints || []);
+            setShowUpdateModal(true);
+        }
+    };
+
+    const handleUpdateAssignment = async (scpId: string, newRecyclingCompanyId: string) => {
+        await updateSmallPointAssignment(scpId, { newRecyclingCompanyId });
+        await fetchRecyclingCompanies();
+        await fetchSmallCollectionPoints();
+        // Refresh detail modal
+        if (selectedCompany) {
+            const data = await getScpAssignmentDetail(selectedCompany.companyId || selectedCompany.id);
+            setCompanySmallPoints(data?.smallPoints || []);
         }
     };
 
@@ -90,7 +105,8 @@ const AssignRecyclingPage: React.FC = () => {
             <AssignedRecyclingList
                 companies={filteredCompanies}
                 loading={loading}
-                onViewTasks={handleViewTasks}
+                onViewTasks={() => {}}
+                onViewDetail={handleViewDetail}
             />
 
             {/* Assign Modal */}
@@ -104,19 +120,21 @@ const AssignRecyclingPage: React.FC = () => {
                 />
             )}
 
-            {/* Tasks Modal */}
-            {showTasksModal && (
-                <TasksModal
-                    open={showTasksModal}
+            {/* Update Recycling Modal */}
+            {showUpdateModal && selectedCompany && (
+                <UpdateRecyclingModal
+                    open={showUpdateModal}
                     onClose={() => {
-                        setShowTasksModal(false);
-                        setSelectedTasks(null);
-                        setSelectedCompanyName('');
+                        setShowUpdateModal(false);
+                        setSelectedCompany(null);
                     }}
-                    tasks={selectedTasks}
-                    companyName={selectedCompanyName}
+                    companyName={selectedCompany.name || selectedCompany.companyName || ''}
+                    smallPoints={companySmallPoints}
+                    recyclingCompanies={recyclingCompanies}
+                    onUpdateAssignment={handleUpdateAssignment}
                 />
             )}
+            {/* Tasks Modal removed as requested */}
         </div>
     );
 };

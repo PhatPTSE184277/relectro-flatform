@@ -18,7 +18,7 @@ export const collectorMenuItems = [
     // { id: 'collection-point', label: 'Điểm thu gom', path: '/small-collector/collection-point', icon: <MapPin size={20} /> },
     {
         id: 'grouping',
-        label: 'Gom nhóm thu gom',
+        label: 'Danh sách sản phẩm',
         path: '/small-collector/grouping',
         icon: <GitBranch size={20} />
     },
