@@ -1,3 +1,4 @@
+import { IoFilterOutline } from 'react-icons/io5';
 import React from 'react';
 
 interface CompanyFilterProps {
@@ -7,19 +8,16 @@ interface CompanyFilterProps {
 
 const CompanyFilter: React.FC<CompanyFilterProps> = ({ status, onFilterChange }) => {
     return (
-        <div className='bg-white rounded-2xl shadow-xl border border-gray-100 p-4 mb-6'>
-            <div className='flex items-center gap-2 mb-4'>
-                <span className='text-gray-500'>
-                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M3 6h18M6 12h12M9 18h6"/></svg>
+        <div className='bg-white rounded-2xl shadow border border-gray-100 px-3 py-2 mb-6'>
+            <div className='flex items-center gap-2 flex-wrap min-h-9'>
+                <span className='flex items-center justify-center w-7 h-7 rounded-full bg-primary-100 border border-primary-200'>
+                    <IoFilterOutline className='text-primary-600' size={16} />
                 </span>
-                <h3 className='text-gray-900 font-medium'>Lọc trạng thái công ty</h3>
-            </div>
-            <div className='flex flex-wrap gap-2'>
                 <button
                     onClick={() => onFilterChange('active')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[90px] ${
                         status === 'active'
-                            ? 'bg-green-100 text-green-700 shadow'
+                            ? 'bg-green-100 text-green-700 shadow-sm'
                             : 'bg-gray-100 text-gray-600'
                     }`}
                 >
@@ -27,9 +25,9 @@ const CompanyFilter: React.FC<CompanyFilterProps> = ({ status, onFilterChange })
                 </button>
                 <button
                     onClick={() => onFilterChange('inactive')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[90px] ${
                         status === 'inactive'
-                            ? 'bg-red-100 text-red-700 shadow'
+                            ? 'bg-red-100 text-red-700 shadow-sm'
                             : 'bg-gray-100 text-gray-600'
                     }`}
                 >

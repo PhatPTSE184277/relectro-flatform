@@ -23,22 +23,20 @@ const ConfigShow: React.FC<ConfigShowProps & { isLast?: boolean }> = ({
                 !isLast ? 'border-b border-primary-100' : ''
             } hover:bg-primary-50/40 transition-colors`}
         >
-            <td className='py-3 px-4 text-center'>
+            <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-base flex items-center justify-center font-bold mx-auto shadow-sm'>
                     {index !== undefined ? index + 1 : ''}
                 </span>
             </td>
-            <td className='py-3 px-4 font-medium'>
+            <td className='py-3 px-4 font-medium' style={{ width: '180px' }}>
                 <div className='text-gray-900'>
                     {company.companyName || `Company ${company.companyId}`}
                 </div>
             </td>
-
-            <td className='py-3 px-4 text-gray-700 text-center'>
+            <td className='py-3 px-4 text-gray-700 text-center' style={{ width: '120px' }}>
                 <span className='font-medium'>{company.ratioPercent}</span>
             </td>
-
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '250px' }}>
                 <div className='flex flex-wrap gap-1'>
                     {company.smallPoints.slice(0, 3).map((sp: any, idx: number) => (
                         <span
@@ -57,14 +55,12 @@ const ConfigShow: React.FC<ConfigShowProps & { isLast?: boolean }> = ({
                     )}
                 </div>
             </td>
-
-            <td className='py-3 px-4 text-gray-700 text-center'>
+            <td className='py-3 px-4 text-gray-700 text-center' style={{ width: '120px' }}>
                 <span className='text-xs font-medium text-gray-900'>
                     {activePoints}
                 </span>
             </td>
-
-            <td className='py-3 px-4 text-center'>
+            <td className='py-3 px-4 text-center' style={{ width: '140px' }}>
                 <button
                     onClick={() => onView?.(company)}
                     className='text-primary-600 hover:text-primary-800 flex items-center justify-center transition cursor-pointer mx-auto'

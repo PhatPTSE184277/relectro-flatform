@@ -9,12 +9,12 @@ interface ProductShowProps {
 const ProductShow: React.FC<ProductShowProps> = ({ product, isLast = false, stt }) => {
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
-            <td className='py-3 px-4 text-center'>
+            <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {stt}
                 </span>
             </td>
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '180px' }}>
                 <div className='flex items-center gap-2'>
                     <div>
                         <div className='font-medium'>{product.categoryName || 'N/A'}</div>
@@ -24,15 +24,15 @@ const ProductShow: React.FC<ProductShowProps> = ({ product, isLast = false, stt 
                     </div>
                 </div>
             </td>
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '160px' }}>
                 <div className='flex items-center gap-2'>
                     <span>{product.userName || 'N/A'}</span>
                 </div>
             </td>
-            <td className='py-3 px-4 text-gray-700 max-w-xs'>
+            <td className='py-3 px-4 text-gray-700 max-w-xs' style={{ width: '220px' }}>
                 <div className='line-clamp-2'>{product.address || 'N/A'}</div>
             </td>
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '140px' }}>
                 <div className='flex flex-col gap-1'>
                     <span className='text-xs'>
                         <span className='font-medium'>Bán kính:</span> {product.radiusKm || 'N/A'}
@@ -42,7 +42,7 @@ const ProductShow: React.FC<ProductShowProps> = ({ product, isLast = false, stt 
                     </span>
                 </div>
             </td>
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '120px' }}>
                 <div className='flex flex-col gap-1'>
                     <span className='text-xs'>
                         <span className='font-medium'>{product.weightKg || 0}</span> kg

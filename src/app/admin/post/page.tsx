@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import type { Post } from '@/types/post';
 
 import PostList from '@/components/admin/post/PostList';
@@ -46,6 +46,7 @@ const PostPage: React.FC = () => {
     const [search, setSearch] = useState<string>("");
     const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
     const [isBulkRejectModalOpen, setIsBulkRejectModalOpen] = useState(false);
+    const tableScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadStats = async () => {
@@ -94,6 +95,10 @@ const PostPage: React.FC = () => {
 
     const handlePageChange = (page: number) => {
         fetchPosts({ page, search, status: filterStatus });
+        // Scroll to top of table when changing pages
+        if (tableScrollRef.current) {
+            tableScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
         // Không clear selectedPostIds khi chuyển trang để giữ lại các bài đã chọn
     };
 
@@ -135,8 +140,8 @@ const PostPage: React.FC = () => {
     };
 
     return (
-         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3'>
                 <div className='flex items-center gap-3'>
                     <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
                         <ClipboardList className='text-white' size={20} />
@@ -158,8 +163,9 @@ const PostPage: React.FC = () => {
                 onFilterChange={handleFilter}
             />
 
-            <div className='mb-6'>
+            <div className='mb-3'>
                 <PostList
+                    ref={tableScrollRef}
                     posts={posts}
                     loading={loading}
                     status={filterStatus}
@@ -171,6 +177,8 @@ const PostPage: React.FC = () => {
                     onToggleSelectAll={handleToggleSelectAll}
                     onBulkApprove={handleBulkApproveClick}
                     onBulkReject={handleBulkRejectModalOpen}
+                    page={filter.page}
+                    pageSize={filter.limit || 10}
                 />
             </div>
 

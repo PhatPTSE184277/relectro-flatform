@@ -12,7 +12,7 @@ const TrackingProductFilter: React.FC<TrackingProductFilterProps> = ({
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow border border-gray-100 px-3 py-2'>
-            <div className='flex items-center gap-1 flex-wrap min-h-[36px]'>
+            <div className='flex items-center gap-1 flex-wrap min-h-9'>
                 <span className='flex items-center justify-center w-7 h-7 rounded-full bg-primary-100 border border-primary-200 mr-1'>
                     <IoFilterOutline className='text-primary-600' size={16} />
                 </span>

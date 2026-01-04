@@ -41,7 +41,7 @@ const PostShow: React.FC<PostShowProps & { isLast?: boolean }> = ({
         } ${
             isSelected ? 'bg-primary-50' : ''
         } hover:bg-primary-50/40 transition-colors`}>
-            <td className="py-3 px-4 text-center">
+            <td className="py-3 px-4 text-center" style={{ width: '60px' }}>
                 {isPending && onToggleSelect ? (
                     <input
                         type="checkbox"
@@ -54,25 +54,29 @@ const PostShow: React.FC<PostShowProps & { isLast?: boolean }> = ({
                     <div className="w-4 h-4"></div>
                 )}
             </td>
-            <td className="py-3 px-4 text-center">
+            <td className="py-3 px-4 text-center" style={{ width: '60px' }}>
                 <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
                     {stt}
                 </span>
             </td>
             {/* Ảnh đã bị ẩn */}
-            <td className='py-3 px-4 font-medium max-w-[220px]'>
-                <div className='text-sm text-gray-500 mt-1 line-clamp-1'>
+            <td className='py-3 px-4 font-medium' style={{ width: '180px' }}>
+                <div className='text-sm text-gray-500 mt-1'>
                     {post.senderName || 'Không rõ'}
                 </div>
             </td>
 
-            <td className='py-3 px-4 text-gray-700'>{post.category}</td>
-            <td className='py-3 px-4 text-gray-700'>{post.address}</td>
-            <td className='py-3 px-4 text-sm text-gray-600'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '150px' }}>
+                {post.category}
+            </td>
+            <td className='py-3 px-4 text-gray-700' style={{ width: 'auto' }}>
+                <div className='line-clamp-2'>{post.address}</div>
+            </td>
+            <td className='py-3 px-4 text-sm text-gray-600 text-center' style={{ width: '130px' }}>
                 {new Date(post.date).toLocaleDateString('vi-VN')}
             </td>
 
-            <td className='py-3 px-4'>
+            <td className='py-3 px-4' style={{ width: '140px' }}>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}

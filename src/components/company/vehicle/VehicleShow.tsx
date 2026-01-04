@@ -20,42 +20,42 @@ const VehicleShow: React.FC<VehicleShowProps> = ({
                 !isLast ? 'border-b border-primary-100' : ''
             } hover:bg-primary-50/40 transition-colors`}
         >
-            <td className='py-3 px-4 text-center'>
+            <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {index !== undefined ? index + 1 : ''}
                 </span>
             </td>
-            <td className='py-3 px-4'>
+            <td className='py-3 px-4' style={{ width: '160px' }}>
                 <div className='text-gray-900 font-medium'>
                     {vehicle.plateNumber || 'Không rõ'}
                 </div>
             </td>
 
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '120px' }}>
                 {vehicle.vehicleType || (
                     <span className='text-gray-400'>Chưa có</span>
                 )}
             </td>
 
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '180px' }}>
                 {vehicle.smallCollectionPointName || (
                     <span className='text-gray-400'>Chưa có</span>
                 )}
             </td>
 
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '120px' }}>
                 {vehicle.capacityKg ? `${vehicle.capacityKg} kg` : (
                     <span className='text-gray-400'>Chưa có</span>
                 )}
             </td>
 
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '100px' }}>
                 {vehicle.radiusKm ? `${vehicle.radiusKm} km` : (
                     <span className='text-gray-400'>Chưa có</span>
                 )}
             </td>
 
-            <td className='py-3 px-4'>
+            <td className='py-3 px-4' style={{ width: '100px' }}>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}

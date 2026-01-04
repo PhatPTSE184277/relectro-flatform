@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { X, Factory, MapPin, Phone } from 'lucide-react';
 import SearchBox from '@/components/ui/SearchBox';
+import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
+import { getFirstDayOfMonthString, getTodayString } from '@/utils/getDayString';
 
 interface CompanySelectModalProps {
     open: boolean;
@@ -20,6 +22,8 @@ const CompanySelectModal: React.FC<CompanySelectModalProps> = ({
     onSelect
 }) => {
     const [search, setSearch] = useState('');
+    const [fromDate, setFromDate] = useState(getFirstDayOfMonthString);
+    const [toDate, setToDate] = useState(getTodayString);
 
     const filteredCompanies = companies.filter((company) => {
         const companyName = company.name || company.companyName || '';
@@ -41,16 +45,13 @@ const CompanySelectModal: React.FC<CompanySelectModalProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[80vh]'>
+            <div className='relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-visible z-10 min-h-[600px]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100 rounded-t-xl'>
                     <div>
-                        <h2 className='text-2xl font-bold text-gray-800'>
+                        <h2 className='text-2xl font-bold text-gray-900 flex items-center gap-2'>
                             Chọn công ty
                         </h2>
-                        <p className='text-sm text-gray-600 mt-1'>
-                            Chọn công ty để xem danh sách sản phẩm
-                        </p>
                     </div>
                     <button
                         onClick={onClose}
@@ -70,8 +71,18 @@ const CompanySelectModal: React.FC<CompanySelectModalProps> = ({
                     />
                 </div>
 
+                {/* Date Range Picker */}
+                <div className='p-4 border-b bg-gray-50'>
+                    <CustomDateRangePicker
+                        fromDate={fromDate}
+                        toDate={toDate}
+                        onFromDateChange={setFromDate}
+                        onToDateChange={setToDate}
+                    />
+                </div>
+
                 {/* Company List */}
-                <div className='flex-1 overflow-y-auto p-4'>
+                <div className='flex-1 overflow-y-auto p-4 pb-8'>
                     {filteredCompanies.length === 0 ? (
                         <div className='text-center py-12 text-gray-400'>
                             Không tìm thấy công ty nào

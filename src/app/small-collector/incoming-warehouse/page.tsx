@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useIWProductContext } from '@/contexts/small-collector/IWProductContext';
 import IWProductFilter from '@/components/small-collector/incoming-warehouse/IWProductFilter';
 import IWProductList from '@/components/small-collector/incoming-warehouse/IWProductList';
+
 import ProductDetail from '@/components/small-collector/incoming-warehouse/modal/ProductDetail';
 import CreateProduct from '@/components/small-collector/incoming-warehouse/modal/CreateProduct';
 import ReceiveProduct from '@/components/small-collector/incoming-warehouse/modal/ReceiveProduct';
@@ -28,6 +29,7 @@ const IncomingWarehousePage: React.FC = () => {
     } = useIWProductContext() as any;
 
     const [search, setSearch] = useState('');
+    const tableScrollRef = useRef<HTMLDivElement>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showReceiveModal, setShowReceiveModal] = useState(false);
@@ -52,6 +54,9 @@ const IncomingWarehousePage: React.FC = () => {
 
     const handlePageChange = (page: number) => {
         setFilter({ page });
+        if (tableScrollRef.current) {
+            tableScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     };
 
     const handleFromDateChange = (date: string) => {
@@ -167,6 +172,7 @@ const IncomingWarehousePage: React.FC = () => {
                     status={filter.status}
                     currentPage={filter.page}
                     pageSize={filter.limit}
+                    ref={tableScrollRef}
                 />
             </div>
 

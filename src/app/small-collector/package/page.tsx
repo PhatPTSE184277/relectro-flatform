@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { usePackageContext } from '@/contexts/small-collector/PackageContext';
 import PackageList from '@/components/small-collector/package/PackageList';
 import PackageDetail from '@/components/small-collector/package/modal/PackageDetail';
@@ -10,7 +10,7 @@ import ConfirmStatusChange from '@/components/small-collector/package/modal/Conf
 import PackageFilter from '@/components/small-collector/package/PackageFilter';
 import SearchBox from '@/components/ui/SearchBox';
 import Pagination from '@/components/ui/Pagination';
-import { Package, Plus } from 'lucide-react';
+import { Package } from 'lucide-react';
 import type { PackageType } from '@/types/Package';
 import { PackageStatus } from '@/enums/PackageStatus';
 
@@ -30,6 +30,7 @@ const PackagePage: React.FC = () => {
     } = usePackageContext();
 
     const [search, setSearch] = useState('');
+    const tableScrollRef = useRef<HTMLDivElement>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -59,6 +60,9 @@ const PackagePage: React.FC = () => {
 
     const handlePageChange = (page: number) => {
         setFilter({ page });
+        if (tableScrollRef.current) {
+            tableScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     };
 
     const handleCreatePackage = async (packageData: {
@@ -134,13 +138,6 @@ const PackagePage: React.FC = () => {
                     </h1>
                 </div>
                 <div className='flex gap-4 items-center flex-1 justify-end'>
-                    <button
-                        onClick={() => setShowCreateModal(true)}
-                        className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md border border-primary-200 cursor-pointer'
-                    >
-                        <Plus size={20} />
-                        Tạo Package Mới
-                    </button>
                     <div className='flex-1 max-w-md'>
                         <SearchBox
                             value={search}
@@ -168,6 +165,7 @@ const PackagePage: React.FC = () => {
                     onViewDetail={handleViewDetail}
                     onUpdate={handleOpenUpdate}
                     onUpdateStatus={handleUpdateStatus}
+                    ref={tableScrollRef}
                 />
             </div>
 

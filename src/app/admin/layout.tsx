@@ -8,6 +8,7 @@ import { SystemConfigProvider } from '@/contexts/admin/SystemConfigContext';
 import { TrackingProvider } from '@/contexts/admin/TrackingContext';
 import { CompanyConfigProvider } from '@/contexts/admin/CompanyConfigContext';
 import { AssignProductProvider } from '@/contexts/admin/AssignProductContext';
+import { AssignRecyclingProvider } from '@/contexts/admin/AssignRecyclingContext';
 
 export default function AdminLayout({
     children
@@ -15,32 +16,36 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     return (
-        <AssignProductProvider>
-            <CompanyConfigProvider>
-                <PostProvider>
-                    <UserProvider>
-                        <CollectionCompanyProvider>
-                            <SystemConfigProvider>
-                                <TrackingProvider>
-                                    <div className='h-screen flex flex-col bg-gray-50'>
-                                        <Header
-                                            title='Bảng điều khiển quản trị'
-                                            href='/admin/dashboard'
-                                            profileHref='/admin/profile'
-                                        />
-                                        <div className='flex flex-1 overflow-hidden'>
-                                            <Sidebar menuItems={adminMenuItems} />
-                                            <main className='flex-1 overflow-y-auto'>
-                                                {children}
-                                            </main>
+        <AssignRecyclingProvider>
+            <AssignProductProvider>
+                <CompanyConfigProvider>
+                    <PostProvider>
+                        <UserProvider>
+                            <CollectionCompanyProvider>
+                                <SystemConfigProvider>
+                                    <TrackingProvider>
+                                        <div className='h-screen flex flex-col bg-gray-50'>
+                                            <Header
+                                                title='Bảng điều khiển quản trị'
+                                                href='/admin/dashboard'
+                                                profileHref='/admin/profile'
+                                            />
+                                            <div className='flex flex-1 overflow-hidden'>
+                                                <Sidebar
+                                                    menuItems={adminMenuItems}
+                                                />
+                                                <main className='flex-1 overflow-y-auto'>
+                                                    {children}
+                                                </main>
+                                            </div>
                                         </div>
-                                    </div>
-                                </TrackingProvider>
-                            </SystemConfigProvider>
-                        </CollectionCompanyProvider>
-                    </UserProvider>
-                </PostProvider>
-            </CompanyConfigProvider>
-        </AssignProductProvider>
+                                    </TrackingProvider>
+                                </SystemConfigProvider>
+                            </CollectionCompanyProvider>
+                        </UserProvider>
+                    </PostProvider>
+                </CompanyConfigProvider>
+            </AssignProductProvider>
+        </AssignRecyclingProvider>
     );
 }

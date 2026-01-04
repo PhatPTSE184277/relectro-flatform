@@ -40,4 +40,11 @@ export const collectorMenuItems = [
         path: '/small-collector/package',
         icon: <Package size={20} />
     }
+    ,
+    {
+        id: 'qrcode',
+        label: 'QR Code',
+        path: '/small-collector/qrcode',
+        icon: <Package size={20} />
+    }
 ];

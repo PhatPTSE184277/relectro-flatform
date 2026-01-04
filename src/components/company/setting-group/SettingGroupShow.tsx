@@ -20,12 +20,12 @@ const SettingGroupShow: React.FC<SettingGroupShowProps> = ({
                 !isLast ? 'border-b border-primary-100' : ''
             } hover:bg-primary-50/40 transition-colors`}
         >
-            <td className='py-3 px-4 text-center'>
+            <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {index !== undefined ? index + 1 : ''}
                 </span>
             </td>
-            <td className='py-3 px-4'>
+            <td className='py-3 px-4' style={{ width: '240px' }}>
                 <div className='text-gray-900 font-medium'>
                     {point.smallPointName || 'Không rõ'}
                 </div>
@@ -36,19 +36,19 @@ const SettingGroupShow: React.FC<SettingGroupShowProps> = ({
                 )}
             </td>
 
-            <td className='py-3 px-4 text-gray-900 text-center'>
+            <td className='py-3 px-4 text-gray-900 text-center' style={{ width: '180px' }}>
                 <span className='font-semibold'>
                     {point.serviceTimeMinutes || 0}
                 </span>
             </td>
 
-            <td className='py-3 px-4 text-gray-900 text-center'>
+            <td className='py-3 px-4 text-gray-900 text-center' style={{ width: '200px' }}>
                 <span className='font-semibold'>
                     {point.avgTravelTimeMinutes || 0}
                 </span>
             </td>
 
-            <td className='py-3 px-4'>
+            <td className='py-3 px-4' style={{ width: '120px' }}>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onEdit}

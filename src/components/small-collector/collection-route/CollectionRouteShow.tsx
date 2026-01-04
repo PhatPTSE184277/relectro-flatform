@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import React from 'react';
 import { Eye } from 'lucide-react';
 import { formatTime } from '@/utils/FormatTime';
@@ -17,32 +16,27 @@ const CollectionRouteShow: React.FC<CollectionRouteShowProps & { isLast?: boolea
 }) => {
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
-            <td className='py-3 px-4 text-center'>
+            <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {stt}
                 </span>
             </td>
-            <td className='py-3 px-4 font-medium max-w-[220px]'>
+            <td className='py-3 px-4 font-medium' style={{ width: '180px' }}>
                 <div className='text-gray-900 line-clamp-2'>{route.brandName || 'Không rõ'}</div>
             </td>
-
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '160px' }}>
                 {route.sender?.name || 'Không rõ'}
             </td>
-
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '160px' }}>
                 {route.collector?.name || 'Không rõ'}
             </td>
-
-            <td className='py-3 px-4 text-gray-700 max-w-[250px]'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '250px' }}>
                 <div className='line-clamp-2'>{route.address}</div>
             </td>
-
-            <td className='py-3 px-4 text-sm text-gray-600 text-center'>
+            <td className='py-3 px-4 text-sm text-gray-600 text-center' style={{ width: '140px' }}>
                 {formatTime(route.estimatedTime)}
             </td>
-
-            <td className='py-3 px-4'>
+            <td className='py-3 px-4' style={{ width: '100px' }}>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}

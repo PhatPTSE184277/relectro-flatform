@@ -31,7 +31,8 @@ const AssignRecyclingPage: React.FC = () => {
     }, [fetchRecyclingCompanies, fetchSmallCollectionPoints]);
 
     const filteredCompanies = recyclingCompanies.filter((company) => {
-        const matchSearch = company.companyName?.toLowerCase().includes(search.toLowerCase());
+        const companyName = company.companyName || company.name || '';
+        const matchSearch = companyName.toLowerCase().includes(search.toLowerCase());
         return matchSearch;
     });
 
@@ -45,7 +46,7 @@ const AssignRecyclingPage: React.FC = () => {
     const handleViewTasks = async (companyId: string) => {
         const company = recyclingCompanies.find(c => c.companyId === companyId);
         if (company) {
-            setSelectedCompanyName(company.companyName);
+            setSelectedCompanyName(company.companyName || company.name || '');
             const tasks = await fetchRecyclingTasks(companyId);
             setSelectedTasks(tasks);
             setShowTasksModal(true);
@@ -53,7 +54,7 @@ const AssignRecyclingPage: React.FC = () => {
     };
 
     return (
-        <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+        <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8'>
             {/* Header + Search */}
             <div className='mb-6'>
                 <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2'>
@@ -65,23 +66,22 @@ const AssignRecyclingPage: React.FC = () => {
                             <h1 className='text-3xl font-bold text-gray-900'>Phân công tái chế</h1>
                         </div>
                     </div>
-                    <div className='max-w-md w-full sm:ml-auto'>
-                        <SearchBox
-                            value={search}
-                            onChange={setSearch}
-                            placeholder='Tìm kiếm theo tên công ty...'
-                        />
-                    </div>
-                </div>
-                <div className='mt-6 mb-4 flex flex-col sm:flex-row sm:items-center sm:gap-4'>
-                    <div className='flex flex-1 justify-end w-full sm:w-auto mt-2 sm:mt-0'>
-                        <button
+                    <div className='flex gap-4 items-center flex-1 justify-end'>
+                          <button
                             onClick={() => setShowAssignModal(true)}
                             className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition cursor-pointer font-medium'
                         >
                             <Plus size={18} />
                             Phân công điểm thu gom
                         </button>
+                        <div className='flex-1 max-w-md'>
+                            <SearchBox
+                                value={search}
+                                onChange={setSearch}
+                                placeholder='Tìm kiếm theo tên công ty...'
+                            />
+                        </div>
+                      
                     </div>
                 </div>
             </div>

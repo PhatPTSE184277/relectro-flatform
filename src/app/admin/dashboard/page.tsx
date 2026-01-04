@@ -32,14 +32,14 @@ const DashboardContent = () => {
     }, [fromDate, toDate, fetchSummary]);
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
             {/* Date Range Picker - style giống tracking, căn phải trên desktop */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center">
                         <Calendar className="text-white" size={20} />
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-900">Thống kê tổng quan</h1>
+                    <h1 className="text-3xl font-bold text-gray-900">Thống kê tổng quan</h1>
                 </div>
                 <div className="flex-1 flex justify-end max-w-xl w-full">
                     <CustomDateRangePicker

@@ -29,14 +29,11 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
             {/* Modal container */}
             <div className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
                     <div>
-                        <h2 className='text-2xl font-bold text-gray-900 flex items-center gap-2'>
+                        <h2 className='text-2xl font-bold text-gray-800'>
                             Theo dõi sản phẩm
                         </h2>
-                        <p className='text-sm text-gray-500 mt-1'>
-                            Xem lịch sử và trạng thái di chuyển của sản phẩm
-                        </p>
                     </div>
                     <button
                         onClick={onClose}

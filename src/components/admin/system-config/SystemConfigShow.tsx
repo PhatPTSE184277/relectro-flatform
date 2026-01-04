@@ -34,17 +34,17 @@ const SystemConfigShow: React.FC<SystemConfigShowProps> = ({
                 !isLast ? 'border-b border-primary-100' : ''
             } hover:bg-primary-50/40 transition-colors`}
         >
-            <td className='py-3 px-4 text-center'>
+            <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-base flex items-center justify-center font-bold mx-auto shadow-sm'>
                     {index !== undefined ? index + 1 : ''}
                 </span>
             </td>
 
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '220px' }}>
                 <div>{config.displayName || 'N/A'}</div>
             </td>
 
-            <td className='py-3 px-2 text-right'>
+            <td className='py-3 px-2 text-right' style={{ width: '220px' }}>
                 {isUrl ? (
                     <button
                         onClick={handleDownload}
@@ -59,7 +59,7 @@ const SystemConfigShow: React.FC<SystemConfigShowProps> = ({
                 )}
             </td>
 
-            <td className='py-3 px-4'>
+            <td className='py-3 px-4 text-center' style={{ width: '140px' }}>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={() => onEdit(config)}

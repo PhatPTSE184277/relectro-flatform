@@ -36,9 +36,9 @@ const SystemConfigPage: React.FC = () => {
     };
 
     return (
-        <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+        <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8'>
             {/* Header + Search */}
-            <div className='flex justify-between items-center mb-6'>
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3'>
                 <div className='flex items-center gap-3'>
                     <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center border border-primary-200'>
                         <Settings className='text-white' size={20} />

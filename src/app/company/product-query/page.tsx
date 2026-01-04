@@ -11,7 +11,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 const ProductQueryPage: React.FC = () => {
     const { user } = useAuth();
-    const { loading, products, fetchProducts, smallPoints, loadingPoints, fetchSmallPoints } = useProductQueryContext();
+    const { loading, products, fetchProducts, smallPoints, fetchSmallPoints } = useProductQueryContext();
     const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
     const [selectedPointId, setSelectedPointId] = useState<number | null>(null);
     const [showPointModal, setShowPointModal] = useState(false);
@@ -92,7 +92,7 @@ const ProductQueryPage: React.FC = () => {
                             onClick={() => setShowPointModal(true)}
                             className='px-8 py-2 bg-white border-2 border-primary-200 rounded-lg hover:border-primary-400 transition-all shadow-sm cursor-pointer flex items-center gap-3 w-[280px] text-center'
                         >
-                            <MapPin className='text-primary-600 flex-shrink-0' size={20} />
+                            <MapPin className='text-primary-600 shrink-0' size={20} />
                             <span className='font-semibold text-gray-900 truncate block max-w-[180px] mx-auto'>
                                 {selectedPoint ? (selectedPoint.name || selectedPoint.smallPointName || 'N/A') : 'Chọn điểm thu gom'}
                             </span>
@@ -109,19 +109,11 @@ const ProductQueryPage: React.FC = () => {
                 <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center text-gray-400'>
                     Vui lòng chọn điểm thu gom để xem danh sách sản phẩm
                 </div>
-            ) : loading ? (
-                <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center'>
-                    <div className='animate-pulse'>Đang tải dữ liệu...</div>
-                </div>
-            ) : pointProducts.length === 0 ? (
-                <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center text-gray-400'>
-                    Không có sản phẩm nào trong điểm thu gom này
-                </div>
             ) : (
                 <>
                     <div className='mb-6'>
                         <ProductList
-                            products={paginatedProducts}
+                            products={loading ? Array.from({ length: 6 }) : paginatedProducts}
                             loading={loading}
                             page={page}
                             itemsPerPage={itemsPerPage}
@@ -129,7 +121,7 @@ const ProductQueryPage: React.FC = () => {
                     </div>
 
                     {/* Pagination */}
-                    {totalPages > 1 && (
+                    {!loading && totalPages > 1 && (
                         <Pagination
                             page={page}
                             totalPages={totalPages}

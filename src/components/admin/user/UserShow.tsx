@@ -11,16 +11,16 @@ interface UserShowProps {
 const UserShow: React.FC<UserShowProps> = ({ user, stt, onView, isLast = false }) => {
   return (
     <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
-      <td className="py-3 px-4 text-center">
+      <td className="py-3 px-4 text-center" style={{ width: '60px' }}>
         <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
           {stt}
         </span>
       </td>
-      <td className="py-3 px-4 font-medium text-gray-900">{user.name}</td>
-      <td className="py-3 px-4 text-gray-700">{user.email}</td>
-      <td className="py-3 px-4 text-gray-700">{user.role || 'User'}</td>
-      <td className="py-3 px-4 text-gray-700">{user.phone || "-"}</td>
-      <td className="py-3 px-4">
+      <td className="py-3 px-4 font-medium text-gray-900" style={{ width: '200px' }}>{user.name}</td>
+      <td className="py-3 px-4 text-gray-700" style={{ width: '250px' }}>{user.email}</td>
+      <td className="py-3 px-4 text-gray-700" style={{ width: '150px' }}>{user.role || 'User'}</td>
+      <td className="py-3 px-4 text-gray-700" style={{ width: '150px' }}>{user.phone || "-"}</td>
+      <td className="py-3 px-4" style={{ width: '100px' }}>
         <div className="flex justify-center">
           <button
             onClick={onView}

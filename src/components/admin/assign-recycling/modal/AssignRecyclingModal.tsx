@@ -115,7 +115,7 @@ const AssignRecyclingModal: React.FC<AssignRecyclingModalProps> = ({
                             options={companies}
                             value={selectedCompanyId}
                             onChange={setSelectedCompanyId}
-                            getLabel={(company) => company.companyName}
+                            getLabel={(company) => company.companyName || company.name}
                             getValue={(company) => company.companyId}
                             placeholder='-- Chọn công ty tái chế --'
                         />
@@ -130,13 +130,11 @@ const AssignRecyclingModal: React.FC<AssignRecyclingModalProps> = ({
                             <table className='w-full text-sm text-gray-800'>
                                 <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                     <tr>
-                                        <th className='py-3 px-4 text-left'>
+                                        <th className='py-3 px-4 text-center w-12'>
                                             <input
                                                 type='checkbox'
-                                                checked={allSelected}
+                                                checked={selectedPointIds.length === smallPoints.length && smallPoints.length > 0}
                                                 onChange={handleToggleAll}
-                                                className='w-4 h-4 text-primary-600 rounded cursor-pointer'
-                                                aria-label='Chọn/Bỏ chọn tất cả'
                                             />
                                         </th>
                                         <th className='py-3 px-4 text-left'>Tên điểm</th>
@@ -146,53 +144,28 @@ const AssignRecyclingModal: React.FC<AssignRecyclingModalProps> = ({
                                 </thead>
                                 <tbody>
                                     {smallPoints.length > 0 ? (
-                                        smallPoints.map((point, index) => {
-                                            const isSelected = selectedPointIds.includes(point.smallPointId);
-                                            const isAssigned = !!point.recyclingCompany;
-                                            const isLast = index === smallPoints.length - 1;
-                                            
-                                            return (
-                                                <tr
-                                                    key={point.smallPointId + '-' + index}
-                                                    className={`${!isLast ? 'border-b border-gray-100' : ''} ${
-                                                        isAssigned ? 'bg-gray-50' : 'hover:bg-primary-50/40'
-                                                    } transition-colors`}
-                                                >
-                                                    <td className='py-3 px-4'>
-                                                        <input
-                                                            type='checkbox'
-                                                            checked={isSelected}
-                                                            onChange={() => !isAssigned && handleTogglePoint(point.smallPointId)}
-                                                            disabled={isAssigned}
-                                                            className={`w-4 h-4 text-primary-600 rounded ${
-                                                                isAssigned ? 'cursor-not-allowed bg-gray-100' : 'cursor-pointer'
-                                                            }`}
-                                                        />
-                                                    </td>
-                                                    <td className={`py-3 px-4 ${isAssigned ? 'text-gray-400' : 'text-gray-900'}`}>
-                                                        {point.name}
-                                                    </td>
-                                                    <td className={`py-3 px-4 ${isAssigned ? 'text-gray-400' : 'text-gray-700'}`}>
-                                                        {point.address}
-                                                    </td>
-                                                    <td className='py-3 px-4'>
-                                                        {isAssigned ? (
-                                                            <span className='text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full'>
-                                                                Đã phân công
-                                                            </span>
-                                                        ) : (
-                                                            <span className='text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full'>
-                                                                Chưa phân công
-                                                            </span>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })
+                                        smallPoints.map((point) => (
+                                            <tr key={point.smallPointId}>
+                                                <td className='py-3 px-4 text-center'>
+                                                    <input
+                                                        type='checkbox'
+                                                        checked={selectedPointIds.includes(point.smallPointId)}
+                                                        onChange={() => handleTogglePoint(point.smallPointId)}
+                                                    />
+                                                </td>
+                                                <td className='py-3 px-4'>{point.name}</td>
+                                                <td className='py-3 px-4'>{point.address}</td>
+                                                <td className='py-3 px-4'>
+                                                    <span className='px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs'>
+                                                        {point.recyclingCompany ? 'Đã phân công' : 'Chưa phân công'}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={4} className='text-center py-8 text-gray-400'>
-                                                Không có điểm thu gom nào
+                                            <td colSpan={4} className='text-center py-6 text-gray-400'>
+                                                Không có điểm thu gom nào.
                                             </td>
                                         </tr>
                                     )}
@@ -218,6 +191,6 @@ const AssignRecyclingModal: React.FC<AssignRecyclingModalProps> = ({
             </div>
         </div>
     );
-};
+}
 
 export default AssignRecyclingModal;

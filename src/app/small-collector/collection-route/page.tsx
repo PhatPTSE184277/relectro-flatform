@@ -8,6 +8,7 @@ import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import SearchBox from '@/components/ui/SearchBox';
 import { Route } from 'lucide-react';
 import CollectionRouteList from '@/components/small-collector/collection-route/CollectionRouteList';
+import { useRef } from 'react';
 import Pagination from '@/components/ui/Pagination';
 
 const CollectionRoutePage: React.FC = () => {
@@ -27,6 +28,8 @@ const CollectionRoutePage: React.FC = () => {
     const [search, setSearch] = useState('');
     const [showDetail, setShowDetail] = useState(false);
     const [detailRouteId, setDetailRouteId] = useState<string | null>(null);
+
+    const tableScrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const today = new Date();
@@ -50,6 +53,9 @@ const CollectionRoutePage: React.FC = () => {
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
+        if (tableScrollRef.current) {
+            tableScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     };
 
     const handleViewDetail = (id: string) => {
@@ -107,6 +113,7 @@ const CollectionRoutePage: React.FC = () => {
                     routes={filteredRoutes}
                     loading={loading}
                     onViewDetail={handleViewDetail}
+                    tableRef={tableScrollRef}
                 />
             </div>
 

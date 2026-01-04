@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { IoSparklesOutline, IoCloudUploadOutline } from 'react-icons/io5';
+import { Factory } from 'lucide-react';
+import { IoCloudUploadOutline } from 'react-icons/io5';
 import { useCollectionCompanyContext } from '@/contexts/admin/CollectionCompanyContext';
 import CompanyList from '@/components/admin/collection-company/CompanyList';
 import CompanyFilter from '@/components/admin/collection-company/CompanyFilter';
@@ -51,12 +52,12 @@ const CollectionCompanyPage: React.FC = () => {
     });
 
     return (
-        <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8'>
             {/* Header */}
-            <div className='flex justify-between items-center mb-6'>
+            <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3'>
                 <div className='flex items-center gap-3'>
                     <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center border border-primary-200'>
-                        <IoSparklesOutline className='text-white' size={20} />
+                        <Factory className='text-white' size={20} />
                     </div>
                     <h1 className='text-3xl font-bold text-gray-900'>
                         {user?.role === 'Collector' ? 'Thông tin công ty' : 'Quản lý công ty thu gom'}
@@ -66,7 +67,7 @@ const CollectionCompanyPage: React.FC = () => {
                     {user?.role !== 'Collector' && (
                         <button
                             type='button'
-                            className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md border border-primary-200 cursor-pointer'
+                            className='flex items-center gap-2 px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md border border-primary-200 cursor-pointer'
                             onClick={() => setShowImportModal(true)}
                         >
                             <IoCloudUploadOutline size={20} />
@@ -84,10 +85,12 @@ const CollectionCompanyPage: React.FC = () => {
             </div>
 
             {/* Filter */}
-            <CompanyFilter
-                status={filterStatus}
-                onFilterChange={setFilterStatus}
-            />
+            <div className='mt-6 mb-4'>
+                <CompanyFilter
+                    status={filterStatus}
+                    onFilterChange={setFilterStatus}
+                />
+            </div>
 
             {/* Company List */}
             <CompanyList
