@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eye, Truck, UserCog } from 'lucide-react';
+import { Eye, UserCog } from 'lucide-react';
 
 interface GroupingShowProps {
     grouping: any;
@@ -23,7 +23,6 @@ const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean; stt?: numbe
             </td>
             <td className='py-3 px-4 text-gray-700' style={{ width: '200px' }}>
                 <div className='flex items-center gap-2'>
-                    <Truck size={16} className='text-primary-600' />
                     <span>{grouping.vehicle}</span>
                 </div>
             </td>

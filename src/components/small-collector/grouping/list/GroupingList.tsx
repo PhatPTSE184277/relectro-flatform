@@ -35,7 +35,7 @@ const GroupingList: React.FC<GroupingListProps> = ({
                             </thead>
                         </table>
                     </div>
-                    <div className='max-h-1 overflow-y-auto'>
+                    <div className='max-h-108 overflow-y-auto'>
                         <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
                             <tbody>
                                 {loading ? (
