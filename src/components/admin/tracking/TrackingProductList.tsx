@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import TrackingProductSkeleton from './TrackingProductSkeleton';
 import { formatDate } from '@/utils/FormatDate';
-import Pagination from '@/components/ui/Pagination';
 import { Eye } from 'lucide-react';
 
 interface TrackingProductListProps {
@@ -50,14 +49,15 @@ const TrackingProductList: React.FC<TrackingProductListProps & { tableRef?: Reac
                                                 <tr
                                                     key={product.productId}
                                                     className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}
+                                                    style={{ tableLayout: 'fixed' }} // Ensure fixed layout for body rows
                                                 >
-                                                    <td className='py-3 px-4 text-center'>
+                                                    <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
                                                         <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                                                             {product.stt}
                                                         </span>
                                                     </td>
-                                                    <td className='py-3 px-4 text-gray-700'>
-                                                        <div className='flex items-center gap-2'>   
+                                                    <td className='py-3 px-4 text-gray-700' style={{ width: '200px' }}>
+                                                        <div className='flex items-center gap-2'>
                                                             <div>
                                                                 <div className='font-medium'>{product.categoryName || 'N/A'}</div>
                                                                 <div className='text-xs text-gray-500'>
@@ -66,17 +66,17 @@ const TrackingProductList: React.FC<TrackingProductListProps & { tableRef?: Reac
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className='py-3 px-4 text-gray-700'>
+                                                    <td className='py-3 px-4 text-gray-700' style={{ width: '180px' }}>
                                                         <div className='flex items-center gap-2'>
                                                             <span>{product.sender?.name || product.userName || 'N/A'}</span>
                                                         </div>
                                                     </td>
-                                                    <td className='py-3 px-4 text-gray-700'>
+                                                    <td className='py-3 px-4 text-gray-700' style={{ width: '180px' }}>
                                                         <div className='flex items-center gap-2'>
                                                             <span>{formatDate(product.pickUpDate) || 'Chưa có'}</span>
                                                         </div>
                                                     </td>
-                                                    <td className='py-3 px-4 text-center align-middle'>
+                                                    <td className='py-3 px-4 text-center align-middle' style={{ width: '120px' }}>
                                                         <div className='flex items-center justify-center h-full'>
                                                             <button
                                                                 onClick={() => onProductClick(product)}

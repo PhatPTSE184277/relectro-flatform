@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { getTodayString } from '@/utils/getDayString';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
-import { Users, Calendar, GitBranch } from 'lucide-react';
+import { GitBranch } from 'lucide-react';
 import PreAssignStep from '@/components/small-collector/grouping/PreAssignStep';
 import AssignDayStep from '@/components/small-collector/grouping/AssignDayStep';
 import { useRouter } from 'next/navigation';
@@ -45,8 +45,8 @@ const GroupingPage: React.FC = () => {
         fetchPendingProducts(selectedDate);
     }, [selectedDate, fetchPendingProducts]);
 
-    const handleGetSuggestion = async () => {
-        await getPreAssignSuggestion(loadThreshold);
+    const handleGetSuggestion = async (selectedProductIds?: string[]) => {
+        await getPreAssignSuggestion(loadThreshold, selectedProductIds);
         setActiveStep(2);
     };
 

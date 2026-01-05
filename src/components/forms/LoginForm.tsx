@@ -43,10 +43,10 @@ const LoginForm = () => {
                 case 'AdminCompany':
                     router.push('/company/dashboard');
                     break;
-                case 'Shipper':
+                case 'Collector':
                     router.push('/shipper/package');
                     break;
-                case 'Recycler':
+                case 'RecyclingCompany':
                     router.push('/recycle/package');
                     break;
                 default:
@@ -92,11 +92,11 @@ const LoginForm = () => {
                 case 'Shipper':
                     router.push('/shipper/package');
                     break;
-                case 'Recycler':
+                case 'RecyclingCompany':
                     router.push('/recycle/package');
                     break;
                 default:
-                    router.push('/admin/dashboard');
+                    router.push('/');
             }
         }
     };

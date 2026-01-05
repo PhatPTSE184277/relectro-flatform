@@ -13,14 +13,15 @@ const QRCodePage: React.FC = () => {
   const qrRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [timestamps, setTimestamps] = useState<string[]>([]);
 
+  // Function to generate new timestamps
+  const generateTimestamps = () => {
+    const now = Date.now();
+    return Array.from({ length: 35 }, (_, i) => (now + i).toString());
+  };
+
   // Generate timestamps once when component mounts
   useEffect(() => {
-    const now = Date.now();
-    const generatedTimestamps = Array.from(
-      { length: 35 },
-      (_, i) => (now + i).toString()
-    );
-    setTimestamps(generatedTimestamps);
+    setTimestamps(generateTimestamps());
   }, []);
 
   // Download PDF handler - converts SVG to canvas manually
@@ -36,16 +37,13 @@ const QRCodePage: React.FC = () => {
     for (let i = 0; i < timestamps.length; i++) {
       const ref = qrRefs.current[i];
       if (!ref) continue;
-      
       // Get SVG element
       const svg = ref.querySelector("svg");
       if (!svg) continue;
-      
       // Convert SVG to image data URL
       const svgData = new XMLSerializer().serializeToString(svg);
       const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
       const svgUrl = URL.createObjectURL(svgBlob);
-      
       // Create image and canvas
       const img = new Image();
       await new Promise((resolve, reject) => {
@@ -53,7 +51,6 @@ const QRCodePage: React.FC = () => {
         img.onerror = reject;
         img.src = svgUrl;
       });
-      
       const canvas = document.createElement("canvas");
       canvas.width = QR_SIZE * 2;
       canvas.height = QR_SIZE * 2;
@@ -61,9 +58,7 @@ const QRCodePage: React.FC = () => {
       if (ctx) {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       }
-      
       URL.revokeObjectURL(svgUrl);
-      
       const imgData = canvas.toDataURL("image/png");
       doc.addImage(imgData, "PNG", x, y, QR_SIZE, QR_SIZE);
       doc.setFontSize(8);
@@ -75,6 +70,8 @@ const QRCodePage: React.FC = () => {
       }
     }
     doc.save("qr-labels.pdf");
+    // Regenerate QR codes after download
+    setTimestamps(generateTimestamps());
   };
 
   return (

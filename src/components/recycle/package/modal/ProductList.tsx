@@ -15,10 +15,10 @@ const ProductList: React.FC<ProductListProps> = ({
     checkedProducts
 }) => {
     return (
-        <div className='bg-white rounded-xl shadow-sm border border-primary-100'>
+       <div className='bg-white rounded-xl shadow-sm border border-gray-100 flex-1 min-h-0'>
             <div className='overflow-x-auto'>
                 <table className='w-full text-sm text-gray-800'>
-                    <thead className='bg-primary-50 text-gray-700 uppercase text-xs font-semibold border-b border-primary-100'>
+                    <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                         <tr>
                             <th className='py-3 px-4 text-left'>STT</th>
                             <th className='py-3 px-4 text-left'>Danh mục</th>

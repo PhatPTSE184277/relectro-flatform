@@ -13,7 +13,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, selectedProductIds,
         }
     };
     return (
-        <div className='max-h-[50vh] overflow-y-auto'> {/* Added max height and overflow-y-auto to restrict scroll to the list */}
+        <div className='max-h-[284px] overflow-y-auto'> {/* Added max height and overflow-y-auto to restrict scroll to the list */}
             <table className='w-full text-sm text-gray-800'>
                 <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                     <tr>

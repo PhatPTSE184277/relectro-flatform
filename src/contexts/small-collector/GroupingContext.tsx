@@ -87,11 +87,11 @@ interface GroupingContextType {
     fetchVehicles: () => Promise<void>;
     fetchPendingProducts: (workDate?: string) => Promise<void>;
     fetchGroups: () => Promise<void>;
-    getPreAssignSuggestion: (loadThresholdPercent: number) => Promise<void>;
+    getPreAssignSuggestion: (loadThresholdPercent: number, selectedProductIds?: string[]) => Promise<void>;
     createGrouping: (payload: AssignDayGroupingPayload) => Promise<void>;
     calculateRoute: (saveResult: boolean) => Promise<void>;
     fetchGroupDetail: (groupId: number) => Promise<void>;
-    fetchDriverCandidates: (companyId: string, date: string) => Promise<void>;
+    fetchDriverCandidates: (date: string) => Promise<void>;
     reassignDriver: (groupId: number, newCollectorId: string) => Promise<void>;
 }
 
@@ -159,14 +159,15 @@ export function GroupingProvider({ children }: Props) {
     }, [user]);
 
     const getPreAssignSuggestion = useCallback(
-        async (loadThresholdPercent: number) => {
+        async (loadThresholdPercent: number, selectedProductIds?: string[]) => {
             if (!user?.smallCollectionPointId) {
                 return;
             }
             setLoading(true);
             try {
                 const payload: PreAssignGroupingPayload = {
-                    loadThresholdPercent
+                    loadThresholdPercent,
+                    productIds: selectedProductIds
                 };
                 const data = await preAssignGrouping(payload, user.smallCollectionPointId);
                 console.log('PreAssign result:', data);
@@ -229,10 +230,15 @@ export function GroupingProvider({ children }: Props) {
         }
     }, []);
 
-    const fetchDriverCandidates = useCallback(async (companyId: string, date: string) => {
+    const fetchDriverCandidates = useCallback(async (date: string) => {
+        if (!user?.smallCollectionPointId) {
+            console.warn('No smallCollectionPointId found in user profile:', user);
+            return;
+        }
         setReassignLoading(true);
         try {
-            const data = await getReassignDriverCandidates(companyId, date);
+            const smallCollectionPointId = user.smallCollectionPointId as string; // Ensure type safety
+            const data = await getReassignDriverCandidates(smallCollectionPointId, date);
             setDriverCandidates(data || []);
         } catch (error) {
             console.error('Error fetching driver candidates:', error);
@@ -240,7 +246,8 @@ export function GroupingProvider({ children }: Props) {
         } finally {
             setReassignLoading(false);
         }
-    }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.smallCollectionPointId]);
 
     const reassignDriver = useCallback(async (groupId: number, newCollectorId: string) => {
         setReassignLoading(true);

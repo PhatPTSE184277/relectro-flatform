@@ -115,7 +115,7 @@ const RecyclePackagePage: React.FC = () => {
                 <PackageFilter
                     status={
                         (filter.status as PackageStatus) ||
-                        PackageStatus.Shipping
+                        PackageStatus.Closed
                     }
                     stats={allStats}
                     onFilterChange={(status: PackageStatus) =>

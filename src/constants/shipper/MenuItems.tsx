@@ -1,7 +1,6 @@
 import {
     LayoutDashboard,
-    Package,
-    Truck
+    Package
 } from 'lucide-react';
 
 export const shipperMenuItems = [
@@ -16,11 +15,5 @@ export const shipperMenuItems = [
         label: 'Quản lý Package',
         path: '/shipper/package',
         icon: <Package size={20} />
-    },
-    {
-        id: 'delivery',
-        label: 'Vận chuyển',
-        path: '/shipper/delivery',
-        icon: <Truck size={20} />
     }
 ];

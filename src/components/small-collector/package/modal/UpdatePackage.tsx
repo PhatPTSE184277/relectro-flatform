@@ -186,7 +186,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                 </div>
 
                 {/* Body */}
-                <div className='flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50'>
+                <div className='flex-1 p-6 space-y-6 bg-gray-50'>
 
 
                     {/* QR Scanner */}
@@ -228,7 +228,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                             </h3>
                         </div>
 
-                        <div className='overflow-y-auto max-h-64'>
+                        <div className='max-h-64 overflow-y-auto'>
                             {scannedProducts.length === 0 ? (
                                 <div className='text-center py-8 text-gray-400'>
                                     <Package

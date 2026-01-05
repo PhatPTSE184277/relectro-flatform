@@ -40,12 +40,7 @@ const PackageList = forwardRef<HTMLDivElement, PackageListProps>(
                                 <tbody>
                                     {loading ? (
                                         Array.from({ length: 6 }).map((_, idx) => (
-                                            <tr key={idx}>
-                                                <td className="py-3 px-4 text-center" style={{ width: '60px' }}><PackageTableSkeleton /></td>
-                                                <td style={{ width: '180px' }}></td>
-                                                <td style={{ width: '160px' }}></td>
-                                                <td style={{ width: '120px' }}></td>
-                                            </tr>
+                                            <PackageTableSkeleton key={idx} />
                                         ))
                                     ) : packages.length > 0 ? (
                                         packages.map((pkg, idx) => (

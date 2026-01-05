@@ -36,16 +36,13 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
     useEffect(() => {
         if (open && day) {
             setActiveTab('vehicle');
-            if (day.suggestedVehicle.id !== selectedVehicleId) {
-                setSelectedVehicleId(day.suggestedVehicle.id);
-            }
-            const newProductIds = day.products.map((p: any) => p.productId);
-            if (JSON.stringify(newProductIds) !== JSON.stringify(selectedProductIds)) {
-                setSelectedProductIds(newProductIds);
-            }
+            // Always reset when day changes
+            setSelectedVehicleId(day.suggestedVehicle?.id || null);
+            const newProductIds = day.products?.map((p: any) => p.productId) || [];
+            setSelectedProductIds(newProductIds);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, day]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, day?.workDate]);
 
     const handleToggleProduct = (productId: string) => {
         setSelectedProductIds((prev) => {

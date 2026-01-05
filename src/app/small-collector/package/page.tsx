@@ -138,6 +138,13 @@ const PackagePage: React.FC = () => {
                     </h1>
                 </div>
                 <div className='flex gap-4 items-center flex-1 justify-end'>
+                    <button
+                        onClick={() => setShowCreateModal(true)}
+                        className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md cursor-pointer'
+                    >
+                        <Package size={20} />
+                        Tạo package
+                    </button>
                     <div className='flex-1 max-w-md'>
                         <SearchBox
                             value={search}

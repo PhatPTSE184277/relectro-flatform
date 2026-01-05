@@ -80,7 +80,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                 </div>
 
                 {/* Main content */}
-                <div className='flex-1 overflow-y-auto p-6'>
+                <div className='flex-1 p-6'>
                     {/* Package Info Card (SummaryCard) */}
                     <SummaryCard items={summaryItems} singleRow={true} />
 
@@ -92,7 +92,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                             </span>
                             Danh sách sản phẩm
                         </h3>
-                        <div className='overflow-y-auto max-h-64'>
+                        <div className='max-h-64 overflow-y-auto'>
                             <ProductList products={pkg.products} />
                         </div>
                     </div>

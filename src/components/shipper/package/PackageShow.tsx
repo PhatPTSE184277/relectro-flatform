@@ -24,11 +24,11 @@ const PackageShow: React.FC<PackageShowProps & { isLast?: boolean }> = ({
                 </span>
             </td>
 
-            <td className='py-3 px-4 font-medium' style={{ width: '180px' }}>
+            <td className='py-3 px-4 font-medium' style={{ width: '200px' }}>
                 <div className='text-gray-900'>{pkg.packageId}</div>
             </td>
 
-            <td className='py-3 px-4 text-gray-700' style={{ width: '160px' }}>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '200px' }}>
                 <span className='px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700'>
                     {pkg.products.length} sản phẩm
                 </span>

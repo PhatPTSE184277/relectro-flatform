@@ -19,7 +19,7 @@ export const collectorMenuItems = [
     {
         id: 'grouping',
         label: 'Danh sách sản phẩm',
-        path: '/small-collector/grouping',
+        path: '/small-collector/grouping/list',
         icon: <GitBranch size={20} />
     },
     {

@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import CompactDatePicker from '@/components/ui/CompactDatePicker';
+import CustomDatePicker from '@/components/ui/CustomDatePicker';
 
 interface ReassignDriverModalProps {
     open: boolean;
@@ -39,7 +39,7 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
 
     useEffect(() => {
         if (open && selectedDate && user?.collectionCompanyId) {
-            fetchDriverCandidates(String(user.collectionCompanyId), selectedDate);
+            fetchDriverCandidates(selectedDate);
         }
     }, [open, selectedDate, user?.collectionCompanyId, fetchDriverCandidates]);
 
@@ -67,9 +67,9 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
+            <div className='relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col z-10 max-h-[98vh] animate-fadeIn' style={{ overflow: 'visible' }}>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 rounded-t-2xl'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Phân lại tài xế
@@ -88,7 +88,7 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                 </div>
 
                 {/* Body */}
-                <div className='flex-1 overflow-y-auto p-6 bg-white space-y-6'>
+                <div className='flex-1 p-6 bg-white space-y-6' style={{ overflow: 'visible' }}>
                     {/* Current Driver Info and Date Picker */}
                     <div className='bg-gray-50 rounded-xl p-4 border border-gray-200 flex items-center justify-between gap-4'>
                         <div className='flex-1'>
@@ -105,11 +105,13 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                             <label className='block text-sm font-medium text-gray-700 mb-2'>
                                 Ngày thu gom
                             </label>
-                            <CompactDatePicker
-                                value={selectedDate}
-                                onChange={setSelectedDate}
-                                placeholder='Chọn ngày thu gom'
-                            />
+                            <div style={{ position: 'relative', zIndex: 50 }}>
+                                <CustomDatePicker
+                                    value={selectedDate}
+                                    onChange={setSelectedDate}
+                                    placeholder='Chọn ngày thu gom'
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -118,58 +120,85 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                         <h3 className='text-sm font-medium text-gray-700 mb-3'>
                             Danh sách tài xế
                         </h3>
-                        {reassignLoading ? (
-                            <div className='text-center py-8 text-gray-500'>
-                                <div className='animate-pulse'>Đang tải danh sách tài xế...</div>
-                            </div>
-                        ) : (Array.isArray(driverCandidates) ? driverCandidates.length === 0 : true) ? (
-                            <div className='text-center py-8 text-gray-400'>
-                                Không có tài xế nào
-                            </div>
-                        ) : (
-                            <div className='overflow-x-auto max-h-80'>
-                                <table className='w-full text-sm text-gray-800'>
-                                    <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
+                        <div className='overflow-x-auto'>
+                            <table className='w-full text-sm text-gray-800 table-fixed'>
+                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+                                    <tr>
+                                        <th className='py-3 px-4 text-center w-16 bg-gray-50'>Chọn</th>
+                                        <th className='py-3 px-4 text-left w-48 bg-gray-50'>Tên tài xế</th>
+                                        <th className='py-3 px-4 text-left w-40 bg-gray-50'>Số điện thoại</th>
+                                        <th className='py-3 px-4 text-left w-36 bg-gray-50'>Ca làm</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div className='max-h-80 overflow-y-auto'>
+                                <table className='w-full text-sm text-gray-800 table-fixed'>
+                                    <thead className='invisible h-0'>
                                         <tr>
-                                            <th className='py-3 px-4 text-center'>Chọn</th>
-                                            <th className='py-3 px-4 text-left'>Tên tài xế</th>
-                                            <th className='py-3 px-4 text-left'>Số điện thoại</th>
+                                            <th className='w-16'></th>
+                                            <th className='w-48'></th>
+                                            <th className='w-40'></th>
+                                            <th className='w-36'></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {driverCandidates.map((driver) => {
-                                            const isSelected = selectedDriverId === driver.userId;
-                                            return (
-                                                <tr
-                                                    key={driver.userId}
-                                                    className={`cursor-pointer transition-colors ${
-                                                        isSelected ? 'bg-primary-50 border-primary-500' : 'hover:bg-primary-50'
-                                                    }`}
-                                                    onClick={() => driver.isAvailable && setSelectedDriverId(driver.userId)}
-                                                >
-                                                    <td className='py-3 px-4 text-center'>
-                                                        <input
-                                                            type='radio'
-                                                            checked={isSelected}
-                                                            onChange={() => setSelectedDriverId(driver.userId)}
-                                                            className='w-4 h-4 text-primary-600 rounded-full cursor-pointer'
-                                                            onClick={(e) => e.stopPropagation()}
-                                                        />
+                                        {reassignLoading ? (
+                                            Array.from({ length: 4 }).map((_, idx) => (
+                                                <tr key={idx}>
+                                                    <td className='py-3 px-4 text-center w-16'>
+                                                        <div className='w-4 h-4 rounded-full bg-gray-200 animate-pulse mx-auto'></div>
                                                     </td>
-                                                    <td className='py-3 px-4 font-medium text-gray-900'>{driver.name}</td>
-                                                    <td className='py-3 px-4 text-gray-700'>{driver.phone || '-'}</td>
+                                                    <td className='py-3 px-4 w-48'>
+                                                        <div className='h-4 w-24 bg-gray-200 rounded animate-pulse mb-2'></div>
+                                                        <div className='h-3 w-16 bg-gray-100 rounded animate-pulse'></div>
+                                                    </td>
+                                                    <td className='py-3 px-4 w-40'>
+                                                        <div className='h-4 w-20 bg-gray-200 rounded animate-pulse'></div>
+                                                    </td>
                                                 </tr>
-                                            );
-                                        })}
+                                            ))
+                                        ) : (Array.isArray(driverCandidates) ? driverCandidates.length === 0 : true) ? (
+                                            <tr>
+                                                <td colSpan={4} className='text-center py-8 text-gray-400'>
+                                                    Không có tài xế nào
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            driverCandidates.map((driver) => {
+                                                const isSelected = selectedDriverId === driver.userId;
+                                                return (
+                                                    <tr
+                                                        key={driver.userId}
+                                                        className={`cursor-pointer transition-colors ${
+                                                            isSelected ? 'bg-primary-50 border-primary-500' : 'hover:bg-primary-50'
+                                                        }`}
+                                                        onClick={() => driver.isAvailable && setSelectedDriverId(driver.userId)}
+                                                    >
+                                                        <td className='py-3 px-4 text-center w-16'>
+                                                            <input
+                                                                type='radio'
+                                                                checked={isSelected}
+                                                                onChange={() => setSelectedDriverId(driver.userId)}
+                                                                className='w-4 h-4 text-primary-600 rounded-full cursor-pointer'
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            />
+                                                        </td>
+                                                        <td className='py-3 px-4 font-medium text-gray-900 w-48'>{driver.name}</td>
+                                                        <td className='py-3 px-4 text-gray-700 w-40'>{driver.phone || '-'}</td>
+                                                        <td className='py-3 px-4 text-gray-700 w-36'>{driver.shiftTime || '-'}</td>
+                                                    </tr>
+                                                );
+                                            })
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
-                        )}
+                        </div>
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className='flex justify-end items-center gap-3 p-5 border-t border-primary-100 bg-white'>
+                <div className='flex justify-end items-center gap-3 p-5 border-t border-primary-100 bg-white rounded-b-2xl'>
                     <button
                         onClick={handleConfirm}
                         disabled={!selectedDriverId || reassignLoading}

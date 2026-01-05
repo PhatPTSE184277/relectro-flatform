@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
 import ProductList from './ProductList';
 
@@ -9,7 +9,8 @@ interface PreAssignStepProps {
     products: any[];
     loadThreshold: number;
     setLoadThreshold: (value: number) => void;
-    onGetSuggestion: () => void;
+    onGetSuggestion: (selectedProductIds?: string[]) => void;
+    onSkip?: () => void;
     page?: number;
     itemsPerPage?: number;
 }
@@ -23,6 +24,27 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     page = 1,
     itemsPerPage = 10
 }) => {
+    const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+
+    const handleToggleSelect = (productId: string) => {
+        setSelectedProductIds(prev => 
+            prev.includes(productId) 
+                ? prev.filter(id => id !== productId)
+                : [...prev, productId]
+        );
+    };
+
+    const handleToggleAll = () => {
+        if (selectedProductIds.length === products.length) {
+            setSelectedProductIds([]);
+        } else {
+            setSelectedProductIds(products.map(p => p.productId));
+        }
+    };
+
+    const handleGetSuggestion = () => {
+        onGetSuggestion(selectedProductIds.length > 0 ? selectedProductIds : undefined);
+    };
     return (
         <div className='space-y-4'>
             {/* Top controls: label, threshold, button all in one row */}
@@ -42,16 +64,26 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                     <span className='text-primary-600 font-semibold'>%</span>
                 </div>
                 <button
-                    onClick={onGetSuggestion}
+                    onClick={handleGetSuggestion}
                     disabled={loading || (products?.length || 0) === 0}
                     className='py-2 px-4 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer ml-0 md:ml-4'
                 >
-                    {loading ? 'Đang xử lý...' : 'Lấy gợi ý gom nhóm'}
+                    {loading ? 'Đang xử lý...' : `Lấy gợi ý gom nhóm${selectedProductIds.length > 0 ? ` (${selectedProductIds.length} sản phẩm)` : ''}`}
                 </button>
+                {/* Bỏ qua, tự tạo nhóm button đã bị loại bỏ */}
             </div>
 
             {/* Pending Products List */}
-            <ProductList products={products} loading={loading} page={page} itemsPerPage={itemsPerPage} />
+            <ProductList 
+                products={products} 
+                loading={loading} 
+                page={page} 
+                itemsPerPage={itemsPerPage}
+                showCheckbox={true}
+                selectedProductIds={selectedProductIds}
+                onToggleSelect={handleToggleSelect}
+                onToggleAll={handleToggleAll}
+            />
         </div>
     );
 };

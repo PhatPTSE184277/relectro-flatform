@@ -7,19 +7,20 @@ import {
 export const filterPackages = async ({
     page = 1,
     limit = 10,
-    smallCollectionPointId,
+    recyclerId,
     status
 }: {
     page?: number;
     limit?: number;
-    smallCollectionPointId?: string;
+    recyclerId?: string;
     status?: string;
 }): Promise<FilterPackagesResponse> => {
     const params: Record<string, any> = { page, limit };
+    if (recyclerId && recyclerId.trim()) params.recyclerId = recyclerId.trim();
     if (status && status.trim()) params.status = status.trim();
 
     const response = await axios.get<FilterPackagesResponse>(
-        '/packages/filter',
+        '/packages/recycler/filter',
         { params }
     );
     return response.data;

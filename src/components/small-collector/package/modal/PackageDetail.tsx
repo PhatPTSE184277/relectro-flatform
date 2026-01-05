@@ -87,7 +87,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                     </div>
                     {/* Products List */}
                     <div className='bg-white rounded-xl shadow-sm border border-gray-100 flex-1 min-h-0'>
-                        <div className='overflow-y-auto max-h-[45vh]'>
+                        <div className='max-h-[45vh] overflow-y-auto'>
                             <table className='w-full text-sm text-gray-800'>
                                 <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                                     <tr>

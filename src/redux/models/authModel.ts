@@ -4,7 +4,7 @@ export interface UserProfile {
     email: string;
     phone: string;
     avatar: string;
-    role: 'AdminWarehouse' | 'Collector' | 'User' | 'Admin' | 'AdminCompany' | 'Shipper' | 'Recycler';
+    role: 'AdminWarehouse' | 'Collector' | 'User' | 'Admin' | 'AdminCompany' | 'Shipper' | 'RecyclingCompany';
     points: number;
     smallCollectionPointId?: string;
     collectionCompanyId?: string;

@@ -1,9 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calendar, Truck, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
 import EditGroupingModal from './modal/EditGroupingModal';
-import ProductList from './ProductList';
 
 interface AssignDayStepProps {
     loading: boolean;
@@ -38,17 +36,14 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
             })
         }))
     );
-    const [expandedDays, setExpandedDays] = useState<number[]>([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedDay, setSelectedDay] = useState<any>(null);
+    const [selectedDateFilter, setSelectedDateFilter] = useState<string>(
+        (preAssignResult?.days || [])[0]?.workDate || ''
+    );
 
-    const toggleDay = (dayIndex: number) => {
-        if (expandedDays.includes(dayIndex)) {
-            setExpandedDays(expandedDays.filter((d) => d !== dayIndex));
-        } else {
-            setExpandedDays([...expandedDays, dayIndex]);
-        }
-    };
+    // Get current filtered day data
+    const currentDay = daySuggestions.find(day => day.workDate === selectedDateFilter);
 
     const handleOpenEditModal = (day: any) => {
         setSelectedDay(day);
@@ -104,12 +99,26 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     };
 
     return (
-        <div className='space-y-6'>
-            <div className='flex items-center justify-between'>
-                <div>
-                    <h2 className='text-2xl font-bold text-gray-900 mb-2'>
-                        Bước 2: Tạo nhóm thu gom
-                    </h2>
+        <div className='space-y-2'>
+            {/* Filter bar with dates */}
+            <div className='flex flex-col md:flex-row md:items-center md:gap-2 gap-1 bg-gray-50 rounded-lg px-2 py-2'>
+                <h2 className='text-lg font-bold text-gray-900 mb-0 md:mb-0 md:mr-4 whitespace-nowrap'>
+                    Bước 2: Tạo nhóm thu gom
+                </h2>
+                <div className='flex items-center gap-2 flex-wrap flex-1'>
+                    {daySuggestions.map((day: any) => (
+                        <button
+                            key={day.workDate}
+                            onClick={() => setSelectedDateFilter(day.workDate)}
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[120px] ${
+                                selectedDateFilter === day.workDate
+                                    ? 'bg-primary-600 text-white shadow-md'
+                                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-primary-50'
+                            }`}
+                        >
+                            {new Date(day.workDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
+                        </button>
+                    ))}
                 </div>
                 <button
                     onClick={onBack}
@@ -119,99 +128,113 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                 </button>
             </div>
 
-            {/* Suggestions Display */}
-            <div className='space-y-4'>
-                {daySuggestions.map((day: any, dayIndex: number) => (
-                    <div
-                        key={dayIndex}
-                        className={`border rounded-lg overflow-hidden transition-all ${
-                            expandedDays.includes(dayIndex)
-                                ? 'border-primary-500 shadow-md bg-white'
-                                : 'border-gray-200 bg-gray-50'
-                        }`}
-                    >
-                        {/* Day Header */}
-                        <div className='p-4 flex items-center justify-between'>
-                            <div className='flex items-center gap-3'>
-                                <Calendar className='text-primary-600' size={20} />
+            {/* Current day info and products */}
+            {currentDay && (
+                <>
+                    {/* Day Summary Card with inline vehicle info */}
+                    <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-2 mt-1'>
+                        <div className='flex items-center justify-between mb-1 gap-2 flex-wrap'>
+                            <div className='flex items-center gap-3 flex-wrap'>
+                                <div className='w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center'>
+                                    <span className='text-primary-600 font-bold text-base'>
+                                        {new Date(currentDay.workDate).getDate()}
+                                    </span>
+                                </div>
                                 <div>
-                                    <p className='font-semibold text-gray-900'>
-                                        {new Date(day.workDate).toLocaleDateString('vi-VN')}
+                                    <h3 className='text-base font-bold text-gray-900 mb-0'>
+                                        {new Date(currentDay.workDate).toLocaleDateString('vi-VN', { 
+                                            weekday: 'long', 
+                                            year: 'numeric', 
+                                            month: 'long', 
+                                            day: 'numeric' 
+                                        })}
+                                    </h3>
+                                    <p className='text-xs text-gray-500 mb-0'>
+                                        {currentDay.products.length} sản phẩm • {currentDay.totalWeight} kg • {currentDay.totalVolume} m³
                                     </p>
-                                    <p className='text-sm text-gray-600'>
-                                        {day.originalPostCount || (day.products || []).length} sản phẩm • {day.totalWeight || 0} kg • {(day.totalVolume || 0).toFixed(2)} m³
-                                    </p>
+                                </div>
+                                {/* Inline vehicle info */}
+                                <div className='ml-2 px-2 py-1 bg-blue-50 rounded-lg border border-blue-200 text-blue-600 font-medium text-xs flex items-center'>
+                                    Xe được gợi ý: {currentDay.suggestedVehicle.vehicle_Type} - {currentDay.suggestedVehicle.plate_Number}
+                                    <span className='ml-2 text-blue-500'>
+                                        ({currentDay.suggestedVehicle.capacity_Kg} kg, {currentDay.suggestedVehicle.capacity_M3 || 0} m³)
+                                    </span>
                                 </div>
                             </div>
                             <div className='flex items-center gap-2'>
                                 <button
-                                    onClick={() => handleOpenEditModal(day)}
-                                    disabled={loading}
-                                    className='p-2 rounded-lg text-primary-600 hover:text-primary-800 transition-colors disabled:text-gray-300 cursor-pointer'
-                                    title='Chỉnh sửa nhóm'
+                                    onClick={() => handleOpenEditModal(currentDay)}
+                                    className='px-4 py-2 bg-white border border-primary-200 text-primary-600 rounded-lg hover:bg-primary-50 transition cursor-pointer'
                                 >
-                                    <Pencil size={18} />
+                                    Chỉnh sửa
                                 </button>
                                 <button
-                                    onClick={() => toggleDay(dayIndex)}
-                                    className='p-2 rounded-lg text-gray-500 hover:text-primary-600 transition-colors cursor-pointer'
-                                    title={expandedDays.includes(dayIndex) ? 'Thu gọn' : 'Xem chi tiết'}
+                                    onClick={() => handleCreateGrouping({
+                                        workDate: currentDay.workDate,
+                                        vehicleId: currentDay.suggestedVehicle.id.toString(),
+                                        productIds: currentDay.products.map((p: any) => p.productId)
+                                    })}
+                                    className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition cursor-pointer shadow-md'
                                 >
-                                    {expandedDays.includes(dayIndex) ? (
-                                        <ChevronUp size={20} />
-                                    ) : (
-                                        <ChevronDown size={20} />
-                                    )}
+                                    Tạo nhóm
                                 </button>
                             </div>
                         </div>
-
-                        {/* Day Content */}
-                        {expandedDays.includes(dayIndex) && (
-                            <div className='p-4 space-y-4 bg-white'>
-                                {/* Vehicle Info - compact style */}
-                                <div className='border-l-4 border-primary-500 bg-primary-50 rounded-lg px-4 py-2'>
-                                    <div className='flex items-center gap-2 mb-1'>
-                                        <Truck className='text-primary-600' size={18} />
-                                        <span className='font-semibold text-gray-900 text-sm'>Phương tiện</span>
-                                    </div>
-                                    <div className='flex flex-wrap items-center gap-2 text-sm text-gray-700 mt-1'>
-                                        <span className='font-medium text-gray-900'>{day.suggestedVehicle.vehicle_Type}</span>
-                                        <span className='text-gray-400'>•</span>
-                                        <span>{day.suggestedVehicle.plate_Number}</span>
-                                        <span className='text-gray-400'>•</span>
-                                        <span>Tải trọng: <span className='font-medium'>{day.suggestedVehicle.capacity_Kg} kg</span></span>
-                                        {day.suggestedVehicle.allowedCapacityKg != null && (
-                                            <>
-                                                <span className='text-gray-400'>•</span>
-                                                <span>Cho phép: <span className='font-medium text-green-600'>{day.suggestedVehicle.allowedCapacityKg} kg</span></span>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Products List */}
-                                <ProductList products={day.products || []} loading={false} />
-
-                                {/* Action Button */}
-                                <div className='pt-2 flex gap-3 justify-end'>
-                                    <button
-                                        onClick={() => handleCreateGrouping({
-                                            workDate: day.workDate,
-                                            vehicleId: day.suggestedVehicle.id,
-                                            productIds: (day.products || []).map((p: any) => p.productId)
-                                        })}
-                                        disabled={loading || (day.products || []).length === 0}
-                                        className='py-3 px-4 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors shadow-sm cursor-pointer'
-                                    >
-                                        Tạo nhóm thu gom
-                                    </button>
-                                </div>
-                            </div>
-                        )}
                     </div>
-                ))}
-            </div>
+
+                    {/* Products Table */}
+                    <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
+                        <div className='w-full overflow-x-auto'>
+                            <table className='min-w-[700px] text-sm text-gray-800' style={{ tableLayout: 'fixed', width: '100%' }}>
+                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
+                                    <tr>
+                                        <th className='py-3 px-4 text-center' style={{ width: '70px' }}>STT</th>
+                                        <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Người gửi</th>
+                                        <th className='py-3 px-4 text-left' style={{ width: '320px' }}>Địa chỉ</th>
+                                        <th className='py-3 pl-4 pr-16 text-right' style={{ width: '180px' }}>Khối lượng(kg/m³)</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                            <div style={{ maxHeight: 310, overflowY: 'auto' }}>
+                                <table className='min-w-[700px] text-sm text-gray-800' style={{ tableLayout: 'fixed', width: '100%' }}>
+                                    <tbody>
+                                        {currentDay.products.map((product: any, idx: number) => (
+                                            <tr key={product.productId} className={`${
+                                                idx !== currentDay.products.length - 1 ? 'border-b border-primary-100' : ''
+                                            } hover:bg-primary-50/40 transition-colors`}>
+                                                <td className='py-3 px-4 text-center' style={{ width: '70px' }}>
+                                                    <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
+                                                        {idx + 1}
+                                                    </span>
+                                                </td>
+                                                <td className='py-3 px-4 text-gray-700' style={{ width: '180px' }}>
+                                                    <div>{product.userName || 'N/A'}</div>
+                                                    <div className='text-xs text-gray-500 mt-1'>
+                                                        {product.categoryName ? product.categoryName : 'Không rõ'}{' - '}{product.brandName ? product.brandName : 'Không rõ'}
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4 text-gray-700' style={{ width: '320px' }}>
+                                                    <div className='line-clamp-2'>{product.address || 'N/A'}</div>
+                                                </td>
+                                                <td className='py-3 pl-4 pr-16 text-gray-700 text-right' style={{ width: '180px' }}>
+                                                    <div className='flex flex-col gap-1 items-end'>
+                                                        <span className='text-xs'>
+                                                            <span className='font-medium'>{product.weight || product.weightKg || 0}</span>
+                                                        </span>
+                                                        <span className='text-xs text-gray-500'>
+                                                            {product.volume || product.volumeM3 || 0}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
 
             {/* Edit Modal */}
             <EditGroupingModal
@@ -223,7 +246,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                 onConfirm={handleConfirmEdit}
                 day={selectedDay}
                 vehicles={vehicles}
-                allProducts={products}
+                allProducts={selectedDay?.products || []}
                 loading={loading}
             />
         </div>

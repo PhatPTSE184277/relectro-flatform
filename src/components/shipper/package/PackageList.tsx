@@ -34,14 +34,14 @@ const PackageList: React.FC<PackageListProps> = ({
                             <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                                 <tr>
                                     <th className='py-3 px-4 text-center' style={{ width: '60px' }}>STT</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Mã Package</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '160px' }}>Số sản phẩm</th>
+                                    <th className='py-3 px-4 text-left' style={{ width: '200px' }}>Mã Package</th>
+                                    <th className='py-3 px-4 text-left' style={{ width: '200px' }}>Số sản phẩm</th>
                                     <th className='py-3 px-4 text-center' style={{ width: '120px' }}>Hành động</th>
                                 </tr>
                             </thead>
                         </table>
                     </div>
-                    <div className='max-h-80 overflow-y-auto' ref={bodyRef}>
+                    <div className='max-h-85 overflow-y-auto' ref={bodyRef}>
                         <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
                             <tbody>
                                 {loading ? (

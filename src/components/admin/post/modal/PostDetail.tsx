@@ -179,7 +179,7 @@ const PostDetail: React.FC<PostDetailProps> = ({
                     </div>
 
                     {/* RIGHT - INFO */}
-                    <div className='md:w-2/3 p-6 pt-10 space-y-1 overflow-y-visible max-h-full'>
+                    <div className='md:w-2/3 p-6 pt-6 space-y-2 overflow-y-visible max-h-full'>
                         {/* Product Details */}
 
                         {post.product && (
@@ -275,7 +275,7 @@ const PostDetail: React.FC<PostDetailProps> = ({
                         />
 
                         {/* Sender Info */}
-                        <div>
+                        <div className='mt-2 mb-2'>
                             <UserInfo user={post.sender} />
                         </div>
 
@@ -283,8 +283,8 @@ const PostDetail: React.FC<PostDetailProps> = ({
 
                         {/* Approve/Reject Buttons under AI Labels */}
                         {isPending && (
-                            <div className='flex justify-end mt-6'>
-                                <div className='flex gap-3'>
+                            <div className='flex justify-end mt-2'>
+                                <div className='flex gap-2'>
                                     <button
                                         onClick={() => setIsRejectModalOpen(true)}
                                         className='bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-medium transition cursor-pointer shadow-sm order-1'

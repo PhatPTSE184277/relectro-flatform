@@ -1,14 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Tag, Box, ListCheck, Truck, List } from 'lucide-react';
-import { PackageType } from '@/types/Package';
+import { Tag, List } from 'lucide-react';
 import ProductList from './ProductList';
 import { PackageStatus } from '@/enums/PackageStatus';
 import SummaryCard from '@/components/ui/SummaryCard';
 
 interface PackageDetailProps {
-    package: PackageType;
+    package: any;
     onClose: () => void;
 }
 
@@ -27,32 +26,15 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             label: 'Mã package',
             value: pkg.packageId,
         },
-
         {
-            icon: <ListCheck size={14} className='text-primary-400' />,
-            label: 'Số sản phẩm',
-            value: pkg.products.length,
+            icon: <Tag size={14} className='text-primary-400' />,
+            label: 'Điểm thu gom',
+            value: pkg.smallCollectionPointsName,
         },
         {
-            icon: <Truck size={14} className='text-primary-400' />,
-            label: 'Trạng thái',
-            value: (
-                <span
-                    className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                        pkg.status === PackageStatus.Packing
-                            ? 'bg-yellow-100 text-yellow-700'
-                            : pkg.status === PackageStatus.Closed
-                            ? 'bg-green-100 text-green-700'
-                            : pkg.status === PackageStatus.Shipping
-                            ? 'bg-blue-100 text-blue-700'
-                            : pkg.status === PackageStatus.Recycling
-                            ? 'bg-purple-100 text-purple-700'
-                            : 'bg-gray-100 text-gray-600'
-                    }`}
-                >
-                    {pkg.status}
-                </span>
-            ),
+            icon: <Tag size={14} className='text-primary-400' />,
+            label: 'Địa chỉ thu gom',
+            value: pkg.smallCollectionPointsAddress,
         },
     ];
 
@@ -71,9 +53,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                         <h2 className='text-2xl font-bold text-gray-900'>
                             Chi tiết Package
                         </h2>
-                        <p className='text-sm text-gray-500 mt-1'>
-                            Thông tin chi tiết về package và danh sách sản phẩm
-                        </p>
                     </div>
                     <button
                         onClick={onClose}
@@ -95,7 +74,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                             <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                 <List className='w-5 h-5 text-primary-500' />
                             </span>
-                            Danh sách sản phẩm
+                            Danh sách sản phẩm ({pkg.products.length})
                         </h3>
                         <ProductList
                             products={pkg.products}

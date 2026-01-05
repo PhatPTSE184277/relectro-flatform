@@ -2,6 +2,7 @@ import axios from '@/lib/axios';
 
 export interface PreAssignGroupingPayload {
     loadThresholdPercent: number;
+    productIds?: string[];
 }
 
 export interface AssignDayGroupingPayload {
@@ -95,9 +96,9 @@ export const getPendingGroupingProducts = async (
 };
 
 // Lấy danh sách tài xế có thể phân lại
-export const getReassignDriverCandidates = async (companyId: string, date: string): Promise<any[]> => {
+export const getReassignDriverCandidates = async (smallCollectionId: string, date: string): Promise<any[]> => {
     const response = await axios.get('/ReassignDriver/candidates', {
-        params: { companyId, date }
+        params: { smallCollectionId, date }
     });
     return response.data;
 };

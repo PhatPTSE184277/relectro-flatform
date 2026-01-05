@@ -1,7 +1,6 @@
 import {
     LayoutDashboard,
-    Package,
-    Recycle
+    Package
 } from 'lucide-react';
 
 export const recyclerMenuItems = [
@@ -16,11 +15,5 @@ export const recyclerMenuItems = [
         label: 'Quản lý Package',
         path: '/recycle/package',
         icon: <Package size={20} />
-    },
-    {
-        id: 'recycling',
-        label: 'Tái chế',
-        path: '/recycle/recycling',
-        icon: <Recycle size={20} />
     }
 ];

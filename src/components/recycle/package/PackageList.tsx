@@ -40,7 +40,7 @@ const PackageList: React.FC<PackageListProps> = ({
                             </thead>
                         </table>
                     </div>
-                    <div className='max-h-96 overflow-y-auto' ref={bodyRef}>
+                    <div className='max-h-85 overflow-y-auto' ref={bodyRef}>
                         <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
                             <tbody>
                                 {loading ? (

@@ -173,7 +173,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                 </div>
 
                 {/* Body */}
-                <div className='flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50'>
+                <div className='flex-1 p-6 space-y-6 bg-gray-50'>
                     {/* Package ID & QR Scanner in one row */}
                     <div className='flex flex-col md:flex-row gap-4'>
                         {/* Mã Package */}

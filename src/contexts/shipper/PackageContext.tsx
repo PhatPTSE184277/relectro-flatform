@@ -15,12 +15,14 @@ import {
 } from '@/services/shipper/PackageService';
 import { PackageType, FilterPackagesResponse } from '@/types/Package';
 import { PackageStatus } from '@/enums/PackageStatus';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 interface PackageFilter {
     page?: number;
     limit?: number;
     status?: string;
-    smallCollectionPointId?: string;
+    recyclerId?: string;
 }
 
 interface PackageContextType {
@@ -46,6 +48,7 @@ const PackageContext = createContext<PackageContextType | undefined>(undefined);
 type Props = { children: ReactNode };
 
 export const ShipperPackageProvider: React.FC<Props> = ({ children }) => {
+    const user = useSelector((state: RootState) => state.auth.user);
     const [packages, setPackages] = useState<PackageType[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [selectedPackage, setSelectedPackage] = useState<PackageType | null>(null);
@@ -56,11 +59,16 @@ export const ShipperPackageProvider: React.FC<Props> = ({ children }) => {
     const [filter, setFilterState] = useState<PackageFilter>({
         page: 1,
         limit: 10,
-        status: PackageStatus.Closed
+        status: PackageStatus.Closed,
+        recyclerId: user?.collectionCompanyId || undefined
     });
 
     const setFilter = (newFilter: Partial<PackageFilter>) => {
-        setFilterState((prev) => ({ ...prev, ...newFilter }));
+        setFilterState((prev) => ({
+            ...prev,
+            ...newFilter,
+            recyclerId: user?.collectionCompanyId || prev.recyclerId
+        }));
     };
 
     const fetchPackages = useCallback(
@@ -69,13 +77,15 @@ export const ShipperPackageProvider: React.FC<Props> = ({ children }) => {
             try {
                 const params: Record<string, any> = {
                     ...filter,
+                    recyclerId: user?.collectionCompanyId,
                     ...customFilter
                 };
                 // Remove undefined values
                 Object.keys(params).forEach(
                     (key) => params[key] === undefined && delete params[key]
                 );
-                
+                // Ensure compatibility: remove smallCollectionPointId, use recyclerId
+                if ('smallCollectionPointId' in params) delete params.smallCollectionPointId;
                 const response: FilterPackagesResponse = await filterPackages(params);
                 setPackages(response.data || []);
                 setTotalPages(response.totalPages);
@@ -88,15 +98,16 @@ export const ShipperPackageProvider: React.FC<Props> = ({ children }) => {
                 setLoading(false);
             }
         },
-        [filter]
+        [filter, user?.collectionCompanyId]
     );
 
     // Fetch stats for all statuses
     const fetchAllStats = useCallback(async () => {
         try {
+            const recyclerId = user?.collectionCompanyId;
             const [closedRes, shippingRes] = await Promise.all([
-                filterPackages({ page: 1, limit: 1, status: PackageStatus.Closed }),
-                filterPackages({ page: 1, limit: 1, status: PackageStatus.Shipping })
+                filterPackages({ page: 1, limit: 1, status: PackageStatus.Closed, recyclerId }),
+                filterPackages({ page: 1, limit: 1, status: PackageStatus.Shipping, recyclerId })
             ]);
             setAllStats({
                 closed: closedRes.totalItems,
@@ -105,7 +116,7 @@ export const ShipperPackageProvider: React.FC<Props> = ({ children }) => {
         } catch (err) {
             console.error('fetchAllStats error', err);
         }
-    }, []);
+    }, [user?.collectionCompanyId]);
 
     const fetchPackageDetail = useCallback(
         async (packageId: string) => {
@@ -143,10 +154,20 @@ export const ShipperPackageProvider: React.FC<Props> = ({ children }) => {
     );
 
     useEffect(() => {
-        void fetchPackages();
-        void fetchAllStats();
+        // Only fetch when user's collectionCompanyId is available
+        if (!user?.collectionCompanyId) {
+            return;
+        }
+
+        // Update filter if recyclerId doesn't match
+        if (filter.recyclerId !== user.collectionCompanyId) {
+            setFilterState((prev) => ({ ...prev, recyclerId: user.collectionCompanyId }));
+        } else {
+            void fetchPackages();
+            void fetchAllStats();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filter]);
+    }, [filter, user?.collectionCompanyId]);
 
     const value: PackageContextType = {
         packages,

@@ -1,4 +1,3 @@
-import React, { forwardRef } from 'react';
 import CollectionRouteShow from './CollectionRouteShow';
 import CollectionRouteTableSkeleton from './CollectionRouteTableSkeleton';
 import type { CollectionRoute } from '@/types/CollectionRoute';
@@ -36,7 +35,7 @@ const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
                                 </tr>
                             </thead>
                         </table>
-                        <div className='max-h-90 overflow-y-auto' ref={tableRef}>
+                        <div className='max-h-85 overflow-y-auto' ref={tableRef}>
                             <table className='w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
                                 <tbody>
                                     {loading ? (
