@@ -18,45 +18,52 @@ const GroupingList: React.FC<GroupingListProps> = ({
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
             <div className='overflow-x-auto'>
-                <table className='w-full text-sm text-gray-800'>
-                    <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
-                        <tr>
-                            <th className='py-3 px-4 text-center w-16'>STT</th>
-                            <th className='py-3 px-4 text-left'>Mã nhóm</th>
-                            <th className='py-3 px-4 text-left'>Ngày thu gom</th>
-                            <th className='py-3 px-4 text-left'>Phương tiện</th>
-                            <th className='py-3 px-4 text-left'>Người thu gom</th>
-                            <th className='py-3 px-4 text-left'>Số sản phẩm</th>
-                            <th className='py-3 px-4 text-right'>Khối lượng (kg/m³)</th>
-                            <th className='py-3 px-4 text-center'>Hành động</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {loading ? (
-                            Array.from({ length: 6 }).map((_, idx) => (
-                                <GroupingTableSkeleton key={idx} />
-                            ))
-                        ) : groupings.length > 0 ? (
-                            groupings.map((group, idx) => (
-                                <GroupingShow
-                                    key={group.groupId}
-                                    grouping={{ ...group, groupDate: group.date, totalPosts: group.totalOrders }}
-                                    onViewDetail={onViewDetail}
-                                    onReassignDriver={onReassignDriver}
-                                    isLast={idx === groupings.length - 1}
-                                    stt={idx + 1}
-                                />
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan={7} className='text-center py-8 text-gray-400'>
-                                    Không có nhóm thu gom nào.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                <div className='inline-block min-w-full align-middle'>
+                    <div className='overflow-hidden'>
+                        <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
+                            <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
+                                <tr>
+                                    <th className='py-3 px-4 text-center' style={{ width: '60px' }}>STT</th>
+                                    <th className='py-3 px-4 text-left' style={{ width: '160px' }}>Mã nhóm</th>
+                                    <th className='py-3 px-4 text-left' style={{ width: '160px' }}>Ngày thu gom</th>
+                                    <th className='py-3 px-4 text-left' style={{ width: '200px' }}>Phương tiện</th>
+                                    <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Người thu gom</th>
+                                    <th className='py-3 px-4 text-left' style={{ width: '160px' }}>Số sản phẩm</th>
+                                    <th className='py-3 px-4 text-right' style={{ width: '160px' }}>Khối lượng (kg/m³)</th>
+                                    <th className='py-3 px-4 text-center' style={{ width: '120px' }}>Hành động</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div className='max-h-1 overflow-y-auto'>
+                        <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
+                            <tbody>
+                                {loading ? (
+                                    Array.from({ length: 6 }).map((_, idx) => (
+                                        <GroupingTableSkeleton key={idx} />
+                                    ))
+                                ) : groupings.length > 0 ? (
+                                    groupings.map((group, idx) => (
+                                        <GroupingShow
+                                            key={group.groupId}
+                                            grouping={{ ...group, groupDate: group.date, totalPosts: group.totalOrders }}
+                                            onViewDetail={onViewDetail}
+                                            onReassignDriver={onReassignDriver}
+                                            isLast={idx === groupings.length - 1}
+                                            stt={idx + 1}
+                                        />
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={8} className='text-center py-8 text-gray-400'>
+                                            Không có nhóm thu gom nào.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     );

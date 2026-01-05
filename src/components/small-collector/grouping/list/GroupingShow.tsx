@@ -9,38 +9,33 @@ interface GroupingShowProps {
 
 const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean; stt?: number }> = ({ grouping, onViewDetail, onReassignDriver, isLast = false, stt }) => {
     return (
-        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
-            <td className='py-3 px-4 text-center'>
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`} style={{ tableLayout: 'fixed' }}>
+            <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {stt}
                 </span>
             </td>
-            <td className='py-3 px-4 font-medium'>
+            <td className='py-3 px-4 font-medium' style={{ width: '160px' }}>
                 <div className='text-gray-900'>{grouping.groupCode}</div>
             </td>
-
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '160px' }}>
                 {new Date(grouping.groupDate).toLocaleDateString('vi-VN')}
             </td>
-
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '200px' }}>
                 <div className='flex items-center gap-2'>
                     <Truck size={16} className='text-primary-600' />
                     <span>{grouping.vehicle}</span>
                 </div>
             </td>
-
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '180px' }}>
                 {grouping.collector}
             </td>
-
-            <td className='py-3 px-4 text-gray-700'>
+            <td className='py-3 px-4 text-gray-700' style={{ width: '160px' }}>
                 <span className='px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700'>
                     {grouping.totalPosts} sản phẩm
                 </span>
             </td>
-
-            <td className='py-3 px-4 text-gray-700 text-right'>
+            <td className='py-3 px-4 text-gray-700 text-right' style={{ width: '160px' }}>
                 <div className='flex flex-col gap-1 items-end'>
                     <span className='text-xs'>
                         <span className='font-medium'>{grouping.totalWeightKg}</span>
@@ -50,8 +45,7 @@ const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean; stt?: numbe
                     </span>
                 </div>
             </td>
-
-            <td className='py-3 px-4'>
+            <td className='py-3 px-4' style={{ width: '120px' }}>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={() => onViewDetail(grouping)}
