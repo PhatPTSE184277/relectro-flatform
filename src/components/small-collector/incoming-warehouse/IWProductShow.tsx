@@ -7,8 +7,7 @@ interface IWProductShowProps {
     status?: string;
 }
 
-const IWProductShow: React.FC<IWProductShowProps & { isLast?: boolean; stt?: number }> = ({ product, onView, status, isLast = false, stt }) => {
-    const isReceived = status === 'Nhập kho';
+const IWProductShow: React.FC<IWProductShowProps & { isLast?: boolean; stt?: number }> = ({ product, onView, isLast = false, stt }) => {
 
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
@@ -39,9 +38,7 @@ const IWProductShow: React.FC<IWProductShowProps & { isLast?: boolean; stt?: num
                     <span className='text-gray-400'>Không có mô tả</span>
                 )}
             </td>
-            <td className='py-3 px-4 text-gray-700 text-center' style={{ width: '120px' }}>
-                {isReceived ? (product.realPoint ?? 0) : (product.estimatePoint ?? 0)}
-            </td>
+            {/* Bỏ cột điểm */}
             <td className='py-3 px-4' style={{ width: '100px' }}>
                 <div className='flex justify-center gap-2'>
                     <button

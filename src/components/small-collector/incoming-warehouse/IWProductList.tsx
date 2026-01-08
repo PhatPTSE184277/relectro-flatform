@@ -23,7 +23,6 @@ const IWProductList = forwardRef<HTMLDivElement, IWProductListProps>(
         currentPage = 1,
         pageSize = 10
     }, ref) => {
-        const isReceived = status === 'Nhập kho';
         const startIndex = (currentPage - 1) * pageSize;
         return (
             <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -38,13 +37,13 @@ const IWProductList = forwardRef<HTMLDivElement, IWProductListProps>(
                                         <th className='py-3 px-4 text-left' style={{ width: '160px' }}>Mã QR</th>
                                         <th className='py-3 px-4 text-left' style={{ width: '140px' }}>Thương hiệu</th>
                                         <th className='py-3 px-4 text-left' style={{ width: '200px' }}>Mô tả</th>
-                                        <th className='py-3 px-4 text-left' style={{ width: '120px' }}>{isReceived ? 'Điểm' : 'Điểm ước tính'}</th>
+                                        {/* Bỏ cột điểm */}
                                         <th className='py-3 px-4 text-center' style={{ width: '100px' }}>Hành động</th>
                                     </tr>
                                 </thead>
                             </table>
                         </div>
-                        <div className='max-h-55 overflow-y-auto' ref={ref}>
+                        <div className='max-h-62 overflow-y-auto' ref={ref}>
                             <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
                                 <tbody>
                                     {loading ? (
@@ -64,7 +63,7 @@ const IWProductList = forwardRef<HTMLDivElement, IWProductListProps>(
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={7} className='text-center py-8 text-gray-400'>
+                                            <td colSpan={6} className='text-center py-8 text-gray-400'>
                                                 Không có sản phẩm nào.
                                             </td>
                                         </tr>

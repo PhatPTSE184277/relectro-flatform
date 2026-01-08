@@ -12,11 +12,11 @@ interface ProductListProps {
     selectedProductIds?: string[];
     onToggleSelect?: (productId: string) => void;
     onToggleAll?: () => void;
+    maxHeight?: number;
 }
 
-const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, itemsPerPage = 10, showCheckbox, selectedProductIds = [], onToggleSelect, onToggleAll }) => {
+const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, itemsPerPage = 10, showCheckbox, selectedProductIds = [], onToggleSelect, onToggleAll, maxHeight = 330 }) => {
     const allSelected = showCheckbox && products.length > 0 && products.every(p => selectedProductIds.includes(p.productId));
-    
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='w-full overflow-x-auto'>
@@ -40,7 +40,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                         </tr>
                     </thead>
                 </table>
-                <div style={{ maxHeight: 330, overflowY: 'auto' }}>
+                <div style={{ maxHeight, overflowY: 'auto' }}>
                     <table className='min-w-[700px] text-sm text-gray-800' style={{ tableLayout: 'fixed', width: '100%' }}>
                         <tbody>
                             {loading ? (

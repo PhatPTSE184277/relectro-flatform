@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import EditGroupingModal from './modal/EditGroupingModal';
+import ProductList from './ProductList';
 
 interface AssignDayStepProps {
     loading: boolean;
@@ -183,56 +184,12 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                     </div>
 
                     {/* Products Table */}
-                    <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
-                        <div className='w-full overflow-x-auto'>
-                            <table className='min-w-[700px] text-sm text-gray-800' style={{ tableLayout: 'fixed', width: '100%' }}>
-                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
-                                    <tr>
-                                        <th className='py-3 px-4 text-center' style={{ width: '70px' }}>STT</th>
-                                        <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Người gửi</th>
-                                        <th className='py-3 px-4 text-left' style={{ width: '320px' }}>Địa chỉ</th>
-                                        <th className='py-3 pl-4 pr-16 text-right' style={{ width: '180px' }}>Khối lượng(kg/m³)</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                            <div style={{ maxHeight: 310, overflowY: 'auto' }}>
-                                <table className='min-w-[700px] text-sm text-gray-800' style={{ tableLayout: 'fixed', width: '100%' }}>
-                                    <tbody>
-                                        {currentDay.products.map((product: any, idx: number) => (
-                                            <tr key={product.productId} className={`${
-                                                idx !== currentDay.products.length - 1 ? 'border-b border-primary-100' : ''
-                                            } hover:bg-primary-50/40 transition-colors`}>
-                                                <td className='py-3 px-4 text-center' style={{ width: '70px' }}>
-                                                    <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
-                                                        {idx + 1}
-                                                    </span>
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-700' style={{ width: '180px' }}>
-                                                    <div>{product.userName || 'N/A'}</div>
-                                                    <div className='text-xs text-gray-500 mt-1'>
-                                                        {product.categoryName ? product.categoryName : 'Không rõ'}{' - '}{product.brandName ? product.brandName : 'Không rõ'}
-                                                    </div>
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-700' style={{ width: '320px' }}>
-                                                    <div className='line-clamp-2'>{product.address || 'N/A'}</div>
-                                                </td>
-                                                <td className='py-3 pl-4 pr-16 text-gray-700 text-right' style={{ width: '180px' }}>
-                                                    <div className='flex flex-col gap-1 items-end'>
-                                                        <span className='text-xs'>
-                                                            <span className='font-medium'>{product.weight || product.weightKg || 0}</span>
-                                                        </span>
-                                                        <span className='text-xs text-gray-500'>
-                                                            {product.volume || product.volumeM3 || 0}
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    <ProductList
+                        products={currentDay.products}
+                        loading={loading}
+                        showCheckbox={false}
+                        maxHeight={350}
+                    />
                 </>
             )}
 

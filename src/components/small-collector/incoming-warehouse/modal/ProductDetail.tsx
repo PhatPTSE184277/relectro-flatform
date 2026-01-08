@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import type { Product } from '@/types/Product';
 import {
     Package,
-    Star,
     UserCheck,
     User,
     List,
@@ -40,7 +39,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
             </div>
         );
     }
-    const isReceived = product.status === 'Nhập kho';
 
     // Badge status - đồng bộ với PostDetail
     const getStatusBadgeClass = (status: string) => {
@@ -204,18 +202,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                                     }
                                 ].filter(Boolean) as import("@/components/ui/SummaryCard").SummaryCardItem[]}
                         />
-
-                        {/* Đã thu gom (realPoint) */}
-                        {isReceived && (
-                            <div className='p-4 bg-green-50 rounded-lg border flex items-center gap-3'>
-                                <Star size={20} className='text-green-600' />
-                                <div>
-                                    <p className='text-gray-900 text-lg font-bold'>
-                                        Điểm nhận được: {product.realPoints}
-                                    </p>
-                                </div>
-                            </div>
-                        )}
 
                         {/* Collector Info */}
 
