@@ -1,114 +1,126 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import LineChart from '@/components/charts/LineChart';
-import LineChartSkeleton from '@/components/charts/LineChartSkeleton';
-import ProductCategoryChart from '@/components/charts/ProductCategoryChart';
 import DashboardStats from '@/components/admin/dashboard/DashboardStats';
-import { DashboardProvider, useDashboardContext } from '@/contexts/admin/DashboardContext';
-import { Calendar } from 'lucide-react';
-import dynamic from 'next/dynamic';
+import { getFirstDayOfMonthString, getTodayString } from '@/utils/getDayString';
+import ProductCategoryList from '@/components/admin/dashboard/ProductCategoryList';
+import { useDashboardContext } from '@/contexts/admin/DashboardContext';
+import { LayoutDashboard } from 'lucide-react';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
+import CustomDatePicker from '@/components/ui/CustomDatePicker';
 
-const BarChartSkeleton = dynamic(
-    () => import('@/components/charts/BarChartSkereton'),
-    { ssr: false }
-);
+// Helper to normalize stat data
+const normalizeStatDetail = (data: any) => {
+    if (typeof data === 'object' && data !== null) return data;
+    return {
+        currentValue: Number(data) || 0,
+        previousValue: 0,
+        absoluteChange: Number(data) || 0,
+        percentChange: 100,
+        trend: 'Increase' as const
+    };
+};
 
-const chartTabs = [
-    { key: 'user', label: 'Người dùng' },
-    { key: 'product', label: 'Sản phẩm' },
-    { key: 'shipping', label: 'Vận chuyển' }
-];
+// Helper to normalize product categories
+const normalizeProductCategories = (categories: any[]) => {
+    if (!Array.isArray(categories)) return [];
+    return categories.map((cat: any) => ({
+        categoryName: cat.categoryName,
+        currentValue: typeof cat.currentValue === 'number' ? cat.currentValue : (cat.count ?? 0),
+        previousValue: typeof cat.previousValue === 'number' ? cat.previousValue : 0,
+        absoluteChange: typeof cat.absoluteChange === 'number' ? cat.absoluteChange : (cat.count ?? 0),
+        percentChange: typeof cat.percentChange === 'number' ? cat.percentChange : 100,
+        trend: cat.trend ?? 'Increase'
+    }));
+};
 
-const DashboardContent = () => {
-    const { summary, loading, fetchSummary } = useDashboardContext();
-    const [activeTab, setActiveTab] = useState('user');
-    const [year, setYear] = useState('2025');
-    const [fromDate, setFromDate] = useState('2025-12-01');
-    const [toDate, setToDate] = useState('2025-12-31');
+const DashboardPage = () => {
+    const { summary, loading, fetchSummary, fetchSummaryByDay } = useDashboardContext();
+    const [viewMode, setViewMode] = useState<'day' | 'range'>('range');
+    const [selectedDate, setSelectedDate] = useState(getTodayString());
+    const [fromDate, setFromDate] = useState(getFirstDayOfMonthString());
+    const [toDate, setToDate] = useState(getTodayString());
 
     useEffect(() => {
-        fetchSummary(fromDate, toDate);
-    }, [fromDate, toDate, fetchSummary]);
+        if (viewMode === 'day') {
+            fetchSummaryByDay(selectedDate);
+        } else {
+            fetchSummary(fromDate, toDate);
+        }
+    }, [viewMode, selectedDate, fromDate, toDate, fetchSummary, fetchSummaryByDay]);
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
-            {/* Date Range Picker - style giống tracking, căn phải trên desktop */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center">
-                        <Calendar className="text-white" size={20} />
+            {/* Header with Mode Toggle and Date Picker */}
+            <div className="mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center">
+                            <LayoutDashboard className="text-white" size={20} />
+                        </div>
+                        <h1 className="text-3xl font-bold text-gray-900">Thống kê</h1>
                     </div>
-                    <h1 className="text-3xl font-bold text-gray-900">Thống kê tổng quan</h1>
-                </div>
-                <div className="flex-1 flex justify-end max-w-xl w-full">
-                    <CustomDateRangePicker
-                        fromDate={fromDate}
-                        toDate={toDate}
-                        onFromDateChange={setFromDate}
-                        onToDateChange={setToDate}
-                    />
+                    <div className="flex gap-4 items-center flex-1 justify-end">
+                        {viewMode === 'day' ? (
+                            <div className="w-full max-w-xs">
+                                <CustomDatePicker
+                                    value={selectedDate}
+                                    onChange={setSelectedDate}
+                                    placeholder="Chọn ngày"
+                                />
+                            </div>
+                        ) : (
+                            <div className="w-full max-w-xl">
+                                <CustomDateRangePicker
+                                    fromDate={fromDate}
+                                    toDate={toDate}
+                                    onFromDateChange={setFromDate}
+                                    onToDateChange={setToDate}
+                                />
+                            </div>
+                        )}
+                             <div className="flex items-center bg-gray-100 rounded-lg">
+                            <button
+                                onClick={() => setViewMode('day')}
+                                className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                                    viewMode === 'day'
+                                        ? 'bg-primary-600 text-white shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                            >
+                                Theo ngày
+                            </button>
+                            <button
+                                onClick={() => setViewMode('range')}
+                                className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                                    viewMode === 'range'
+                                        ? 'bg-primary-600 text-white shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                            >
+                                Theo khoảng
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             {/* Card thống kê */}
             <DashboardStats
-                totalUsers={summary?.totalUsers || 0}
-                totalCompanies={summary?.totalCompanies || 0}
-                totalProducts={summary?.totalProducts || 0}
+                totalUsers={normalizeStatDetail(summary?.totalUsers)}
+                totalCompanies={normalizeStatDetail(summary?.totalCompanies)}
+                totalProducts={normalizeStatDetail(summary?.totalProducts)}
                 loading={loading}
             />
             
-            <div className="bg-white rounded-xl shadow p-6">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex gap-6">
-                        {chartTabs.map(tab => (
-                            <button
-                                key={tab.key}
-                                className={`text-sm font-medium border-b-2 pb-1 transition ${
-                                    activeTab === tab.key
-                                        ? 'border-blue-500 text-blue-600'
-                                        : 'border-transparent text-gray-500'
-                                }`}
-                                onClick={() => setActiveTab(tab.key)}
-                            >
-                                {tab.label}
-                            </button>
-                        ))}
-                    </div>
-                    <div className="flex gap-2 items-center">
-                        <select
-                            value={year}
-                            onChange={e => setYear(e.target.value)}
-                            className="px-2 py-1 rounded border border-gray-200 bg-white text-gray-900 outline-none"
-                        >
-                            <option value="2025">Năm</option>
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    {loading ? <LineChartSkeleton /> : <LineChart tab={activeTab} year={year} />}
-                </div>
-            </div>
-
+            {/* Danh sách danh mục sản phẩm */}
             <div>
-                {loading ? (
-                    <BarChartSkeleton />
-                ) : (
-                    <ProductCategoryChart data={summary?.productCategories || []} />
-                )}
+                <ProductCategoryList
+                    data={normalizeProductCategories(summary?.productCategories || [])}
+                    total={normalizeStatDetail(summary?.totalProducts).currentValue}
+                    loading={loading}
+                />
             </div>
         </div>
-    );
-};
-
-const DashboardPage = () => {
-    return (
-        <DashboardProvider>
-            <DashboardContent />
-        </DashboardProvider>
     );
 };
 

@@ -13,7 +13,7 @@ import {
 export const adminMenuItems = [
     {
         id: 'dashboard',
-        label: 'Bảng điều khiển',
+        label: 'Thống kê',
         path: '/admin/dashboard',
         icon: <LayoutDashboard size={20} />
     },

@@ -29,3 +29,17 @@ export const getDashboardSummary = async (
   );
   return response.data;
 };
+
+export const getDashboardSummaryByDay = async (
+  date: string
+): Promise<DashboardSummaryResponse> => {
+  const response = await axios.get<DashboardSummaryResponse>(
+    '/dashboard/summary/day',
+    {
+      params: {
+        date,
+      },
+    }
+  );
+  return response.data;
+};

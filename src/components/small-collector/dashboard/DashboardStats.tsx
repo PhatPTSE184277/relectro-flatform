@@ -1,31 +1,29 @@
 import React from 'react';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Package, Box } from 'lucide-react';
 
 interface StatDetail {
   currentValue: number;
   previousValue: number;
   absoluteChange: number;
   percentChange: number;
-  trend: 'Increase' | 'Decrease' | 'NoChange';
+  trend: 'Increase' | 'Decrease' | 'NoChange' | 'Stable';
 }
 
 interface DashboardStatsProps {
-  totalUsers: StatDetail;
-  totalCompanies: StatDetail;
+  totalPackages: StatDetail;
   totalProducts: StatDetail;
   loading: boolean;
 }
 
 const DashboardStats: React.FC<DashboardStatsProps> = ({
-  totalUsers,
-  totalCompanies,
+  totalPackages,
   totalProducts,
   loading
 }) => {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {[1, 2, 3, 4].map((i) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[1, 2, 3].map((i) => (
           <div key={i} className="bg-gray-200 p-6 rounded-xl animate-pulse">
             <div className="h-4 bg-gray-300 rounded w-20 mb-4"></div>
             <div className="h-8 bg-gray-300 rounded w-16"></div>
@@ -36,26 +34,26 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
   }
 
   const stats = [
-    { title: 'Người dùng', detail: totalUsers },
-    { title: 'Công ty', detail: totalCompanies },
-    { title: 'Sản phẩm', detail: totalProducts },
+    { title: 'Kiện hàng', detail: totalPackages, icon: Package },
+    { title: 'Sản phẩm', detail: totalProducts, icon: Box },
     {
       title: 'Tổng quan',
+      icon: TrendingUp,
       detail: {
-        currentValue: totalUsers.currentValue + totalProducts.currentValue,
-        previousValue: totalUsers.previousValue + totalProducts.previousValue,
-        absoluteChange: totalUsers.absoluteChange + totalProducts.absoluteChange,
+        currentValue: totalPackages.currentValue + totalProducts.currentValue,
+        previousValue: totalPackages.previousValue + totalProducts.previousValue,
+        absoluteChange: totalPackages.absoluteChange + totalProducts.absoluteChange,
         percentChange:
-          totalUsers.previousValue + totalProducts.previousValue === 0
+          totalPackages.previousValue + totalProducts.previousValue === 0
             ? 100
             : Math.round(
-                ((totalUsers.currentValue + totalProducts.currentValue - (totalUsers.previousValue + totalProducts.previousValue)) /
-                  (totalUsers.previousValue + totalProducts.previousValue)) * 100
+                ((totalPackages.currentValue + totalProducts.currentValue - (totalPackages.previousValue + totalProducts.previousValue)) /
+                  (totalPackages.previousValue + totalProducts.previousValue)) * 100
               ),
         trend:
-          totalUsers.currentValue + totalProducts.currentValue > totalUsers.previousValue + totalProducts.previousValue
+          totalPackages.currentValue + totalProducts.currentValue > totalPackages.previousValue + totalProducts.previousValue
             ? 'Increase'
-            : totalUsers.currentValue + totalProducts.currentValue < totalUsers.previousValue + totalProducts.previousValue
+            : totalPackages.currentValue + totalProducts.currentValue < totalPackages.previousValue + totalProducts.previousValue
             ? 'Decrease'
             : 'NoChange',
       },
@@ -63,10 +61,10 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {stats.map((stat, idx) => {
         const isPrimary = idx % 2 === 1;
-        // Ensure all values are numbers and fallback to 0 if NaN or undefined
+        const Icon = stat.icon;
         const {
           currentValue,
           previousValue,
@@ -88,9 +86,11 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
             }
           >
             <div className="flex items-center justify-between w-full">
-              <h3 className={isPrimary ? 'text-lg font-semibold text-white' : 'text-lg font-semibold text-primary-700'}>{stat.title}</h3>
-              <TrendingUp size={18} className={isPrimary ? 'text-white opacity-80' : 'text-primary-400 opacity-80'} />
-              <span className={isPrimary ? 'text-3xl font-bold ml-4 text-white' : 'text-3xl font-bold ml-4 text-primary-600'}>{safeCurrentValue}</span>
+              <div className="flex items-center gap-2">
+                <Icon size={18} className={isPrimary ? 'text-white opacity-80' : 'text-primary-400 opacity-80'} />
+                <h3 className={isPrimary ? 'text-lg font-semibold text-white' : 'text-lg font-semibold text-primary-700'}>{stat.title}</h3>
+              </div>
+              <span className={isPrimary ? 'text-3xl font-bold text-white' : 'text-3xl font-bold text-primary-600'}>{safeCurrentValue}</span>
             </div>
             <div className={isPrimary ? 'flex justify-between items-center mt-2 text-white text-xs' : 'flex justify-between items-center mt-2 text-primary-700 text-xs'}>
               <span>

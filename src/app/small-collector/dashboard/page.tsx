@@ -1,123 +1,186 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import StatCard from '@/components/ui/StateCard';
-import StatCardSkeleton from '@/components/ui/StatCardSkeleton';
-import LineChart from '@/components/charts/LineChart';
-import BarChart from '@/components/charts/BarChart';
-const BarChartSkeleton = dynamic(
-    () => import('@/components/charts/BarChartSkereton'),
-    { ssr: false }
-);
+import DashboardStats from '@/components/small-collector/dashboard/DashboardStats';
+import { getFirstDayOfMonthString, getTodayString } from '@/utils/getDayString';
+import ProductCategoryList from '@/components/small-collector/dashboard/ProductCategoryList';
+import DailyPackageStats from '@/components/small-collector/dashboard/DailyPackageStats';
+import { useDashboardContext } from '@/contexts/small-collector/DashboardContext';
+import { LayoutDashboard } from 'lucide-react';
+import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
+import CustomDatePicker from '@/components/ui/CustomDatePicker';
 
-import LineChartSkeleton from '@/components/charts/LineChartSkeleton';
-import PieChart from '@/components/charts/PieChart';
-import PieChartSkeleton from '@/components/charts/PieChartSkeleton';
-import dynamic from 'next/dynamic';
+// Helper to normalize stat data
+const normalizeStatDetail = (data: any) => {
+    if (typeof data === 'object' && data !== null) return data;
+    return {
+        currentValue: Number(data) || 0,
+        previousValue: 0,
+        absoluteChange: Number(data) || 0,
+        percentChange: 100,
+        trend: 'Increase' as const
+    };
+};
 
-const chartTabs = [
-    { key: 'user', label: 'Người dùng' },
-    { key: 'product', label: 'Sản phẩm' },
-    { key: 'shipping', label: 'Vận chuyển' }
-];
+// Helper to normalize product categories
+const normalizeProductCategories = (categories: any[]) => {
+    if (!Array.isArray(categories)) return [];
+    return categories.map((cat: any) => ({
+        categoryName: cat.categoryName,
+        currentValue: typeof cat.currentValue === 'number' ? cat.currentValue : (cat.count ?? 0),
+        previousValue: typeof cat.previousValue === 'number' ? cat.previousValue : 0,
+        absoluteChange: typeof cat.absoluteChange === 'number' ? cat.absoluteChange : (cat.count ?? 0),
+        percentChange: typeof cat.percentChange === 'number' ? cat.percentChange : 100,
+        trend: cat.trend ?? 'Increase'
+    }));
+};
 
 const DashboardPage = () => {
-    const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('user');
-    const [year, setYear] = useState('2025');
+    const { summary, loading, fetchSummary, fetchSummaryByDay, fetchPackageStats } = useDashboardContext();
+    const [viewMode, setViewMode] = useState<'day' | 'range'>('range');
+    const [selectedDate, setSelectedDate] = useState(getTodayString());
+    const [fromDate, setFromDate] = useState(getFirstDayOfMonthString());
+    const [toDate, setToDate] = useState(getTodayString());
+    const [packageStats, setPackageStats] = useState<any>(null);
+    const [statsView, setStatsView] = useState<'package' | 'product'>('package');
+
+    // Get smallCollectionPointId from localStorage or context (adjust as needed)
+    const smallCollectionPointId = '2'; // TODO: Get from auth context or user context
+
+    // Handler để chuyển đổi stats view
+    const handleStatsViewChange = (view: 'package' | 'product') => {
+        setStatsView(view);
+        // Khi chọn package, force về range mode
+        if (view === 'package') {
+            setViewMode('range');
+        }
+    };
 
     useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 1000);
-        return () => clearTimeout(timer);
-    }, []);
+        const fetchData = async () => {
+            // Fetch product stats theo mode được chọn
+            if (statsView === 'product') {
+                if (viewMode === 'day') {
+                    await fetchSummaryByDay(smallCollectionPointId, selectedDate);
+                } else {
+                    await fetchSummary(smallCollectionPointId, fromDate, toDate);
+                }
+            }
+
+            // Fetch package stats chỉ theo range
+            if (statsView === 'package') {
+                await fetchSummary(smallCollectionPointId, fromDate, toDate);
+                const pkgStats = await fetchPackageStats(smallCollectionPointId, fromDate, toDate);
+                setPackageStats(pkgStats);
+            }
+        };
+        fetchData();
+    }, [viewMode, selectedDate, fromDate, toDate, statsView, fetchSummary, fetchSummaryByDay, fetchPackageStats, smallCollectionPointId]);
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pt-16">
-            {/* Card thống kê */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                {loading ? (
-                    <>
-                        <StatCardSkeleton />
-                        <StatCardSkeleton />
-                        <StatCardSkeleton />
-                        <StatCardSkeleton />
-                    </>
-                ) : (
-                    <>
-                        <StatCard
-                            title="Yêu cầu"
-                            value="7,265"
-                            change="+11.01%"
-                            isPositive={true}
-                            variant="blue"
-                        />
-                        <StatCard
-                            title="Người dùng"
-                            value="3,671"
-                            change="-0.03%"
-                            isPositive={false}
-                            variant="dark"
-                        />
-                        <StatCard
-                            title="Sản phẩm"
-                            value="256"
-                            change="+15.03%"
-                            isPositive={true}
-                            variant="blue"
-                        />
-                        <StatCard
-                            title="Vận chuyển"
-                            value="2,318"
-                            change="+6.08%"
-                            isPositive={true}
-                            variant="dark"
-                        />
-                    </>
-                )}
-            </div>
-            
-            <div className="bg-white rounded-xl shadow p-6">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex gap-6">
-                        {chartTabs.map(tab => (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
+            {/* Header with Mode Toggle and Date Picker */}
+            <div className="mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center">
+                            <LayoutDashboard className="text-white" size={20} />
+                        </div>
+                        <h1 className="text-3xl font-bold text-gray-900">Thống kê</h1>
+                    </div>
+                    <div className="flex gap-4 items-center flex-1 justify-end">
+                        {viewMode === 'day' ? (
+                            <div className="w-full max-w-xs">
+                                <CustomDatePicker
+                                    value={selectedDate}
+                                    onChange={setSelectedDate}
+                                    placeholder="Chọn ngày"
+                                />
+                            </div>
+                        ) : (
+                            <div className="w-full max-w-xl">
+                                <CustomDateRangePicker
+                                    fromDate={fromDate}
+                                    toDate={toDate}
+                                    onFromDateChange={setFromDate}
+                                    onToDateChange={setToDate}
+                                />
+                            </div>
+                        )}
+
+                        {/* Chỉ hiển thị day/range toggle khi ở product view */}
+                        {statsView === 'product' && (
+                            <div className="flex items-center bg-gray-100 rounded-lg">
+                                <button
+                                    onClick={() => setViewMode('day')}
+                                    className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                                        viewMode === 'day'
+                                            ? 'bg-primary-600 text-white shadow-sm'
+                                            : 'text-gray-600 hover:text-gray-900'
+                                    }`}
+                                >
+                                    Theo ngày
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('range')}
+                                    className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                                        viewMode === 'range'
+                                            ? 'bg-primary-600 text-white shadow-sm'
+                                            : 'text-gray-600 hover:text-gray-900'
+                                    }`}
+                                >
+                                    Theo khoảng
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Toggle View: Package vs Product */}
+                        <div className="flex items-center bg-gray-100 rounded-lg p-1">
                             <button
-                                key={tab.key}
-                                className={`text-sm font-medium border-b-2 pb-1 transition ${
-                                    activeTab === tab.key
-                                        ? 'border-blue-500 text-blue-600'
-                                        : 'border-transparent text-gray-500'
+                                onClick={() => handleStatsViewChange('package')}
+                                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                    statsView === 'package'
+                                        ? 'bg-primary-600 text-white shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
                                 }`}
-                                onClick={() => setActiveTab(tab.key)}
                             >
-                                {tab.label}
+                                Kiện hàng
                             </button>
-                        ))}
+                            <button
+                                onClick={() => handleStatsViewChange('product')}
+                                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                    statsView === 'product'
+                                        ? 'bg-primary-600 text-white shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                            >
+                                Sản phẩm
+                            </button>
+                        </div>
                     </div>
-                    <div className="flex gap-2 items-center">
-                        <select
-                            value={year}
-                            onChange={e => setYear(e.target.value)}
-                            className="px-2 py-1 rounded border border-gray-200 bg-white text-gray-900 outline-none"
-                        >
-                            <option value="2025">Năm</option>
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    {loading ? <LineChartSkeleton /> : <LineChart tab={activeTab} year={year} />}
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white rounded-xl shadow p-6">
-                    <div className="font-semibold text-blue-600 mb-2">Sản phẩm</div>
-                    {loading ? <BarChartSkeleton /> : <BarChart />}
-                </div>
-                <div className="bg-white rounded-xl shadow p-6">
-                    <div className="font-semibold text-green-600 mb-2">Địa điểm thu mua</div>
-                    {loading ? <PieChartSkeleton /> : <PieChart />}
-                </div>
+            {/* Card thống kê */}
+            <DashboardStats
+                totalPackages={normalizeStatDetail(packageStats?.totalPackages || 0)}
+                totalProducts={normalizeStatDetail(summary?.totalProducts)}
+                loading={loading}
+            />
+
+            {/* Conditional Stats Display */}
+            <div>
+                {statsView === 'package' ? (
+                    <DailyPackageStats
+                        dailyStats={packageStats?.dailyStats || []}
+                        loading={loading}
+                    />
+                ) : (
+                    <ProductCategoryList
+                        data={normalizeProductCategories(summary?.productCategories || [])}
+                        total={normalizeStatDetail(summary?.totalProducts).currentValue}
+                        loading={loading}
+                    />
+                )}
             </div>
         </div>
     );

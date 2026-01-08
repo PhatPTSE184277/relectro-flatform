@@ -4,7 +4,7 @@ export interface SummaryCardItem {
     icon?: React.ReactNode;
     label: React.ReactNode;
     value: React.ReactNode;
-    colSpan?: number; // Optional: for items that should span multiple columns
+    colSpan?: number;
 }
 
 interface SummaryCardProps {
@@ -55,7 +55,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ items, singleRow = false, lab
                                     wordBreak: 'break-word',
                                     overflowWrap: 'break-word',
                                     whiteSpace: 'normal',
-                                    ...(typeof item.value === 'number' ? { paddingLeft: '2.5em' } : {})
+                                    ...(typeof item.value === 'number' ? { paddingLeft: '10.5em' } : {})
                                 }}
                             >
                                 {formatValue(item.value)}

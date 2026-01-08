@@ -12,7 +12,7 @@ const AssignedProductShow: React.FC<AssignedProductShowProps> = ({
     index
 }) => {
     return (
-        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} bg-green-50/30 hover:bg-green-100/40 transition-colors`}>
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} bg-primary-50/30 hover:bg-primary-100/40 transition-colors`}>
             <td className="py-3 px-4 text-center" style={{ width: '60px' }}>
                 <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
                     {index !== undefined ? index + 1 : ''}

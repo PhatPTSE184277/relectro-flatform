@@ -173,9 +173,6 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                         <h2 className='text-2xl font-bold text-gray-900'>
                             Cập nhật Package
                         </h2>
-                        <p className='text-sm text-gray-500 mt-1'>
-                            Quét QR code để thêm hoặc xóa sản phẩm
-                        </p>
                     </div>
                     <button
                         onClick={handleClose}
@@ -278,7 +275,12 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                                                 <td className='py-2 px-3 text-gray-700'>
                                                     {product.brandName}
                                                 </td>
-                                                <td className='py-2 px-3 text-gray-500 font-mono text-xs'>
+                                                <td className='py-2 px-3 text-gray-700 max-w-xs'>
+                                                    <div className='line-clamp-2'>
+                                                        {product.description || 'Không có mô tả'}
+                                                    </div>
+                                                </td>
+                                                  <td className='py-2 px-3 text-gray-500 font-mono text-xs'>
                                                     {product.qrCode}
                                                 </td>
                                                 <td className='py-2 px-3 text-center'>
