@@ -23,7 +23,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, label }) => {
     }
 
     return (
-        <div className={`relative bg-white rounded-xl p-6 mb-3 shadow-sm border border-gray-100 flex gap-2 items-center${label ? ' mt-10' : ''}`}>
+        <div className={`relative bg-white rounded-xl p-3 mb-3 shadow-sm border border-gray-100 flex gap-2 items-center${label ? ' mt-10' : ''}`}>
             {label && (
                 <div
                     className="absolute -top-3 left-4 bg-white px-3 py-0.5 text-sm font-bold text-primary-700 border border-primary-300 rounded-full shadow-sm z-10 select-none"
@@ -42,22 +42,21 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, label }) => {
                 />
             )}
             <div className='flex flex-col justify-center w-full'>
-                <div className='text-sm font-semibold text-gray-900'>
-                    {user.name || 'Không có tên'}
+                <div className='flex items-center gap-x-2 text-sm mt-0 font-semibold text-gray-900'>
+                    <span>{user.name || 'Không có tên'}</span>
+                    {user.phone && (
+                        <>
+                            <span className='mx-1 text-gray-400 font-normal'>•</span>
+                            <span className='text-gray-700 font-normal'>{user.phone}</span>
+                        </>
+                    )}
+                    {user.email && (
+                        <>
+                            <span className='mx-1 text-gray-400 font-normal'>•</span>
+                            <span className='text-gray-700 font-normal'>{user.email}</span>
+                        </>
+                    )}
                 </div>
-                {(user.phone || user.email) && (
-                    <div className='flex flex-wrap items-center gap-x-2 gap-y-1 text-sm mt-1'>
-                        {user.phone && (
-                            <span className='text-gray-700'>{user.phone}</span>
-                        )}
-                        {user.phone && user.email && (
-                            <span className='mx-1 text-gray-400'>•</span>
-                        )}
-                        {user.email && (
-                            <span className='text-gray-700'>{user.email}</span>
-                        )}
-                    </div>
-                )}
                 {user.address && (
                     <p className='mt-1 text-gray-600 text-sm'>{user.address}</p>
                 )}

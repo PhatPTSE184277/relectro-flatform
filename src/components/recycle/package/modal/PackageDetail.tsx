@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Tag, List } from 'lucide-react';
+import { Tag, MapPin, Home, List } from 'lucide-react';
 import ProductList from './ProductList';
 import { PackageStatus } from '@/enums/PackageStatus';
 import SummaryCard from '@/components/ui/SummaryCard';
@@ -27,12 +27,12 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             value: pkg.packageId,
         },
         {
-            icon: <Tag size={14} className='text-primary-400' />,
+            icon: <MapPin size={14} className='text-primary-400' />,
             label: 'Điểm thu gom',
             value: pkg.smallCollectionPointsName,
         },
         {
-            icon: <Tag size={14} className='text-primary-400' />,
+            icon: <Home size={14} className='text-primary-400' />,
             label: 'Địa chỉ thu gom',
             value: pkg.smallCollectionPointsAddress,
         },

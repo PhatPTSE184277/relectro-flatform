@@ -50,7 +50,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
             {/* Top controls: label, threshold, button all in one row */}
             <div className='flex flex-col md:flex-row md:items-center md:gap-4 gap-2 bg-gray-50 rounded-lg px-4 py-3 mb-2'>
                 <h2 className='text-lg font-bold text-gray-900 mb-0 md:mb-0 md:mr-4 whitespace-nowrap'>
-                    Bước 1: Hệ thống sẽ tự động gợi ý cách gom nhóm
+                    Bước 1: Hệ thống sẽ tự động gom nhóm
                 </h2>
                 <div className='flex items-center gap-2'>
                     <label className='text-sm font-medium text-gray-700 whitespace-nowrap'>Ngưỡng tải:</label>
@@ -65,12 +65,11 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 </div>
                 <button
                     onClick={handleGetSuggestion}
-                    disabled={loading || (products?.length || 0) === 0}
+                    disabled={loading || selectedProductIds.length === 0}
                     className='py-2 px-4 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer ml-0 md:ml-4'
                 >
-                    {loading ? 'Đang xử lý...' : `Lấy gợi ý gom nhóm${selectedProductIds.length > 0 ? ` (${selectedProductIds.length} sản phẩm)` : ''}`}
+                    {loading ? 'Đang xử lý...' : `Gom nhóm${selectedProductIds.length > 0 ? ` (${selectedProductIds.length} sản phẩm)` : ''}`}
                 </button>
-                {/* Bỏ qua, tự tạo nhóm button đã bị loại bỏ */}
             </div>
 
             {/* Pending Products List */}

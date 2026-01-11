@@ -9,8 +9,11 @@ export interface SystemConfig {
   [key: string]: any;
 }
 
-export const getActiveSystemConfigs = async (): Promise<SystemConfig[]> => {
-  const response = await axios.get('/system-config/active');
+
+export const getActiveSystemConfigs = async (groupName?: string): Promise<SystemConfig[]> => {
+  const response = await axios.get('/system-config/active', {
+    params: groupName ? { GroupName: groupName } : undefined,
+  });
   return response.data;
 };
     

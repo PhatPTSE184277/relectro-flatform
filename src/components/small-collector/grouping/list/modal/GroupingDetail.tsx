@@ -1,5 +1,5 @@
-'use client';
-
+"use client";
+import { formatDimensionText, formatWeightKg } from "@/utils/formatNumber";
 import React from 'react';
 import {
     Truck,
@@ -22,6 +22,7 @@ interface Route {
     sizeTier?: string;
     categoryName?: string;
     brandName?: string;
+    dimensionText?: string;
 }
 
 interface GroupingDetailData {
@@ -82,7 +83,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[98vh] min-h-[80vh]'>
+            <div className='relative w-full max-w-[90vw] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[98vh] min-h-[80vh]'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
@@ -105,7 +106,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                     <SummaryCard label="Thông tin nhóm" items={summaryItems} />
 
                     {/* Statistics */}
-                    <div className='grid grid-cols-3 gap-4 mb-6'>
+                    <div className='grid grid-cols-2 gap-4 mb-6'>
                         <div className='bg-blue-50 rounded-xl p-4 border border-blue-100 shadow-sm flex items-center justify-between'>
                             <span className='text-xs font-semibold uppercase text-blue-700'>
                                 Tổng bưu phẩm
@@ -122,14 +123,6 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                 {grouping.totalWeightKg}
                             </span>
                         </div>
-                        <div className='bg-green-50 rounded-xl p-4 border border-green-100 shadow-sm flex items-center justify-between'>
-                            <span className='text-xs font-semibold uppercase text-green-700'>
-                                Tổng thể tích (m³)
-                            </span>
-                            <span className='text-2xl font-bold text-green-900'>
-                                {grouping.totalVolumeM3}
-                            </span>
-                        </div>
                     </div>
 
                     {/* Routes List */}
@@ -141,19 +134,19 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                         <th className='py-3 px-4 text-left w-16'>
                                             STT
                                         </th>
-                                        <th className='py-3 px-4 text-left w-48'>
+                                        <th className='py-3 px-4 text-left w-56'>
                                             Người gửi
                                         </th>
                                         <th className='py-3 px-4 text-left'>
                                             Địa chỉ
                                         </th>
-                                        <th className='py-3 px-4 text-right w-36'>
-                                            Khối lượng (kg/m³)
+                                        <th className='py-3 px-4 text-right w-64'>
+                                            Khối lượng / Kích thước (kg, cm)
                                         </th>
-                                        <th className='py-3 px-4 text-right w-36'>
+                                        <th className='py-3 px-4 text-right w-42'>
                                             Khoảng cách (km)
                                         </th>
-                                        <th className='py-3 px-4 text-center w-32'>
+                                        <th className='py-3 px-4 text-center w-42'>
                                             Giờ đến dự kiến
                                         </th>
                                     </tr>
@@ -174,7 +167,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                                             {idx + 1}
                                                         </span>
                                                     </td>
-                                                    <td className='py-3 px-4 font-medium text-gray-900 w-48'>
+                                                    <td className='py-3 px-4 font-medium text-gray-900 w-56'>
                                                         <div className='wrap-break-word'>{route.userName}</div>
                                                         <div className='text-xs text-gray-500 mt-1 wrap-break-word'>
                                                             {route.categoryName} - {route.brandName}
@@ -185,23 +178,25 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                                             {route.address}
                                                         </div>
                                                     </td>
-                                                    <td className='py-3 px-4 text-gray-700 text-right w-36'>
+                                                    <td className='py-3 px-4 text-gray-700 text-right w-64'>
                                                         <div className='flex flex-col gap-1 items-end'>
                                                             <span className='text-xs'>
-                                                                <span className='font-medium'>{route.weightKg} kg</span>
+                                                                <span className='font-medium'>{formatWeightKg(route.weightKg)}</span>
                                                             </span>
                                                             <span className='text-xs text-gray-500'>
-                                                                {route.volumeM3} m³
+                                                                {formatDimensionText(route.dimensionText)}
                                                             </span>
                                                         </div>
                                                     </td>
-                                                    <td className='py-3 px-4 text-gray-700 text-right w-36'>
+                                                    <td className='py-3 px-4 text-gray-700 text-right w-42'>
                                                         <span className='flex items-center gap-1 justify-end'>
                                                             {route.distanceKm}
                                                         </span>
                                                     </td>
-                                                    <td className='py-3 px-4 text-center w-32'>
-                                                        {route.estimatedArrival}
+                                                    <td className='py-3 px-4 text-center w-42'>
+                                                        <span className='flex items-center justify-center'>
+                                                            {route.estimatedArrival}
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             );

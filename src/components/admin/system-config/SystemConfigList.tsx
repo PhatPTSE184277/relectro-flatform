@@ -32,7 +32,7 @@ const SystemConfigList: React.FC<SystemConfigListProps> = ({
                             </thead>
                         </table>
                     </div>
-                    <div className='max-h-115 overflow-y-auto'>
+                    <div className='max-h-105 overflow-y-auto'>
                         <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
                             <tbody>
                                 {loading ? (

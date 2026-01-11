@@ -19,7 +19,7 @@ interface SystemConfigContextType {
   configs: SystemConfig[];
   loading: boolean;
   error: string | null;
-  fetchConfigs: () => Promise<void>;
+  fetchConfigs: (groupName?: string) => Promise<void>;
   fetchConfigByKey: (key: string) => Promise<SystemConfig | null>;
   updateConfig: (id: string, value?: string | null, file?: File | null) => Promise<SystemConfig | null>;
   clearConfigs: () => void;
@@ -34,11 +34,11 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchConfigs = useCallback(async () => {
+  const fetchConfigs = useCallback(async (groupName?: string) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getActiveSystemConfigs();
+      const data = await getActiveSystemConfigs(groupName);
       setConfigs(data);
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Lỗi khi tải cấu hình hệ thống');

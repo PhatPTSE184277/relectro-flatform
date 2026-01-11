@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { formatDate } from '@/utils/FormatDate';
 import EditGroupingModal from './modal/EditGroupingModal';
 import ProductList from './ProductList';
 
@@ -117,7 +118,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-primary-50'
                             }`}
                         >
-                            {new Date(day.workDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}
+                            {formatDate(day.workDate)}
                         </button>
                     ))}
                 </div>
@@ -156,10 +157,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                                 </div>
                                 {/* Inline vehicle info */}
                                 <div className='ml-2 px-2 py-1 bg-blue-50 rounded-lg border border-blue-200 text-blue-600 font-medium text-xs flex items-center'>
-                                    Xe được gợi ý: {currentDay.suggestedVehicle.vehicle_Type} - {currentDay.suggestedVehicle.plate_Number}
-                                    <span className='ml-2 text-blue-500'>
-                                        ({currentDay.suggestedVehicle.capacity_Kg} kg, {currentDay.suggestedVehicle.capacity_M3 || 0} m³)
-                                    </span>
+                                    Gợi ý: Biển số: {currentDay.suggestedVehicle.plate_Number} - Trọng lượng: {currentDay.suggestedVehicle.capacity_Kg} kg, Thể tích: {currentDay.suggestedVehicle.capacity_M3 || 0} m³
                                 </div>
                             </div>
                             <div className='flex items-center gap-2'>

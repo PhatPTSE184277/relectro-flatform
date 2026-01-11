@@ -23,14 +23,14 @@ const GroupingList: React.FC<GroupingListProps> = ({
                         <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
                             <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                                 <tr>
-                                    <th className='py-3 px-4 text-center' style={{ width: '60px' }}>STT</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '160px' }}>Mã nhóm</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '160px' }}>Ngày thu gom</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '200px' }}>Phương tiện</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Người thu gom</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '160px' }}>Số sản phẩm</th>
-                                    <th className='py-3 px-4 text-right' style={{ width: '160px' }}>Khối lượng (kg/m³)</th>
-                                    <th className='py-3 px-4 text-center' style={{ width: '120px' }}>Hành động</th>
+                                    <th className='py-3 px-4 text-left w-16'>STT</th>
+                                    <th className='py-3 px-4 text-left w-56'>Mã nhóm</th>
+                                    <th className='py-3 px-4 text-left w-40'>Ngày thu gom</th>
+                                    <th className='py-3 px-4 text-left w-48'>Phương tiện</th>
+                                    <th className='py-3 px-4 text-left w-48'>Người thu gom</th>
+                                    <th className='py-3 px-4 text-left w-32'>Số sản phẩm</th>
+                                    <th className='py-3 px-4 text-right w-48'>Khối lượng (kg/m³)</th>
+                                    <th className='py-3 px-4 text-center w-32'>Hành động</th>
                                 </tr>
                             </thead>
                         </table>

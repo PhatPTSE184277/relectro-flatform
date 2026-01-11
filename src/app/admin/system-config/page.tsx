@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSystemConfigContext } from '@/contexts/admin/SystemConfigContext';
 import { Settings } from 'lucide-react';
 import SearchBox from '@/components/ui/SearchBox';
 import SystemConfigList from '@/components/admin/system-config/SystemConfigList';
 import EditSystemConfigModal from '@/components/admin/system-config/modal/EditSystemConfigModal';
+import SystemConfigFilter from '@/components/admin/system-config/SystemConfigFilter';
 import { SystemConfig } from '@/services/admin/SystemConfigService';
 
 const SystemConfigPage: React.FC = () => {
@@ -14,15 +15,34 @@ const SystemConfigPage: React.FC = () => {
     const [search, setSearch] = useState('');
     const [selectedConfig, setSelectedConfig] = useState<SystemConfig | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [groupName, setGroupName] = useState<string>('');
 
-    const filteredConfigs = configs.filter((config) => {
+        const groupNames = [
+            { value: 'WORKFLOW_CONFIG', label: 'Luồng xử lý' },
+            { value: 'Excel', label: 'Mẫu Excel' },
+            { value: 'PointConfig', label: 'Cấu hình điểm' },
+            { value: 'CompanyConfig', label: 'Cấu hình công ty' }
+        ];
+
+    // Auto select first groupName if not selected
+    useEffect(() => {
+        if (!groupName && groupNames.length > 0) {
+            setGroupName(groupNames[0].value);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [groupNames.map(g => g.value).join(',')]);
+
+    // Filter hiển thị: lọc theo groupName và search
+    const filteredConfigs = useMemo(() => {
+        let arr = configs;
+        if (groupName) arr = arr.filter(cfg => cfg.groupName === groupName);
         const searchLower = search.toLowerCase();
-        return (
+        return arr.filter((config) =>
             config.key?.toLowerCase().includes(searchLower) ||
             config.displayName?.toLowerCase().includes(searchLower) ||
             config.groupName?.toLowerCase().includes(searchLower)
         );
-    });
+    }, [configs, groupName, search]);
 
     const handleEditConfig = (config: SystemConfig) => {
         setSelectedConfig(config);
@@ -55,6 +75,13 @@ const SystemConfigPage: React.FC = () => {
                     />
                 </div>
             </div>
+
+            {/* Filter groupName */}
+            <SystemConfigFilter
+                groupNames={groupNames}
+                groupName={groupName}
+                onFilterChange={setGroupName}
+            />
 
             {/* Config List */}
             <SystemConfigList

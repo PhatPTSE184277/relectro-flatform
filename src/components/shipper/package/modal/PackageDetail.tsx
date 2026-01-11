@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { List, Tag, ListCheck, Truck } from 'lucide-react';
+import { List, Tag, Boxes, CheckCircle2 } from 'lucide-react';
 import { PackageType } from '@/types/Package';
 import SummaryCard from '@/components/ui/SummaryCard';
 import ProductList from './ProductList';
@@ -25,14 +25,13 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             label: 'Mã package',
             value: pkg.packageId,
         },
-
         {
-            icon: <ListCheck size={14} className='text-primary-400' />,
+            icon: <Boxes size={14} className='text-primary-400' />,
             label: 'Số sản phẩm',
             value: pkg.products.length,
         },
         {
-            icon: <Truck size={14} className='text-primary-400' />,
+            icon: <CheckCircle2 size={14} className="text-primary-400" />,
             label: 'Trạng thái',
             value: (
                 <span

@@ -24,7 +24,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
                         <tr>
                             {showCheckbox && (
-                                <th className='py-3 px-4 text-center' style={{ width: '50px' }}>
+                                <th className='py-3 px-4 text-center w-13'>
                                     <input
                                         type='checkbox'
                                         checked={allSelected}
@@ -33,10 +33,10 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                                     />
                                 </th>
                             )}
-                            <th className='py-3 px-4 text-center' style={{ width: '70px' }}>STT</th>
-                            <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Người gửi</th>
-                            <th className='py-3 px-4 text-left' style={{ width: '320px' }}>Địa chỉ</th>
-                            <th className='py-3 pl-4 pr-16 text-right' style={{ width: '180px' }}>Khối lượng(kg/m³)</th>
+                            <th className='py-3 px-4 text-left w-18'>STT</th>
+                            <th className='py-3 px-4 text-left w-64'>Người gửi</th>
+                            <th className='py-3 px-4 text-left'>Địa chỉ</th>
+                            <th className='py-3 px-4 text-right w-64'>Khối lượng / Kích thước (kg, cm)</th>
                         </tr>
                     </thead>
                 </table>

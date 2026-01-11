@@ -24,7 +24,6 @@ const ProductList: React.FC<ProductListProps> = ({
                             <th className='py-3 px-4 text-left'>Danh mục</th>
                             <th className='py-3 px-4 text-left'>Thương hiệu</th>
                             <th className='py-3 px-4 text-left'>Ghi chú</th>
-                            <th className='py-3 px-4 text-left'>QR Code</th>
                             {showStatus && (
                                 <th className='py-3 px-4 text-center'>Trạng thái</th>
                             )}
@@ -57,9 +56,6 @@ const ProductList: React.FC<ProductListProps> = ({
                                     <td className='py-3 px-4 text-gray-700'>{product.brandName}</td>
                                     <td className='py-3 px-4 text-gray-600 text-xs max-w-xs truncate'>
                                         {product.description || '-'}
-                                    </td>
-                                    <td className='py-3 px-4 text-gray-400 font-mono text-xs'>
-                                        {product.qrCode}
                                     </td>
                                     {showStatus && (
                                         <td className='py-3 px-4 text-center'>

@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import type { PackageType } from '@/types/Package';
-import { Tag, ListCheck, Truck } from 'lucide-react';
+import { Tag, CheckCircle2, Boxes } from 'lucide-react';
 import SummaryCard from '@/components/ui/SummaryCard';
 import { PackageStatus } from '@/enums/PackageStatus';
 
@@ -16,7 +16,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
 }) => {
     if (!pkg) return null;
 
-    // Tách summaryItems ra ngoài cho rõ ràng
     const summaryItems = [
         {
             icon: <Tag size={14} className='text-primary-400' />,
@@ -24,12 +23,12 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             value: pkg.packageId,
         },
         {
-            icon: <ListCheck size={14} className='text-primary-400' />,
+            icon: <Boxes size={14} className='text-primary-400' />,
             label: 'Số sản phẩm',
             value: pkg.products.length,
         },
         {
-            icon: <Truck size={14} className='text-primary-400' />,
+            icon: <CheckCircle2 size={14} className="text-primary-400" />,
             label: 'Trạng thái',
             value: (
                 <span

@@ -6,9 +6,9 @@ import { useAuth } from '@/hooks/useAuth';
 interface DashboardContextType {
   summary: SCPStatsResponse | null;
   loading: boolean;
-  fetchSummary: (smallCollectionPointId: string, fromDate: string, toDate: string) => Promise<void>;
-  fetchSummaryByDay: (smallCollectionPointId: string, date: string) => Promise<void>;
-  fetchPackageStats: (smallCollectionPointId: string, fromDate: string, toDate: string) => Promise<PackageStatsResponse | null>;
+  fetchSummary: (fromDate: string, toDate: string) => Promise<void>;
+  fetchSummaryByDay: (date: string) => Promise<void>;
+  fetchPackageStats: (fromDate: string, toDate: string) => Promise<PackageStatsResponse | null>;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);

@@ -43,9 +43,6 @@ const DashboardPage = () => {
     const [packageStats, setPackageStats] = useState<any>(null);
     const [statsView, setStatsView] = useState<'package' | 'product'>('package');
 
-    // Get smallCollectionPointId from localStorage or context (adjust as needed)
-    const smallCollectionPointId = '2'; // TODO: Get from auth context or user context
-
     // Handler để chuyển đổi stats view
     const handleStatsViewChange = (view: 'package' | 'product') => {
         setStatsView(view);
@@ -60,21 +57,22 @@ const DashboardPage = () => {
             // Fetch product stats theo mode được chọn
             if (statsView === 'product') {
                 if (viewMode === 'day') {
-                    await fetchSummaryByDay(smallCollectionPointId, selectedDate);
+                        await fetchSummaryByDay(selectedDate);
                 } else {
-                    await fetchSummary(smallCollectionPointId, fromDate, toDate);
+                        await fetchSummary(fromDate, toDate);
                 }
             }
 
             // Fetch package stats chỉ theo range
             if (statsView === 'package') {
-                await fetchSummary(smallCollectionPointId, fromDate, toDate);
-                const pkgStats = await fetchPackageStats(smallCollectionPointId, fromDate, toDate);
-                setPackageStats(pkgStats);
+                    await fetchSummary(fromDate, toDate);
+                    const pkgStats = await fetchPackageStats(fromDate, toDate);
+                    setPackageStats(pkgStats);
             }
         };
         fetchData();
-    }, [viewMode, selectedDate, fromDate, toDate, statsView, fetchSummary, fetchSummaryByDay, fetchPackageStats, smallCollectionPointId]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [viewMode, selectedDate, fromDate, toDate, statsView]);
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
