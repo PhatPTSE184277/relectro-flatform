@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eye } from 'lucide-react';
+import { Eye, Package, Pencil } from 'lucide-react';
 import type { PackageType } from '@/types/Package';
 
 interface PackageShowProps {
@@ -50,14 +50,14 @@ const PackageShow: React.FC<PackageShowProps> = ({
                                 className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
                                 title='Chỉnh sửa package'
                             >
-                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                                <Pencil size={18} />
                             </button>
                             <button
                                 onClick={() => onUpdateStatus(pkg.packageId)}
                                 className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
-                                title='Đóng trạng thái package'
+                                title='Xác nhận đóng gói'
                             >
-                                <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M16 3v4"/><path d="M8 3v4"/></svg>
+                                <Package size={18} />
                             </button>
                         </>
                     )}

@@ -21,6 +21,8 @@ export interface PackageProduct {
 export interface PackageType {
     packageId: string;
     smallCollectionPointsId: string;
+    smallCollectionPointsName?: string;
+    smallCollectionPointsAddress?: string;
     status?: string;
     products: PackageProduct[];
 }

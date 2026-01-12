@@ -17,7 +17,6 @@ const ProductList: React.FC<ProductListProps> = ({ products }) => {
                         <th className='py-3 px-4 text-left' style={{ width: '200px' }}>Danh mục</th>
                         <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Thương hiệu</th>
                         <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Ghi chú</th>
-                        <th className='py-3 px-4 text-left' style={{ width: '120px' }}>QR Code</th>
                     </tr>
                 </thead>
             </table>
@@ -47,9 +46,6 @@ const ProductList: React.FC<ProductListProps> = ({ products }) => {
                                     </td>
                                     <td className='py-3 px-4 text-gray-600 text-xs max-w-xs truncate' style={{ width: '180px' }}>
                                         {product.description || '-'}
-                                    </td>
-                                    <td className='py-3 px-4 text-gray-400 font-mono text-xs' style={{ width: '120px' }}>
-                                        {product.qrCode || '-'}
                                     </td>
                                 </tr>
                             );

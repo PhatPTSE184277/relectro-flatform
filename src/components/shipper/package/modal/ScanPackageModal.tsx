@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Package as PackageIcon, X, List, ArrowRight, Tag, ListCheck, Truck } from 'lucide-react';
+import { Package as PackageIcon, X, List, ArrowRight, Tag, Boxes, CheckCircle2 } from 'lucide-react';
 import { getPackageById } from '@/services/shipper/PackageService';
 import { PackageType } from '@/types/Package';
 import { PackageStatus } from '@/enums/PackageStatus';
@@ -141,16 +141,17 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                             {(() => {
                                 const summaryItems = [
                                     {
-                                        icon: <span className="w-8 h-8 flex items-center justify-center rounded-full border border-primary-200 bg-primary-50"><Tag size={14} className='text-primary-400' /></span>,
+                                        icon: <Tag size={14} className='text-primary-400' />,
                                         label: 'Mã package',
                                         value: scannedPackage.packageId,
-                                    },{
-                                        icon: <span className="w-8 h-8 flex items-center justify-center rounded-full border border-primary-200 bg-primary-50"><ListCheck size={14} className='text-primary-400' /></span>,
+                                    },
+                                    {
+                                        icon: <Boxes size={14} className='text-primary-400' />,
                                         label: 'Số sản phẩm',
                                         value: scannedPackage.products.length,
                                     },
                                     {
-                                        icon: <span className="w-8 h-8 flex items-center justify-center rounded-full border border-primary-200 bg-primary-50"><Truck size={14} className='text-primary-400' /></span>,
+                                        icon: <CheckCircle2 size={14} className='text-primary-400' />,
                                         label: 'Trạng thái',
                                         value: (
                                             <span

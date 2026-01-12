@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Package as PackageIcon, X, List, ArrowRight } from 'lucide-react';
+import { Package as PackageIcon, X, List, ArrowRight, Tag, Boxes, CheckCircle2 } from 'lucide-react';
 import { getPackageById } from '@/services/recycle/PackageService';
 import { PackageType } from '@/types/Package';
 import ProductList from './ProductList';
@@ -159,18 +159,17 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                             <SummaryCard
                                 items={[
                                     {
-                                        icon: <PackageIcon size={14} className='text-primary-400' />,
+                                        icon: <Tag size={14} className='text-primary-400' />,
                                         label: 'Mã package',
                                         value: scannedPackage.packageId,
                                     },
-
                                     {
-                                        icon: <List size={14} className='text-primary-400' />,
+                                        icon: <Boxes size={14} className='text-primary-400' />,
                                         label: 'Số sản phẩm',
                                         value: scannedPackage.products.length,
                                     },
                                     {
-                                        icon: <ArrowRight size={14} className='text-primary-400' />,
+                                        icon: <CheckCircle2 size={14} className='text-primary-400' />,
                                         label: 'Trạng thái',
                                         value: (
                                             <span

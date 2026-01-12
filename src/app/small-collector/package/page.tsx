@@ -10,7 +10,7 @@ import ConfirmStatusChange from '@/components/small-collector/package/modal/Conf
 import PackageFilter from '@/components/small-collector/package/PackageFilter';
 import SearchBox from '@/components/ui/SearchBox';
 import Pagination from '@/components/ui/Pagination';
-import { Package } from 'lucide-react';
+import { Package, Plus } from 'lucide-react';
 import type { PackageType } from '@/types/Package';
 import { PackageStatus } from '@/enums/PackageStatus';
 
@@ -142,7 +142,7 @@ const PackagePage: React.FC = () => {
                         onClick={() => setShowCreateModal(true)}
                         className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md cursor-pointer'
                     >
-                        <Package size={20} />
+                        <Plus size={20} />
                         Tạo package
                     </button>
                     <div className='flex-1 max-w-md'>

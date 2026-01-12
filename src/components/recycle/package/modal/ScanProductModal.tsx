@@ -2,10 +2,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { PackageType } from '@/types/Package';
-import { X, QrCode, List, Tag, ListCheck, Truck } from 'lucide-react';
+import { X, QrCode, List, Tag, MapPin, Home } from 'lucide-react';
 import SummaryCard from '@/components/ui/SummaryCard';
 import ProductList from './ProductList';
-import { PackageStatus } from '@/enums/PackageStatus';
 
 interface ScanProductModalProps {
     open: boolean;
@@ -122,32 +121,15 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
                                 label: 'Mã package',
                                 value: pkg.packageId,
                             },
-
                             {
-                                icon: <ListCheck size={14} className='text-primary-400' />,
-                                label: 'Số sản phẩm',
-                                value: pkg.products.length,
+                                icon: <MapPin size={14} className='text-primary-400' />,
+                                label: 'Điểm thu gom',
+                                value: pkg.smallCollectionPointsName,
                             },
                             {
-                                icon: <Truck size={14} className='text-primary-400' />,
-                                label: 'Trạng thái',
-                                value: (
-                                    <span
-                                        className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                                            pkg.status === PackageStatus.Packing
-                                                ? 'bg-yellow-100 text-yellow-700'
-                                                : pkg.status === PackageStatus.Closed
-                                                ? 'bg-green-100 text-green-700'
-                                                : pkg.status === PackageStatus.Shipping
-                                                ? 'bg-blue-100 text-blue-700'
-                                                : pkg.status === PackageStatus.Recycling
-                                                ? 'bg-purple-100 text-purple-700'
-                                                : 'bg-gray-100 text-gray-600'
-                                        }`}
-                                    >
-                                        {pkg.status}
-                                    </span>
-                                ),
+                                icon: <Home size={14} className='text-primary-400' />,
+                                label: 'Địa chỉ thu gom',
+                                value: pkg.smallCollectionPointsAddress,
                             },
                         ]}
                         singleRow={true}

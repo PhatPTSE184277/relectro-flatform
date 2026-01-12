@@ -320,7 +320,6 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                             className='p-2 rounded-lg text-white cursor-pointer shadow-md transition-all duration-200 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 border border-primary-200'
                             title='Cập nhật Package'
                         >
-                            <Package size={22} />
                             Xác nhận
                         </button>
                     </div>
