@@ -11,6 +11,7 @@ import SearchBox from '@/components/ui/SearchBox';
 import { usePostContext } from '@/contexts/admin/PostContext';
 import { PostStatus } from '@/enums/PostStatus';
 import { ClipboardList } from 'lucide-react';
+import { filterPosts } from '@/services/admin/PostService';
 
 type Stats = {
     total: number;
@@ -51,13 +52,9 @@ const PostPage: React.FC = () => {
   useEffect(() => {
     const loadStats = async () => {
         try {
-            const approvedRes = await fetch(`/api/posts/filter?status=${encodeURIComponent(PostStatus.Approved)}&limit=1`);
-            const rejectedRes = await fetch(`/api/posts/filter?status=${encodeURIComponent(PostStatus.Rejected)}&limit=1`);
-            const pendingRes = await fetch(`/api/posts/filter?status=${encodeURIComponent(PostStatus.Pending)}&limit=1`);
-            
-            const approved = await approvedRes.json();
-            const rejected = await rejectedRes.json();
-            const pending = await pendingRes.json();
+            const approved = await filterPosts({ status: PostStatus.Approved, limit: 1, page: 1 });
+            const rejected = await filterPosts({ status: PostStatus.Rejected, limit: 1, page: 1 });
+            const pending = await filterPosts({ status: PostStatus.Pending, limit: 1, page: 1 });
 
             setStats({
                 total: approved.totalItems + rejected.totalItems + pending.totalItems,

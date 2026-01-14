@@ -6,6 +6,7 @@ interface CustomDatePickerProps {
     onChange: (date: string) => void;
     placeholder?: string;
     showIcon?: boolean;
+    disabled?: boolean;
 }
 
 function parseLocalDate(dateString: string): Date {
@@ -23,10 +24,11 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     value,
     onChange,
     placeholder,
+    disabled = false,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState<string>(value || '');
-    const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+    const [currentMonth, setCurrentMonth] = useState<Date>(() => value ? parseLocalDate(value) : new Date());
     const [mode, setMode] = useState<'day' | 'month' | 'year'>('day');
     const datePickerRef = useRef<HTMLDivElement>(null);
 
@@ -36,15 +38,15 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     const years = Array.from({ length: 12 }, (_, i) => yearStart + i);
 
     useEffect(() => {
-        if (value) {
+        if (value && value !== selectedDate) {
             const parsed = parseLocalDate(value);
             setSelectedDate(value);
             setCurrentMonth(parsed);
-        } else {
+        } else if (!value && selectedDate) {
             setSelectedDate('');
             setCurrentMonth(new Date());
         }
-    }, [value]);
+    }, [value, selectedDate]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -148,8 +150,10 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     return (
         <div className="relative" ref={datePickerRef}>
             <div
-                onClick={() => { setIsOpen(!isOpen); setMode('day'); }}
-                className={`h-12 cursor-pointer flex items-center justify-between transition-all duration-300 bg-white border border-primary-200 rounded-xl px-4 shadow-sm ${isOpen ? 'ring-2 ring-primary-400 border-primary-400' : ''}`}
+                onClick={() => { if (!disabled) { setIsOpen(!isOpen); setMode('day'); } }}
+                className={`h-12 flex items-center justify-between transition-all duration-300 bg-white border border-primary-200 rounded-xl px-4 shadow-sm ${
+                    disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                } ${isOpen ? 'ring-2 ring-primary-400 border-primary-400' : ''}`}
             >
                 <span className={selectedDate ? 'text-gray-900' : 'text-gray-400'}>
                     {selectedDate ? formatDisplayDate(selectedDate) : (placeholder || 'Chọn ngày')}

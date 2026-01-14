@@ -21,7 +21,7 @@ export const login = createAsyncThunk(
             const { accessToken, isFirstLogin } = response;
             
             // Save token to localStorage
-            localStorage.setItem('token', accessToken);
+            localStorage.setItem('ewise_token', accessToken);
             
             // Get user profile
             const userProfile = await getUserProfile();
@@ -38,7 +38,7 @@ export const loadUserFromToken = createAsyncThunk(
     'auth/loadUserFromToken',
     async (_, { rejectWithValue }) => {
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('ewise_token');
             
             if (!token) {
                 return rejectWithValue('No token found');
@@ -48,7 +48,7 @@ export const loadUserFromToken = createAsyncThunk(
             
             return { token, user: userProfile };
         } catch (error: any) {
-            localStorage.removeItem('token');
+            localStorage.removeItem('ewise_token');
             return rejectWithValue(error?.response?.data?.message || 'Token không hợp lệ');
         }
     }
@@ -56,7 +56,7 @@ export const loadUserFromToken = createAsyncThunk(
 
 // Async thunk for logout
 export const logout = createAsyncThunk('auth/logout', async () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('ewise_token');
     return null;
 });
 

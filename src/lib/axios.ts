@@ -12,7 +12,7 @@ api.interceptors.request.use(
   (config) => {
     if (typeof window !== "undefined") {
       const token =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
+        localStorage.getItem("ewise_token") || sessionStorage.getItem("ewise_token");
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

@@ -6,14 +6,14 @@ const nextConfig: NextConfig = {
   },
   experimental: {
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://160.187.1.125:5000/api/:path*',
-      },
-    ];
-  },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/api/:path*',
+  //       destination: 'http://160.187.1.125:5000/api/:path*',
+  //     },
+  //   ];
+  // },
 };
 
 export default nextConfig;
