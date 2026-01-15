@@ -7,6 +7,7 @@ import ProductList from './ProductList';
 interface PreAssignStepProps {
     loading: boolean;
     products: any[];
+    allProducts?: any[];
     loadThreshold: number;
     setLoadThreshold: (value: number) => void;
     onGetSuggestion: (selectedProductIds?: string[]) => void;
@@ -18,6 +19,7 @@ interface PreAssignStepProps {
 const PreAssignStep: React.FC<PreAssignStepProps> = ({
     loading,
     products,
+    allProducts,
     loadThreshold,
     setLoadThreshold,
     onGetSuggestion,
@@ -35,10 +37,11 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     };
 
     const handleToggleAll = () => {
-        if (selectedProductIds.length === products.length) {
+        const productsToToggle = allProducts && allProducts.length > 0 ? allProducts : products;
+        if (selectedProductIds.length === productsToToggle.length) {
             setSelectedProductIds([]);
         } else {
-            setSelectedProductIds(products.map(p => p.productId));
+            setSelectedProductIds(productsToToggle.map(p => p.productId));
         }
     };
 
@@ -83,6 +86,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 onToggleSelect={handleToggleSelect}
                 onToggleAll={handleToggleAll}
                 maxHeight={360}
+                allProducts={allProducts}
             />
         </div>
     );

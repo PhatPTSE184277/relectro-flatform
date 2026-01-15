@@ -246,7 +246,6 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                     <th className='py-3 px-4 text-left w-40'>Danh mục</th>
                                     <th className='py-3 px-4 text-left w-32'>Thương hiệu</th>
                                     <th className='py-3 px-4 text-left w-56'>Ghi chú</th>
-                                    <th className='py-3 px-4 text-left w-40'>QR Code</th>
                                     <th className='py-3 px-4 text-center w-24'>Hành động</th>
                                 </tr>
                             </thead>
@@ -291,9 +290,6 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                                 </td>
                                                 <td className='py-3 px-4 text-gray-600 text-xs w-56 truncate'>
                                                     {product.description || '-'}
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-400 font-mono text-xs w-40'>
-                                                    {product.qrCode}
                                                 </td>
                                                 <td className='py-3 px-4 w-24'>
                                                     <div className='flex justify-center gap-2'>

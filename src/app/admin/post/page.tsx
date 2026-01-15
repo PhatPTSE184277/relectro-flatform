@@ -71,13 +71,18 @@ const PostPage: React.FC = () => {
 
     // Debounce search: mỗi lần search thay đổi thì fetch lại
     useEffect(() => {
-        fetchPosts({ search, status: filterStatus, page: 1 });
+        // Nếu là Pending, sắp xếp theo ngày cũ nhất trước (ascending)
+        const order = filterStatus === PostStatus.Pending ? 'asc' : '';
+        fetchPosts({ search, status: filterStatus, page: 1, order });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search, filterStatus]);
 
     const handleFilter = (status: PostStatus) => {
         setFilterStatus(status);
         setSelectedPostIds([]);
+        // Nếu là Pending, sắp xếp theo ngày cũ nhất trước (ascending)
+        const order = status === PostStatus.Pending ? 'asc' : '';
+        fetchPosts({ status, page: 1, search, order });
     };
 
     const handleView = async (post: Post) => {
@@ -91,7 +96,9 @@ const PostPage: React.FC = () => {
     };
 
     const handlePageChange = (page: number) => {
-        fetchPosts({ page, search, status: filterStatus });
+        // Nếu là Pending, sắp xếp theo ngày cũ nhất trước (ascending)
+        const order = filterStatus === PostStatus.Pending ? 'asc' : '';
+        fetchPosts({ page, search, status: filterStatus, order });
         // Scroll to top of table when changing pages
         if (tableScrollRef.current) {
             tableScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });

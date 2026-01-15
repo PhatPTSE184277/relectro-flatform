@@ -245,7 +245,6 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                                             <th className='py-3 px-4 text-left'>Danh mục</th>
                                             <th className='py-3 px-4 text-left'>Thương hiệu</th>
                                             <th className='py-3 px-4 text-left'>Ghi chú</th>
-                                            <th className='py-3 px-4 text-left'>QR Code</th>
                                             <th className='py-3 px-4 text-center'>Hành động</th>
                                         </tr>
                                     </thead>
@@ -279,9 +278,6 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                                                     <div className='line-clamp-2'>
                                                         {product.description || 'Không có mô tả'}
                                                     </div>
-                                                </td>
-                                                  <td className='py-2 px-3 text-gray-500 font-mono text-xs'>
-                                                    {product.qrCode}
                                                 </td>
                                                 <td className='py-2 px-3 text-center'>
                                                     <button

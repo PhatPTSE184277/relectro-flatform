@@ -65,7 +65,7 @@ export const TrackingProvider: React.FC<Props> = ({ children }) => {
     setLoadingProducts(true);
     setError(null);
     try {
-      const params: any = { page: 1, limit: 100, collectionCompanyId: companyId };
+      const params: any = { page: 1, limit: 5000, collectionCompanyId: companyId };
       if (fromDate) params.fromDate = fromDate;
       if (toDate) params.toDate = toDate;
       const data = await filterProducts(params);

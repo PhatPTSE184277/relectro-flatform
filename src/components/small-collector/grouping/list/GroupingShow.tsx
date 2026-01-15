@@ -29,18 +29,13 @@ const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean; stt?: numbe
             <td className='py-3 px-4 text-gray-700 w-48'>
                 {grouping.collector}
             </td>
-            <td className='py-3 px-4 text-gray-700 w-32'>
-                <span className='px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700'>
-                    {grouping.totalPosts} sản phẩm
-                </span>
+            <td className='py-3 px-4 text-gray-700 text-right w-32'>
+                    {grouping.totalPosts}
             </td>
             <td className='py-3 px-4 text-gray-700 text-right w-48'>
                 <div className='flex flex-col gap-1 items-end'>
                     <span className='text-xs'>
                         <span className='font-medium'>{grouping.totalWeightKg}</span>
-                    </span>
-                    <span className='text-xs text-gray-500'>
-                        {grouping.totalVolumeM3}
                     </span>
                 </div>
             </td>

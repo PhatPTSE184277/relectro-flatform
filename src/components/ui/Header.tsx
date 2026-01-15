@@ -169,7 +169,10 @@ const Header = ({ title, href, profileHref }: HeaderProps) => {
                                     <div className="w-9 h-9 rounded-full bg-linear-to-tr from-primary-600 to-primary-400 text-white flex items-center justify-center font-bold text-lg shadow ring-2 ring-primary-200 border-2 border-white">
                                         {user.name?.charAt(0).toUpperCase() || 'U'}
                                     </div>
-                                    <span className='hidden sm:block text-base font-semibold text-gray-800 pr-1'>
+                                    <span 
+                                        className='hidden sm:block text-base font-semibold text-gray-800 pr-1 truncate max-w-[150px] overflow-hidden' 
+                                        title={user.name}
+                                    >
                                         {user.name}
                                     </span>
                                     <IoChevronDownOutline className={`ml-1 text-primary-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} size={20} />

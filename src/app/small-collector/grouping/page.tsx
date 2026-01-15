@@ -115,6 +115,7 @@ const GroupingPage: React.FC = () => {
                     <PreAssignStep
                         loading={loading}
                         products={paginatedProducts}
+                        allProducts={pendingProducts}
                         loadThreshold={loadThreshold}
                         setLoadThreshold={setLoadThreshold}
                         onGetSuggestion={handleGetSuggestion}

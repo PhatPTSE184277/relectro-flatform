@@ -111,3 +111,20 @@ export const confirmReassignDriver = async (groupId: number, newCollectorId: str
     });
     return response.data;
 };
+
+
+// Lấy danh sách xe preview theo ngày làm việc
+export const previewVehicles = async (workDate: string): Promise<any> => {
+    const response = await axios.get('/grouping/preview-vehicles', {
+        params: { workDate }
+    });
+    return response.data;
+};
+
+// Lấy danh sách sản phẩm preview theo xe và ngày làm việc
+export const previewProducts = async (vehicleId: string, workDate: { year: number; month: number; day: number; dayOfWeek: number }): Promise<any> => {
+    const response = await axios.get('/grouping/preview-products', {
+        params: { vehicleId, workDate }
+    });
+    return response.data;
+};

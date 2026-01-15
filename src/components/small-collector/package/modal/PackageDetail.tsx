@@ -94,7 +94,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                                         <th className='py-3 px-4 text-left'>Danh mục</th>
                                         <th className='py-3 px-4 text-left'>Thương hiệu</th>
                                         <th className='py-3 px-4 text-left'>Ghi chú</th>
-                                        <th className='py-3 px-4 text-left'>QR Code</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -120,9 +119,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                                                     <div className='line-clamp-2'>
                                                         {product.description || '-'}
                                                     </div>
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-700 font-mono text-xs'>
-                                                    {product.qrCode || '-'}
                                                 </td>
                                             </tr>
                                         );

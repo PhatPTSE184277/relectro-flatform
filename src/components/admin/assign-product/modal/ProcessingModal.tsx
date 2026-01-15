@@ -7,7 +7,6 @@ const ProcessingModal: React.FC = () => (
             <div className='text-center'>
                 <h3 className='text-xl font-bold text-gray-900 mb-2'>Đang xử lý phân công...</h3>
                 <p className='text-gray-600'>Hệ thống đang phân công sản phẩm</p>
-                <p className='text-sm text-primary-600 mt-2 font-medium'>Bạn có thể chuyển sang trang khác qua sidebar</p>
             </div>
         </div>
     </div>

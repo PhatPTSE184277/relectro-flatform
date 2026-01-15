@@ -13,10 +13,14 @@ interface ProductListProps {
     onToggleSelect?: (productId: string) => void;
     onToggleAll?: () => void;
     maxHeight?: number;
+    allProducts?: any[]; // Tất cả products (không phân trang) để select all
 }
 
-const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, itemsPerPage = 10, showCheckbox, selectedProductIds = [], onToggleSelect, onToggleAll, maxHeight = 330 }) => {
-    const allSelected = showCheckbox && products.length > 0 && products.every(p => selectedProductIds.includes(p.productId));
+const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, itemsPerPage = 10, showCheckbox, selectedProductIds = [], onToggleSelect, onToggleAll, maxHeight = 330, allProducts }) => {
+    // Nếu có allProducts thì check xem tất cả products có được chọn không
+    // Nếu không có allProducts thì chỉ check products của trang hiện tại
+    const productsToCheck = allProducts && allProducts.length > 0 ? allProducts : products;
+    const allSelected = showCheckbox && productsToCheck.length > 0 && productsToCheck.every(p => selectedProductIds.includes(p.productId));
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='w-full overflow-x-auto'>
