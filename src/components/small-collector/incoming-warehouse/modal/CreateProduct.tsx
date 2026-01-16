@@ -41,6 +41,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     const [qrCode, setQrCode] = useState('');
     const [point, setPoint] = useState(0);
     const [searchClicked, setSearchClicked] = useState(false);
+    const [loadingUser, setLoadingUser] = useState(false);
 
     const userInfoInputRef = useRef<HTMLInputElement>(null);
     const qrInputRef = useRef<HTMLInputElement>(null);
@@ -80,7 +81,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({
             return;
         }
         setSearchClicked(true);
+        setLoadingUser(true);
         await fetchUserByInformation(info);
+        setLoadingUser(false);
     };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -289,7 +292,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                 <UserInfo user={user} />
                             </div>
                         )}
-                        {!user && userInfoInput.trim() && searchClicked && (
+                        {!user && userInfoInput.trim() && searchClicked && !loadingUser && (
                             <div className='mt-4 flex flex-col items-center gap-2'>
                                 <div className='text-sm text-gray-600 mb-2'>
                                     Không tìm thấy người gửi? Tải app để đăng ký tài khoản:
@@ -314,39 +317,37 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                 </div>
                             </div>
                         )}
+                        {loadingUser && userInfoInput.trim() && searchClicked && (
+                            <div className="mt-4 w-full flex justify-center">
+                                <div className="w-6 h-6 border-2 border-primary-400 border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Product QR Code - only show after user is found */}
-                    {user && (
-                        <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                Mã QR Sản Phẩm{' '}
-                                <span className='text-red-500'>*</span>
-                            </label>
-                            <div className='flex gap-2 items-center'>
-                                <div className='relative flex-1'>
-                                    <input
-                                        ref={qrInputRef}
-                                        type='text'
-                                        value={qrCode}
-                                        onChange={(e) => setQrCode(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                handleSearchUser(e);
-                                            }
-                                        }}
-                                        placeholder='Quét hoặc nhập mã QR sản phẩm...'
-                                        className='w-full pl-10 pr-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
-                                        autoComplete='off'
-                                    />
-                                    <ScanLine
-                                        className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
-                                        size={18}
-                                    />
-                                </div>
+                    {/* Product QR Code - always show */}
+                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
+                        <label className='block text-sm font-medium text-gray-700 mb-2'>
+                            Mã QR Sản Phẩm{' '}
+                            <span className='text-red-500'>*</span>
+                        </label>
+                        <div className='flex gap-2 items-center'>
+                            <div className='relative flex-1'>
+                                <input
+                                    ref={qrInputRef}
+                                    type='text'
+                                    value={qrCode}
+                                    onChange={(e) => setQrCode(e.target.value)}
+                                    placeholder='Quét hoặc nhập mã QR sản phẩm...'
+                                    className='w-full pl-10 pr-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
+                                    autoComplete='off'
+                                />
+                                <ScanLine
+                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
+                                    size={18}
+                                />
                             </div>
                         </div>
-                    )}
+                    </div>
 
                     {/* Category & Brand Info */}
                     <div className='space-y-4'>
