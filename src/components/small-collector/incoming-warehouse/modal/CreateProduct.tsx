@@ -45,6 +45,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
 
     const userInfoInputRef = useRef<HTMLInputElement>(null);
     const qrInputRef = useRef<HTMLInputElement>(null);
+    const imageInputRef = useRef<HTMLInputElement>(null);
 
     // Category context
     const {
@@ -121,6 +122,10 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     const handleRemoveImage = (index: number) => {
         setImages((prev) => prev.filter((_, i) => i !== index));
         setImageFiles((prev) => prev.filter((_, i) => i !== index));
+        // Reset input file để có thể chọn lại cùng file
+        if (imageInputRef.current) {
+            imageInputRef.current.value = '';
+        }
     };
 
     const handleSubmit = async () => {
@@ -468,6 +473,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     Thêm ảnh
                                 </span>
                                 <input
+                                    ref={imageInputRef}
                                     type='file'
                                     accept='image/*'
                                     multiple

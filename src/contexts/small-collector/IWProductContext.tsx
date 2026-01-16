@@ -281,14 +281,14 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
             setLoading(true);
             try {
                 await createIncomingWarehouseProduct(payload);
-                await fetchProducts();
+                await fetchProducts(filter.fromDate, filter.toDate);
             } catch (err: any) {
                 console.error('createProduct error', err);
             } finally {
                 setLoading(false);
             }
         },
-        [fetchProducts]
+        [fetchProducts, filter.fromDate, filter.toDate]
     );
 
     const getProductByIdHandler = useCallback(async (id: string) => {

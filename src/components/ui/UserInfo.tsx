@@ -8,6 +8,7 @@ interface UserInfoProps {
         email?: string;
         address?: string;
         avatar?: string;
+        points?: number;
         [key: string]: any;
     };
     label?: React.ReactNode;
@@ -54,6 +55,12 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, label }) => {
                         <>
                             <span className='mx-1 text-gray-400 font-normal'>•</span>
                             <span className='text-gray-700 font-normal'>{user.email}</span>
+                        </>
+                    )}
+                    {user.points !== undefined && (
+                        <>
+                            <span className='mx-1 text-gray-400 font-normal'>•</span>
+                            <span className='text-primary-600 font-semibold'>{user.points} điểm</span>
                         </>
                     )}
                 </div>
