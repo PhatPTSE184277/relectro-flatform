@@ -9,11 +9,13 @@ import {
 import { X, ScanLine, Upload, Trash2, User } from 'lucide-react';
 import { useCategoryContext } from '@/contexts/small-collector/CategoryContext';
 import { useUserContext } from '@/contexts/UserContext';
+import { useAuth } from '@/hooks/useAuth';
 import CustomSelect from '@/components/ui/CustomSelect';
 import { uploadToCloudinary } from '@/utils/Cloudinary';
 import SearchableSelect from '@/components/ui/SearchableSelect';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
 import type { CreateProductPayload } from '@/types/Product';
+import UserInfo from '@/components/ui/UserInfo';
 
 interface CreateProductProps {
     open: boolean;
@@ -26,7 +28,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     onClose,
     onConfirm
 }) => {
-    const [phone, setPhone] = useState('');
+    const [userInfoInput, setUserInfoInput] = useState('');
     const [description, setDescription] = useState('');
     const [images, setImages] = useState<string[]>([]);
     const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -38,8 +40,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     const [brandLoading, setBrandLoading] = useState(false);
     const [qrCode, setQrCode] = useState('');
     const [point, setPoint] = useState(0);
+    const [searchClicked, setSearchClicked] = useState(false);
 
-    const phoneInputRef = useRef<HTMLInputElement>(null);
+    const userInfoInputRef = useRef<HTMLInputElement>(null);
     const qrInputRef = useRef<HTMLInputElement>(null);
 
     // Category context
@@ -51,7 +54,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     } = useCategoryContext();
 
     // User context
-    const { user, fetchUserByPhone, setUser } = useUserContext();
+    const { user, fetchUserByInformation, setUser } = useUserContext();
+    const currentUser = useAuth();
 
     const playStoreUrl = process.env.NEXT_PUBLIC_PLAY_STORE_URL;
     const appStoreUrl = process.env.NEXT_PUBLIC_APP_STORE_URL;
@@ -59,7 +63,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     useEffect(() => {
         if (open) {
             setUser(null);
-            setTimeout(() => phoneInputRef.current?.focus(), 100);
+            setTimeout(() => userInfoInputRef.current?.focus(), 100);
         }
     }, [open, setUser]);
 
@@ -71,13 +75,12 @@ const CreateProduct: React.FC<CreateProductProps> = ({
 
     const handleSearchUser = async (e: React.FormEvent) => {
         e.preventDefault();
-        const phoneNumber = phone.trim();
-
-        if (!phoneNumber) {
+        const info = userInfoInput.trim();
+        if (!info) {
             return;
         }
-
-        await fetchUserByPhone(phoneNumber);
+        setSearchClicked(true);
+        await fetchUserByInformation(info);
     };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,7 +160,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
             onConfirm({
                 senderId: user.userId,
                 description: (description || '').trim(),
-                smallCollectionPointId: "1",
+                smallCollectionPointId: currentUser.user?.smallCollectionPointId || "1",
                 images: uploadedUrls,
                 parentCategoryId: (parentCategoryId || '').trim(),
                 subCategoryId: (subCategoryId || '').trim(),
@@ -175,7 +178,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     };
 
     const handleClose = () => {
-        setPhone('');
+        setUserInfoInput('');
         setUser(null);
         setDescription('');
         setImages([]);
@@ -185,6 +188,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         setBrandId('');
         setQrCode('');
         setPoint(0);
+        setSearchClicked(false);
         onClose();
     };
 
@@ -235,7 +239,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                     <div className='flex items-center gap-3'>
                         <div>
                             <h2 className='text-2xl font-bold text-gray-800'>
-                                Tạo Sản Phẩm Mới
+                                Nhận hàng từ người dùng
                             </h2>
                         </div>
                     </div>
@@ -249,10 +253,10 @@ const CreateProduct: React.FC<CreateProductProps> = ({
 
                 {/* Body */}
                 <div className='flex-1 overflow-y-auto p-6 space-y-6 bg-white'>
-                    {/* Phone Search */}
+                    {/* User Info Search (Phone or Email) */}
                     <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>
-                            Số Điện Thoại Người Gửi{' '}
+                            Số Điện Thoại hoặc Email{' '}
                             <span className='text-red-500'>*</span>
                         </label>
                         <form
@@ -261,11 +265,16 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                         >
                             <div className='relative flex-1'>
                                 <input
-                                    ref={phoneInputRef}
+                                    ref={userInfoInputRef}
                                     type='text'
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
-                                    placeholder='Nhập số điện thoại...'
+                                    value={userInfoInput}
+                                    onChange={(e) => setUserInfoInput(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            handleSearchUser(e);
+                                        }
+                                    }}
+                                    placeholder='Nhập số điện thoại hoặc email...'
                                     className='w-full pl-10 pr-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
                                     autoComplete='off'
                                 />
@@ -274,48 +283,13 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     size={18}
                                 />
                             </div>
-                            <button
-                                type='submit'
-                                className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium flex items-center gap-2 cursor-pointer'
-                            >
-                                <ScanLine size={18} />
-                                Tìm
-                            </button>
                         </form>
                         {user && (
-                            <div className='mt-3 p-3 bg-primary-50 border border-primary-200 rounded-lg'>
-                                <div className='flex items-center gap-2 mb-2'>
-                                    <div className='w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center'>
-                                        <User
-                                            className='text-white'
-                                            size={16}
-                                        />
-                                    </div>
-                                    <span className='font-semibold text-primary-900'>
-                                        {user.name}
-                                    </span>
-                                </div>
-                                <div className='text-sm text-primary-700 space-y-1'>
-                                    {user.email && (
-                                        <p>
-                                            <span className='font-medium'>
-                                                Email:
-                                            </span>{' '}
-                                            {user.email}
-                                        </p>
-                                    )}
-                                    {user.address && (
-                                        <p>
-                                            <span className='font-medium'>
-                                                Địa chỉ:
-                                            </span>{' '}
-                                            {user.address}
-                                        </p>
-                                    )}
-                                </div>
+                            <div className='mt-3'>
+                                <UserInfo user={user} />
                             </div>
                         )}
-                        {!user && phone.trim() && (
+                        {!user && userInfoInput.trim() && searchClicked && (
                             <div className='mt-4 flex flex-col items-center gap-2'>
                                 <div className='text-sm text-gray-600 mb-2'>
                                     Không tìm thấy người gửi? Tải app để đăng ký tài khoản:
@@ -342,40 +316,37 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                         )}
                     </div>
 
-                    {/* Product QR Code */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
-                        <label className='block text-sm font-medium text-gray-700 mb-2'>
-                            Mã QR Sản Phẩm{' '}
-                            <span className='text-red-500'>*</span>
-                        </label>
-                        <div className='flex gap-2 items-center'>
-                            <div className='relative flex-1'>
-                                <input
-                                    ref={qrInputRef}
-                                    type='text'
-                                    value={qrCode}
-                                    onChange={(e) => setQrCode(e.target.value)}
-                                    placeholder='Quét hoặc nhập mã QR sản phẩm...'
-                                    className='w-full pl-10 pr-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
-                                    autoComplete='off'
-                                />
-                                <ScanLine
-                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
-                                    size={18}
-                                />
+                    {/* Product QR Code - only show after user is found */}
+                    {user && (
+                        <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                Mã QR Sản Phẩm{' '}
+                                <span className='text-red-500'>*</span>
+                            </label>
+                            <div className='flex gap-2 items-center'>
+                                <div className='relative flex-1'>
+                                    <input
+                                        ref={qrInputRef}
+                                        type='text'
+                                        value={qrCode}
+                                        onChange={(e) => setQrCode(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                handleSearchUser(e);
+                                            }
+                                        }}
+                                        placeholder='Quét hoặc nhập mã QR sản phẩm...'
+                                        className='w-full pl-10 pr-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
+                                        autoComplete='off'
+                                    />
+                                    <ScanLine
+                                        className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
+                                        size={18}
+                                    />
+                                </div>
                             </div>
-                            <button
-                                type='button'
-                                className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium flex items-center gap-2 cursor-pointer'
-                                onClick={() => {
-                                    /* Mở modal quét QR ở đây */
-                                }}
-                            >
-                                <ScanLine size={18} />
-                                Quét
-                            </button>
                         </div>
-                    </div>
+                    )}
 
                     {/* Category & Brand Info */}
                     <div className='space-y-4'>
@@ -547,7 +518,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     Đang upload...
                                 </>
                             ) : (
-                                'Tạo Sản Phẩm'
+                                'Nhận hàng'
                             )}
                         </button>
                     </div>

@@ -6,8 +6,7 @@ import React, {
     useCallback,
     useContext,
     useEffect,
-    ReactNode,
-    useRef
+    ReactNode
 } from 'react';
 import type { Product, CreateProductPayload } from '@/types/Product';
 import {
@@ -34,7 +33,7 @@ interface IWProductContextType {
     detailLoading: boolean;
     selectedProduct: Product | null;
     setSelectedProduct: (product: Product | null) => void;
-    fetchProducts: (customFilter?: Partial<ProductFilter>) => Promise<void>;
+    fetchProducts: (fromDate?: string, toDate?: string) => Promise<void>;
     receiveProduct: (
         qrCode: string,
         productId?: string,
@@ -80,14 +79,18 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
         received: 0
     });
 
-    // const [allProductsData, setAllProductsData] = useState<Product[]>([]);
+    // Cache toàn bộ data đã fetch từ API
+    const [allProductsData, setAllProductsData] = useState<Product[]>([]);
     const [filter, setFilterState] = useState<ProductFilter>(() => {
         const today = new Date();
         const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const firstDay = `${year}-${month}-01`;
-        const currentDay = `${year}-${month}-${String(today.getDate()).padStart(2, '0')}`;
-        
+        const currentDay = `${year}-${month}-${String(today.getDate()).padStart(
+            2,
+            '0'
+        )}`;
+
         return {
             page: 1,
             limit: 10,
@@ -98,132 +101,140 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
         };
     });
 
-    // Ref để lưu filter hiện tại
-    const filterRef = useRef(filter);
-    useEffect(() => {
-        filterRef.current = filter;
-    }, [filter]);
-
+    // Chỉ reset page về 1 khi đổi filter khác ngoài page
     const setFilter = useCallback((newFilter: Partial<ProductFilter>) => {
-        setFilterState((prev) => ({ ...prev, ...newFilter }));
+        setFilterState((prev) => {
+            // Nếu có thuộc tính page thì chỉ đổi page, giữ nguyên các filter khác
+            if (Object.keys(newFilter).length === 1 && newFilter.page !== undefined) {
+                return { ...prev, page: newFilter.page };
+            }
+            // Nếu đổi filter khác (status/search/fromDate/toDate/limit) thì reset page về 1
+            return { ...prev, ...newFilter, page: 1 };
+        });
     }, []);
 
     // Hàm apply filter và pagination TRÊN DATA ĐÃ CÓ
-    const applyFilterAndPagination = useCallback((allData: Product[], currentFilter: ProductFilter) => {
-        // Filter theo status
-        let filtered: Product[] = allData;
+    const applyFilterAndPagination = useCallback(
+        (allData: Product[], currentFilter: ProductFilter) => {
+            // Filter theo status
+            let filtered: Product[] = allData;
 
-        if (currentFilter.status) {
-            const statusLower = currentFilter.status.toLowerCase();
-            filtered = filtered.filter((p) => {
-                const pStatus = p.status?.toLowerCase() || '';
-                if (statusLower.includes('chờ')) {
-                    return pStatus.includes('chờ') || pStatus === 'pending';
-                }
-                if (statusLower.includes('đã thu')) {
-                    return pStatus.includes('đã thu') || pStatus === 'collected';
-                }
-                if (statusLower.includes('hủy')) {
-                    return pStatus.includes('hủy') || pStatus === 'cancelled';
-                }
-                if (statusLower.includes('nhập')) {
-                    return pStatus.includes('nhập') || pStatus === 'received';
-                }
-                return false;
-            });
-        }
+            if (currentFilter.status) {
+                const statusLower = currentFilter.status.toLowerCase();
+                filtered = filtered.filter((p) => {
+                    const pStatus = p.status?.toLowerCase() || '';
+                    if (statusLower.includes('chờ')) {
+                        return pStatus.includes('chờ') || pStatus === 'pending';
+                    }
+                    if (statusLower.includes('đã thu')) {
+                        return (
+                            pStatus.includes('đã thu') ||
+                            pStatus === 'collected'
+                        );
+                    }
+                    if (statusLower.includes('hủy')) {
+                        return (
+                            pStatus.includes('hủy') || pStatus === 'cancelled'
+                        );
+                    }
+                    if (statusLower.includes('nhập')) {
+                        return (
+                            pStatus.includes('nhập') || pStatus === 'received'
+                        );
+                    }
+                    return false;
+                });
+            }
 
-        // Filter theo search
-        if (currentFilter.search && currentFilter.search.trim()) {
-            const searchLower = currentFilter.search.toLowerCase();
-            filtered = filtered.filter((p) => {
-                return (
-                    p.categoryName?.toLowerCase().includes(searchLower) ||
-                    p.brandName?.toLowerCase().includes(searchLower) ||
-                    p.description?.toLowerCase().includes(searchLower) ||
-                    p.qrCode?.toLowerCase().includes(searchLower)
-                );
-            });
-        }
-
-        // Tính stats từ data sau khi filter theo date và search
-        const dateAndSearchFiltered = allData.filter((p) => {
+            // Filter theo search
             if (currentFilter.search && currentFilter.search.trim()) {
                 const searchLower = currentFilter.search.toLowerCase();
-                const matchesSearch = (
-                    p.categoryName?.toLowerCase().includes(searchLower) ||
-                    p.brandName?.toLowerCase().includes(searchLower) ||
-                    p.description?.toLowerCase().includes(searchLower) ||
-                    p.qrCode?.toLowerCase().includes(searchLower)
-                );
-                if (!matchesSearch) return false;
+                filtered = filtered.filter((p) => {
+                    return (
+                        p.categoryName?.toLowerCase().includes(searchLower) ||
+                        p.brandName?.toLowerCase().includes(searchLower) ||
+                        p.description?.toLowerCase().includes(searchLower) ||
+                        p.qrCode?.toLowerCase().includes(searchLower)
+                    );
+                });
             }
-            return true;
-        });
 
-        const stats = {
-            total: dateAndSearchFiltered.length,
-            pending: dateAndSearchFiltered.filter(
-                (p) => p.status?.toLowerCase().includes('chờ') || p.status === 'pending'
-            ).length,
-            collected: dateAndSearchFiltered.filter(
-                (p) => p.status?.toLowerCase().includes('đã thu') || p.status === 'collected'
-            ).length,
-            cancelled: dateAndSearchFiltered.filter(
-                (p) => p.status?.toLowerCase().includes('hủy') || p.status === 'cancelled'
-            ).length,
-            received: dateAndSearchFiltered.filter(
-                (p) => p.status?.toLowerCase().includes('nhập') || p.status === 'received'
-            ).length
-        };
+            // Tính stats từ data sau khi filter theo date và search
+            const dateAndSearchFiltered = allData.filter((p) => {
+                if (currentFilter.search && currentFilter.search.trim()) {
+                    const searchLower = currentFilter.search.toLowerCase();
+                    const matchesSearch =
+                        p.categoryName?.toLowerCase().includes(searchLower) ||
+                        p.brandName?.toLowerCase().includes(searchLower) ||
+                        p.description?.toLowerCase().includes(searchLower) ||
+                        p.qrCode?.toLowerCase().includes(searchLower);
+                    if (!matchesSearch) return false;
+                }
+                return true;
+            });
 
-        // Phân trang
-        const totalItems = filtered.length;
-        const totalPages = Math.ceil(totalItems / currentFilter.limit);
-        const startIndex = (currentFilter.page - 1) * currentFilter.limit;
-        const endIndex = startIndex + currentFilter.limit;
-        const paginatedProducts = filtered.slice(startIndex, endIndex);
+            const stats = {
+                total: dateAndSearchFiltered.length,
+                pending: dateAndSearchFiltered.filter(
+                    (p) =>
+                        p.status?.toLowerCase().includes('chờ') ||
+                        p.status === 'pending'
+                ).length,
+                collected: dateAndSearchFiltered.filter(
+                    (p) =>
+                        p.status?.toLowerCase().includes('đã thu') ||
+                        p.status === 'collected'
+                ).length,
+                cancelled: dateAndSearchFiltered.filter(
+                    (p) =>
+                        p.status?.toLowerCase().includes('hủy') ||
+                        p.status === 'cancelled'
+                ).length,
+                received: dateAndSearchFiltered.filter(
+                    (p) =>
+                        p.status?.toLowerCase().includes('nhập') ||
+                        p.status === 'received'
+                ).length
+            };
 
-        return { paginatedProducts, totalPages, totalItems, stats };
-    }, []);
+            // Phân trang
+            const totalItems = filtered.length;
+            const totalPages = Math.ceil(totalItems / currentFilter.limit);
+            const startIndex = (currentFilter.page - 1) * currentFilter.limit;
+            const endIndex = startIndex + currentFilter.limit;
+            const paginatedProducts = filtered.slice(startIndex, endIndex);
+
+            return { paginatedProducts, totalPages, totalItems, stats };
+        },
+        []
+    );
 
     const fetchProducts = useCallback(
-        async () => {
+        async (fromDate?: string, toDate?: string) => {
             if (!user?.smallCollectionPointId) {
                 console.warn('No smallCollectionPointId found in user profile');
                 return;
             }
             setLoading(true);
             try {
-                // Lấy filter hiện tại từ ref (luôn mới nhất)
-                const currentFilter = filterRef.current;
-
-                // Fetch toàn bộ data từ API
+                // Fetch toàn bộ data từ API - CHỈ DỰA VÀO fromDate/toDate
                 const response = await filterIncomingWarehouseProducts({
-                    fromDate: currentFilter.fromDate,
-                    toDate: currentFilter.toDate,
+                    fromDate: fromDate,
+                    toDate: toDate,
                     smallCollectionPointId: user.smallCollectionPointId
                 });
 
                 const allData = Array.isArray(response) ? response : [];
-                // setAllProductsData(allData);
-
-                // Apply filter và pagination
-                const { paginatedProducts, totalPages, totalItems, stats } = 
-                    applyFilterAndPagination(allData, currentFilter);
-
-                setProducts(paginatedProducts);
-                setTotalPages(totalPages);
-                setTotalItems(totalItems);
-                setAllStats(stats);
+                setAllProductsData(allData);
             } catch (err) {
                 console.error('fetchProducts error', err);
                 setProducts([]);
+                setAllProductsData([]);
             } finally {
                 setLoading(false);
             }
         },
-        [user?.smallCollectionPointId, applyFilterAndPagination]
+        [user?.smallCollectionPointId]
     );
 
     const receiveProduct = useCallback(
@@ -294,15 +305,45 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
         }
     }, []);
 
+    // Fetch data từ API chỉ khi fromDate/toDate thay đổi
     useEffect(() => {
-        void fetchProducts();
+        if (filter.fromDate && filter.toDate) {
+            void fetchProducts(filter.fromDate, filter.toDate);
+        }
+    }, [filter.fromDate, filter.toDate, fetchProducts]);
+
+    // Apply filter và pagination khi page/status/search thay đổi (không fetch lại)
+    useEffect(() => {
+        if (allProductsData.length > 0) {
+            const { paginatedProducts, totalPages, totalItems, stats } =
+                applyFilterAndPagination(allProductsData, filter);
+
+            setProducts(paginatedProducts);
+            setTotalPages(totalPages);
+            setTotalItems(totalItems);
+            setAllStats(stats);
+        } else if (allProductsData.length === 0 && !loading) {
+            // Khi không có data, reset về state rỗng
+            setProducts([]);
+            setTotalPages(1);
+            setTotalItems(0);
+            setAllStats({
+                total: 0,
+                pending: 0,
+                collected: 0,
+                cancelled: 0,
+                received: 0
+            });
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         filter.page,
         filter.status,
         filter.search,
-        filter.fromDate,
-        filter.toDate
+        filter.limit,
+        allProductsData,
+        applyFilterAndPagination,
+        loading
     ]);
 
     const value = {

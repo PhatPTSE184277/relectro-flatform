@@ -5,7 +5,7 @@ export const getUserProfile = async () => {
     return response.data;
 };
 
-export const getUserByPhone = async (phone: string): Promise<any> => {
-	const response = await axios.get(`/users/phone/${phone}`);
+export const getUserByInformation = async (information: string): Promise<any> => {
+	const response = await axios.get(`/users/infomation/${information}`);
 	return response.data;
 };

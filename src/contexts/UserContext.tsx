@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { getUserByPhone } from '@/services/UserService';
+import { getUserByInformation } from '@/services/UserService';
 
 interface User {
 	id: string;
@@ -13,7 +13,7 @@ interface UserContextType {
 	user: User | null;
 	loading: boolean;
 	error: string | null;
-	fetchUserByPhone: (phone: string) => Promise<void>;
+	fetchUserByInformation: (information: string) => Promise<void>;
 	setUser: (user: User | null) => void;
 }
 
@@ -24,11 +24,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const fetchUserByPhone = async (phone: string) => {
+	const fetchUserByInformation = async (information: string) => {
 		setLoading(true);
 		setError(null);
 		try {
-			const data = await getUserByPhone(phone);
+			const data = await getUserByInformation(information);
 			setUser(data);
 		} catch (err: any) {
 			setError(err?.response?.data?.message || 'Không tìm thấy user');
@@ -39,7 +39,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 	};
 
 	return (
-		<UserContext.Provider value={{ user, loading, error, fetchUserByPhone, setUser }}>
+		<UserContext.Provider value={{ user, loading, error, fetchUserByInformation, setUser }}>
 			{children}
 		</UserContext.Provider>
 	);

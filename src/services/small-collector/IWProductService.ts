@@ -7,7 +7,7 @@ export const filterIncomingWarehouseProducts = async ({
     fromDate,
     toDate,
     smallCollectionPointId
-}: {
+}: {    
     fromDate?: string;
     toDate?: string;
     smallCollectionPointId: string;

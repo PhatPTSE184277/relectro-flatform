@@ -146,7 +146,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-800'>
-                            Nhận Sản Phẩm Nhập Kho
+                            Nhận hàng từ shipper
                         </h2>
                     </div>
                     <button
@@ -291,7 +291,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                 disabled={loading}
                                 className='px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
                             >
-                                Xác nhận nhập kho
+                                Xác nhận nhận hàng từ shipper
                             </button>
                         </div>
                     </div>

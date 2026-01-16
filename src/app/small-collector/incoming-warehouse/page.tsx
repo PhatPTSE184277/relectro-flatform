@@ -49,11 +49,15 @@ const IncomingWarehousePage: React.FC = () => {
     });
 
     const handleFilterChange = (status: string) => {
-        setFilter({ status, page: 1 });
+        if (status !== filter.status) {
+            setFilter({ status });
+        }
     };
 
     const handlePageChange = (page: number) => {
-        setFilter({ page });
+        if (page !== filter.page) {
+            setFilter({ page });
+        }
         if (tableScrollRef.current) {
             tableScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -61,12 +65,16 @@ const IncomingWarehousePage: React.FC = () => {
 
     const handleFromDateChange = (date: string) => {
         setFromDate(date);
-        setFilter({ fromDate: date, page: 1 });
+        if (date !== filter.fromDate) {
+            setFilter({ fromDate: date });
+        }
     };
 
     const handleToDateChange = (date: string) => {
         setToDate(date);
-        setFilter({ toDate: date, page: 1 });
+        if (date !== filter.toDate) {
+            setFilter({ toDate: date });
+        }
     };
 
     const handleViewDetail = async (product: any) => {
@@ -80,7 +88,9 @@ const IncomingWarehousePage: React.FC = () => {
 
     const handleSearchChange = (value: string) => {
         setSearch(value);
-        setFilter({ search: value, page: 1 });
+        if (value !== filter.search) {
+            setFilter({ search: value });
+        }
     };
 
     const handleCloseModal = () => {
@@ -105,7 +115,6 @@ const IncomingWarehousePage: React.FC = () => {
     return (
 
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-
             {/* Header + Search */}
             <div className='flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:gap-6'>
                 <div className='flex items-center gap-3 shrink-0'>
@@ -141,14 +150,14 @@ const IncomingWarehousePage: React.FC = () => {
                         className='px-4 py-2 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition font-medium flex items-center gap-2 cursor-pointer whitespace-nowrap border border-primary-200'
                     >
                         <ScanLine size={18} />
-                        Nhận Hàng Nhập Kho
+                        Nhận hàng từ shipper
                     </button>
                     <button
                         onClick={() => setShowCreateModal(true)}
                         className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium flex items-center gap-2 cursor-pointer'
                     >
                         <Plus size={18} />
-                        Tạo Sản Phẩm Mới
+                        Nhận hàng từ người dùng
                     </button>
                 </div>
             </div>
