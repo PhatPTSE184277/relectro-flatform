@@ -253,14 +253,20 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     // Add a useEffect to validate the form whenever dependencies change
     useEffect(() => {
         let error = '';
-        if (qrCode.trim() && !isValidSystemQRCode(qrCode.trim())) {
-            error = 'Chỉ được sử dụng mã QR do hệ thống tạo ra!';
+        const qr = qrCode.trim();
+        if (qr) {
+            if (!/^[0-9]{13}$/.test(qr)) {
+                error = 'Mã QR phải là số gồm 13 ký tự (mã hệ thống tạo ra)!';
+            } else if (!isValidSystemQRCode(qr)) {
+                error = 'Chỉ được sử dụng mã QR do hệ thống tạo ra trong hôm qua hoặc hôm nay!';
+            }
         }
         setQrError(error);
         const isValid = !!(
             user &&
-            qrCode.trim() &&
-            isValidSystemQRCode(qrCode.trim()) &&
+            qr &&
+            /^[0-9]{13}$/.test(qr) &&
+            isValidSystemQRCode(qr) &&
             parentCategoryId.trim() &&
             subCategoryId.trim() &&
             brandId.trim() &&

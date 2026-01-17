@@ -1,8 +1,15 @@
-// utils/qr.ts
-// Hàm kiểm tra QR code hợp lệ (chỉ cho phép QR do hệ thống tạo ra)
 export function isValidSystemQRCode(qr: string): boolean {
-    // Quy ước: QR hệ thống tạo là số nguyên dương, đúng 13 ký tự số, không chứa ký tự chữ
-    if (!qr) return false;
-    if (!/^[0-9]{13}$/.test(qr)) return false;
-    return true;
+  if (!/^[0-9]{13}$/.test(qr)) return false;
+  const qrNum = Number(qr);
+
+  // Đầu ngày hôm qua
+  const startOfYesterday = new Date();
+  startOfYesterday.setHours(0, 0, 0, 0);
+  startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+
+  // Cuối ngày hôm nay
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
+
+  return qrNum >= startOfYesterday.getTime() && qrNum <= endOfToday.getTime();
 }
