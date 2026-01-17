@@ -10,6 +10,7 @@ interface CustomSelectProps<T> {
     placeholder?: string;
     showIcon?: boolean;
     disabled?: boolean;
+    className?: string; // Thêm dòng này
 }
 
 const CustomSelect = <T,>({
@@ -20,7 +21,8 @@ const CustomSelect = <T,>({
     getValue,
     placeholder = 'Chọn...',
     showIcon = true,
-    disabled = false
+    disabled = false,
+    className = '', // Thêm dòng này
 }: CustomSelectProps<T>) => {
     const [isOpen, setIsOpen] = useState(false);
     const selectRef = useRef<HTMLDivElement>(null);
@@ -42,7 +44,7 @@ const CustomSelect = <T,>({
     const selectedOption = options.find((opt) => getValue(opt) === value);
 
     return (
-        <div className='relative' ref={selectRef}>
+        <div className={`relative ${className}`} ref={selectRef}>
             <div
                 onClick={() => !disabled && setIsOpen(!isOpen)}
                 className={`h-12 cursor-pointer flex items-center justify-between transition-all duration-300 bg-white border border-primary-200 rounded-xl px-4 shadow-sm ${
@@ -51,7 +53,8 @@ const CustomSelect = <T,>({
             >
                 <span
                     className={
-                        selectedOption ? 'text-gray-900' : 'text-gray-400'
+                        (selectedOption ? 'text-gray-900' : 'text-gray-400') +
+                        ' text-center w-full'
                     }
                 >
                     {selectedOption ? getLabel(selectedOption) : placeholder}

@@ -8,6 +8,7 @@ interface SearchableSelectProps<T> {
 	getValue: (option: T) => string;
 	placeholder?: string;
 	disabled?: boolean;
+	className?: string; // Thêm dòng này
 }
 
 const SearchableSelect = <T,>({
@@ -17,7 +18,8 @@ const SearchableSelect = <T,>({
 	getLabel,
 	getValue,
 	placeholder = 'Chọn...',
-	disabled = false
+	disabled = false,
+	className = '', // Thêm dòng này
 }: SearchableSelectProps<T>) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [search, setSearch] = useState('');
@@ -39,14 +41,16 @@ const SearchableSelect = <T,>({
 	);
 
 	return (
-		<div className='relative' ref={selectRef}>
+		<div className={`relative ${className}`} ref={selectRef}>
 			<div
 				onClick={() => !disabled && setIsOpen(!isOpen)}
 				   className={`h-12 cursor-pointer flex items-center justify-between transition-all duration-300 bg-white border border-primary-200 rounded-xl px-4 shadow-sm ${
 					   isOpen ? 'ring-2 ring-primary-400 border-primary-400' : ''
 				   } ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
 			>
-				<span className={selectedOption ? 'text-gray-900' : 'text-gray-400'}>
+				<span className={
+    (selectedOption ? 'text-gray-900' : 'text-gray-400') + ' text-center w-full'
+}>
 					{selectedOption ? getLabel(selectedOption) : placeholder}
 				</span>
 				   <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>

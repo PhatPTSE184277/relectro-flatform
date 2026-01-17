@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
+import { isValidSystemQRCode } from '@/utils/qr';
 
 import React, { useState, useRef, useEffect } from 'react';
 import {
@@ -128,12 +129,20 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         }
     };
 
+    // Đã import isValidSystemQRCode từ utils/qr
+
     const handleSubmit = async () => {
+
         if (!user) {
             return;
         }
 
-        if (!(qrCode || '').trim()) {
+        const qr = (qrCode || '').trim();
+        if (!qr) {
+            return;
+        }
+        if (!isValidSystemQRCode(qr)) {
+            alert('Chỉ được sử dụng mã QR do hệ thống tạo ra!');
             return;
         }
 
@@ -146,6 +155,11 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         }
 
         if (!(brandId || '').trim()) {
+            return;
+        }
+
+        if (!description.trim()) {
+            alert('Vui lòng nhập mô tả sản phẩm!');
             return;
         }
 
@@ -173,7 +187,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                 parentCategoryId: (parentCategoryId || '').trim(),
                 subCategoryId: (subCategoryId || '').trim(),
                 brandId: (brandId || '').trim(),
-                qrCode: (qrCode || '').trim(),
+                qrCode: qr,
                 point
             });
 
@@ -231,6 +245,25 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         };
     }, [subCategoryId]);
 
+    // Add a state to track form validity
+    const [isFormValid, setIsFormValid] = useState(false);
+
+    // Add a useEffect to validate the form whenever dependencies change
+    useEffect(() => {
+        const isValid = !!(
+            user &&
+            qrCode.trim() &&
+            isValidSystemQRCode(qrCode.trim()) &&
+            parentCategoryId.trim() &&
+            subCategoryId.trim() &&
+            brandId.trim() &&
+            description.trim() &&
+            imageFiles.length > 0 &&
+            imageFiles.length <= 5
+        );
+        setIsFormValid(isValid);
+    }, [user, qrCode, parentCategoryId, subCategoryId, brandId, description, imageFiles]);
+
     if (!open) return null;
 
     return (
@@ -260,17 +293,17 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                 </div>
 
                 {/* Body */}
-                <div className='flex-1 overflow-y-auto p-6 space-y-6 bg-white'>
+                <div className='flex-1 overflow-y-auto p-6 space-y-4 bg-white'>
                     {/* User Info Search (Phone or Email) */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
-                        <label className='block text-sm font-medium text-gray-700 mb-2'>
-                            Số Điện Thoại hoặc Email{' '}
-                            <span className='text-red-500'>*</span>
-                        </label>
+                    <div className='bg-white rounded-lg p-3 shadow-sm border border-primary-100'>
                         <form
                             onSubmit={handleSearchUser}
-                            className='flex gap-2'
+                            className='flex items-center gap-3'
                         >
+                            <label className='text-sm font-medium text-gray-700 whitespace-nowrap min-w-[180px]'>
+                                Số Điện Thoại hoặc Email{' '}
+                                <span className='text-red-500'>*</span>
+                            </label>
                             <div className='relative flex-1'>
                                 <input
                                     ref={userInfoInputRef}
@@ -330,12 +363,12 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                     </div>
 
                     {/* Product QR Code - always show */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
-                        <label className='block text-sm font-medium text-gray-700 mb-2'>
-                            Mã QR Sản Phẩm{' '}
-                            <span className='text-red-500'>*</span>
-                        </label>
-                        <div className='flex gap-2 items-center'>
+                    <div className='bg-white rounded-lg p-3 shadow-sm border border-primary-100'>
+                        <div className='flex items-center gap-3'>
+                            <label className='text-sm font-medium text-gray-700 whitespace-nowrap min-w-[180px]'>
+                                Mã QR Sản Phẩm{' '}
+                                <span className='text-red-500'>*</span>
+                            </label>
                             <div className='relative flex-1'>
                                 <input
                                     ref={qrInputRef}
@@ -355,15 +388,16 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                     </div>
 
                     {/* Category & Brand Info */}
-                    <div className='space-y-4'>
-                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                    <div className='space-y-3'>
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
                             {/* Danh Mục Cha */}
-                            <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
-                                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                    Danh Mục Cha{' '}
-                                    <span className='text-red-500'>*</span>
-                                </label>
-                                <CustomSelect
+                            <div className='bg-white rounded-lg p-3 shadow-sm border border-primary-100'>
+                                <div className='flex items-center gap-3'>
+                                    <label className='text-sm font-medium text-gray-700 whitespace-nowrap min-w-[120px]'>
+                                        Danh Mục Cha{' '}
+                                        <span className='text-red-500'>*</span>
+                                    </label>
+                                    <CustomSelect
                                     options={parentCategories}
                                     value={parentCategoryId}
                                     onChange={(val) => {
@@ -374,16 +408,19 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     getValue={(cat) => cat.id}
                                     placeholder='Chọn danh mục cha...'
                                     disabled={categoryLoading}
-                                />
+                                    className='w-full' // Đảm bảo chiều rộng bằng với các ô khác
+                                    />
+                                </div>
                             </div>
 
                             {/* Danh Mục Con */}
-                            <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
-                                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                    Danh Mục Con{' '}
-                                    <span className='text-red-500'>*</span>
-                                </label>
-                                {parentCategoryId ? (
+                            <div className='bg-white rounded-lg p-3 shadow-sm border border-primary-100'>
+                                <div className='flex items-center gap-3'>
+                                    <label className='text-sm font-medium text-gray-700 whitespace-nowrap min-w-[120px]'>
+                                        Danh Mục Con{' '}
+                                        <span className='text-red-500'>*</span>
+                                    </label>
+                                    {parentCategoryId ? (
                                     <SearchableSelect
                                         options={subCategories}
                                         value={subCategoryId}
@@ -392,22 +429,25 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                         getValue={(cat) => cat.id}
                                         placeholder='Chọn danh mục con...'
                                         disabled={categoryLoading}
+                                        className='w-full' // Đảm bảo chiều rộng bằng các ô khác
                                     />
-                                ) : (
-                                    <div className='px-4 py-2 text-gray-400 bg-gray-50 rounded-lg border border-gray-200'>
-                                        Chọn danh mục cha trước
-                                    </div>
-                                )}
+                                    ) : (
+                                        <div className='px-4 py-2 text-gray-400 bg-gray-50 rounded-lg border border-gray-200 flex-1'>
+                                            Chọn danh mục cha trước
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
-                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                            <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
-                                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                    Thương Hiệu{' '}
-                                    <span className='text-red-500'>*</span>
-                                </label>
-                                {subCategoryId ? (
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
+                            <div className='bg-white rounded-lg p-3 shadow-sm border border-gray-100'>
+                                <div className='flex items-center gap-3'>
+                                    <label className='text-sm font-medium text-gray-700 whitespace-nowrap min-w-[120px]'>
+                                        Thương Hiệu{' '}
+                                        <span className='text-red-500'>*</span>
+                                    </label>
+                                    {subCategoryId ? (
                                     <SearchableSelect
                                         options={brands}
                                         value={brandId}
@@ -420,53 +460,64 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                                 : 'Chọn thương hiệu...'
                                         }
                                         disabled={brandLoading}
+                                        className='w-full' // Đảm bảo chiều rộng bằng các ô khác
                                     />
-                                ) : (
-                                    <div className='px-4 py-2 text-gray-400 bg-gray-50 rounded-lg border border-gray-200'>
-                                        Chọn danh mục con trước
-                                    </div>
-                                )}
+                                    ) : (
+                                        <div className='px-4 py-2 text-gray-400 bg-gray-50 rounded-lg border border-gray-200 flex-1'>
+                                            Chọn danh mục con trước
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
-                            <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
-                                <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                    Điểm
-                                </label>
-                                <CustomNumberInput
+                            <div className='bg-white rounded-lg p-3 shadow-sm border border-gray-100'>
+                                <div className='flex items-center gap-3'>
+                                    <label className='text-sm font-medium text-gray-700 whitespace-nowrap min-w-[120px]'>
+                                        Điểm
+                                    </label>
+                                    <CustomNumberInput
                                     value={point}
                                     onChange={setPoint}
                                     placeholder='Nhập điểm...'
                                     min={0}
-                                    className='w-full px-4 py-2 border border-primary-300 rounded-lg text-gray-900 placeholder-gray-400 placeholder-font-medium font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent'
-                                />
+                                    className='flex-1 px-4 py-2 border border-primary-300 rounded-lg text-gray-900 placeholder-gray-400 placeholder-font-medium font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent'
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Description */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
-                        <label className='block text-sm font-medium text-gray-700 mb-2'>
-                            Mô Tả
-                        </label>
-                        <textarea
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            placeholder='Nhập mô tả sản phẩm...'
-                            rows={3}
-                            className='w-full px-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 resize-none'
-                        />
+                    <div className='bg-white rounded-lg p-3 shadow-sm border border-primary-100'>
+                        <div className='flex items-start gap-3 w-full'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2 min-w-[120px]'>
+                                Mô Tả
+                            </label>
+                            <div className='w-full'>
+                                <textarea
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    placeholder='Nhập mô tả sản phẩm...'
+                                    rows={3}
+                                    className='px-3 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 resize-none w-full'
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {/* Image Upload */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
-                        <label className='block text-sm font-medium text-gray-700 mb-2'>
-                            Hình ảnh / Video về sản phẩm{' '}
-                            <span className='text-red-500'>*</span>
-                        </label>
-                        <p className='text-xs text-gray-500 mb-3'>
-                            Tối đa 5 ảnh/video, mỗi file không quá 10MB
-                        </p>
-                        <div className='flex gap-4 items-start'>
+                    <div className='bg-white rounded-lg p-3 shadow-sm border border-primary-100'>
+                        <div className='flex items-start gap-3'>
+                            <div className='min-w-[180px]'>
+                                <label className='text-sm font-medium text-gray-700 whitespace-nowrap'>
+                                    Hình ảnh{' '}
+                                    <span className='text-red-500'>*</span>
+                                </label>
+                                <p className='text-xs text-gray-500 mt-0.5'>
+                                    (Tối đa 5 ảnh)
+                                </p>
+                            </div>
+                            <div className='flex-1 flex gap-3 items-start'>
                             <label className='cursor-pointer flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-primary-300 rounded-lg hover:border-primary-400 hover:bg-primary-50 transition'>
                                 <Upload className='text-primary-400' size={32} />
                                 <span className='text-xs text-gray-500 mt-2'>
@@ -502,8 +553,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                         </button>
                                     </div>
                                 ))}
-                            </div>
-                        </div>
+                            </div>                            </div>                        </div>
                     </div>
                 </div>
 
@@ -516,7 +566,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                     <div className='flex gap-3'>
                         <button
                             onClick={handleSubmit}
-                            disabled={uploading}
+                            disabled={!isFormValid || uploading}
                             className='px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2'
                         >
                             {uploading ? (
