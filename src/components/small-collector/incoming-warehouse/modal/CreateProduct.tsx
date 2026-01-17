@@ -40,6 +40,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     const [brands, setBrands] = useState<Brand[]>([]);
     const [brandLoading, setBrandLoading] = useState(false);
     const [qrCode, setQrCode] = useState('');
+    const [qrError, setQrError] = useState('');
     const [point, setPoint] = useState(0);
     const [searchClicked, setSearchClicked] = useState(false);
     const [loadingUser, setLoadingUser] = useState(false);
@@ -139,10 +140,11 @@ const CreateProduct: React.FC<CreateProductProps> = ({
 
         const qr = (qrCode || '').trim();
         if (!qr) {
+            setQrError('Vui lòng nhập mã QR sản phẩm!');
             return;
         }
         if (!isValidSystemQRCode(qr)) {
-            alert('Chỉ được sử dụng mã QR do hệ thống tạo ra!');
+            setQrError('Chỉ được sử dụng mã QR do hệ thống tạo ra!');
             return;
         }
 
@@ -250,6 +252,11 @@ const CreateProduct: React.FC<CreateProductProps> = ({
 
     // Add a useEffect to validate the form whenever dependencies change
     useEffect(() => {
+        let error = '';
+        if (qrCode.trim() && !isValidSystemQRCode(qrCode.trim())) {
+            error = 'Chỉ được sử dụng mã QR do hệ thống tạo ra!';
+        }
+        setQrError(error);
         const isValid = !!(
             user &&
             qrCode.trim() &&
@@ -369,20 +376,25 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                 Mã QR Sản Phẩm{' '}
                                 <span className='text-red-500'>*</span>
                             </label>
-                            <div className='relative flex-1'>
-                                <input
-                                    ref={qrInputRef}
-                                    type='text'
-                                    value={qrCode}
-                                    onChange={(e) => setQrCode(e.target.value)}
-                                    placeholder='Quét hoặc nhập mã QR sản phẩm...'
-                                    className='w-full pl-10 pr-4 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
-                                    autoComplete='off'
-                                />
-                                <ScanLine
-                                    className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
-                                    size={18}
-                                />
+                            <div className='flex-1'>
+                                <div className='relative'>
+                                    <input
+                                        ref={qrInputRef}
+                                        type='text'
+                                        value={qrCode}
+                                        onChange={(e) => setQrCode(e.target.value)}
+                                        placeholder='Quét hoặc nhập mã QR sản phẩm...'
+                                        className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100 ${qrError ? 'border-red-500' : 'border-primary-300'}`}
+                                        autoComplete='off'
+                                    />
+                                    <ScanLine
+                                        className='absolute left-3 top-1/2 transform -translate-y-1/2 text-primary-400'
+                                        size={18}
+                                    />
+                                </div>
+                                {qrError && (
+                                    <div className='mt-2 text-xs text-red-600'>{qrError}</div>
+                                )}
                             </div>
                         </div>
                     </div>
