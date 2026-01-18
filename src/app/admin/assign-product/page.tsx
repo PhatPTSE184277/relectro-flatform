@@ -13,6 +13,7 @@ import AssignProductModal from '@/components/admin/assign-product/modal/AssignPr
 import Pagination from '@/components/ui/Pagination';
 import ProcessingModal from '@/components/admin/assign-product/modal/ProcessingModal';
 import { useNotifications } from '@/contexts/NotificationContext';
+import Toast from '@/components/ui/Toast';
 
 const AssignProductPage: React.FC = () => {
     const {
@@ -233,51 +234,13 @@ const AssignProductPage: React.FC = () => {
             )}
 
             {/* Notification Toast */}
-            {notification && (
-                <div className='fixed top-4 right-4 z-50 animate-fade-in'>
-                    <div className={`rounded-xl shadow-2xl p-4 min-w-[320px] border-l-4 ${
-                        notification.type === 'success' 
-                            ? 'bg-green-50 border-green-500' 
-                            : 'bg-red-50 border-red-500'
-                    }`}>
-                        <div className='flex items-start gap-3'>
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                                notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
-                            }`}>
-                                {notification.type === 'success' ? (
-                                    <svg className='w-4 h-4 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
-                                    </svg>
-                                ) : (
-                                    <svg className='w-4 h-4 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-                                    </svg>
-                                )}
-                            </div>
-                            <div className='flex-1'>
-                                <h4 className={`font-semibold mb-1 ${
-                                    notification.type === 'success' ? 'text-green-800' : 'text-red-800'
-                                }`}>
-                                    {notification.type === 'success' ? 'Thành công!' : 'Thông báo'}
-                                </h4>
-                                <p className={`text-sm ${
-                                    notification.type === 'success' ? 'text-green-700' : 'text-red-700'
-                                }`}>
-                                    {notification.message}
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => setNotification(null)}
-                                className='text-gray-400 hover:text-gray-600 transition'
-                            >
-                                <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <Toast
+                open={!!notification}
+                type={notification?.type}
+                message={notification?.message || ''}
+                onClose={() => setNotification(null)}
+                duration={5000}
+            />
         </div>
     );
 };

@@ -1,6 +1,9 @@
 // Định dạng số về 2 chữ số thập phân
 export function formatWeightKg(weight?: number): string {
-    return weight != null ? weight.toFixed(2) : '-';
+    if (weight == null) return '-';
+    // Nếu là số nguyên, trả về nguyên, nếu có thập phân thì giữ lại
+    if (Number.isInteger(weight)) return weight.toString();
+    return weight % 1 === 0 ? weight.toString() : weight.toString().replace(/\.0+$/, '').replace(/(\.[1-9]*)0+$/, '$1');
 }
 
 // Làm tròn từng số trong dimensionText về 2 chữ số thập phân

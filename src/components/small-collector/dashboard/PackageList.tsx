@@ -1,27 +1,30 @@
 import React from 'react';
-import ProductCategoryListSkeleton from './ProductCategoryListSkeleton';
 
-interface ProductCategory {
-  categoryName: string;
-  currentValue: number;
-  previousValue: number;
-  absoluteChange: number;
-  percentChange: number;
-  trend: 'Increase' | 'Decrease' | 'NoChange' | 'Stable';
+interface DailyStat {
+  date: string;
+  count: number;
+  absoluteChange: number | null;
+  percentChange: number | null;
 }
 
-interface ProductCategoryListProps {
-  data: ProductCategory[];
+interface DailyPackageStatsProps {
+  dailyStats: DailyStat[];
   loading: boolean;
 }
 
-const ProductCategoryList: React.FC<ProductCategoryListProps & { total?: number }> = ({ data, loading, total }) => {
+const PackageList: React.FC<DailyPackageStatsProps> = ({ dailyStats, loading }) => {
   if (loading) {
-    return <ProductCategoryListSkeleton />;
+    return (
+      <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-6'>
+        <div className='h-8 bg-gray-200 rounded w-48 mb-4 animate-pulse' />
+        <div className='space-y-3'>
+          {Array.from({ length: 5 }).map((_, idx) => (
+            <div key={idx} className='h-6 bg-gray-200 rounded animate-pulse' />
+          ))}
+        </div>
+      </div>
+    );
   }
-
-  // Tính tổng số lượng sản phẩm nếu chưa truyền vào
-  const totalProducts = typeof total === 'number' ? total : data.reduce((sum, c) => sum + (c.currentValue || 0), 0);
 
   return (
     <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
@@ -30,17 +33,17 @@ const ProductCategoryList: React.FC<ProductCategoryListProps & { total?: number 
           <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
             <tr>
               <th className='py-3 px-4 text-left w-16'>STT</th>
-              <th className='py-3 px-4 text-left'>Danh mục sản phẩm</th>
+              <th className='py-3 px-4 text-left'>Ngày</th>
               <th className='py-3 px-4 text-right w-72'>Số lượng</th>
               <th className='py-3 px-4 text-right w-72'>Thay đổi</th>
-              <th className='py-3 px-4 text-right w-72'>% Tổng</th>
+              <th className='py-3 px-4 text-right w-72'>% Thay đổi</th>
             </tr>
           </thead>
           <tbody>
-            {data.length > 0 ? (
-              data.map((category, idx) => {
-                const isLast = idx === data.length - 1;
-                const percentOfTotal = totalProducts > 0 ? Math.round((category.currentValue / totalProducts) * 100) : 0;
+            {dailyStats && dailyStats.length > 0 ? (
+              dailyStats.map((stat, idx) => {
+                const isLast = idx === dailyStats.length - 1;
+                const hasChange = stat.absoluteChange !== null;
                 return (
                   <tr
                     key={idx}
@@ -52,24 +55,32 @@ const ProductCategoryList: React.FC<ProductCategoryListProps & { total?: number 
                       </span>
                     </td>
                     <td className='py-3 px-4 font-medium text-gray-900'>
-                      {category.categoryName}
+                      {new Date(stat.date).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                     </td>
                     <td className='py-3 px-4 text-right text-gray-700 font-semibold w-72'>
-                      {category.currentValue}
+                      {stat.count}
                     </td>
                     <td className='py-3 px-4 text-right text-gray-700 font-semibold w-72'>
-                      {category.trend === 'Increase' ? '▲' : category.trend === 'Decrease' ? '▼' : ''} {category.absoluteChange > 0 ? '+' : ''}{category.absoluteChange} ({category.percentChange}%)
+                      {hasChange ? (
+                        <>
+                          {stat.absoluteChange! > 0 ? '▲' : stat.absoluteChange! < 0 ? '▼' : ''}
+                          {' '}
+                          {stat.absoluteChange! > 0 ? '+' : ''}{stat.absoluteChange}
+                        </>
+                      ) : (
+                        '-'
+                      )}
                     </td>
                     <td className='py-3 px-4 text-right text-gray-700 font-semibold w-72'>
-                      {percentOfTotal}
-                    </td> 
+                      {hasChange && stat.percentChange !== null ? `${stat.percentChange}` : '-'}
+                    </td>
                   </tr>
                 );
               })
             ) : (
               <tr>
                 <td colSpan={5} className='text-center py-8 text-gray-400'>
-                  Không có dữ liệu danh mục sản phẩm.
+                  Không có dữ liệu thống kê theo ngày.
                 </td>
               </tr>
             )}
@@ -80,4 +91,4 @@ const ProductCategoryList: React.FC<ProductCategoryListProps & { total?: number 
   );
 };
 
-export default ProductCategoryList;
+export default PackageList;

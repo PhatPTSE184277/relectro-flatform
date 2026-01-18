@@ -138,7 +138,7 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                 className='absolute inset-0 bg-black/50 backdrop-blur-sm'
             ></div>
 
-            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[98vh] min-h-[80vh]'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
@@ -180,14 +180,14 @@ const AssignProductModal: React.FC<AssignProductModalProps> = ({
                                 </p>
                             </div>
                         </div>
-                        <div className='border border-primary-200 rounded-lg p-4 bg-primary-50/30 flex-1 min-h-0 flex flex-col'>
+                        <div className='flex-1 min-h-0 flex flex-col'>
                             <div className='flex items-center mb-4 gap-2'>
                                 <span className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
                                     <Package size={20} className='text-primary-500' />
                                 </span>
                                 <span className='text-lg font-semibold text-gray-900'>Chọn sản phẩm ({selectedProductIds.length}/{allProducts.length})</span>
                             </div>
-                            <div ref={productListRef} className='flex-1 min-h-0 overflow-y-auto'>
+                            <div ref={productListRef} className='flex-1 min-h-0'>
                                 <AssignProductSelectList
                                     products={products}
                                     selectedProductIds={selectedProductIds}

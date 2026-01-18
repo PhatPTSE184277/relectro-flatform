@@ -1,7 +1,8 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { X, ScanLine, Trash2, Package } from 'lucide-react';
+import { X, ScanLine } from 'lucide-react';
 import { getProductByQRCode } from '@/services/small-collector/IWProductService';
+import ProductList from './ProductList';
 
 interface UpdatePackageProps {
     open: boolean;
@@ -166,7 +167,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[96vh] animate-fadeIn'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
@@ -225,79 +226,14 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                             </h3>
                         </div>
 
-                        <div className='max-h-64 overflow-y-auto'>
-                            {scannedProducts.length === 0 ? (
-                                <div className='text-center py-8 text-gray-400'>
-                                    <Package
-                                        size={48}
-                                        className='mx-auto mb-2 opacity-50'
-                                    />
-                                    <p>Chưa có sản phẩm nào</p>
-                                    <p className='text-sm'>
-                                        Quét QR code để thêm sản phẩm
-                                    </p>
-                                </div>
-                            ) : (
-                                <table className='w-full text-sm text-gray-800'>
-                                    <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
-                                        <tr>
-                                            <th className='py-3 px-4 text-center'>STT</th>
-                                            <th className='py-3 px-4 text-left'>Danh mục</th>
-                                            <th className='py-3 px-4 text-left'>Thương hiệu</th>
-                                            <th className='py-3 px-4 text-left'>Ghi chú</th>
-                                            <th className='py-3 px-4 text-center'>Hành động</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {scannedProducts.map((product, index) => (
-                                            <tr
-                                                key={product.qrCode}
-                                                ref={
-                                                    index === selectedIndex
-                                                        ? lastProductRef
-                                                        : null
-                                                }
-                                                className={`border-b border-gray-100 ${
-                                                    index === selectedIndex
-                                                        ? 'bg-blue-50'
-                                                        : 'hover:bg-gray-50'
-                                                }`}
-                                            >
-                                                <td className='py-2 px-3 text-gray-700 text-center'>
-                                                    <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold mx-auto'>
-                                                        {index + 1}
-                                                    </span>
-                                                </td>
-                                                <td className='py-2 px-3 text-gray-900 font-medium'>
-                                                    {product.categoryName}
-                                                </td>
-                                                <td className='py-2 px-3 text-gray-700'>
-                                                    {product.brandName}
-                                                </td>
-                                                <td className='py-2 px-3 text-gray-700 max-w-xs'>
-                                                    <div className='line-clamp-2'>
-                                                        {product.description || 'Không có mô tả'}
-                                                    </div>
-                                                </td>
-                                                <td className='py-2 px-3 text-center'>
-                                                    <button
-                                                        onClick={() =>
-                                                            handleRemoveProduct(
-                                                                product.qrCode
-                                                            )
-                                                        }
-                                                        className='text-red-500 hover:text-red-700 transition cursor-pointer'
-                                                        title='Xóa sản phẩm'
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            )}
-                        </div>
+                        <ProductList
+                            products={scannedProducts}
+                            mode='edit'
+                            onRemoveProduct={handleRemoveProduct}
+                            selectedIndex={selectedIndex}
+                            lastProductRef={lastProductRef}
+                            loading={loading}
+                        />
                     </div>
                 </div>
 

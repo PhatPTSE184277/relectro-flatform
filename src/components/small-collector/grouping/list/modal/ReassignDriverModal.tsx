@@ -120,7 +120,7 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                         <h3 className='text-sm font-medium text-gray-700 mb-3'>
                             Danh sách tài xế
                         </h3>
-                        <div className='overflow-x-auto'>
+                        <div className='overflow-x-auto max-h-80 overflow-y-auto'>
                             <table className='w-full text-sm text-gray-800 table-fixed'>
                                 <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                     <tr>
@@ -130,69 +130,58 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                                         <th className='py-3 px-4 text-left w-36 bg-gray-50'>Ca làm</th>
                                     </tr>
                                 </thead>
-                            </table>
-                            <div className='max-h-80 overflow-y-auto'>
-                                <table className='w-full text-sm text-gray-800 table-fixed'>
-                                    <thead className='invisible h-0'>
-                                        <tr>
-                                            <th className='w-16'></th>
-                                            <th className='w-48'></th>
-                                            <th className='w-40'></th>
-                                            <th className='w-36'></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {reassignLoading ? (
-                                            Array.from({ length: 4 }).map((_, idx) => (
-                                                <tr key={idx}>
-                                                    <td className='py-3 px-4 text-center w-16'>
-                                                        <div className='w-4 h-4 rounded-full bg-gray-200 animate-pulse mx-auto'></div>
-                                                    </td>
-                                                    <td className='py-3 px-4 w-48'>
-                                                        <div className='h-4 w-24 bg-gray-200 rounded animate-pulse mb-2'></div>
-                                                        <div className='h-3 w-16 bg-gray-100 rounded animate-pulse'></div>
-                                                    </td>
-                                                    <td className='py-3 px-4 w-40'>
-                                                        <div className='h-4 w-20 bg-gray-200 rounded animate-pulse'></div>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        ) : (Array.isArray(driverCandidates) ? driverCandidates.length === 0 : true) ? (
-                                            <tr>
-                                                <td colSpan={4} className='text-center py-8 text-gray-400'>
-                                                    Không có tài xế nào
+                                <tbody>
+                                    {reassignLoading ? (
+                                        Array.from({ length: 4 }).map((_, idx) => (
+                                            <tr key={idx}>
+                                                <td className='py-3 px-4 text-center w-16'>
+                                                    <div className='w-4 h-4 rounded-full bg-gray-200 animate-pulse mx-auto'></div>
                                                 </td>
+                                                <td className='py-3 px-4 w-48'>
+                                                    <div className='h-4 w-24 bg-gray-200 rounded animate-pulse mb-2'></div>
+                                                    <div className='h-3 w-16 bg-gray-100 rounded animate-pulse'></div>
+                                                </td>
+                                                <td className='py-3 px-4 w-40'>
+                                                    <div className='h-4 w-20 bg-gray-200 rounded animate-pulse'></div>
+                                                </td>
+                                                <td className='py-3 px-4 w-36'></td>
                                             </tr>
-                                        ) : (
-                                            driverCandidates.map((driver) => {
-                                                const isSelected = selectedDriverId === driver.userId;
-                                                return (
-                                                    <tr
-                                                        key={driver.userId}
-                                                        className={`cursor-pointer transition-colors ${
-                                                            isSelected ? 'bg-primary-50 border-primary-500' : 'hover:bg-primary-50'
-                                                        }`}
-                                                        onClick={() => driver.isAvailable && setSelectedDriverId(driver.userId)}
-                                                    >
-                                                        <td className='py-3 px-4 text-center w-16'>
-                                                            <input
-                                                                type='radio'
-                                                                checked={isSelected}
-                                                                onChange={() => setSelectedDriverId(driver.userId)}
-                                                                className='w-4 h-4 text-primary-600 rounded-full cursor-pointer'
-                                                                onClick={(e) => e.stopPropagation()}
-                                                            />
-                                                        </td>
-                                                        <td className='py-3 px-4 font-medium text-gray-900 w-48'>{driver.name}</td>
-                                                        <td className='py-3 px-4 text-gray-700 w-40'>{driver.phone || '-'}</td>
-                                                        <td className='py-3 px-4 text-gray-700 w-36'>{driver.shiftTime || '-'}</td>
-                                                    </tr>
-                                                );
-                                            })
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        ))
+                                    ) : (Array.isArray(driverCandidates) ? driverCandidates.length === 0 : true) ? (
+                                        <tr>
+                                            <td colSpan={4} className='text-center py-8 text-gray-400'>
+                                                Không có tài xế nào
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        driverCandidates.map((driver) => {
+                                            const isSelected = selectedDriverId === driver.userId;
+                                            return (
+                                                <tr
+                                                    key={driver.userId}
+                                                    className={`cursor-pointer transition-colors ${
+                                                        isSelected ? 'bg-primary-50 border-primary-500' : 'hover:bg-primary-50'
+                                                    }`}
+                                                    onClick={() => driver.isAvailable && setSelectedDriverId(driver.userId)}
+                                                >
+                                                    <td className='py-3 px-4 text-center w-16'>
+                                                        <input
+                                                            type='radio'
+                                                            checked={isSelected}
+                                                            onChange={() => setSelectedDriverId(driver.userId)}
+                                                            className='w-4 h-4 text-primary-600 rounded-full cursor-pointer'
+                                                            onClick={(e) => e.stopPropagation()}
+                                                        />
+                                                    </td>
+                                                    <td className='py-3 px-4 font-medium text-gray-900 w-48'>{driver.name}</td>
+                                                    <td className='py-3 px-4 text-gray-700 w-40'>{driver.phone || '-'}</td>
+                                                    <td className='py-3 px-4 text-gray-700 w-36'>{driver.shiftTime || '-'}</td>
+                                                </tr>
+                                            );
+                                        })
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

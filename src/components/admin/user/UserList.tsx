@@ -9,42 +9,36 @@ const UserList: React.FC = () => {
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
       <div className="overflow-x-auto">
-        <div className="inline-block min-w-full align-middle">
-          <div className="overflow-hidden">
-            <table className="min-w-full text-sm text-gray-800" style={{ tableLayout: 'fixed' }}>
-              <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold">
+        <div className="max-h-125 overflow-y-auto">
+          <table className="min-w-full text-sm text-gray-800 table-fixed">
+            <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10">
+              <tr>
+                <th className="py-3 px-4 text-center w-16">STT</th>
+                <th className="py-3 px-4 text-left w-52">Tên</th>
+                <th className="py-3 px-4 text-left w-64">Email</th>
+                <th className="py-3 px-4 text-left w-36">Vai trò</th>
+                <th className="py-3 px-4 text-left w-36">Số điện thoại</th>
+                <th className="py-3 px-4 text-center w-24">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 6 }).map((_, idx) => (
+                  <UserTableSkeleton key={idx} />
+                ))
+              ) : users.length > 0 ? (
+                users.map((user, idx) => (
+                  <UserShow key={user.userId} user={user} stt={idx + 1} onView={() => {}} isLast={idx === users.length - 1} />
+                ))
+              ) : (
                 <tr>
-                  <th className="py-3 px-4 text-center" style={{ width: '60px' }}>STT</th>
-                  <th className="py-3 px-4 text-left" style={{ width: '200px' }}>Tên</th>
-                  <th className="py-3 px-4 text-left" style={{ width: '250px' }}>Email</th>
-                  <th className="py-3 px-4 text-left" style={{ width: '150px' }}>Vai trò</th>
-                  <th className="py-3 px-4 text-left" style={{ width: '150px' }}>Số điện thoại</th>
-                  <th className="py-3 px-4 text-center" style={{ width: '100px' }}>Hành động</th>
+                  <td colSpan={6} className="text-center py-8 text-gray-400">
+                    Không có người dùng nào.
+                  </td>
                 </tr>
-              </thead>
-            </table>
-          </div>
-          <div className="max-h-115 overflow-y-auto">
-            <table className="min-w-full text-sm text-gray-800" style={{ tableLayout: 'fixed' }}>
-              <tbody>
-                {loading ? (
-                  Array.from({ length: 6 }).map((_, idx) => (
-                    <UserTableSkeleton key={idx} />
-                  ))
-                ) : users.length > 0 ? (
-                  users.map((user, idx) => (
-                    <UserShow key={user.userId} user={user} stt={idx + 1} onView={() => {}} isLast={idx === users.length - 1} />
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={6} className="text-center py-8 text-gray-400">
-                      Không có người dùng nào.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

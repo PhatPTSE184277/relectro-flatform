@@ -1,4 +1,5 @@
 import { Eye, CheckCircle, XCircle } from 'lucide-react';
+import { formatDate } from '@/utils/FormatDate';
 import type { Post } from '@/types/post';
 import { PostStatus } from '@/enums/PostStatus';
 
@@ -41,7 +42,7 @@ const PostShow: React.FC<PostShowProps & { isLast?: boolean }> = ({
         } ${
             isSelected ? 'bg-primary-50' : ''
         } hover:bg-primary-50/40 transition-colors`}>
-            <td className="py-3 px-4 text-center" style={{ width: '60px' }}>
+            <td className="py-3 px-4 text-center w-16">
                 {isPending && onToggleSelect ? (
                     <input
                         type="checkbox"
@@ -54,29 +55,29 @@ const PostShow: React.FC<PostShowProps & { isLast?: boolean }> = ({
                     <div className="w-4 h-4"></div>
                 )}
             </td>
-            <td className="py-3 px-4 text-center" style={{ width: '60px' }}>
+            <td className="py-3 px-4 text-center w-16">
                 <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
                     {stt}
                 </span>
             </td>
             {/* Ảnh đã bị ẩn */}
-            <td className='py-3 px-4 font-medium' style={{ width: '180px' }}>
+            <td className='py-3 px-4 font-medium w-60'>
                 <div className='text-sm text-gray-500 mt-1'>
                     {post.senderName || 'Không rõ'}
                 </div>
             </td>
 
-            <td className='py-3 px-4 text-gray-700' style={{ width: '150px' }}>
+            <td className='py-3 px-4 text-gray-700 w-88'>
                 {post.category}
             </td>
-            <td className='py-3 px-4 text-gray-700' style={{ width: 'auto' }}>
-                <div className='line-clamp-2'>{post.address}</div>
+            <td className='py-3 px-4 text-gray-700 w-[550px]'>
+                <div className='line-clamp-2 wrap-break-word'>{post.address}</div>
             </td>
-            <td className='py-3 px-4 text-sm text-gray-600 text-center' style={{ width: '130px' }}>
-                {new Date(post.date).toLocaleDateString('vi-VN')}
+            <td className='py-3 px-4 text-sm text-gray-600 text-right w-72'>
+                {formatDate(post.date)}
             </td>
 
-            <td className='py-3 px-4' style={{ width: '140px' }}>
+            <td className='py-3 px-4 w-36'>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}

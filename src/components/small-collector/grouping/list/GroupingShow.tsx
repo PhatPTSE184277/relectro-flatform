@@ -1,5 +1,6 @@
 import React from 'react';
 import { Eye, UserCog } from 'lucide-react';
+import { formatWeightKg } from '@/utils/formatNumber';
 
 interface GroupingShowProps {
     grouping: any;
@@ -35,7 +36,7 @@ const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean; stt?: numbe
             <td className='py-3 px-4 text-gray-700 text-right w-48'>
                 <div className='flex flex-col gap-1 items-end'>
                     <span className='text-xs'>
-                        <span className='font-medium'>{grouping.totalWeightKg}</span>
+                        <span className='font-medium'>{formatWeightKg(grouping.totalWeightKg)}</span>
                     </span>
                 </div>
             </td>

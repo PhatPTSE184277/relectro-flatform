@@ -17,16 +17,6 @@ const TrackingProductFilter: React.FC<TrackingProductFilterProps> = ({
                     <IoFilterOutline className='text-primary-600' size={16} />
                 </span>
                 <button
-                    onClick={() => onFilterChange('all')}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[70px] ${
-                        status === 'all'
-                            ? 'bg-primary-100 text-primary-700 shadow-sm'
-                            : 'bg-gray-100 text-gray-600'
-                    }`}
-                >
-                    Tất cả
-                </button>
-                <button
                     onClick={() => onFilterChange('Chờ Duyệt')}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[70px] ${
                         status === 'Chờ Duyệt'

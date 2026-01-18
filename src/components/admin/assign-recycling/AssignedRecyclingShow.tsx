@@ -17,24 +17,24 @@ const AssignedRecyclingShow: React.FC<AssignedRecyclingShowProps> = ({
 }) => {
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
-            <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
+            <td className='py-3 px-4 text-center w-16'>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {index !== undefined ? index + 1 : ''}
                 </span>
             </td>
-            <td className='py-3 px-4 font-medium text-gray-900 align-middle' style={{ width: '180px' }}>
+            <td className='py-3 px-4 font-medium text-gray-900 align-middle w-48'>
                 {company.name || 'Không rõ'}
             </td>
-            <td className='py-3 px-4 text-gray-700' style={{ width: '180px' }}>
+            <td className='py-3 px-4 text-gray-700 w-48'>
                 {company.companyEmail || 'Chưa có email'}
             </td>
-            <td className='py-3 px-4 text-gray-700' style={{ width: '140px' }}>
+            <td className='py-3 px-4 text-gray-700 w-36'>
                 {company.phone || 'Chưa có SĐT'}
             </td>
-            <td className='py-3 px-4 text-gray-700' style={{ width: '200px' }}>
+            <td className='py-3 px-4 text-gray-700 w-60'>
                 {company.city || 'Chưa có địa chỉ'}
             </td>
-            <td className='py-3 px-4' style={{ width: '140px' }}>
+            <td className='py-3 px-4 w-36'>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={() => onViewDetail(company.id)}

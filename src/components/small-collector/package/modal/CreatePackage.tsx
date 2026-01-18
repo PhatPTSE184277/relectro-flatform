@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, ScanLine, Package, Trash2, Plus } from 'lucide-react';
+import { X, ScanLine, Plus } from 'lucide-react';
 import { getProductByQRCode } from '@/services/small-collector/IWProductService';
+import ProductList from './ProductList';
 
 interface CreatePackageProps {
     open: boolean;
@@ -239,79 +240,13 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                             </h3>
                         </div>
 
-                        <table className='w-full text-sm text-gray-800 table-fixed'>
-                            <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
-                                <tr>
-                                    <th className='py-3 px-4 text-center w-16'>STT</th>
-                                    <th className='py-3 px-4 text-left w-40'>Danh mục</th>
-                                    <th className='py-3 px-4 text-left w-32'>Thương hiệu</th>
-                                    <th className='py-3 px-4 text-left w-56'>Ghi chú</th>
-                                    <th className='py-3 px-4 text-center w-24'>Hành động</th>
-                                </tr>
-                            </thead>
-                        </table>
-                        <div className='max-h-64 overflow-y-auto'>
-                            <table className='w-full text-sm text-gray-800 table-fixed'>
-                                <tbody>
-                                    {scannedProducts.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={6} className='text-center py-8 text-gray-400'>
-                                                <Package
-                                                    size={48}
-                                                    className='mx-auto mb-2 opacity-50'
-                                                />
-                                                <p>Chưa có sản phẩm nào</p>
-                                                <p className='text-sm'>
-                                                    Quét QR code để thêm sản phẩm
-                                                </p>
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        scannedProducts.map((product, index) => (
-                                            <tr
-                                                key={product.qrCode}
-                                                ref={
-                                                    selectedIndex === index
-                                                        ? lastProductRef
-                                                        : undefined
-                                                }
-                                                className={`border-b border-primary-100 hover:bg-primary-50/40 transition-colors`}
-                                            >
-                                                <td className='py-3 px-4 font-medium text-center w-16'>
-                                                    <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold mx-auto'>
-                                                        {index + 1}
-                                                    </span>
-                                                </td>
-                                                <td className='py-3 px-4 font-medium w-40'>
-                                                    <div className='text-gray-900'>{product.categoryName}</div>
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-700 w-32'>
-                                                    {product.brandName}
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-600 text-xs w-56 truncate'>
-                                                    {product.description || '-'}
-                                                </td>
-                                                <td className='py-3 px-4 w-24'>
-                                                    <div className='flex justify-center gap-2'>
-                                                        <button
-                                                            onClick={() =>
-                                                                handleRemoveProduct(
-                                                                    product.qrCode
-                                                                )
-                                                            }
-                                                            className='text-red-500 hover:text-red-700 flex items-center gap-1 font-medium transition cursor-pointer'
-                                                            title='Xóa sản phẩm'
-                                                        >
-                                                            <Trash2 size={16} />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                        <ProductList
+                            products={scannedProducts}
+                            mode='edit'
+                            onRemoveProduct={handleRemoveProduct}
+                            selectedIndex={selectedIndex}
+                            lastProductRef={lastProductRef}
+                        />
                     </div>
                 </div>
 

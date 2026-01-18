@@ -4,6 +4,7 @@ import type { PackageType } from '@/types/Package';
 import { Tag, CheckCircle2, Boxes } from 'lucide-react';
 import SummaryCard from '@/components/ui/SummaryCard';
 import { PackageStatus } from '@/enums/PackageStatus';
+import ProductList from './ProductList';
 
 interface PackageDetailProps {
     package: PackageType;
@@ -87,44 +88,13 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                     {/* Products List */}
                     <div className='bg-white rounded-xl shadow-sm border border-gray-100 flex-1 min-h-0'>
                         <div className='max-h-[45vh] overflow-y-auto'>
-                            <table className='w-full text-sm text-gray-800'>
-                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
-                                    <tr>
-                                        <th className='py-3 px-4 text-left'>STT</th>
-                                        <th className='py-3 px-4 text-left'>Danh mục</th>
-                                        <th className='py-3 px-4 text-left'>Thương hiệu</th>
-                                        <th className='py-3 px-4 text-left'>Ghi chú</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {pkg.products.map((product, index) => {
-                                        const isLast = index === pkg.products.length - 1;
-                                        return (
-                                            <tr
-                                                key={product.productId}
-                                                className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50 transition-colors`}
-                                            >
-                                                <td className='py-3 px-4 font-medium'>
-                                                    <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold'>
-                                                        {index + 1}
-                                                    </span>
-                                                </td>
-                                                <td className='py-3 px-4 font-medium text-gray-900'>
-                                                    {product.categoryName}
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-700'>
-                                                    {product.brandName}
-                                                </td>
-                                                <td className='py-3 px-4 text-gray-700 max-w-xs'>
-                                                    <div className='line-clamp-2'>
-                                                        {product.description || '-'}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
+                            <ProductList
+                                products={pkg.products.map(p => ({
+                                    ...p,
+                                    qrCode: p.qrCode ?? undefined
+                                }))}
+                                mode='view'
+                            />
                         </div>
                     </div>
                 </div>

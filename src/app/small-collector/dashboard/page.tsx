@@ -1,9 +1,9 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DashboardStats from '@/components/small-collector/dashboard/DashboardStats';
 import { getFirstDayOfMonthString, getTodayString } from '@/utils/getDayString';
 import ProductCategoryList from '@/components/small-collector/dashboard/ProductCategoryList';
-import DailyPackageStats from '@/components/small-collector/dashboard/DailyPackageStats';
+import PackageList from '@/components/small-collector/dashboard/PackageList';
 import { useDashboardContext } from '@/contexts/small-collector/DashboardContext';
 import { LayoutDashboard } from 'lucide-react';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
@@ -168,7 +168,7 @@ const DashboardPage = () => {
             {/* Conditional Stats Display */}
             <div>
                 {statsView === 'package' ? (
-                    <DailyPackageStats
+                    <PackageList
                         dailyStats={packageStats?.dailyStats || []}
                         loading={loading}
                     />

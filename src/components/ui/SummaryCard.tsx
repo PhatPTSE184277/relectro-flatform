@@ -13,7 +13,15 @@ interface SummaryCardProps {
     label?: React.ReactNode;
 }
 
-const formatValue = (value: React.ReactNode): React.ReactNode => {
+
+// Utility to remove text in parentheses
+const removeParentheses = (str: string) => str.replace(/\s*\([^)]*\)/g, '').trim();
+
+const formatValue = (value: React.ReactNode, label?: React.ReactNode): React.ReactNode => {
+    // Only remove parentheses for 'Phương tiện' label
+    if (label === 'Phương tiện' && typeof value === 'string') {
+        return removeParentheses(value);
+    }
     return value;
 };
 
@@ -58,7 +66,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ items, singleRow = false, lab
                                     ...(typeof item.value === 'number' ? { paddingLeft: '10.5em' } : {})
                                 }}
                             >
-                                {formatValue(item.value)}
+                                {formatValue(item.value, item.label)}
                             </span>
                         </div>
                     </div>

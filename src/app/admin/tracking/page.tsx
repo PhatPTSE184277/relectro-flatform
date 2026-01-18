@@ -16,7 +16,7 @@ const TrackingPage: React.FC = () => {
     const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [showCompanyModal, setShowCompanyModal] = useState(false);
-    const [statusFilter, setStatusFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState('Chờ Duyệt');
     const [page, setPage] = useState(1);
     const itemsPerPage = 10;
     const [search, setSearch] = useState<string>("");

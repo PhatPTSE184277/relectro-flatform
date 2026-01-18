@@ -14,20 +14,16 @@ const AssignedProductListInner = forwardRef<HTMLDivElement, AssignedProductListP
             <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
                 <div className='overflow-x-auto'>
                     <div className='inline-block min-w-full align-middle'>
-                        <div className='overflow-hidden'>
-                            <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
-                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
+                        <div className='max-h-90 overflow-y-auto' ref={ref}>
+                            <table className='min-w-full text-sm text-gray-800 table-fixed'>
+                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                     <tr>
-                                        <th className='py-3 px-4 text-center' style={{ width: '60px' }}>STT</th>
-                                        <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Sản phẩm</th>
-                                        <th className='py-3 px-4 text-left' style={{ width: '200px' }}>Khách hàng</th>
-                                        <th className='py-3 px-4 text-left' style={{ width: 'auto' }}>Địa chỉ</th>
+                                        <th className='py-3 px-4 text-center w-16'>STT</th>
+                                        <th className='py-3 px-4 text-left w-50'>Sản phẩm</th>
+                                        <th className='py-3 px-4 text-left w-45'>Khách hàng</th>
+                                        <th className='py-3 px-4 text-left w-[420px]'>Địa chỉ</th>
                                     </tr>
                                 </thead>
-                            </table>
-                        </div>
-                        <div className='max-h-90 overflow-y-auto' ref={ref}>
-                            <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
                                 <tbody>
                                     {loading ? (
                                         Array.from({ length: 6 }).map((_, idx) => (

@@ -3,11 +3,12 @@
 import { isValidSystemQRCode } from '@/utils/qr';
 
 import React, { useState, useRef, useEffect } from 'react';
+import Toast from '@/components/ui/Toast';
 import {
     getBrandsBySubCategory,
     Brand
 } from '@/services/small-collector/BrandService';
-import { X, ScanLine, Upload, Trash2, User } from 'lucide-react';
+import { X, ScanLine, Upload, Trash2, User, Camera } from 'lucide-react';
 import { useCategoryContext } from '@/contexts/small-collector/CategoryContext';
 import { useUserContext } from '@/contexts/UserContext';
 import { useAuth } from '@/hooks/useAuth';
@@ -29,6 +30,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     onClose,
     onConfirm
 }) => {
+    const [toast, setToast] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
     const [userInfoInput, setUserInfoInput] = useState('');
     const [description, setDescription] = useState('');
     const [images, setImages] = useState<string[]>([]);
@@ -44,10 +46,14 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     const [point, setPoint] = useState(0);
     const [searchClicked, setSearchClicked] = useState(false);
     const [loadingUser, setLoadingUser] = useState(false);
+    const [showCamera, setShowCamera] = useState(false);
+    const [stream, setStream] = useState<MediaStream | null>(null);
 
     const userInfoInputRef = useRef<HTMLInputElement>(null);
     const qrInputRef = useRef<HTMLInputElement>(null);
     const imageInputRef = useRef<HTMLInputElement>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
     // Category context
     const {
@@ -130,6 +136,64 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         }
     };
 
+    const startCamera = async () => {
+        try {
+            const mediaStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment' },
+                audio: false
+            });
+            setStream(mediaStream);
+            setShowCamera(true);
+            if (videoRef.current) {
+                videoRef.current.srcObject = mediaStream;
+            }
+        } catch (error) {
+            console.error('Lỗi khi mở camera:', error);
+            setToast({ open: true, message: 'Không thể mở camera. Vui lòng kiểm tra quyền truy cập camera.' });
+        }
+    };
+
+    const stopCamera = () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            setStream(null);
+        }
+        setShowCamera(false);
+    };
+
+    const capturePhoto = () => {
+        if (videoRef.current && canvasRef.current) {
+            const video = videoRef.current;
+            const canvas = canvasRef.current;
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.drawImage(video, 0, 0);
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        const file = new File([blob], `camera-${Date.now()}.jpg`, { type: 'image/jpeg' });
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            setImages((prev) => [...prev, reader.result as string]);
+                            setImageFiles((prev) => [...prev, file]);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }, 'image/jpeg', 0.9);
+            }
+        }
+        stopCamera();
+    };
+
+    useEffect(() => {
+        return () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        };
+    }, [stream]);
+
     // Đã import isValidSystemQRCode từ utils/qr
 
     const handleSubmit = async () => {
@@ -202,6 +266,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     };
 
     const handleClose = () => {
+        stopCamera();
         setUserInfoInput('');
         setUser(null);
         setDescription('');
@@ -535,35 +600,42 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     (Tối đa 5 ảnh)
                                 </p>
                             </div>
-                            <div className='flex-1 flex gap-3 items-start'>
-                            <label className='cursor-pointer flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-primary-300 rounded-lg hover:border-primary-400 hover:bg-primary-50 transition'>
-                                <Upload className='text-primary-400' size={32} />
-                                <span className='text-xs text-gray-500 mt-2'>
-                                    Thêm ảnh
-                                </span>
-                                <input
-                                    ref={imageInputRef}
-                                    type='file'
-                                    accept='image/*'
-                                    multiple
-                                    onChange={handleImageUpload}
-                                    className='hidden'
-                                    disabled={uploading}
-                                />
-                            </label>
-
-                            <div className='flex-1 grid grid-cols-4 gap-3'>
+                            <div className='flex-1 flex flex-wrap gap-3 items-start'>
+                                <label className='cursor-pointer flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-primary-300 rounded-lg hover:border-primary-400 hover:bg-primary-50 transition'>
+                                    <Upload className='text-primary-400' size={32} />
+                                    <span className='text-xs text-gray-500 mt-2'>
+                                        Tải ảnh lên
+                                    </span>
+                                    <input
+                                        ref={imageInputRef}
+                                        type='file'
+                                        accept='image/*'
+                                        multiple
+                                        onChange={handleImageUpload}
+                                        className='hidden'
+                                        disabled={uploading}
+                                    />
+                                </label>
+                                <button
+                                    type='button'
+                                    onClick={startCamera}
+                                    disabled={uploading || images.length >= 5}
+                                    className='cursor-pointer flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-green-300 rounded-lg hover:border-green-400 hover:bg-green-50 transition disabled:opacity-50 disabled:cursor-not-allowed'
+                                >
+                                    <Camera className='text-green-400' size={32} />
+                                    <span className='text-xs text-gray-500 mt-2'>
+                                        Chụp ảnh
+                                    </span>
+                                </button>
                                 {images.map((img, index) => (
-                                    <div key={index} className='relative group'>
+                                    <div key={index} className='relative group w-32 h-32'>
                                         <img
                                             src={img}
                                             alt={`Product ${index + 1}`}
-                                            className='w-full h-32 object-cover rounded-lg border border-primary-200'
+                                            className='w-full h-full object-cover rounded-lg border border-primary-200'
                                         />
                                         <button
-                                            onClick={() =>
-                                                handleRemoveImage(index)
-                                            }
+                                            onClick={() => handleRemoveImage(index)}
                                             className='absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition cursor-pointer'
                                             disabled={uploading}
                                         >
@@ -571,7 +643,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                         </button>
                                     </div>
                                 ))}
-                            </div>                            </div>                        </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -600,6 +673,47 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                 </div>
             </div>
 
+            {/* Camera Modal */}
+            {showCamera && (
+                <div className='fixed inset-0 z-60 flex items-center justify-center bg-black/80 p-4'>
+                    <div className='relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden'>
+                        <div className='flex justify-between items-center p-4 border-b bg-gray-50'>
+                            <h3 className='text-lg font-semibold text-gray-800'>Chụp ảnh sản phẩm</h3>
+                            <button
+                                onClick={stopCamera}
+                                className='text-gray-400 hover:text-red-500 transition'
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+                        <div className='relative bg-black'>
+                            <video
+                                ref={videoRef}
+                                autoPlay
+                                playsInline
+                                className='w-full h-auto max-h-[60vh] object-contain'
+                            />
+                            <canvas ref={canvasRef} className='hidden' />
+                        </div>
+                        <div className='flex justify-center gap-4 p-4 bg-gray-50'>
+                            <button
+                                onClick={stopCamera}
+                                className='px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg font-medium transition cursor-pointer'
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={capturePhoto}
+                                className='px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition cursor-pointer flex items-center gap-2'
+                            >
+                                <Camera size={20} />
+                                Chụp ảnh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Animation */}
             <style jsx>{`
                 @keyframes fadeIn {
@@ -616,6 +730,14 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                     animation: fadeIn 0.3s ease-out;
                 }
             `}</style>
+            {/* Toast notification for camera error */}
+            <Toast
+                open={toast.open}
+                type="error"
+                message={toast.message}
+                onClose={() => setToast({ open: false, message: '' })}
+                duration={4000}
+            />
         </div>
     );
 };

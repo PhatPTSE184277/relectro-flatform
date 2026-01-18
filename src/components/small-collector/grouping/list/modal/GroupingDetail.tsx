@@ -120,90 +120,74 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                 Tổng khối lượng (kg)
                             </span>
                             <span className='text-2xl font-bold text-purple-900'>
-                                {grouping.totalWeightKg}
+                                {formatWeightKg(grouping.totalWeightKg)}
                             </span>
                         </div>
                     </div>
 
                     {/* Routes List */}
                     <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
-                        <div className='overflow-x-auto'>
+                        <div className='overflow-x-auto max-h-[40vh] overflow-y-auto'>
                             <table className='w-full text-sm text-gray-800 table-fixed'>
-                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
+                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                     <tr>
-                                        <th className='py-3 px-4 text-left w-16'>
-                                            STT
-                                        </th>
-                                        <th className='py-3 px-4 text-left w-56'>
-                                            Người gửi
-                                        </th>
-                                        <th className='py-3 px-4 text-left'>
-                                            Địa chỉ
-                                        </th>
-                                        <th className='py-3 px-4 text-right w-64'>
-                                            Khối lượng / Kích thước (kg, cm)
-                                        </th>
-                                        <th className='py-3 px-4 text-right w-42'>
-                                            Khoảng cách (km)
-                                        </th>
-                                        <th className='py-3 px-4 text-center w-42'>
-                                            Giờ đến dự kiến
-                                        </th>
+                                        <th className='py-3 px-4 text-left w-16'>STT</th>
+                                        <th className='py-3 px-4 text-left w-56'>Người gửi</th>
+                                        <th className='py-3 px-4 text-left'>Địa chỉ</th>
+                                        <th className='py-3 px-4 text-right w-64'>Khối lượng / Kích thước (kg, cm)</th>
+                                        <th className='py-3 px-4 text-right w-42'>Khoảng cách (km)</th>
+                                        <th className='py-3 px-4 text-center w-42'>Giờ đến dự kiến</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    {routes.map((route, idx) => {
+                                        const isLast = idx === routes.length - 1;
+                                        return (
+                                            <tr
+                                                key={route.postId}
+                                                className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50 transition-colors`}
+                                            >
+                                                <td className='py-3 px-4 font-medium w-16'>
+                                                    <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold'>
+                                                        {idx + 1}
+                                                    </span>
+                                                </td>
+                                                <td className='py-3 px-4 font-medium text-gray-900 w-56'>
+                                                    <div className='wrap-break-word'>{route.userName}</div>
+                                                    <div className='text-xs text-gray-500 mt-1 wrap-break-word'>
+                                                        {route.categoryName} - {route.brandName}
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4 text-gray-700'>
+                                                    <div className='wrap-break-word'>
+                                                        {route.address}
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4 text-gray-700 text-right w-64'>
+                                                    <div className='flex flex-col gap-1 items-end'>
+                                                        <span className='text-xs'>
+                                                            <span className='font-medium'>{formatWeightKg(route.weightKg)}</span>
+                                                        </span>
+                                                        <span className='text-xs text-gray-500'>
+                                                            {formatDimensionText(route.dimensionText)}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className='py-3 px-4 text-gray-700 text-right w-42'>
+                                                    <span className='flex items-center gap-1 justify-end'>
+                                                        {route.distanceKm}
+                                                    </span>
+                                                </td>
+                                                <td className='py-3 px-4 text-center w-42'>
+                                                    <span className='flex items-center justify-center'>
+                                                        {route.estimatedArrival}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
                             </table>
-                            <div className='max-h-[31vh] overflow-y-auto'>
-                                <table className='w-full text-sm text-gray-800 table-fixed'>
-                                    <tbody>
-                                        {routes.map((route, idx) => {
-                                            const isLast = idx === routes.length - 1;
-                                            return (
-                                                <tr
-                                                    key={route.postId}
-                                                    className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50 transition-colors`}
-                                                >
-                                                    <td className='py-3 px-4 font-medium w-16'>
-                                                        <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold'>
-                                                            {idx + 1}
-                                                        </span>
-                                                    </td>
-                                                    <td className='py-3 px-4 font-medium text-gray-900 w-56'>
-                                                        <div className='wrap-break-word'>{route.userName}</div>
-                                                        <div className='text-xs text-gray-500 mt-1 wrap-break-word'>
-                                                            {route.categoryName} - {route.brandName}
-                                                        </div>
-                                                    </td>
-                                                    <td className='py-3 px-4 text-gray-700'>
-                                                        <div className='wrap-break-word'>
-                                                            {route.address}
-                                                        </div>
-                                                    </td>
-                                                    <td className='py-3 px-4 text-gray-700 text-right w-64'>
-                                                        <div className='flex flex-col gap-1 items-end'>
-                                                            <span className='text-xs'>
-                                                                <span className='font-medium'>{formatWeightKg(route.weightKg)}</span>
-                                                            </span>
-                                                            <span className='text-xs text-gray-500'>
-                                                                {formatDimensionText(route.dimensionText)}
-                                                            </span>
-                                                        </div>
-                                                    </td>
-                                                    <td className='py-3 px-4 text-gray-700 text-right w-42'>
-                                                        <span className='flex items-center gap-1 justify-end'>
-                                                            {route.distanceKm}
-                                                        </span>
-                                                    </td>
-                                                    <td className='py-3 px-4 text-center w-42'>
-                                                        <span className='flex items-center justify-center'>
-                                                            {route.estimatedArrival}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
                         </div>
                     </div>
                 </div>

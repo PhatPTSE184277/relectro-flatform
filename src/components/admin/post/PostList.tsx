@@ -106,60 +106,58 @@ const PostList = React.forwardRef<HTMLDivElement, PostListProps>(({
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full align-middle">
           <div className="overflow-hidden">
-            <table className="min-w-full text-sm text-gray-800" style={{ tableLayout: 'fixed' }}>
-              <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold">
-                <tr>
-                  <th className="py-3 px-4 text-center" style={{ width: '60px' }}>
-                    {isPending && (
-                      <button
-                        onClick={onToggleSelectAll}
-                        className="text-primary-600 hover:text-primary-800"
-                      >
-                        {allCurrentPageSelected ? <CheckSquare size={18} /> : <Square size={18} />}
-                      </button>
-                    )}
-                  </th>
-                  <th className="py-3 px-4 text-center" style={{ width: '60px' }}>STT</th>
-                  <th className="py-3 px-4 text-left" style={{ width: '180px' }}>Người gửi</th>
-                  <th className="py-3 px-4 text-left" style={{ width: '150px' }}>Danh mục</th>
-                  <th className="py-3 px-4 text-left" style={{ width: 'auto' }}>Địa chỉ</th>
-                  <th className="py-3 px-4 text-left" style={{ width: '130px' }}>Ngày đăng</th>
-                  <th className="py-3 px-4 text-center" style={{ width: '140px' }}>Hành động</th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-          <div className="max-h-89 overflow-y-auto" ref={ref}>
-            <table className="min-w-full text-sm text-gray-800" style={{ tableLayout: 'fixed' }}>
-              <tbody>
-                {loading ? (
-                  Array.from({ length: 6 }).map((_, idx) => (
-                    <PostRowSkeleton key={idx} />
-                  ))
-                ) : posts.length > 0 ? (
-                  posts.map((p, idx) => (
-                    <PostShow
-                      key={p.id}
-                      post={p}
-                      stt={(page - 1) * pageSize + idx + 1}
-                      onView={() => onView(p)}
-                      onApprove={handleApprove}
-                      onReject={() => handleReject(p.id)}
-                      hideImage
-                      isLast={idx === posts.length - 1}
-                      isSelected={selectedPostIds.includes(p.id)}
-                      onToggleSelect={onToggleSelect}
-                    />
-                  ))
-                ) : (
+            <div className="max-h-89 overflow-y-auto" ref={ref}>
+              <table className="min-w-full text-sm text-gray-800 table-fixed">
+                <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10">
                   <tr>
-                    <td colSpan={7} className="text-center py-8 text-gray-400">
-                      Không có bài đăng nào.
-                    </td>
+                    <th className="py-3 px-4 text-center" style={{ width: '60px' }}>
+                      {isPending && (
+                        <button
+                          onClick={onToggleSelectAll}
+                          className="text-primary-600 hover:text-primary-800"
+                        >
+                          {allCurrentPageSelected ? <CheckSquare size={18} /> : <Square size={18} />}
+                        </button>
+                      )}
+                    </th>
+                    <th className="py-3 px-4 text-center w-16">STT</th>
+                    <th className="py-3 px-4 text-left w-60">Người gửi</th>
+                    <th className="py-3 px-4 text-left w-88">Danh mục</th>
+                    <th className="py-3 px-4 text-left w-[550px]">Địa chỉ</th>
+                    <th className="py-3 px-4 text-right w-72">Ngày đăng</th>
+                    <th className="py-3 px-4 text-center w-36">Hành động</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    Array.from({ length: 6 }).map((_, idx) => (
+                      <PostRowSkeleton key={idx} />
+                    ))
+                  ) : posts.length > 0 ? (
+                    posts.map((p, idx) => (
+                      <PostShow
+                        key={p.id}
+                        post={p}
+                        stt={(page - 1) * pageSize + idx + 1}
+                        onView={() => onView(p)}
+                        onApprove={handleApprove}
+                        onReject={() => handleReject(p.id)}
+                        hideImage
+                        isLast={idx === posts.length - 1}
+                        isSelected={selectedPostIds.includes(p.id)}
+                        onToggleSelect={onToggleSelect}
+                      />
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={7} className="text-center py-8 text-gray-400">
+                        Không có bài đăng nào.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
