@@ -47,7 +47,7 @@ const CompanySelectModal: React.FC<CompanySelectModalProps> = ({
             {/* Modal container */}
             <div className='relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-visible z-10 min-h-[600px]'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100 rounded-t-2xl'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-900 flex items-center gap-2'>
                             Chọn công ty
@@ -73,12 +73,14 @@ const CompanySelectModal: React.FC<CompanySelectModalProps> = ({
 
                 {/* Date Range Picker */}
                 <div className='p-4 border-b bg-gray-50'>
-                    <CustomDateRangePicker
-                        fromDate={fromDate}
-                        toDate={toDate}
-                        onFromDateChange={setFromDate}
-                        onToDateChange={setToDate}
-                    />
+                    <div className='max-w-lg w-full mx-auto'>
+                        <CustomDateRangePicker
+                            fromDate={fromDate}
+                            toDate={toDate}
+                            onFromDateChange={setFromDate}
+                            onToDateChange={setToDate}
+                        />
+                    </div>
                 </div>
 
                 {/* Company List */}

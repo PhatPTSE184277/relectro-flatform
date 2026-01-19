@@ -78,23 +78,23 @@ const CollectorDetail: React.FC<CollectorDetailProps> = ({ collector, onClose })
                         <SummaryCard
                             label={
                                 <span className="flex items-center gap-2">
-                                    <User className="w-4 h-4 text-primary-500" />
+                                    <User size={14} className="w-4 h-4 text-primary-500" />
                                     Thông tin liên hệ
                                 </span>
                             }
                             items={[
                                 {
-                                    icon: <Mail className="w-5 h-5 text-primary-500" />,
+                                    icon: <Mail size={14} className="text-primary-400" />,
                                     label: 'Email',
                                     value: collector.email || 'Chưa có',
                                 },
                                 {
-                                    icon: <Phone className="w-5 h-5 text-primary-500" />,
+                                    icon: <Phone size={14} className="text-primary-400" />,
                                     label: 'Số điện thoại',
                                     value: collector.phone || 'Chưa có',
                                 },
                                 {
-                                    icon: <MapPin className="w-5 h-5 text-primary-500" />,
+                                    icon: <MapPin size={14} className="text-primary-400" />,
                                     label: 'Điểm thu gom',
                                     value: `Điểm thu gom số ${collector.smallCollectionPointId}`,
                                 },

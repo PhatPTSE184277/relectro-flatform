@@ -155,7 +155,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                     disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                 } ${isOpen ? 'ring-2 ring-primary-400 border-primary-400' : ''}`}
             >
-                <span className={selectedDate ? 'text-gray-900' : 'text-gray-400'}>
+                <span className={selectedDate ? 'text-gray-900 w-full flex justify-center' : 'text-gray-400 w-full flex justify-center'}>
                     {selectedDate ? formatDisplayDate(selectedDate) : (placeholder || 'Chọn ngày')}
                 </span>
                 <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>

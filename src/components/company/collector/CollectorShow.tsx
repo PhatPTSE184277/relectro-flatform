@@ -22,7 +22,7 @@ const CollectorShow: React.FC<CollectorShowProps> = ({
             } hover:bg-primary-50/40 transition-colors`}
         >
             <td className='py-3 px-4 text-center'>
-                <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
+               <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
                     {index !== undefined ? index + 1 : ''}
                 </span>
             </td>

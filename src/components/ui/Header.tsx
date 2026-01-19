@@ -86,77 +86,79 @@ const Header = ({ title, href, profileHref }: HeaderProps) => {
                     <div className='flex items-center space-x-4'>
                         {isAuthenticated && user && (
                             <>
-                                {/* Notification Bell */}
-                                <div className='relative' ref={notifDropdownRef}>
-                                    <button
-                                        onClick={() => setNotifDropdownOpen((v) => !v)}
-                                        className='relative p-2 rounded-full hover:bg-primary-50 transition cursor-pointer'
-                                    >
-                                        <IoNotificationsOutline className='text-gray-700' size={24} />
-                                        {unreadCount > 0 && (
-                                            <span className='absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse'>
-                                                {unreadCount > 9 ? '9+' : unreadCount}
-                                            </span>
-                                        )}
-                                    </button>
+                                {/* Notification Bell: Only for Admin */}
+                                {user.role === 'Admin' && (
+                                    <div className='relative' ref={notifDropdownRef}>
+                                        <button
+                                            onClick={() => setNotifDropdownOpen((v) => !v)}
+                                            className='relative p-2 rounded-full hover:bg-primary-50 transition cursor-pointer'
+                                        >
+                                            <IoNotificationsOutline className='text-gray-700' size={24} />
+                                            {unreadCount > 0 && (
+                                                <span className='absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse'>
+                                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                                </span>
+                                            )}
+                                        </button>
 
-                                    {/* Notification Dropdown */}
-                                    {notifDropdownOpen && (
-                                        <div className='absolute right-0 mt-2 w-96 bg-white border border-primary-200 rounded-2xl shadow-2xl z-50 animate-fade-in overflow-hidden max-h-[500px] flex flex-col'>
-                                            {/* Header */}
-                                            <div className='flex items-center justify-between p-4 border-b border-primary-100 bg-primary-50'>
-                                                <h3 className='font-bold text-gray-900'>Thông báo</h3>
-                                                {unreadCount > 0 && (
-                                                    <button
-                                                        onClick={markAllAsRead}
-                                                        className='text-xs text-primary-600 hover:text-primary-700 font-medium'
-                                                    >
-                                                        Đánh dấu tất cả đã đọc
-                                                    </button>
-                                                )}
-                                            </div>
-
-                                            {/* Notification List */}
-                                            <div className='overflow-y-auto flex-1'>
-                                                {notifications.length === 0 ? (
-                                                    <div className='p-8 text-center text-gray-400'>
-                                                        <IoNotificationsOutline className='mx-auto mb-2' size={48} />
-                                                        <p>Không có thông báo</p>
-                                                    </div>
-                                                ) : (
-                                                    notifications.map((notif) => (
-                                                        <div
-                                                            key={notif.notificationId}
-                                                            onClick={() => !notif.isRead && markAsRead(notif.notificationId)}
-                                                            className={`p-4 border-b border-primary-50 cursor-pointer transition ${
-                                                                notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-primary-50/50 hover:bg-primary-50'
-                                                            }`}
+                                        {/* Notification Dropdown */}
+                                        {notifDropdownOpen && (
+                                            <div className='absolute right-0 mt-2 w-96 bg-white border border-primary-200 rounded-2xl shadow-2xl z-50 animate-fade-in overflow-hidden max-h-[500px] flex flex-col'>
+                                                {/* Header */}
+                                                <div className='flex items-center justify-between p-4 border-b border-primary-100 bg-primary-50'>
+                                                    <h3 className='font-bold text-gray-900'>Thông báo</h3>
+                                                    {unreadCount > 0 && (
+                                                        <button
+                                                            onClick={markAllAsRead}
+                                                            className='text-xs text-primary-600 hover:text-primary-700 font-medium'
                                                         >
-                                                            <div className='flex items-start gap-3'>
-                                                                <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${
-                                                                    notif.isRead ? 'bg-gray-300' : 'bg-primary-600'
-                                                                }`} />
-                                                                <div className='flex-1 min-w-0'>
-                                                                    <h4 className={`text-sm font-semibold mb-1 ${
-                                                                        notif.isRead ? 'text-gray-700' : 'text-gray-900'
-                                                                    }`}>
-                                                                        {notif.title}
-                                                                    </h4>
-                                                                    <p className='text-sm text-gray-600 line-clamp-2'>
-                                                                        {notif.message}
-                                                                    </p>
-                                                                    <p className='text-xs text-gray-400 mt-1'>
-                                                                        {new Date(notif.createdAt).toLocaleString('vi-VN')}
-                                                                    </p>
+                                                            Đánh dấu tất cả đã đọc
+                                                        </button>
+                                                    )}
+                                                </div>
+
+                                                {/* Notification List */}
+                                                <div className='overflow-y-auto flex-1'>
+                                                    {notifications.length === 0 ? (
+                                                        <div className='p-8 text-center text-gray-400'>
+                                                            <IoNotificationsOutline className='mx-auto mb-2' size={48} />
+                                                            <p>Không có thông báo</p>
+                                                        </div>
+                                                    ) : (
+                                                        notifications.map((notif) => (
+                                                            <div
+                                                                key={notif.notificationId}
+                                                                onClick={() => !notif.isRead && markAsRead(notif.notificationId)}
+                                                                className={`p-4 border-b border-primary-50 cursor-pointer transition ${
+                                                                    notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-primary-50/50 hover:bg-primary-50'
+                                                                }`}
+                                                            >
+                                                                <div className='flex items-start gap-3'>
+                                                                    <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${
+                                                                        notif.isRead ? 'bg-gray-300' : 'bg-primary-600'
+                                                                    }`} />
+                                                                    <div className='flex-1 min-w-0'>
+                                                                        <h4 className={`text-sm font-semibold mb-1 ${
+                                                                            notif.isRead ? 'text-gray-700' : 'text-gray-900'
+                                                                        }`}>
+                                                                            {notif.title}
+                                                                        </h4>
+                                                                        <p className='text-sm text-gray-600 line-clamp-2'>
+                                                                            {notif.message}
+                                                                        </p>
+                                                                        <p className='text-xs text-gray-400 mt-1'>
+                                                                            {new Date(notif.createdAt).toLocaleString('vi-VN')}
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    ))
-                                                )}
+                                                        ))
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
-                                </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 {/* User Avatar Dropdown */}
                                 <div className='relative' ref={dropdownRef}>

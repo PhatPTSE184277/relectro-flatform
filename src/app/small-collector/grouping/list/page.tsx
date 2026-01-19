@@ -12,21 +12,26 @@ import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 
 const GroupingListPage: React.FC = () => {
     const router = useRouter();
-    const { groups, loading, groupDetailLoading, fetchGroups, fetchGroupDetail, groupDetail } = useGroupingContext();
+    const {
+        groups,
+        loading,
+        groupDetailLoading,
+        fetchGroups,
+        fetchGroupDetail,
+        groupDetail,
+        groupsPage,
+        groupsTotalPage,
+        setGroupsPage
+    } = useGroupingContext();
     const [search, setSearch] = useState('');
-    const [filter, setFilter] = useState({
-        page: 1,
-        status: 'all'
-    });
-    const [totalPages, setTotalPages] = useState(1);
     const [selectedGrouping, setSelectedGrouping] = useState<any | null>(null);
     const [showReassignModal, setShowReassignModal] = useState(false);
     const [reassignGrouping, setReassignGrouping] = useState<any | null>(null);
 
     // Fetch groups on mount
     useEffect(() => {
-        fetchGroups();
-    }, [fetchGroups]);
+        fetchGroups(groupsPage);
+    }, [fetchGroups, groupsPage]);
 
     const filteredGroupings = groups.filter((group: any) => {
         const matchSearch =
@@ -37,7 +42,7 @@ const GroupingListPage: React.FC = () => {
     });
 
     const handlePageChange = (page: number) => {
-        setFilter({ ...filter, page });
+        setGroupsPage(page);
     };
 
     const handleCreateNew = () => {
@@ -95,11 +100,9 @@ const GroupingListPage: React.FC = () => {
                 onViewDetail={handleViewDetail}
                 onReassignDriver={handleReassignDriver}
             />
-
-            {/* Pagination */}
             <Pagination
-                page={filter.page}
-                totalPages={totalPages}
+                page={groupsPage}
+                totalPages={groupsTotalPage}
                 onPageChange={handlePageChange}
             />
 

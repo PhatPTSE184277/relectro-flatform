@@ -10,10 +10,11 @@ import { Collector } from '@/types';
 import { Users } from 'lucide-react';
 import ImportCollectorModal from '@/components/company/collector/modal/ImportCollectorModal';
 import { useAuth } from '@/hooks/useAuth';
+import Pagination from '@/components/ui/Pagination';
 
 const CollectorPage: React.FC = () => {
     const { user } = useAuth();
-    const { collectors, loading, fetchCollectors, importCollectors } = useCollectorContext();
+    const { collectors, loading, fetchCollectors, importCollectors, page, limit, total, setPage } = useCollectorContext();
     const [selectedCollector, setSelectedCollector] = useState<Collector | null>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [search, setSearch] = useState('');
@@ -23,9 +24,9 @@ const CollectorPage: React.FC = () => {
 
     useEffect(() => {
         if (companyId) {
-            fetchCollectors(companyId);
+            fetchCollectors(companyId, page, limit);
         }
-    }, [fetchCollectors, companyId]);
+    }, [fetchCollectors, companyId, page, limit]);
 
     const handleViewDetail = (collector: Collector) => {
         setSelectedCollector(collector);
@@ -43,10 +44,14 @@ const CollectorPage: React.FC = () => {
         }
         try {
             await importCollectors(file);
-            await fetchCollectors(companyId);
+            await fetchCollectors(companyId, page, limit);
         } catch (error) {
             console.log(error);
         }
+    };
+
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage);
     };
 
     const filteredCollectors = collectors.filter((collector) => {
@@ -58,6 +63,8 @@ const CollectorPage: React.FC = () => {
             collector.collectorId?.toLowerCase().includes(searchLower)
         );
     });
+
+    const totalPages = Math.ceil(total / limit);
 
     return (
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
@@ -95,6 +102,13 @@ const CollectorPage: React.FC = () => {
                 collectors={filteredCollectors}
                 loading={loading}
                 onViewDetail={handleViewDetail}
+            />
+
+            {/* Pagination */}
+            <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
             />
 
             {/* Detail Modal */}

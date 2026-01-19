@@ -21,7 +21,8 @@ import {
     PreAssignGroupingPayload,
     AssignDayGroupingPayload,
     AutoGroupPayload,
-    PendingProductsResponse
+    PendingProductsResponse,
+    GroupingPageResponse
 } from '@/services/small-collector/GroupingService';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -83,14 +84,20 @@ interface GroupingContextType {
     autoGroupResult: any | null;
     groupDetail: any | null;
     groups: any[];
+    groupsPaging: GroupingPageResponse | null;
+    groupsPage: number;
+    groupsLimit: number;
+    groupsTotalPage: number;
     driverCandidates: any[];
     fetchVehicles: () => Promise<void>;
     fetchPendingProducts: (workDate?: string) => Promise<void>;
-    fetchGroups: () => Promise<void>;
+    fetchGroups: (page?: number, limit?: number) => Promise<void>;
+    setGroupsPage: (page: number) => void;
+    setGroupsLimit: (limit: number) => void;
     getPreAssignSuggestion: (loadThresholdPercent: number, selectedProductIds?: string[]) => Promise<void>;
     createGrouping: (payload: AssignDayGroupingPayload) => Promise<void>;
     calculateRoute: (saveResult: boolean) => Promise<void>;
-    fetchGroupDetail: (groupId: number) => Promise<void>;
+    fetchGroupDetail: (groupId: number, page?: number, limit?: number) => Promise<void>;
     fetchDriverCandidates: (date: string) => Promise<void>;
     reassignDriver: (groupId: number, newCollectorId: string) => Promise<void>;
 }
@@ -111,19 +118,27 @@ export function GroupingProvider({ children }: Props) {
     const [autoGroupResult, setAutoGroupResult] = useState<any | null>(null);
     const [groupDetail, setGroupDetail] = useState<any | null>(null);
     const [groups, setGroups] = useState<any[]>([]);
+    const [groupsPaging, setGroupsPaging] = useState<GroupingPageResponse | null>(null);
+    const [groupsPage, setGroupsPage] = useState<number>(1);
+    const [groupsLimit, setGroupsLimit] = useState<number>(10);
+    const [groupsTotalPage, setGroupsTotalPage] = useState<number>(1);
     const [driverCandidates, setDriverCandidates] = useState<any[]>([]);
-    const fetchGroups = useCallback(async () => {
+    const fetchGroups = useCallback(async (page: number = groupsPage, limit: number = groupsLimit) => {
         if (!user?.smallCollectionPointId) return;
         setLoading(true);
         try {
-            const data = await getGroupsByCollectionPointId(user.smallCollectionPointId);
-            setGroups(data);
+            const data = await getGroupsByCollectionPointId(user.smallCollectionPointId, page, limit);
+            setGroupsPaging(data);
+            setGroups(data.data || []);
+            setGroupsPage(data.page || 1);
+            setGroupsLimit(data.limit || 10);
+            setGroupsTotalPage(data.totalPages || 1);
         } catch (err) {
             console.error('fetchGroups error', err);
         } finally {
             setLoading(false);
         }
-    }, [user?.smallCollectionPointId]);
+    }, [user?.smallCollectionPointId, groupsPage, groupsLimit]);
 
     const fetchVehicles = useCallback(async () => {
         if (!user?.smallCollectionPointId) return;
@@ -218,10 +233,10 @@ export function GroupingProvider({ children }: Props) {
         }
     }, [user?.smallCollectionPointId]);
 
-    const fetchGroupDetail = useCallback(async (groupId: number) => {
+    const fetchGroupDetail = useCallback(async (groupId: number, page: number = 1, limit: number = 10) => {
         setGroupDetailLoading(true);
         try {
-            const data = await getGroupById(groupId);
+            const data = await getGroupById(groupId, page, limit);
             setGroupDetail(data);
         } catch (err) {
             console.error('fetchGroupDetail error', err);
@@ -272,10 +287,16 @@ export function GroupingProvider({ children }: Props) {
         autoGroupResult,
         groupDetail,
         groups,
+        groupsPaging,
+        groupsPage,
+        groupsLimit,
+        groupsTotalPage,
         driverCandidates,
         fetchVehicles,
         fetchPendingProducts,
         fetchGroups,
+        setGroupsPage,
+        setGroupsLimit,
         getPreAssignSuggestion,
         createGrouping,
         calculateRoute,

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Eye, UserCog } from 'lucide-react';
 import { formatWeightKg } from '@/utils/formatNumber';
+import { formatDate } from '@/utils/FormatDate';
 
 interface GroupingShowProps {
     grouping: any;
@@ -16,14 +17,14 @@ const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean; stt?: numbe
                     {stt}
                 </span>
             </td>
-            <td className='py-3 px-4 font-medium w-56'>
+            <td className='py-3 px-4 font-medium w-48'>
                 <div className='text-gray-900'>{grouping.groupCode}</div>
             </td>
-            <td className='py-3 px-4 text-gray-700 w-40'>
-                {new Date(grouping.groupDate).toLocaleDateString('vi-VN')}
+            <td className='py-3 px-4 text-center text-gray-700 w-48'>
+                {formatDate(grouping.groupDate)}
             </td>
-            <td className='py-3 px-4 text-gray-700 w-48'>
-                <div className='flex items-center gap-2'>
+            <td className='py-3 px-4 text-center text-gray-700 w-48'>
+                <div className='flex items-center justify-center gap-2'>
                     <span>{grouping.vehicle?.replace(/\s*\(.*\)/, '')}</span>
                 </div>
             </td>

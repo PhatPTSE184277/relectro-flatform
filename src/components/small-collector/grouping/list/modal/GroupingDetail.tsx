@@ -1,6 +1,6 @@
 "use client";
 import { formatDimensionText, formatWeightKg } from "@/utils/formatNumber";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Truck,
     MapPin,
@@ -8,6 +8,9 @@ import {
     User,
 } from 'lucide-react';
 import SummaryCard, { SummaryCardItem } from '@/components/ui/SummaryCard';
+import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
+import Pagination from '@/components/ui/Pagination';
+import RouteTableSkeleton from './RouteTableSkeleton';
 
 interface Route {
     pickupOrder: number;
@@ -36,6 +39,10 @@ interface GroupingDetailData {
     totalPosts: number;
     totalWeightKg: number;
     totalVolumeM3: number;
+    totalRoutes?: number;
+    page?: number;
+    limit?: number;
+    totalPage?: number;
     routes: Route[];
 }
 
@@ -48,6 +55,29 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
     grouping,
     onClose
 }) => {
+    const { fetchGroupDetail, groupDetailLoading } = useGroupingContext();
+
+    // State phân trang
+    const [page, setPage] = useState(1);
+    const [limit] = useState(10);
+    const totalPage = grouping?.totalPage || 1;
+
+    // Đồng bộ page khi groupId thay đổi (mở modal mới hoặc chọn nhóm khác)
+    useEffect(() => {
+        if (grouping?.groupId) {
+            setPage(grouping.page || 1);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [grouping?.groupId]);
+
+    // Khi đổi page, gọi lại API
+    const handlePageChange = (newPage: number) => {
+        if (grouping?.groupId && newPage !== page) {
+            setPage(newPage);
+            fetchGroupDetail(grouping.groupId, newPage, limit);
+        }
+    }
+
     if (!grouping) return null;
     const routes = grouping.routes ?? [];
 
@@ -140,16 +170,23 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {routes.map((route, idx) => {
-                                        const isLast = idx === routes.length - 1;
-                                        return (
+                                    {groupDetailLoading ? (
+                                        Array.from({ length: 5 }).map((_, idx) => (
+                                            <RouteTableSkeleton key={idx} />
+                                        ))
+                                    ) : routes.length > 0 ? (
+                                        routes.map((route, idx) => {
+                                            const isLast = idx === routes.length - 1;
+                                            // Calculate global index for STT
+                                            const globalIndex = (page - 1) * limit + idx + 1;
+                                            return (
                                             <tr
                                                 key={route.postId}
                                                 className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50 transition-colors`}
                                             >
                                                 <td className='py-3 px-4 font-medium w-16'>
                                                     <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold'>
-                                                        {idx + 1}
+                                                        {globalIndex}
                                                     </span>
                                                 </td>
                                                 <td className='py-3 px-4 font-medium text-gray-900 w-56'>
@@ -185,10 +222,25 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                                 </td>
                                             </tr>
                                         );
-                                    })}
+                                    })
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={6} className='text-center py-8 text-gray-400'>
+                                                Không có tuyến đường nào.
+                                            </td>
+                                        </tr>
+                                    )}
                                 </tbody>
                             </table>
                         </div>
+                        {/* Pagination Controls */}
+                        {!groupDetailLoading && (
+                            <Pagination
+                                page={page}
+                                totalPages={totalPage}
+                                onPageChange={handlePageChange}
+                            />
+                        )}
                     </div>
                 </div>
             </div>

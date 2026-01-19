@@ -61,15 +61,42 @@ export const getVehicles = async (smallCollectionPointId: string): Promise<Vehic
     return response.data;
 };
 
+// Lấy danh sách nhóm theo collectionPointId với phân trang
+export interface GroupListPagingResponse {
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+    data: any[];
+}
+
+export interface GroupingPageResponse {
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+    data: any[];
+}
+
 export const getGroupsByCollectionPointId = async (
-    collectionPointId: string
-): Promise<any[]> => {
-    const response = await axios.get(`/grouping/groups/${collectionPointId}`);
+    collectionPointId: string,
+    page: number = 1,
+    limit: number = 10
+): Promise<GroupListPagingResponse> => {
+    const response = await axios.get(`/grouping/groups/${collectionPointId}`, {
+        params: { page, limit }
+    });
     return response.data;
 };
 
-export const getGroupById = async (groupId: number): Promise<any> => {
-    const response = await axios.get(`/grouping/group/${groupId}`);
+export const getGroupById = async (
+    groupId: number,
+    page: number = 1,
+    limit: number = 10
+): Promise<any> => {
+    const response = await axios.get(`/grouping/group/${groupId}`, {
+        params: { page, limit }
+    });
     return response.data;
 };
 

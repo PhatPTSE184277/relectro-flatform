@@ -12,7 +12,24 @@ export interface User {
 	status: string | null;
 }
 
-export const getAllUsers = async (): Promise<User[]> => {
-	const response = await axios.get<User[]>('/users');
+
+export interface UserFilterParams {
+	page?: number;
+	limit?: number;
+	fromDate?: object;
+	toDate?: object;
+	email?: string;
+	status?: string;
+}
+
+export interface UserFilterResponse {
+	data: User[];
+	total: number;
+	page: number;
+	limit: number;
+}
+
+export const getAllUsers = async (params?: UserFilterParams): Promise<UserFilterResponse> => {
+	const response = await axios.get<UserFilterResponse>('/users/filter', { params });
 	return response.data;
 };
