@@ -85,7 +85,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 selectedProductIds={selectedProductIds}
                 onToggleSelect={handleToggleSelect}
                 onToggleAll={handleToggleAll}
-                maxHeight={360}
+                maxHeight={400}
                 allProducts={allProducts}
             />
         </div>

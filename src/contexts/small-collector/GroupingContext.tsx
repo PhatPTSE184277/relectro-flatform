@@ -22,7 +22,9 @@ import {
     AssignDayGroupingPayload,
     AutoGroupPayload,
     PendingProductsResponse,
-    GroupingPageResponse
+    GroupingPageResponse,
+    previewProducts,
+    PreviewProductsPagingResponse
 } from '@/services/small-collector/GroupingService';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -89,6 +91,7 @@ interface GroupingContextType {
     groupsLimit: number;
     groupsTotalPage: number;
     driverCandidates: any[];
+    previewProductsPaging: PreviewProductsPagingResponse | null;
     fetchVehicles: () => Promise<void>;
     fetchPendingProducts: (workDate?: string) => Promise<void>;
     fetchGroups: (page?: number, limit?: number) => Promise<void>;
@@ -100,6 +103,12 @@ interface GroupingContextType {
     fetchGroupDetail: (groupId: number, page?: number, limit?: number) => Promise<void>;
     fetchDriverCandidates: (date: string) => Promise<void>;
     reassignDriver: (groupId: number, newCollectorId: string) => Promise<void>;
+    fetchPreviewProducts: (
+        vehicleId: string,
+        workDate: { year: number; month: number; day: number; dayOfWeek: number },
+        page?: number,
+        pageSize?: number
+    ) => Promise<void>;
 }
 
 const GroupingContext = createContext<GroupingContextType | undefined>(undefined);
@@ -123,6 +132,8 @@ export function GroupingProvider({ children }: Props) {
     const [groupsLimit, setGroupsLimit] = useState<number>(10);
     const [groupsTotalPage, setGroupsTotalPage] = useState<number>(1);
     const [driverCandidates, setDriverCandidates] = useState<any[]>([]);
+    const [previewProductsPaging, setPreviewProductsPaging] = useState<PreviewProductsPagingResponse | null>(null);
+
     const fetchGroups = useCallback(async (page: number = groupsPage, limit: number = groupsLimit) => {
         if (!user?.smallCollectionPointId) return;
         setLoading(true);
@@ -276,6 +287,26 @@ export function GroupingProvider({ children }: Props) {
         }
     }, [fetchGroups]);
 
+    const fetchPreviewProducts = useCallback(
+        async (
+            vehicleId: string,
+            workDate: { year: number; month: number; day: number; dayOfWeek: number },
+            page: number = 1,
+            pageSize: number = 10
+        ) => {
+            setLoading(true);
+            try {
+                const data = await previewProducts(vehicleId, workDate, page, pageSize);
+                setPreviewProductsPaging(data);
+            } catch (err) {
+                console.error('fetchPreviewProducts error', err);
+            } finally {
+                setLoading(false);
+            }
+        },
+        []
+    );
+
     const value: GroupingContextType = {
         loading,
         groupDetailLoading,
@@ -292,6 +323,7 @@ export function GroupingProvider({ children }: Props) {
         groupsLimit,
         groupsTotalPage,
         driverCandidates,
+        previewProductsPaging,
         fetchVehicles,
         fetchPendingProducts,
         fetchGroups,
@@ -302,7 +334,8 @@ export function GroupingProvider({ children }: Props) {
         calculateRoute,
         fetchGroupDetail,
         fetchDriverCandidates,
-        reassignDriver
+        reassignDriver,
+        fetchPreviewProducts
     };
 
     return (

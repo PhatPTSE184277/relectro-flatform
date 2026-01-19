@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react';
 import { formatDate } from '@/utils/FormatDate';
-import EditGroupingModal from './modal/EditGroupingModal';
+// import EditGroupingModal from './modal/EditGroupingModal';
 import ProductList from './ProductList';
 import { useRouter } from 'next/navigation';
+import Pagination from '@/components/ui/Pagination';
 
 interface AssignDayStepProps {
     loading: boolean;
@@ -46,6 +47,8 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         (preAssignResult?.days || [])[0]?.workDate || ''
     );
     const [selectedVehicleIndex, setSelectedVehicleIndex] = useState<number>(0);
+    const [productPage, setProductPage] = useState(1);
+    const itemsPerPage = 10;
 
     // Get unique dates for filter
     const uniqueDates = Array.from(new Set(daySuggestions.map(d => d.workDate)));
@@ -55,6 +58,14 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     
     // Get current selected vehicle group
     const currentVehicleGroup = vehiclesForSelectedDate[selectedVehicleIndex];
+
+    // Client-side pagination for products
+    const allProductsForVehicle = currentVehicleGroup?.products || [];
+    const totalPages = Math.ceil(allProductsForVehicle.length / itemsPerPage);
+    const paginatedProducts = allProductsForVehicle.slice(
+        (productPage - 1) * itemsPerPage,
+        productPage * itemsPerPage
+    );
 
     const handleOpenEditModal = (day: any) => {
         setSelectedDay(day);
@@ -69,8 +80,12 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         // Cập nhật lại xe và sản phẩm của nhóm đang chỉnh sửa
         setDaySuggestions((prev) => prev.map((day) => {
             // Tìm đúng day dựa trên cả workDate và vehicleId
-            if (day.workDate === data.workDate && (day.suggestedVehicle.id === data.vehicleId || day.suggestedVehicle.id.toString() === data.vehicleId)) {
-                const selectedVehicle = vehicles.find(v => v.vehicleId === data.vehicleId || v.id === data.vehicleId || v.id.toString() === data.vehicleId);
+            if (day.workDate === data.workDate && (day.suggestedVehicle.id === data.vehicleId || day.suggestedVehicle.id?.toString() === data.vehicleId)) {
+                const selectedVehicle = vehicles.find(v => 
+                    v.vehicleId === data.vehicleId || 
+                    v.id === data.vehicleId || 
+                    (v.id && v.id.toString() === data.vehicleId)
+                );
                 const updatedProducts = data.productIds.map(productId => {
                     const found = products.find(p => p.productId === productId)
                     return found ? { ...found } : { productId };
@@ -135,6 +150,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                             onClick={() => {
                                 setSelectedDateFilter(date);
                                 setSelectedVehicleIndex(0); // Reset về xe đầu tiên khi đổi ngày
+                                setProductPage(1); // Reset page when date changes
                             }}
                             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[120px] ${
                                 selectedDateFilter === date
@@ -161,7 +177,10 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                     {vehiclesForSelectedDate.map((vehicleGroup: any, index: number) => (
                         <button
                             key={`${vehicleGroup.suggestedVehicle.id}-${index}`}
-                            onClick={() => setSelectedVehicleIndex(index)}
+                            onClick={() => {
+                                setSelectedVehicleIndex(index);
+                                setProductPage(1); // Reset page when vehicle changes
+                            }}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
                                 selectedVehicleIndex === index
                                     ? 'bg-primary-600 text-white shadow-md'
@@ -207,12 +226,12 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                                 </div>
                             </div>
                             <div className='flex items-center gap-2'>
-                                <button
+                                {/* <button
                                     onClick={() => handleOpenEditModal(currentVehicleGroup)}
                                     className='px-4 py-2 bg-white border border-primary-200 text-primary-600 rounded-lg hover:bg-primary-50 transition cursor-pointer font-medium'
                                 >
                                     Chỉnh sửa
-                                </button>
+                                </button> */}
                                 <button
                                     onClick={handleCreateGrouping}
                                     className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition cursor-pointer shadow-md font-medium'
@@ -226,10 +245,15 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
 
                     {/* Products List for this vehicle */}
                     <ProductList
-                        products={currentVehicleGroup.products}
+                        products={paginatedProducts}
                         loading={loading}
                         showCheckbox={false}
-                        maxHeight={260}
+                        maxHeight={250}
+                    />
+                    <Pagination
+                        page={productPage}
+                        totalPages={totalPages}
+                        onPageChange={setProductPage}
                     />
                 </>
             )}
@@ -242,7 +266,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
             )}
 
             {/* Edit Modal */}
-            <EditGroupingModal
+            {/* <EditGroupingModal
                 open={showModal}
                 onClose={() => {
                     setShowModal(false);
@@ -253,7 +277,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                 vehicles={vehicles}
                 allProducts={selectedDay?.products || []}
                 loading={loading}
-            />
+            /> */}
         </div>
     );
 };

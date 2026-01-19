@@ -20,7 +20,7 @@ const SystemConfigFilter: React.FC<SystemConfigFilterProps> = ({ groupNames, gro
             key={g.value}
             onClick={() => onFilterChange(g.value)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[90px] ${
-              groupName === g.value ? 'bg-primary-100 text-primary-700 shadow-sm' : 'bg-gray-100 text-gray-600'
+              groupName === g.value ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
             {g.label}

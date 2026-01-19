@@ -149,9 +149,22 @@ export const previewVehicles = async (workDate: string): Promise<any> => {
 };
 
 // Lấy danh sách sản phẩm preview theo xe và ngày làm việc
-export const previewProducts = async (vehicleId: string, workDate: { year: number; month: number; day: number; dayOfWeek: number }): Promise<any> => {
+export interface PreviewProductsPagingResponse {
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+    data: any[];
+}
+
+export const previewProducts = async (
+    vehicleId: string,
+    workDate: { year: number; month: number; day: number; dayOfWeek: number },
+    page: number = 1,
+    pageSize: number = 10
+): Promise<PreviewProductsPagingResponse> => {
     const response = await axios.get('/grouping/preview-products', {
-        params: { vehicleId, workDate }
+        params: { vehicleId, workDate, page, pageSize }
     });
     return response.data;
 };

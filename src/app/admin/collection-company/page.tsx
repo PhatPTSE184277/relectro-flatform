@@ -5,20 +5,51 @@ import { Factory } from 'lucide-react';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import { useCollectionCompanyContext } from '@/contexts/admin/CollectionCompanyContext';
 import CompanyList from '@/components/admin/collection-company/CompanyList';
-import CompanyFilter from '@/components/admin/collection-company/CompanyFilter';
 import CompanyDetail from '@/components/admin/collection-company/modal/CompanyDetail';
-import SearchBox from '@/components/ui/SearchBox';
 import ImportExcelModal from '@/components/admin/collection-company/modal/ImportComapnyModal';
+import Pagination from '@/components/ui/Pagination';
+import CompanyFilter from '@/components/admin/collection-company/CompanyFilter';
 import { useAuth } from '@/hooks/useAuth';
 
 const CollectionCompanyPage: React.FC = () => {
     const { user } = useAuth();
-    const { companies, loading, importFromExcel } = useCollectionCompanyContext();
+    const {
+        companies,
+        loading,
+        importFromExcel,
+        page,
+        totalPages,
+        setPage,
+        fetchCompanies,
+        status,
+        setStatus
+    } = useCollectionCompanyContext();
+
     const [selectedCompany, setSelectedCompany] = useState<any>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
-    const [search, setSearch] = useState('');
-    const [filterStatus, setFilterStatus] = useState<'active' | 'inactive'>('active');
     const [showImportModal, setShowImportModal] = useState(false);
+
+
+    // Khi vào trang, mặc định filter là 'Đang hoạt động'
+    React.useEffect(() => {
+        setStatus('DANG_HOAT_DONG');
+        setPage(1);
+        fetchCompanies(1, undefined, 'DANG_HOAT_DONG');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Xử lý chuyển trang
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage);
+        fetchCompanies(newPage, undefined, status);
+    };
+
+    // Xử lý filter status
+    const handleStatusChange = (newStatus: string) => {
+        setStatus(newStatus);
+        setPage(1);
+        fetchCompanies(1, undefined, newStatus);
+    };
 
     const handleViewDetail = (company: any) => {
         setSelectedCompany(company);
@@ -34,22 +65,7 @@ const CollectionCompanyPage: React.FC = () => {
         await importFromExcel(file);
     };
 
-    const filteredCompanies = companies.filter((company) => {
-        const searchLower = search.toLowerCase();
-        const matchSearch =
-            company.name?.toLowerCase().includes(searchLower) ||
-            company.companyEmail?.toLowerCase().includes(searchLower) ||
-            company.phone?.toLowerCase().includes(searchLower) ||
-            company.city?.toLowerCase().includes(searchLower);
 
-        if (filterStatus === 'active') {
-            return matchSearch && company.status?.toLowerCase() === 'active';
-        }
-        if (filterStatus === 'inactive') {
-            return matchSearch && company.status?.toLowerCase() === 'inactive';
-        }
-        return false;
-    });
 
     return (
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8'>
@@ -74,29 +90,26 @@ const CollectionCompanyPage: React.FC = () => {
                             Import từ Excel
                         </button>
                     )}
-                    <div className='flex-1 max-w-md'>
-                        <SearchBox
-                            value={search}
-                            onChange={setSearch}
-                            placeholder='Tìm kiếm công ty...'
-                        />
-                    </div>
+                    {/* Bỏ ô tìm kiếm */}
                 </div>
             </div>
 
-            {/* Filter */}
-            <div className='mt-6 mb-4'>
-                <CompanyFilter
-                    status={filterStatus}
-                    onFilterChange={setFilterStatus}
-                />
-            </div>
+            {/* Filter trạng thái */}
+            <CompanyFilter status={status} onFilterChange={handleStatusChange} />
 
-            {/* Company List */}
+
+            {/* Danh sách công ty */}
             <CompanyList
-                companies={filteredCompanies}
+                companies={companies}
                 loading={loading}
                 onViewDetail={handleViewDetail}
+            />
+
+            {/* Phân trang */}
+            <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
             />
 
             {/* Detail Modal */}

@@ -1,9 +1,9 @@
-import { IoFilterOutline } from 'react-icons/io5';
 import React from 'react';
+import { IoFilterOutline } from 'react-icons/io5';
 
 interface CompanyFilterProps {
-    status: 'active' | 'inactive';
-    onFilterChange: (status: 'active' | 'inactive') => void;
+    status: string;
+    onFilterChange: (status: string) => void;
 }
 
 const CompanyFilter: React.FC<CompanyFilterProps> = ({ status, onFilterChange }) => {
@@ -14,24 +14,24 @@ const CompanyFilter: React.FC<CompanyFilterProps> = ({ status, onFilterChange })
                     <IoFilterOutline className='text-primary-600' size={16} />
                 </span>
                 <button
-                    onClick={() => onFilterChange('active')}
+                    onClick={() => onFilterChange('DANG_HOAT_DONG')}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[90px] ${
-                        status === 'active'
-                            ? 'bg-green-100 text-green-700 shadow-sm'
-                            : 'bg-gray-100 text-gray-600'
+                        status === 'DANG_HOAT_DONG'
+                            ? 'bg-primary-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Hoạt động
+                    Đang hoạt động
                 </button>
                 <button
-                    onClick={() => onFilterChange('inactive')}
+                    onClick={() => onFilterChange('NGUNG_HOAT_DONG')}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[90px] ${
-                        status === 'inactive'
-                            ? 'bg-red-100 text-red-700 shadow-sm'
-                            : 'bg-gray-100 text-gray-600'
+                        status === 'NGUNG_HOAT_DONG'
+                            ? 'bg-primary-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Không hoạt động
+                    Ngừng hoạt động
                 </button>
             </div>
         </div>

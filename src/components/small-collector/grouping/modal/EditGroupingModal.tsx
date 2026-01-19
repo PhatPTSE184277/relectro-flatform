@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { X, Package } from 'lucide-react';
 import { formatDate } from '@/utils/FormatDate';
-import ProductList from './ProductList';
+import ProductList from '../ProductList';
 import VehicleSelectTable from './VehicleSelectTable';
+import Pagination from '@/components/ui/Pagination';
 
 interface EditGroupingModalProps {
     open: boolean;
@@ -32,10 +33,13 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
     const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
     const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState<'vehicle' | 'product'>('vehicle');
+    const [productPage, setProductPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         if (open && day) {
             setActiveTab('vehicle');
+            setProductPage(1);
             // Always reset when day changes
             setSelectedVehicleId(day.suggestedVehicle?.id || null);
             const newProductIds = day.products?.map((p: any) => p.productId) || [];
@@ -82,6 +86,13 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
     };
 
     if (!open || !day || !Array.isArray(allProducts)) return null;
+
+    // Client-side pagination for products
+    const totalPages = Math.ceil(allProducts.length / itemsPerPage);
+    const paginatedProducts = allProducts.slice(
+        (productPage - 1) * itemsPerPage,
+        productPage * itemsPerPage
+    );
 
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
@@ -159,13 +170,21 @@ const EditGroupingModal: React.FC<EditGroupingModalProps> = ({
 
                             <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
                                 <div className='overflow-x-auto'>
-                                    <ProductList
-                                        products={allProducts}
+                                    {/* <ProductList
+                                        products={paginatedProducts}
                                         selectedProductIds={selectedProductIds}
                                         onToggleProduct={handleToggleProduct}
                                         onToggleAll={handleToggleAll}
-                                    />
+                                        allProducts={allProducts}
+                                    /> */}
                                 </div>
+                            </div>
+                            <div className='mt-4'>
+                                <Pagination
+                                    page={productPage}
+                                    totalPages={totalPages}
+                                    onPageChange={setProductPage}
+                                />
                             </div>
                         </div>
                     )}
