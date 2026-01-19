@@ -183,7 +183,7 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                                     </span>
                                     Danh sách sản phẩm
                                 </h3>
-                                <div className='overflow-y-auto max-h-64'>
+                                <div className='max-h-64'>
                                     <ProductList products={scannedPackage.products} />
                                 </div>
                             </div>

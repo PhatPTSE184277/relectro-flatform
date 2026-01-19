@@ -291,7 +291,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                 disabled={loading}
                                 className='px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
                             >
-                                Xác nhận nhận hàng từ shipper
+                                Xác nhận
                             </button>
                         </div>
                     </div>

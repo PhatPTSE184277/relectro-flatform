@@ -226,17 +226,8 @@ export function GroupingProvider({ children }: Props) {
                 
                 // Gửi từng batch theo ngày
                 for (const [workDateStr, dateAssignments] of Object.entries(groupedByDate)) {
-                    // Parse workDate string thành object
-                    const date = new Date(workDateStr);
-                    const workDate = {
-                        year: date.getFullYear(),
-                        month: date.getMonth() + 1,
-                        day: date.getDate(),
-                        dayOfWeek: date.getDay()
-                    };
-                    
                     const payload: AssignDayGroupingPayload = {
-                        workDate,
+                        workDate: workDateStr,
                         assignments: dateAssignments.map(a => ({
                             vehicleId: String(a.vehicleId),
                             productIds: a.productIds

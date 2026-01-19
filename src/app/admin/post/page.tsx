@@ -206,6 +206,7 @@ const PostPage: React.FC = () => {
                     open={isBulkRejectModalOpen}
                     onClose={() => setIsBulkRejectModalOpen(false)}
                     onConfirm={handleBulkRejectConfirm}
+                    showTags={true}
                 />
             )}
         </div>

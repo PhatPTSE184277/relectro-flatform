@@ -13,11 +13,25 @@ interface TrackingModalProps {
 const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
     const { timeline, fetchTimeline } = useTrackingContext();
 
-    useEffect(() => {
-        if (product?.productId) {
-            fetchTimeline(product.productId);
+    // Extract data from nested structure if exists
+    const productInfo = product?.productInfo || product;
+    let timelineData: any[] = [];
+    if (Array.isArray(timeline)) {
+        timelineData = timeline;
+    } else if (timeline && typeof timeline === 'object') {
+        if (Array.isArray((timeline as any).timeline)) {
+            timelineData = (timeline as any).timeline;
+        } else if (Array.isArray((timeline as any).data)) {
+            timelineData = (timeline as any).data;
         }
-    }, [product?.productId, fetchTimeline]);
+    }
+
+    useEffect(() => {
+        const productId = product?.productId || product?.productInfo?.productId;
+        if (productId) {
+            fetchTimeline(productId);
+        }
+    }, [product?.productId, product?.productInfo?.productId, fetchTimeline]);
 
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
@@ -27,7 +41,7 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]'>
+            <div className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[98vh]'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
                     <div>
@@ -52,17 +66,17 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
                             {
                                 icon: <Package size={14} className='text-primary-400' />,
                                 label: 'Danh mục',
-                                value: product.categoryName || 'N/A',
+                                value: productInfo?.categoryName || 'N/A',
                             },
                             {
                                 icon: <Package size={14} className='text-primary-400' />,
                                 label: 'Thương hiệu',
-                                value: product.brandName || 'N/A',
+                                value: productInfo?.brandName || 'N/A',
                             },
                             {
                                 icon: <MapPin size={14} className='text-primary-400' />,
                                 label: 'Người gửi',
-                                value: product.sender?.name || 'N/A',
+                                value: productInfo?.sender?.name || product?.sender?.name || 'N/A',
                             }
                         ]}
                         singleRow={true}
@@ -75,7 +89,7 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
                             Lịch sử di chuyển
                         </h3>
 
-                        {timeline.length === 0 ? (
+                        {timelineData.length === 0 ? (
                             <div className='text-center py-12 text-gray-500'>
                                 Chưa có lịch sử di chuyển
                             </div>
@@ -83,12 +97,12 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
                             <div className='relative py-8'>
                                 {/* Timeline with vertical connector */}
                                 <div className='space-y-'>
-                                    {timeline.map((item, index) => {
+                                    {timelineData.map((item, index) => {
                                         const isLeft = index % 2 === 0;
                                         return (
                                             <div key={index} className='relative flex'>
                                                 {/* Vertical straight connector between dots */}
-                                                {index < timeline.length - 1 && (
+                                                {index < timelineData.length - 1 && (
                                                     <div
                                                         className='absolute left-1/2 transform -translate-x-1/2 top-11 w-1 h-20 bg-primary-200 z-0'
                                                         style={{}}

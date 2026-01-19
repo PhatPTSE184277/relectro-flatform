@@ -57,12 +57,12 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, label }) => {
                             <span className='text-gray-700 font-normal'>{user.email}</span>
                         </>
                     )}
-                    {user.points !== undefined && (
-                        <>
-                            <span className='mx-1 text-gray-400 font-normal'>•</span>
-                            <span className='text-primary-600 font-semibold'>{user.points} điểm</span>
-                        </>
-                    )}
+                        {(user.points !== undefined && user.points !== null) && (
+                            <>
+                                <span className='mx-1 text-gray-400 font-normal'>•</span>
+                                <span className='text-primary-600 font-semibold'>{user.points} điểm</span>
+                            </>
+                        )}
                 </div>
                 {user.address && (
                     <p className='mt-1 text-gray-600 text-sm'>{user.address}</p>

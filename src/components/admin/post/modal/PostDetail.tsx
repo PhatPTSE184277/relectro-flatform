@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
 import PostApprove from './PostApprove';
-import PostReject from './PostReject';
 import { formatDate } from '@/utils/FormatDate';
 import { groupScheduleByTimeRange } from '@/utils/groupScheduleByTimeRange';
 import {
@@ -61,7 +60,16 @@ const PostDetail: React.FC<PostDetailProps> = ({
     const [zoomImg, setZoomImg] = useState<string | null>(null);
 
     const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
-    const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+    const [showRejectForm, setShowRejectForm] = useState(false);
+    
+    const REASON_TAGS = [
+        "Ảnh sản phẩm không rõ ràng",
+        "Mô tả thiếu thông tin liên hệ",
+        "Nội dung không phù hợp quy định",
+        "Khác"
+    ];
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [customReason, setCustomReason] = useState("");
 
     const handleApproveConfirm = () => {
         onApprove(post.id);
@@ -69,9 +77,15 @@ const PostDetail: React.FC<PostDetailProps> = ({
         onClose();
     };
 
-    const handleRejectConfirm = (reason: string) => {
-        onReject(post.id, reason);
-        setIsRejectModalOpen(false);
+    const handleRejectConfirm = () => {
+        const reasons = selectedTags.filter(t => t !== "Khác");
+        if (selectedTags.includes("Khác")) {
+            if (customReason.trim()) reasons.push(customReason.trim());
+        }
+        onReject(post.id, reasons.join("; "));
+        setShowRejectForm(false);
+        setSelectedTags([]);
+        setCustomReason("");
         onClose();
     };
 
@@ -283,23 +297,114 @@ const PostDetail: React.FC<PostDetailProps> = ({
 
                         {/* Approve/Reject Buttons under AI Labels */}
                         {isPending && (
-                            <div className='flex justify-end mt-2'>
-                                <div className='flex gap-2'>
-                                    <button
-                                        onClick={() => setIsRejectModalOpen(true)}
-                                        className='bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-medium transition cursor-pointer shadow-sm order-1'
-                                    >
-                                        Từ chối
-                                    </button>
-                                    <button
-                                        onClick={() => setIsApproveModalOpen(true)}
-                                        className='bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg font-medium transition cursor-pointer shadow-sm flex items-center gap-2 order-2'
-                                    >
-                                        <CheckCircle size={18} />
-                                        Duyệt
-                                    </button>
-                                </div>
-                            </div>
+                            <>
+                                {!showRejectForm ? (
+                                    <div className='flex justify-end mt-2'>
+                                        <div className='flex gap-2'>
+                                            <button
+                                                onClick={() => setShowRejectForm(true)}
+                                                className='bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-medium transition cursor-pointer shadow-sm order-1'
+                                            >
+                                                Từ chối
+                                            </button>
+                                            <button
+                                                onClick={() => setIsApproveModalOpen(true)}
+                                                className='bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg font-medium transition cursor-pointer shadow-sm flex items-center gap-2 order-2'
+                                            >
+                                                <CheckCircle size={18} />
+                                                Duyệt
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className='mt-4 bg-red-50 rounded-xl p-4 border border-red-200'>
+                                        <h3 className='text-base font-semibold text-gray-900 mb-3'>Từ chối bài đăng</h3>
+                                        <div className='space-y-2'>
+                                            <label className='block text-sm font-medium text-gray-700'>
+                                                Lý do từ chối <span className='text-red-500'>*</span>
+                                            </label>
+                                            <div className='flex flex-wrap gap-2 mb-2 items-center'>
+                                                {REASON_TAGS.slice(0, 3).map((tag) => {
+                                                    const isSelected = selectedTags.includes(tag);
+                                                    return (
+                                                        <button
+                                                            type='button'
+                                                            key={tag}
+                                                            className={`px-3 py-1 rounded-full border text-xs font-medium transition-colors cursor-pointer
+                                                                ${isSelected ? 'bg-primary-100 border-primary-500 text-primary-700' : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-primary-50'}`}
+                                                            onClick={() => {
+                                                                if (isSelected) {
+                                                                    setSelectedTags(selectedTags.filter(t => t !== tag));
+                                                                } else {
+                                                                    setSelectedTags([...selectedTags, tag]);
+                                                                }
+                                                            }}
+                                                        >
+                                                            {tag}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                            <div className='flex gap-2 mb-2'>
+                                                {(() => {
+                                                    const tag = REASON_TAGS[3];
+                                                    const isSelected = selectedTags.includes(tag);
+                                                    return (
+                                                        <button
+                                                            type='button'
+                                                            key={tag}
+                                                            className={`px-3 py-1 rounded-full border text-xs font-medium transition-colors cursor-pointer
+                                                                ${isSelected ? 'bg-primary-100 border-primary-500 text-primary-700' : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-primary-50'}`}
+                                                            onClick={() => {
+                                                                if (isSelected) {
+                                                                    setSelectedTags(selectedTags.filter(t => t !== tag));
+                                                                    setCustomReason('');
+                                                                } else {
+                                                                    setSelectedTags([...selectedTags, tag]);
+                                                                }
+                                                            }}
+                                                        >
+                                                            {tag}
+                                                        </button>
+                                                    );
+                                                })()}
+                                            </div>
+                                            {selectedTags.includes('Khác') && (
+                                                <textarea
+                                                    className='w-full border border-gray-200 rounded-lg p-2 text-sm text-gray-800 placeholder-gray-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-100 outline-none resize-none transition-all duration-200 bg-white'
+                                                    rows={3}
+                                                    value={customReason}
+                                                    onChange={(e) => setCustomReason(e.target.value)}
+                                                    placeholder='Nhập lý do từ chối bài đăng...'
+                                                />
+                                            )}
+                                        </div>
+                                        <div className='flex justify-end gap-2 mt-3'>
+                                            <button
+                                                onClick={() => {
+                                                    setShowRejectForm(false);
+                                                    setSelectedTags([]);
+                                                    setCustomReason('');
+                                                }}
+                                                className='px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium transition cursor-pointer text-sm'
+                                            >
+                                                Hủy
+                                            </button>
+                                            <button
+                                                disabled={selectedTags.length === 0 || (selectedTags.includes('Khác') && !customReason.trim())}
+                                                onClick={handleRejectConfirm}
+                                                className={`px-4 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 text-sm
+                                                    ${selectedTags.length === 0 || (selectedTags.includes('Khác') && !customReason.trim())
+                                                        ? 'bg-red-300 cursor-not-allowed'
+                                                        : 'bg-red-500 hover:bg-red-600'}
+                                                `}
+                                            >
+                                                Xác nhận từ chối
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
@@ -312,12 +417,6 @@ const PostDetail: React.FC<PostDetailProps> = ({
                 open={isApproveModalOpen}
                 onClose={() => setIsApproveModalOpen(false)}
                 onConfirm={handleApproveConfirm}
-            />
-
-            <PostReject
-                open={isRejectModalOpen}
-                onClose={() => setIsRejectModalOpen(false)}
-                onConfirm={handleRejectConfirm}
             />
 
             {/* ZOOM IMAGE */}

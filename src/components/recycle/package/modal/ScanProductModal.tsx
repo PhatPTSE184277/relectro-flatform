@@ -95,7 +95,7 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[98vh] animate-fadeIn'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-4 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
@@ -112,7 +112,7 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
                 </div>
 
                 {/* Body */}
-                <div className='flex-1 overflow-y-auto p-4 space-y-4'>
+                <div className='p-4 space-y-4'>
                     {/* Package Info */}
                     <SummaryCard 
                         items={[
@@ -172,13 +172,11 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
                             </span>
                             Danh sách sản phẩm
                         </h3>
-                        <div className='overflow-y-auto max-h-[40vh]'>
                             <ProductList
                                 products={pkg.products}
                                 showStatus={true}
                                 checkedProducts={checkedProducts}
                             />
-                        </div>
                     </div>
                 </div>
 

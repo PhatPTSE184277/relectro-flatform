@@ -91,7 +91,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                             </span>
                             Danh sách sản phẩm
                         </h3>
-                        <div className='max-h-64 overflow-y-auto'>
+                        <div className='max-h-64'>
                             <ProductList products={pkg.products} />
                         </div>
                     </div>
