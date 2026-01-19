@@ -21,20 +21,20 @@ const PackageShow: React.FC<PackageShowProps> = ({
     const isRecycling = pkg.status === PackageStatus.Recycling;
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`} style={{ tableLayout: 'fixed' }}>
-            <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
+            <td className='py-3 px-4 text-center w-16'>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {stt}
                 </span>
             </td>
-            <td className='py-3 px-4 font-medium' style={{ width: '180px' }}>
+            <td className='py-3 px-4 font-medium w-48'>
                 <div className='text-gray-900'>{pkg.packageId}</div>
             </td>
-            <td className='py-3 px-4 text-gray-700' style={{ width: '160px' }}>
+            <td className='py-3 px-4 text-gray-700 w-40'>
                 <span className='px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700'>
                     {pkg.products.length} sản phẩm
                 </span>
             </td>
-            <td className='py-3 px-4' style={{ width: '120px' }}>
+            <td className='py-3 px-4 w-32'>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}

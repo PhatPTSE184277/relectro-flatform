@@ -50,17 +50,17 @@ const GroupingPage: React.FC = () => {
         setActiveStep(2);
     };
 
-    const handleCreateGrouping = async (payload: {
+    const handleCreateGrouping = async (assignments: {
         workDate: string;
         vehicleId: string;
         productIds: string[];
-    }) => {
-        // Ensure vehicleId is string
-        const formattedPayload = {
-            ...payload,
-            vehicleId: String(payload.vehicleId)
-        };
-        await createGrouping(formattedPayload);
+    }[]) => {
+        // Ensure vehicleId is string for all assignments
+        const formattedAssignments = assignments.map(assignment => ({
+            ...assignment,
+            vehicleId: String(assignment.vehicleId)
+        }));
+        await createGrouping(formattedAssignments);
     };
 
     const handleDateChange = (date: string) => {

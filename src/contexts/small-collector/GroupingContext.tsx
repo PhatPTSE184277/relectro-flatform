@@ -98,7 +98,7 @@ interface GroupingContextType {
     setGroupsPage: (page: number) => void;
     setGroupsLimit: (limit: number) => void;
     getPreAssignSuggestion: (loadThresholdPercent: number, selectedProductIds?: string[]) => Promise<void>;
-    createGrouping: (payload: AssignDayGroupingPayload) => Promise<void>;
+    createGrouping: (assignments: { workDate: string; vehicleId: string; productIds: string[] }[]) => Promise<void>;
     calculateRoute: (saveResult: boolean) => Promise<void>;
     fetchGroupDetail: (groupId: number, page?: number, limit?: number) => Promise<void>;
     fetchDriverCandidates: (date: string) => Promise<void>;
@@ -209,13 +209,43 @@ export function GroupingProvider({ children }: Props) {
     );
 
     const createGrouping = useCallback(
-        async (payload: AssignDayGroupingPayload) => {
+        async (assignments: { workDate: string; vehicleId: string; productIds: string[] }[]) => {
             if (!user?.smallCollectionPointId) {
                 return;
             }
             setLoading(true);
             try {
-                await assignDayGrouping(payload, user.smallCollectionPointId);
+                // Nhóm tất cả assignments theo workDate
+                const groupedByDate: { [key: string]: typeof assignments } = {};
+                assignments.forEach(assignment => {
+                    if (!groupedByDate[assignment.workDate]) {
+                        groupedByDate[assignment.workDate] = [];
+                    }
+                    groupedByDate[assignment.workDate].push(assignment);
+                });
+                
+                // Gửi từng batch theo ngày
+                for (const [workDateStr, dateAssignments] of Object.entries(groupedByDate)) {
+                    // Parse workDate string thành object
+                    const date = new Date(workDateStr);
+                    const workDate = {
+                        year: date.getFullYear(),
+                        month: date.getMonth() + 1,
+                        day: date.getDate(),
+                        dayOfWeek: date.getDay()
+                    };
+                    
+                    const payload: AssignDayGroupingPayload = {
+                        workDate,
+                        assignments: dateAssignments.map(a => ({
+                            vehicleId: String(a.vehicleId),
+                            productIds: a.productIds
+                        }))
+                    };
+                    
+                    await assignDayGrouping(payload, user.smallCollectionPointId);
+                }
+                
                 // Refresh pending products after creating grouping
                 await fetchPendingProducts();
             } catch (err: any) {

@@ -28,20 +28,16 @@ const PackageList: React.FC<PackageListProps> = ({
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>
                 <div className='inline-block min-w-full align-middle'>
-                    <div className='overflow-hidden'>
-                        <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
-                            <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
+                    <div style={{ maxHeight: 390, overflowY: 'auto' }} ref={bodyRef}>
+                        <table className='min-w-full text-sm text-gray-800 table-fixed'>
+                            <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                 <tr>
-                                    <th className='py-3 px-4 text-center' style={{ width: '60px' }}>STT</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Mã Package</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '160px' }}>Số sản phẩm</th>
-                                    <th className='py-3 px-4 text-center' style={{ width: '120px' }}>Hành động</th>
+                                    <th className='py-3 px-4 text-center w-16'>STT</th>
+                                    <th className='py-3 px-4 text-left w-48'>Mã Package</th>
+                                    <th className='py-3 px-4 text-left w-40'>Số sản phẩm</th>
+                                    <th className='py-3 px-4 text-center w-32'>Hành động</th>
                                 </tr>
                             </thead>
-                        </table>
-                    </div>
-                    <div className='max-h-85 overflow-y-auto' ref={bodyRef}>
-                        <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
                             <tbody>
                                 {loading ? (
                                     Array.from({ length: 6 }).map((_, idx) => (

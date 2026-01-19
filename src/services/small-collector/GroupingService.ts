@@ -6,9 +6,16 @@ export interface PreAssignGroupingPayload {
 }
 
 export interface AssignDayGroupingPayload {
-    workDate: string;
-    vehicleId: string;
-    productIds: string[];
+    workDate: {
+        year: number;
+        month: number;
+        day: number;
+        dayOfWeek: number;
+    };
+    assignments: {
+        vehicleId: string;
+        productIds: string[];
+    }[];
 }
 
 export interface Vehicle {

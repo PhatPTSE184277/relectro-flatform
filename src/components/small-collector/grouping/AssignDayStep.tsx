@@ -12,11 +12,11 @@ interface AssignDayStepProps {
     preAssignResult: any;
     vehicles: any[];
     products: any[];
-    onCreateGrouping: (payload: {
+    onCreateGrouping: (assignments: {
         workDate: string;
         vehicleId: string;
         productIds: string[];
-    }) => void;
+    }[]) => void;
     onBack: () => void;
     calculateRoute: (saveResult: boolean) => Promise<void>;
 }
@@ -116,19 +116,19 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
             // Lấy tất cả xe của ngày đang chọn
             const allVehiclesOfDay = vehiclesForSelectedDate;
             
-            // Tạo nhóm cho từng xe
-            for (let i = 0; i < allVehiclesOfDay.length; i++) {
-                const vehicleGroup = allVehiclesOfDay[i];
-                console.log(`Đang tạo nhóm cho xe ${i + 1}/${allVehiclesOfDay.length}: ${vehicleGroup.suggestedVehicle.plate_Number}`);
-                
-                await onCreateGrouping({
-                    workDate: vehicleGroup.workDate,
-                    vehicleId: vehicleGroup.suggestedVehicle.id.toString(),
-                    productIds: vehicleGroup.products.map((p: any) => p.productId)
-                });
-            }
+            // Gom tất cả assignments của ngày này vào một mảng
+            const assignments = allVehiclesOfDay.map(vehicleGroup => ({
+                workDate: vehicleGroup.workDate,
+                vehicleId: vehicleGroup.suggestedVehicle.id.toString(),
+                productIds: vehicleGroup.products.map((p: any) => p.productId)
+            }));
             
-            // Sau khi tạo xong tất cả xe, tính route và chuyển trang
+            console.log(`Đang tạo nhóm cho ${assignments.length} xe cùng lúc`);
+            
+            // Gọi API một lần duy nhất cho tất cả xe
+            await onCreateGrouping(assignments);
+            
+            // Sau khi tạo xong, tính route và chuyển trang
             await calculateRoute(true);
             router.push("/small-collector/grouping/list");
         } catch (error) {
