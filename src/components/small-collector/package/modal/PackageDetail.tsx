@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import type { PackageType } from '@/types/Package';
 import { Tag, CheckCircle2, Boxes } from 'lucide-react';
 import SummaryCard from '@/components/ui/SummaryCard';
-import { PackageStatus } from '@/enums/PackageStatus';
 import ProductList from './ProductList';
 import Pagination from '@/components/ui/Pagination';
 import { usePackageContext } from '@/contexts/small-collector/PackageContext';
@@ -48,19 +47,10 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
         {
             icon: <CheckCircle2 size={14} className="text-primary-400" />,
             label: 'Trạng thái',
-            value: (
+            value:(
                 <span
-                    className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                        pkg.status === PackageStatus.Packing
-                            ? 'bg-yellow-100 text-yellow-700'
-                            : pkg.status === PackageStatus.Closed
-                            ? 'bg-green-100 text-green-700'
-                            : pkg.status === PackageStatus.Shipping
-                            ? 'bg-blue-100 text-blue-700'
-                            : pkg.status === PackageStatus.Recycling
-                            ? 'bg-purple-100 text-purple-700'
-                            : 'bg-gray-100 text-gray-600'
-                    }`}
+                    className="flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-primary-600 text-white"
+                    style={{ minWidth: 110 }}
                 >
                     {pkg.status}
                 </span>

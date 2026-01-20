@@ -43,17 +43,6 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
         return status;
     }
 
-    const getStatusBadgeClass = (status: string) => {
-        const normalized = normalizeStatus(status);
-        const badge: Record<string, string> = {
-            'Hoàn thành': 'bg-green-100 text-green-700',
-            'Đang tiến hành': 'bg-blue-100 text-blue-700',
-            'Chưa bắt đầu': 'bg-yellow-100 text-yellow-700',
-            'Hủy bỏ': 'bg-red-100 text-red-700'
-        };
-        return badge[normalized] || 'bg-gray-100 text-gray-600';
-    };
-
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
             {/* Overlay */}
@@ -65,27 +54,26 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
             <div className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
-                    <div className='flex flex-col gap-1'>
-                        <h2 className='text-2xl font-bold text-gray-800'>
-                            Chi tiết tuyến thu gom
-                        </h2>
-                    </div>
                     <div className='flex items-center gap-4'>
                         <span
-                            className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(
-                                route.status
-                            )}`}
+                            className="flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-primary-600 text-white"
+                            style={{ minWidth: 110 }}
                         >
                             {normalizeStatus(route.status)}
                         </span>
-                        <button
-                            onClick={onClose}
-                            className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
-                            aria-label='Đóng'
-                        >
-                            &times;
-                        </button>
+                        <div className='flex flex-col gap-1'>
+                            <h2 className='text-2xl font-bold text-gray-800'>
+                                Chi tiết tuyến thu gom
+                            </h2>
+                        </div>
                     </div>
+                    <button
+                        onClick={onClose}
+                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
+                        aria-label='Đóng'
+                    >
+                        &times;
+                    </button>
                 </div>
 
                 {/* Content */}

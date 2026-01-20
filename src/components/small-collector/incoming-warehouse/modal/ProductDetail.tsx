@@ -40,36 +40,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
         );
     }
 
-    // Badge status - đồng bộ với PostDetail
-    const getStatusBadgeClass = (status: string) => {
-        const normalized = status?.toLowerCase() || '';
-        const badge: Record<string, string> = {
-            'chờ thu gom': 'bg-yellow-100 text-yellow-700',
-            chờ: 'bg-yellow-100 text-yellow-700',
-            pending: 'bg-yellow-100 text-yellow-700',
-            'đã thu gom': 'bg-blue-100 text-blue-700',
-            'đã thu': 'bg-blue-100 text-blue-700',
-            collected: 'bg-blue-100 text-blue-700',
-            'hủy bỏ': 'bg-red-100 text-red-700',
-            hủy: 'bg-red-100 text-red-700',
-            cancelled: 'bg-red-100 text-red-700',
-            'nhập kho': 'bg-green-100 text-green-700',
-            nhập: 'bg-green-100 text-green-700',
-            received: 'bg-green-100 text-green-700',
-            'đóng gói': 'bg-purple-100 text-purple-700',
-            packed: 'bg-purple-100 text-purple-700',
-            'đang vận chuyển': 'bg-indigo-100 text-indigo-700'
-        };
-        const key = Object.keys(badge).find((k) => normalized.includes(k));
-        return key ? badge[key] : 'bg-gray-100 text-gray-600';
-    };
-
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/60 backdrop-blur-sm'
-                onClick={onClose}
             ></div>
 
             {/* Modal */}
@@ -83,7 +58,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                     </div>
                     <div className='flex items-center gap-4'>
                         <span
-                            className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(product.status)}`}
+                            className="flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-primary-600 text-white"
+                            style={{ minWidth: 110 }}
                         >
                             {product.status}
                         </span>

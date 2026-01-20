@@ -25,7 +25,7 @@ const ProductCategoryList: React.FC<ProductCategoryListProps & { total?: number 
 
   return (
     <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
-      <div className='overflow-x-auto max-h-[40vh] overflow-y-auto'>
+      <div className='overflow-x-auto max-h-105 overflow-y-auto'>
         <table className='w-full text-sm text-gray-800 table-fixed'>
           <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
             <tr>

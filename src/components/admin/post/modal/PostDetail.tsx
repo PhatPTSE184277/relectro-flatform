@@ -35,21 +35,6 @@ function normalizeStatus(status: string = ''): string {
     return status;
 }
 
-// Badge color logic (match ProductDetail/CollectorRouteDetail)
-function getStatusBadgeClass(status: string) {
-    const s = normalizeStatus(status);
-    const badge: Record<string, string> = {
-        'Chờ duyệt': 'bg-yellow-100 text-yellow-700',
-        'Đã duyệt': 'bg-green-100 text-green-700',
-        'Đã từ chối': 'bg-red-100 text-red-700',
-        'Hoàn thành': 'bg-green-100 text-green-700',
-        'Đang tiến hành': 'bg-blue-100 text-blue-700',
-        'Chưa bắt đầu': 'bg-yellow-100 text-yellow-700',
-        'Hủy bỏ': 'bg-red-100 text-red-700'
-    };
-    return badge[s] || 'bg-gray-100 text-gray-600';
-}
-
 const PostDetail: React.FC<PostDetailProps> = ({
     post,
     onClose,
@@ -110,7 +95,8 @@ const PostDetail: React.FC<PostDetailProps> = ({
                     <div className='flex items-center gap-4'>
                         {/* Status Badge - moved to header */}
                         <span
-                            className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${getStatusBadgeClass(post.status)}`}
+                            className="flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-primary-600 text-white"
+                            style={{ minWidth: 110 }}
                         >
                             {normalizeStatus(post.status)}
                         </span>
