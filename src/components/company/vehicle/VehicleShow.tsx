@@ -11,51 +11,50 @@ interface VehicleShowProps {
 const VehicleShow: React.FC<VehicleShowProps> = ({
     vehicle,
     onView,
-    isLast = false,
     index
 }) => {
     return (
         <tr
-            className={`${
+            className={`$
                 !isLast ? 'border-b border-primary-100' : ''
             } hover:bg-primary-50/40 transition-colors`}
         >
-            <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
+            <td className='py-3 px-4 text-center w-16'>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {index !== undefined ? index + 1 : ''}
                 </span>
             </td>
-            <td className='py-3 px-4' style={{ width: '160px' }}>
+            <td className='py-3 px-4 w-40'>
                 <div className='text-gray-900 font-medium'>
                     {vehicle.plateNumber || 'Không rõ'}
                 </div>
             </td>
 
-            <td className='py-3 px-4 text-gray-700' style={{ width: '120px' }}>
+            <td className='py-3 px-4 text-gray-700 w-32'>
                 {vehicle.vehicleType || (
                     <span className='text-gray-400'>Chưa có</span>
                 )}
             </td>
 
-            <td className='py-3 px-4 text-gray-700' style={{ width: '180px' }}>
+            <td className='py-3 px-4 text-gray-700 w-56'>
                 {vehicle.smallCollectionPointName || (
                     <span className='text-gray-400'>Chưa có</span>
                 )}
             </td>
 
-            <td className='py-3 px-4 text-gray-700' style={{ width: '120px' }}>
+            <td className='py-3 px-4 text-gray-700 w-32'>
                 {vehicle.capacityKg ? `${vehicle.capacityKg} kg` : (
                     <span className='text-gray-400'>Chưa có</span>
                 )}
             </td>
 
-            <td className='py-3 px-4 text-gray-700' style={{ width: '100px' }}>
+            <td className='py-3 px-4 text-gray-700 w-24'>
                 {vehicle.radiusKm ? `${vehicle.radiusKm} km` : (
                     <span className='text-gray-400'>Chưa có</span>
                 )}
             </td>
 
-            <td className='py-3 px-4' style={{ width: '100px' }}>
+            <td className='py-3 px-4 w-24'>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}

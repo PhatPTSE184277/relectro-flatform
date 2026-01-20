@@ -25,36 +25,36 @@ const ShiftShow: React.FC<ShiftShowProps> = ({
                 !isLast ? 'border-b border-primary-100' : ''
             } hover:bg-primary-50/40 transition-colors`}
         >
-            <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
+            <td className='py-3 px-4 text-center w-16'>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {index !== undefined ? index + 1 : ''}
                 </span>
             </td>
-            <td className='py-3 px-4' style={{ width: '180px' }}>
+            <td className='py-3 px-4 w-60'>
                 <div className='text-gray-900 font-medium'>
                     {shift.collectorName || 'Không rõ'}
                 </div>
             </td>
-            <td className='py-3 px-4 text-gray-700' style={{ width: '140px' }}>
+            <td className='py-3 px-4 text-gray-700 w-36'>
                 {shift.plate_Number || (
                     <span className='text-gray-400'>Chưa có</span>
                 )}
             </td>
             {showSplitTime ? (
                 <>
-                    <td className='py-3 px-4 text-gray-700' style={{ width: '120px' }}>
+                    <td className='py-3 px-4 text-gray-700 w-32'>
                         <div className='flex flex-col items-start'>
                             {RenderTimeCell(shift.shift_Start_Time)}
                         </div>
                     </td>
-                    <td className='py-3 px-4 text-gray-700' style={{ width: '120px' }}>
+                    <td className='py-3 px-4 text-gray-700 w-32'>
                         <div className='flex flex-col items-start'>
                             {RenderTimeCell(shift.shift_End_Time)}
                         </div>
                     </td>
                 </>
             ) : (
-                <td className='py-3 px-4 text-gray-700' style={{ width: '240px' }} colSpan={2}>
+                <td className='py-3 px-4 text-gray-700 w-[272px]' colSpan={2}>
                     {shift.shift_Start_Time && shift.shift_End_Time ? (
                         `${formatTimeWithDate(shift.shift_Start_Time)} - ${formatTimeWithDate(shift.shift_End_Time)}`
                     ) : (
@@ -62,7 +62,7 @@ const ShiftShow: React.FC<ShiftShowProps> = ({
                     )}
                 </td>
             )}
-            <td className='py-3 px-4' style={{ width: '100px' }}>
+            <td className='py-3 px-4 w-24'>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}

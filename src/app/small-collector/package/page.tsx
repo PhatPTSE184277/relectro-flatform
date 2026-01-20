@@ -17,7 +17,8 @@ import { PackageStatus } from '@/enums/PackageStatus';
 const PackagePage: React.FC = () => {
     const {
         packages,
-        loading,
+        loadingList,
+        loadingDetail,
         selectedPackage,
         setSelectedPackage,
         filter,
@@ -26,7 +27,8 @@ const PackagePage: React.FC = () => {
         allStats,
         createNewPackage,
         updateExistingPackage,
-        updateStatus
+        updateStatus,
+        fetchPackageDetail
     } = usePackageContext();
 
     const [search, setSearch] = useState('');
@@ -39,18 +41,17 @@ const PackagePage: React.FC = () => {
 
     const filteredPackages = packages.filter((pkg) => {
         const matchSearch =
-            pkg.packageId.toLowerCase().includes(search.toLowerCase()) ||
-            pkg.products.some(
-                (p) =>
-                    p.categoryName.toLowerCase().includes(search.toLowerCase()) ||
-                    p.brandName.toLowerCase().includes(search.toLowerCase())
-            );
+            pkg.packageId.toLowerCase().includes(search.toLowerCase());
         return matchSearch;
     });
 
-    const handleViewDetail = (pkg: PackageType) => {
-        setSelectedPackage(pkg);
-        setShowDetailModal(true);
+    const handleViewDetail = async (pkg: PackageType) => {
+        try {
+            await fetchPackageDetail(pkg.packageId, 1, 10);
+            setShowDetailModal(true);
+        } catch (error) {
+            console.error('Error fetching package detail:', error);
+        }
     };
 
     const handleCloseModal = () => {
@@ -119,10 +120,14 @@ const PackagePage: React.FC = () => {
         }
     };
 
-    const handleOpenUpdate = (pkg: PackageType) => {
-        setSelectedPackage(pkg);
-        setShowDetailModal(false);
-        setShowUpdateModal(true);
+    const handleOpenUpdate = async (pkg: PackageType) => {
+        try {
+            await fetchPackageDetail(pkg.packageId, 1, 10);
+            setShowDetailModal(false);
+            setShowUpdateModal(true);
+        } catch (error) {
+            console.error('Error fetching package detail:', error);
+        }
     };
 
     return (
@@ -168,7 +173,7 @@ const PackagePage: React.FC = () => {
             <div className='mb-6'>
                 <PackageList
                     packages={filteredPackages}
-                    loading={loading}
+                    loading={loadingList}
                     onViewDetail={handleViewDetail}
                     onUpdate={handleOpenUpdate}
                     onUpdateStatus={handleUpdateStatus}
@@ -188,6 +193,7 @@ const PackagePage: React.FC = () => {
                 <PackageDetail
                     package={selectedPackage}
                     onClose={handleCloseModal}
+                    loading={loadingDetail}
                 />
             )}
 
@@ -208,7 +214,7 @@ const PackagePage: React.FC = () => {
                     }}
                     onConfirm={handleUpdatePackage}
                     initialData={{
-                        productsQrCode: selectedPackage.products.map(p => p.qrCode).filter(Boolean) as string[]
+                        productsQrCode: selectedPackage.products.data.map(p => p.qrCode).filter(Boolean) as string[]
                     }}
                 />
             )}

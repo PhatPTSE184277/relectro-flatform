@@ -31,14 +31,7 @@ const ShipperPackagePage: React.FC = () => {
 
     const filteredPackages = packages.filter((pkg) => {
         const matchSearch =
-            pkg.packageId.toLowerCase().includes(search.toLowerCase()) ||
-            pkg.products.some(
-                (p) =>
-                    p.categoryName
-                        .toLowerCase()
-                        .includes(search.toLowerCase()) ||
-                    p.brandName.toLowerCase().includes(search.toLowerCase())
-            );
+            pkg.packageId.toLowerCase().includes(search.toLowerCase());
         return matchSearch;
     });
 

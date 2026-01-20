@@ -148,7 +148,7 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                                     {
                                         icon: <Boxes size={14} className='text-primary-400' />,
                                         label: 'Số sản phẩm',
-                                        value: scannedPackage.products.length,
+                                        value: scannedPackage.products.data.length,
                                     },
                                     {
                                         icon: <CheckCircle2 size={14} className='text-primary-400' />,

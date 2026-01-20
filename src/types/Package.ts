@@ -18,13 +18,21 @@ export interface PackageProduct {
     attributes: PackageProductAttribute[];
 }
 
+export interface PackageProductsResponse {
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+    data: PackageProduct[];
+}
+
 export interface PackageType {
     packageId: string;
     smallCollectionPointsId: string;
     smallCollectionPointsName?: string;
     smallCollectionPointsAddress?: string;
     status?: string;
-    products: PackageProduct[];
+    products: PackageProductsResponse;
 }
 
 export interface FilterPackagesResponse {

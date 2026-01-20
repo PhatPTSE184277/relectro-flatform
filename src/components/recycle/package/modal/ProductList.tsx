@@ -30,8 +30,9 @@ const ProductList: React.FC<ProductListProps> = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {products.map((product, index) => {
-                            const isLast = index === products.length - 1;
+                        {(Array.isArray(products) ? products : products.data).map((product, index) => {
+                            const productsArray = Array.isArray(products) ? products : products.data;
+                            const isLast = index === productsArray.length - 1;
                             const isAlreadyChecked = product.isChecked;
                             const isNewlyScanned = checkedProducts && product.qrCode && checkedProducts.has(product.qrCode);
                             const isChecked = isAlreadyChecked || isNewlyScanned;

@@ -23,7 +23,7 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
     const [checkedProducts, setCheckedProducts] = useState<Set<string>>(new Set());
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const totalChecked = pkg.products.filter(p => p.isChecked).length + checkedProducts.size;
+    const totalChecked = pkg.products.data.filter(p => p.isChecked).length + checkedProducts.size;
 
     useEffect(() => {
         if (open) {
@@ -42,7 +42,7 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
         }
 
         // Check if product exists in package
-        const product = pkg.products.find((p) => p.qrCode === trimmedQr);
+        const product = pkg.products.data.find((p) => p.qrCode === trimmedQr);
         
         if (!product) {
             setQrCode('');
@@ -159,7 +159,7 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
                                 </button>
                             </form>
                             <span className='text-sm font-semibold text-gray-700 whitespace-nowrap'>
-                                Tiến độ kiểm tra: <span className='text-primary-600 font-bold'>{totalChecked} / {pkg.products.length}</span>
+                                Tiến độ kiểm tra: <span className='text-primary-600 font-bold'>{totalChecked} / {pkg.products.totalItems}</span>
                             </span>
                         </div>
                     </div>

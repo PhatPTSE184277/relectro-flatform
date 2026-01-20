@@ -5,7 +5,6 @@ import { IoCloudUploadOutline } from 'react-icons/io5';
 import { MapPin } from 'lucide-react';
 import { useSmallCollectionContext } from '@/contexts/company/SmallCollectionContext';
 import SmallCollectionList from '@/components/company/small-collection/SmallCollectionList';
-import SmallCollectionMap from '@/components/company/small-collection/SmallCollectionMap';
 import SmallCollectionDetail from '@/components/company/small-collection/modal/SmallCollectionDetail';
 import SearchBox from '@/components/ui/SearchBox';
 import ImportExcelModal from '@/components/admin/collection-company/modal/ImportComapnyModal';
@@ -26,7 +25,6 @@ const SmallCollectionPage: React.FC = () => {
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [search, setSearch] = useState('');
     const [showImportModal, setShowImportModal] = useState(false);
-    const [selectedId, setSelectedId] = useState<number | null>(null);
     const [filterStatus, setFilterStatus] = useState('active');
 
     const companyId = user?.collectionCompanyId;
@@ -58,10 +56,10 @@ const SmallCollectionPage: React.FC = () => {
             point.name?.toLowerCase().includes(searchLower) ||
             point.address?.toLowerCase().includes(searchLower);
         if (filterStatus === 'active') {
-            return matchSearch && point.status === 'Active';
+            return matchSearch && point.status === 'DANG_HOAT_DONG';
         }
         if (filterStatus === 'inactive') {
-            return matchSearch && point.status !== 'Active';
+            return matchSearch && point.status !== 'DANG_HOAT_DONG';
         }
         return matchSearch;
     });
@@ -102,29 +100,12 @@ const SmallCollectionPage: React.FC = () => {
                 <SmallCollectionFilter status={filterStatus} onFilterChange={setFilterStatus} />
             </div>
 
-            {/* Main Content: List + Map */}
-            <div className='flex-1 flex overflow-hidden min-h-[600px]'>
-                {/* List - Left Side */}
-                <div className='w-1/2 overflow-y-auto p-6 border-r border-gray-200'>
-                    <SmallCollectionList
-                        collections={filteredCollections}
-                        loading={loading}
-                        onViewDetail={handleViewDetail}
-                        selectedId={selectedId}
-                        onSelectPoint={setSelectedId}
-                    />
-                </div>
-
-                {/* Map - Right Side */}
-                <div className='w-1/2 relative'>
-                    <SmallCollectionMap
-                        collections={filteredCollections}
-                        selectedId={selectedId}
-                        onSelectPoint={setSelectedId}
-                        onViewDetail={handleViewDetail}
-                    />
-                </div>
-            </div>
+            {/* Main Content: List */}
+            <SmallCollectionList
+                collections={filteredCollections}
+                loading={loading}
+                onViewDetail={handleViewDetail}
+            />
 
             {/* Detail Modal */}
             {showDetailModal && (

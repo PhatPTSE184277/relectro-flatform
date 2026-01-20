@@ -34,11 +34,12 @@ interface PackageFilter {
 
 interface PackageContextType {
     packages: PackageType[];
-    loading: boolean;
+    loadingList: boolean;
+    loadingDetail: boolean;
     selectedPackage: PackageType | null;
     setSelectedPackage: (pkg: PackageType | null) => void;
     fetchPackages: (customFilter?: Partial<PackageFilter>) => Promise<void>;
-    fetchPackageDetail: (packageId: string) => Promise<void>;
+    fetchPackageDetail: (packageId: string, page?: number, limit?: number) => Promise<void>;
     createNewPackage: (payload: CreatePackagePayload) => Promise<void>;
     updateExistingPackage: (packageId: string, payload: UpdatePackagePayload) => Promise<void>;
     updateStatus: (packageId: string) => Promise<void>;
@@ -63,7 +64,8 @@ type Props = { children: ReactNode };
 export const PackageProvider: React.FC<Props> = ({ children }) => {
     const { user } = useAuth();
     const [packages, setPackages] = useState<PackageType[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loadingList, setLoadingList] = useState<boolean>(false);
+    const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
     const [selectedPackage, setSelectedPackage] = useState<PackageType | null>(null);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
@@ -96,7 +98,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 console.warn('No smallCollectionPointId found in user profile');
                 return;
             }
-            setLoading(true);
+            setLoadingList(true);
             try {
                 const params: Record<string, any> = {
                     ...filter,
@@ -118,7 +120,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 // ...existing code...
                 setPackages([]);
             } finally {
-                setLoading(false);
+                setLoadingList(false);
             }
         },
         [filter, user?.smallCollectionPointId]
@@ -151,17 +153,17 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
     }, [filter.smallCollectionPointId]);
 
     const fetchPackageDetail = useCallback(
-        async (packageId: string) => {
-            setLoading(true);
+        async (packageId: string, page: number = 1, limit: number = 10) => {
+            setLoadingDetail(true);
             try {
-                const pkg = await getPackageById(packageId);
+                const pkg = await getPackageById(packageId, page, limit);
                 setSelectedPackage(pkg);
             } catch (err) {
                 console.error('fetchPackageDetail error', err);
                 // ...existing code...
                 setSelectedPackage(null);
             } finally {
-                setLoading(false);
+                setLoadingDetail(false);
             }
         },
         []
@@ -169,7 +171,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
 
     const createNewPackage = useCallback(
         async (payload: CreatePackagePayload) => {
-            setLoading(true);
+            setLoadingList(true);
             try {
                 await createPackage(payload);
                 // ...existing code...
@@ -180,7 +182,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 // ...existing code...
                 throw err;
             } finally {
-                setLoading(false);
+                setLoadingList(false);
             }
         },
         [fetchPackages, fetchAllStats]
@@ -188,7 +190,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
 
     const updateExistingPackage = useCallback(
         async (packageId: string, payload: UpdatePackagePayload) => {
-            setLoading(true);
+            setLoadingList(true);
             try {
                 await updatePackage(packageId, payload);
                 // ...existing code...
@@ -198,7 +200,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 // ...existing code...
                 throw err;
             } finally {
-                setLoading(false);
+                setLoadingList(false);
             }
         },
         [fetchPackages]
@@ -207,7 +209,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
     // Thêm hàm cập nhật trạng thái package
     const updateStatus = useCallback(
         async (packageId: string) => {
-            setLoading(true);
+            setLoadingList(true);
             try {
                 await updatePackageStatus(packageId);
                 // ...existing code...
@@ -217,7 +219,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 console.error('updateStatus error', err);
                 // ...existing code...
             } finally {
-                setLoading(false);
+                setLoadingList(false);
             }
         },
         [fetchPackages, fetchAllStats]
@@ -226,7 +228,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
     // Hàm cho Shipper: Lấy hàng từ kho để vận chuyển đến nơi tái chế
     const handleDeliverPackage = useCallback(
         async (packageId: string) => {
-            setLoading(true);
+            setLoadingList(true);
             try {
                 await deliverPackage(packageId);
                 // ...existing code...
@@ -236,7 +238,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 console.error('handleDeliverPackage error', err);
                 // ...existing code...
             } finally {
-                setLoading(false);
+                setLoadingList(false);
             }
         },
         [fetchPackages, fetchAllStats]
@@ -245,7 +247,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
     // Hàm cho Recycler: Xác nhận nhận hàng tại nơi tái chế
     const handleSendPackageToRecycler = useCallback(
         async (packageId: string) => {
-            setLoading(true);
+            setLoadingList(true);
             try {
                 await sendPackageToRecycler(packageId);
                 // ...existing code...
@@ -255,7 +257,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                 console.error('handleSendPackageToRecycler error', err);
                 // ...existing code...
             } finally {
-                setLoading(false);
+                setLoadingList(false);
             }
         },
         [fetchPackages, fetchAllStats]
@@ -269,7 +271,8 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
 
     const value: PackageContextType = {
         packages,
-        loading,
+        loadingList,
+        loadingDetail,
         selectedPackage,
         setSelectedPackage,
         fetchPackages,

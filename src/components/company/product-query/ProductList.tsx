@@ -23,44 +23,42 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
             <div className='overflow-x-auto'>
                 <div className='inline-block min-w-full align-middle'>
                     <div className='overflow-hidden'>
-                        <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
-                            <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
-                                <tr>
-                                    <th className='py-3 px-4 text-center' style={{ width: '60px' }}>STT</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Sản phẩm</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '160px' }}>Người gửi</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '220px' }}>Địa chỉ</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '140px' }}>Khoảng cách</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '120px' }}>Khối lượng</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                    <div className='max-h-100 overflow-y-auto' ref={bodyRef}>
-                        <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
-                            <tbody>
-                                {loading ? (
-                                    Array.from({ length: 6 }).map((_, idx) => (
-                                        <ProductSkeleton key={idx} />
-                                    ))
-                                ) : products?.length === 0 ? (
+                        <div className='max-h-115 overflow-y-auto' ref={bodyRef}>
+                            <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
+                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                     <tr>
-                                        <td colSpan={6} className='text-center py-8 text-gray-400'>
-                                            Không có sản phẩm nào.
-                                        </td>
+                                        <th className='py-3 px-4 text-center w-16'>STT</th>
+                                        <th className='py-3 px-4 text-left w-60'>Sản phẩm</th>
+                                        <th className='py-3 px-4 text-left w-60'>Người gửi</th>
+                                        <th className='py-3 px-4 text-left w-88'>Địa chỉ</th>
+                                        <th className='py-3 px-4 text-left w-40'>Khoảng cách</th>
+                                        <th className='py-3 px-4 text-left w-32'>Khối lượng</th>
                                     </tr>
-                                ) : (
-                                    products?.map((product, idx) => (
-                                        <ProductShow 
-                                            key={product.productId} 
-                                            product={product} 
-                                            isLast={idx === products.length - 1}
-                                            stt={(page - 1) * itemsPerPage + idx + 1}
-                                        />
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {loading ? (
+                                        Array.from({ length: 6 }).map((_, idx) => (
+                                            <ProductSkeleton key={idx} />
+                                        ))
+                                    ) : products?.length === 0 ? (
+                                        <tr>
+                                            <td colSpan={6} className='text-center py-8 text-gray-400'>
+                                                Không có sản phẩm nào.
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        products?.map((product, idx) => (
+                                            <ProductShow 
+                                                key={product.productId} 
+                                                product={product} 
+                                                isLast={idx === products.length - 1}
+                                                stt={(page - 1) * itemsPerPage + idx + 1}
+                                            />
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

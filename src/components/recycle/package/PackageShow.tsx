@@ -31,7 +31,7 @@ const PackageShow: React.FC<PackageShowProps> = ({
             </td>
             <td className='py-3 px-4 text-gray-700 w-40'>
                 <span className='px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700'>
-                    {pkg.products.length} sản phẩm
+                    {pkg.products.totalItems} sản phẩm
                 </span>
             </td>
             <td className='py-3 px-4 w-32'>

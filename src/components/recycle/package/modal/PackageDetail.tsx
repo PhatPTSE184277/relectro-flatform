@@ -74,10 +74,10 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                             <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                 <List className='w-5 h-5 text-primary-500' />
                             </span>
-                            Danh sách sản phẩm ({pkg.products.length})
+                            Danh sách sản phẩm ({pkg.products.totalItems})
                         </h3>
                         <ProductList
-                            products={pkg.products}
+                            products={pkg.products.data}
                             showStatus={isRecycling}
                         />
                     </div>

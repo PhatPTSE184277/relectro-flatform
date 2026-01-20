@@ -28,7 +28,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
         {
             icon: <Boxes size={14} className='text-primary-400' />,
             label: 'Số sản phẩm',
-            value: pkg.products.length,
+            value: pkg.products.totalItems,
         },
         {
             icon: <CheckCircle2 size={14} className="text-primary-400" />,

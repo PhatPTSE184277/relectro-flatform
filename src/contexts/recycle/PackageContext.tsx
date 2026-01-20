@@ -120,10 +120,10 @@ export const RecyclerPackageProvider: React.FC<Props> = ({ children }) => {
     );
 
     const fetchPackageDetail = useCallback(
-        async (packageId: string) => {
+        async (packageId: string, page: number = 1, limit: number = 10) => {
             setLoading(true);
             try {
-                const pkg = await getPackageById(packageId);
+                const pkg = await getPackageById(packageId, page, limit);
                 setSelectedPackage(pkg);
             } catch (err) {
                 console.error('fetchPackageDetail error', err);

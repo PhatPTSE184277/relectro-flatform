@@ -4,10 +4,12 @@ import React from 'react';
 import { PackageType } from '@/types/Package';
 
 interface ProductListProps {
-    products: PackageType['products'];
+    products: any; // Accept both array and paginated object for flexibility
 }
 
 const ProductList: React.FC<ProductListProps> = ({ products }) => {
+    // Support both array and paginated object
+    const productsArray = Array.isArray(products) ? products : products.data;
     return (
         <div className='bg-white rounded-xl shadow-sm border border-gray-100 flex-1 min-h-0'>
             <div className='relative w-full max-h-64 overflow-y-auto'>
@@ -21,8 +23,8 @@ const ProductList: React.FC<ProductListProps> = ({ products }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {products.map((product, index) => {
-                            const isLast = index === products.length - 1;
+                        {productsArray.map((product: any, index: number) => {
+                            const isLast = index === productsArray.length - 1;
                             return (
                                 <tr
                                     key={product.productId}

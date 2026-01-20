@@ -27,8 +27,14 @@ export const filterPackages = async ({
 };
 
 
-export const getPackageById = async (packageId: string): Promise<PackageType> => {
-    const response = await axios.get<PackageType>(`/packages/${packageId}`);
+export const getPackageById = async (
+    packageId: string,
+    page: number = 1,
+    limit: number = 10
+): Promise<PackageType> => {
+    const response = await axios.get<PackageType>(`/packages/${packageId}`, {
+        params: { page, limit }
+    });
     return response.data;
 };
 
