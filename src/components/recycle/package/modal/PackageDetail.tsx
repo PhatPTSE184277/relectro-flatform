@@ -5,16 +5,17 @@ import { Tag, MapPin, Home, List } from 'lucide-react';
 import ProductList from './ProductList';
 import { PackageStatus } from '@/enums/PackageStatus';
 import SummaryCard from '@/components/ui/SummaryCard';
+import { useRecyclerPackageContext } from '@/contexts/recycle/PackageContext';
 
 interface PackageDetailProps {
-    package: any;
     onClose: () => void;
 }
 
 const PackageDetail: React.FC<PackageDetailProps> = ({
-    package: pkg,
     onClose
 }) => {
+    const { selectedPackage: pkg, fetchPackageDetail } = useRecyclerPackageContext();
+
     if (!pkg) return null;
 
     const isRecycling = pkg.status === PackageStatus.Recycling;
@@ -38,6 +39,10 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
         },
     ];
 
+    const handlePageChange = async (page: number) => {
+        await fetchPackageDetail(pkg.packageId, page, 10);
+    };
+
     return (
         <div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
             {/* Overlay */}
@@ -46,7 +51,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[95vh]'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
@@ -77,8 +82,10 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                             Danh sách sản phẩm ({pkg.products.totalItems})
                         </h3>
                         <ProductList
-                            products={pkg.products.data}
+                            products={pkg.products}
                             showStatus={isRecycling}
+                            showPagination={true}
+                            onPageChange={handlePageChange}
                         />
                     </div>
                 </div>

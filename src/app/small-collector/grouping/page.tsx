@@ -18,9 +18,13 @@ const GroupingPage: React.FC = () => {
         loading,
         vehicles,
         pendingProducts,
+        pendingProductsData,
+        pendingProductsPage,
+        pendingProductsTotalPages,
         preAssignResult,
         fetchVehicles,
         fetchPendingProducts,
+        setPendingProductsPage,
         getPreAssignSuggestion,
         createGrouping,
         calculateRoute
@@ -29,8 +33,6 @@ const GroupingPage: React.FC = () => {
     const [activeStep, setActiveStep] = useState(1);
     const [loadThreshold, setLoadThreshold] = useState(80);
     const [selectedDate, setSelectedDate] = useState<string>(getTodayString);
-    const [page, setPage] = useState(1);
-    const itemsPerPage = 10;
 
     useEffect(() => {
         console.log('User profile:', user);
@@ -42,8 +44,8 @@ const GroupingPage: React.FC = () => {
     }, [fetchVehicles]);
 
     useEffect(() => {
-        fetchPendingProducts(selectedDate);
-    }, [selectedDate, fetchPendingProducts]);
+        fetchPendingProducts(selectedDate, pendingProductsPage);
+    }, [selectedDate, pendingProductsPage, fetchPendingProducts]);
 
     const handleGetSuggestion = async (selectedProductIds?: string[]) => {
         await getPreAssignSuggestion(loadThreshold, selectedProductIds);
@@ -65,15 +67,8 @@ const GroupingPage: React.FC = () => {
 
     const handleDateChange = (date: string) => {
         setSelectedDate(date);
-        setPage(1);
+        setPendingProductsPage(1);
     };
-
-    // Phân trang
-    const totalPages = Math.ceil((pendingProducts?.length || 0) / itemsPerPage);
-    const paginatedProducts = pendingProducts?.slice(
-        (page - 1) * itemsPerPage,
-        page * itemsPerPage
-    ) || [];
 
     // const steps = [
     //     { id: 1, name: 'Gợi ý gom nhóm', icon: <Users size={20} /> },
@@ -114,18 +109,18 @@ const GroupingPage: React.FC = () => {
                 <>
                     <PreAssignStep
                         loading={loading}
-                        products={paginatedProducts}
-                        allProducts={pendingProducts}
+                        products={pendingProducts}
+                        totalItems={pendingProductsData?.total || 0}
                         loadThreshold={loadThreshold}
                         setLoadThreshold={setLoadThreshold}
                         onGetSuggestion={handleGetSuggestion}
-                        page={page}
-                        itemsPerPage={itemsPerPage}
+                        page={pendingProductsPage}
+                        itemsPerPage={10}
                     />
                     <Pagination
-                        page={page}
-                        totalPages={totalPages}
-                        onPageChange={setPage}
+                        page={pendingProductsPage}
+                        totalPages={pendingProductsTotalPages}
+                        onPageChange={setPendingProductsPage}
                     />
                 </>
             )}

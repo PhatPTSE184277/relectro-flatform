@@ -22,6 +22,7 @@ const RecyclePackagePage: React.FC = () => {
         filter,
         setFilter,
         totalPages,
+        fetchPackageDetail,
         handleSendPackageToRecycler,
         handleMarkProductsAsChecked,
         allStats
@@ -38,9 +39,9 @@ const RecyclePackagePage: React.FC = () => {
         return matchSearch;
     });
 
-    const handleViewDetail = (pkg: PackageType) => {
-        setSelectedPackage(pkg);
+    const handleViewDetail = async (pkg: PackageType) => {
         setShowDetailModal(true);
+        await fetchPackageDetail(pkg.packageId, 1, 10);
     };
 
     const handleCloseModal = () => {
@@ -56,9 +57,9 @@ const RecyclePackagePage: React.FC = () => {
         await handleSendPackageToRecycler(packageId);
     };
 
-    const handleOpenCheckProducts = (pkg: PackageType) => {
-        setSelectedPackage(pkg);
+    const handleOpenCheckProducts = async (pkg: PackageType) => {
         setShowCheckProductsModal(true);
+        await fetchPackageDetail(pkg.packageId, 1, 50);
     };
 
     const handleCheckProducts = async (
@@ -137,7 +138,6 @@ const RecyclePackagePage: React.FC = () => {
             {/* Detail Modal */}
             {showDetailModal && selectedPackage && (
                 <PackageDetail
-                    package={selectedPackage}
                     onClose={handleCloseModal}
                 />
             )}

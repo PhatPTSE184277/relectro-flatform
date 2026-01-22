@@ -17,7 +17,7 @@ const GroupingList: React.FC<GroupingListProps> = ({
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
-            <div className='overflow-x-auto max-h-120 overflow-y-auto'>
+            <div className='overflow-x-auto max-h-110 overflow-y-auto'>
                 <table className='min-w-full text-sm text-gray-800 table-fixed'>
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                         <tr>

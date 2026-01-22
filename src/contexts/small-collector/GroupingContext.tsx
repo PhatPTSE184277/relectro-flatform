@@ -82,6 +82,9 @@ interface GroupingContextType {
     vehicles: Vehicle[];
     pendingProducts: PendingProduct[];
     pendingProductsData: PendingProductsResponse | null;
+    pendingProductsPage: number;
+    pendingProductsLimit: number;
+    pendingProductsTotalPages: number;
     preAssignResult: PreAssignResponse | null;
     autoGroupResult: any | null;
     groupDetail: any | null;
@@ -93,7 +96,8 @@ interface GroupingContextType {
     driverCandidates: any[];
     previewProductsPaging: PreviewProductsPagingResponse | null;
     fetchVehicles: () => Promise<void>;
-    fetchPendingProducts: (workDate?: string) => Promise<void>;
+    fetchPendingProducts: (workDate?: string, page?: number, limit?: number) => Promise<void>;
+    setPendingProductsPage: (page: number) => void;
     fetchGroups: (page?: number, limit?: number) => Promise<void>;
     setGroupsPage: (page: number) => void;
     setGroupsLimit: (limit: number) => void;
@@ -123,6 +127,9 @@ export function GroupingProvider({ children }: Props) {
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const [pendingProducts, setPendingProducts] = useState<PendingProduct[]>([]);
     const [pendingProductsData, setPendingProductsData] = useState<PendingProductsResponse | null>(null);
+    const [pendingProductsPage, setPendingProductsPage] = useState<number>(1);
+    const [pendingProductsLimit, setPendingProductsLimit] = useState<number>(10);
+    const [pendingProductsTotalPages, setPendingProductsTotalPages] = useState<number>(1);
     const [preAssignResult, setPreAssignResult] = useState<PreAssignResponse | null>(null);
     const [autoGroupResult, setAutoGroupResult] = useState<any | null>(null);
     const [groupDetail, setGroupDetail] = useState<any | null>(null);
@@ -164,25 +171,30 @@ export function GroupingProvider({ children }: Props) {
         }
     }, [user?.smallCollectionPointId]);
 
-    const fetchPendingProducts = useCallback(async (workDate?: string) => {
+    const fetchPendingProducts = useCallback(async (workDate?: string, page?: number, limit?: number) => {
         if (!user?.smallCollectionPointId) {
             console.warn('No smallCollectionPointId found in user profile:', user);
             return;
         }
+        
+        const currentPage = page ?? pendingProductsPage;
+        const currentLimit = limit ?? pendingProductsLimit;
+        
         setLoading(true);
         try {
             const today = workDate || new Date().toISOString().split('T')[0];
-            console.log('Fetching products for:', { smallPointId: user.smallCollectionPointId, workDate: today });
-            const data = await getPendingGroupingProducts(user.smallCollectionPointId, today);
+            console.log('Fetching products for:', { smallPointId: user.smallCollectionPointId, workDate: today, page: currentPage, limit: currentLimit });
+            const data = await getPendingGroupingProducts(user.smallCollectionPointId, today, currentPage, currentLimit);
             console.log('Products data received:', data);
             setPendingProductsData(data);
             setPendingProducts(data.products || []);
+            setPendingProductsTotalPages(Math.ceil((data.total || 0) / currentLimit));
         } catch (err) {
             console.error('fetchPendingProducts error', err);
         } finally {
             setLoading(false);
         }
-    }, [user]);
+    }, [user, pendingProductsPage, pendingProductsLimit]);
 
     const getPreAssignSuggestion = useCallback(
         async (loadThresholdPercent: number, selectedProductIds?: string[]) => {
@@ -335,6 +347,9 @@ export function GroupingProvider({ children }: Props) {
         vehicles,
         pendingProducts,
         pendingProductsData,
+        pendingProductsPage,
+        pendingProductsLimit,
+        pendingProductsTotalPages,
         preAssignResult,
         autoGroupResult,
         groupDetail,
@@ -347,6 +362,7 @@ export function GroupingProvider({ children }: Props) {
         previewProductsPaging,
         fetchVehicles,
         fetchPendingProducts,
+        setPendingProductsPage,
         fetchGroups,
         setGroupsPage,
         setGroupsLimit,

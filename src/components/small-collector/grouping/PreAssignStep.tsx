@@ -7,7 +7,7 @@ import ProductList from './ProductList';
 interface PreAssignStepProps {
     loading: boolean;
     products: any[];
-    allProducts?: any[];
+    totalItems?: number;
     loadThreshold: number;
     setLoadThreshold: (value: number) => void;
     onGetSuggestion: (selectedProductIds?: string[]) => void;
@@ -19,7 +19,7 @@ interface PreAssignStepProps {
 const PreAssignStep: React.FC<PreAssignStepProps> = ({
     loading,
     products,
-    allProducts,
+    totalItems = 0,
     loadThreshold,
     setLoadThreshold,
     onGetSuggestion,
@@ -37,11 +37,11 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     };
 
     const handleToggleAll = () => {
-        const productsToToggle = allProducts && allProducts.length > 0 ? allProducts : products;
-        if (selectedProductIds.length === productsToToggle.length) {
+        // Toggle all products on current page
+        if (selectedProductIds.length === products.length) {
             setSelectedProductIds([]);
         } else {
-            setSelectedProductIds(productsToToggle.map(p => p.productId));
+            setSelectedProductIds(products.map(p => p.productId));
         }
     };
 
@@ -69,9 +69,9 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 <button
                     onClick={handleGetSuggestion}
                     disabled={loading || selectedProductIds.length === 0}
-                    className='py-2 px-4 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer ml-0 md:ml-4'
+                    className='py-2 px-4 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer ml-0 md:ml-4 whitespace-nowrap'
                 >
-                    {loading ? 'Đang xử lý...' : `Gom nhóm${selectedProductIds.length > 0 ? ` (${selectedProductIds.length} sản phẩm)` : ''}`}
+                    {loading ? 'Đang xử lý...' : `Gom nhóm${selectedProductIds.length > 0 ? ` (${selectedProductIds.length}/${totalItems})` : ''}`}
                 </button>
             </div>
 
@@ -86,7 +86,6 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 onToggleSelect={handleToggleSelect}
                 onToggleAll={handleToggleAll}
                 maxHeight={400}
-                allProducts={allProducts}
             />
         </div>
     );

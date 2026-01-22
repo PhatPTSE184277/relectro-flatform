@@ -115,11 +115,16 @@ export interface PendingProductsResponse {
 
 export const getPendingGroupingProducts = async (
     smallPointId: string,
-    workDate: string
+    workDate: string,
+    page?: number,
+    limit?: number
 ): Promise<PendingProductsResponse> => {
+    const params: any = { workDate };
+    if (page !== undefined) params.page = page;
+    if (limit !== undefined) params.limit = limit;
     const response = await axios.get(
         `/product-query/small-point/${smallPointId}`,
-        { params: { workDate } }
+        { params }
     );
     return response.data;
 };

@@ -10,6 +10,7 @@ import { CompanyConfigProvider } from '@/contexts/admin/CompanyConfigContext';
 import { AssignProductProvider } from '@/contexts/admin/AssignProductContext';
 import { AssignRecyclingProvider } from '@/contexts/admin/AssignRecyclingContext';
 import { DashboardProvider } from '@/contexts/admin/DashboardContext';
+import { AssignedProductProvider } from '@/contexts/admin/AssignedProductContext';
 
 export default function AdminLayout({
     children
@@ -17,9 +18,10 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     return (
-        <AssignRecyclingProvider>
-            <AssignProductProvider>
-                <CompanyConfigProvider>
+        <AssignedProductProvider>
+            <AssignRecyclingProvider>
+                <AssignProductProvider>
+                    <CompanyConfigProvider>
                     <PostProvider>
                         <UserProvider>
                             <CollectionCompanyProvider>
@@ -50,5 +52,6 @@ export default function AdminLayout({
                 </CompanyConfigProvider>
             </AssignProductProvider>
         </AssignRecyclingProvider>
+        </AssignedProductProvider>
     );
 }

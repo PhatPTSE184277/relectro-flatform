@@ -7,6 +7,7 @@ interface CustomDatePickerProps {
     placeholder?: string;
     showIcon?: boolean;
     disabled?: boolean;
+    dropdownAlign?: 'left' | 'right'; // 'left' (default) or 'right'
 }
 
 function parseLocalDate(dateString: string): Date {
@@ -25,6 +26,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     onChange,
     placeholder,
     disabled = false,
+    dropdownAlign = 'left',
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState<string>(value || '');
@@ -164,7 +166,10 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
             </div>
 
             {isOpen && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-primary-100 rounded-xl overflow-hidden z-50 animate-slide-up shadow-2xl w-80">
+                <div
+                    className={`absolute top-full mt-2 bg-white border border-primary-100 rounded-xl overflow-hidden z-50 animate-slide-up shadow-2xl w-80
+                        ${dropdownAlign === 'right' ? 'right-0 left-auto' : 'left-0 right-0'}`}
+                >
                     {/* Header: chọn tháng/năm */}
                     <div className="p-3 border-b border-primary-100 bg-primary-50">
                         <div className="flex items-center justify-between">

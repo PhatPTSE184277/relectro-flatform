@@ -5,7 +5,8 @@ import { getTodayString } from '@/utils/getDayString';
 import { useAssignProductContext } from '@/contexts/admin/AssignProductContext';
 import { useNotificationHub } from '@/hooks/useNotificationHub';
 import { useAuth } from '@/hooks/useAuth';
-import { Package } from 'lucide-react';
+import { Package, ListChecks } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import SearchBox from '@/components/ui/SearchBox';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import AssignedProductList from '@/components/admin/assign-product/AssignedProductList';
@@ -29,6 +30,7 @@ const AssignProductPage: React.FC = () => {
 
     const { user } = useAuth();
     const { notifications } = useNotifications();
+    const router = useRouter();
     const [search, setSearch] = useState('');
     const [selectedDate, setSelectedDate] = useState(getTodayString);
     const [showAssignModal, setShowAssignModal] = useState(false);
@@ -180,12 +182,22 @@ const AssignProductPage: React.FC = () => {
                         Phân công sản phẩm
                     </h1>
                 </div>
-                <div className='w-full sm:max-w-md'>
-                    <SearchBox
-                        value={search}
-                        onChange={setSearch}
-                        placeholder='Tìm kiếm theo tên sản phẩm, khách hàng...'
-                    />
+                <div className='flex flex-nowrap items-center gap-2 w-full max-w-2xl justify-end'>
+                    <button
+                        onClick={() => router.push('/admin/assigned-product')}
+                        className='px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition cursor-pointer shadow-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed'
+                        title='Xem sản phẩm đã phân công'
+                    >
+                        <ListChecks size={18} />
+                        Sản phẩm đã phân công
+                    </button>
+                    <div className='flex-1 min-w-0'>
+                        <SearchBox
+                            value={search}
+                            onChange={setSearch}
+                            placeholder='Tìm kiếm theo tên sản phẩm, khách hàng...'
+                        />
+                    </div>
                 </div>
             </div>
             <div className='mt-6 mb-4 flex flex-col sm:flex-row sm:items-center sm:gap-4'>

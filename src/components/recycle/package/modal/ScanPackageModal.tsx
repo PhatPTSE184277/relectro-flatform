@@ -49,7 +49,7 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
 
         setLoading(true);
         try {
-            const pkg = await getPackageById(trimmedId);
+            const pkg = await getPackageById(trimmedId, 1, 10);
 
             // Check if package status is valid for receiving
             if (pkg.status !== PackageStatus.Shipping) {
@@ -81,6 +81,19 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
         setPackageId('');
         setScannedPackage(null);
         onClose();
+    };
+
+    const handlePageChange = async (page: number) => {
+        if (!scannedPackage || loading) return;
+        setLoading(true);
+        try {
+            const pkg = await getPackageById(scannedPackage.packageId, page, 10);
+            setScannedPackage(pkg);
+        } catch (err) {
+            console.error('Failed to fetch page:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (!open) return null;
@@ -201,7 +214,11 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                                     </span>
                                     Danh sách sản phẩm
                                 </h3>
-                                <ProductList products={scannedPackage.products} />
+                                <ProductList 
+                                    products={scannedPackage.products}
+                                    showPagination={true}
+                                    onPageChange={handlePageChange}
+                                />
                             </div>
                         </>
                     )}

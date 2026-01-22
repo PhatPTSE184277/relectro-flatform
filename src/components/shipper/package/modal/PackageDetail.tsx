@@ -6,17 +6,22 @@ import { PackageType } from '@/types/Package';
 import SummaryCard from '@/components/ui/SummaryCard';
 import ProductList from './ProductList';
 import { PackageStatus } from '@/enums/PackageStatus';
+import { useShipperPackageContext } from '@/contexts/shipper/PackageContext';
 
 interface PackageDetailProps {
-    package: PackageType;
     onClose: () => void;
 }
 
 const PackageDetail: React.FC<PackageDetailProps> = ({
-    package: pkg,
     onClose
 }) => {
+    const { selectedPackage: pkg, fetchPackageDetail } = useShipperPackageContext();
+    
     if (!pkg) return null;
+
+    const handlePageChange = async (page: number) => {
+        await fetchPackageDetail(pkg.packageId, page, 10);
+    };
 
     // Summary items for consistency with small-collector
     const summaryItems = [
@@ -91,9 +96,11 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                             </span>
                             Danh sách sản phẩm
                         </h3>
-                        <div className='max-h-64'>
-                            <ProductList products={pkg.products} />
-                        </div>
+                        <ProductList 
+                            products={pkg.products}
+                            showPagination={true}
+                            onPageChange={handlePageChange}
+                        />
                     </div>
                 </div>
             </div>

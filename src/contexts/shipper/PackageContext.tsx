@@ -31,7 +31,7 @@ interface PackageContextType {
     selectedPackage: PackageType | null;
     setSelectedPackage: (pkg: PackageType | null) => void;
     fetchPackages: (customFilter?: Partial<PackageFilter>) => Promise<void>;
-    fetchPackageDetail: (packageId: string) => Promise<void>;
+    fetchPackageDetail: (packageId: string, page?: number, limit?: number) => Promise<void>;
     handleDeliverPackage: (packageId: string) => Promise<void>;
     filter: PackageFilter;
     setFilter: (filter: Partial<PackageFilter>) => void;

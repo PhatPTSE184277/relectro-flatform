@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { PackageType } from '@/types/Package';
 import { X, QrCode, List, Tag, MapPin, Home } from 'lucide-react';
 import SummaryCard from '@/components/ui/SummaryCard';
 import ProductList from './ProductList';
+import { useRecyclerPackageContext } from '@/contexts/recycle/PackageContext';
 
 interface ScanProductModalProps {
     open: boolean;
     onClose: () => void;
-    package: PackageType;
+    package: { packageId: string };
     onConfirm: (packageId: string, productQrCodes: string[]) => void;
 }
 
@@ -19,19 +19,25 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
     package: pkg,
     onConfirm
 }) => {
+    const { selectedPackage, fetchPackageDetail } = useRecyclerPackageContext();
     const [qrCode, setQrCode] = useState('');
     const [checkedProducts, setCheckedProducts] = useState<Set<string>>(new Set());
     const inputRef = useRef<HTMLInputElement>(null);
-
-    const totalChecked = pkg.products.data.filter(p => p.isChecked).length + checkedProducts.size;
 
     useEffect(() => {
         if (open) {
             setQrCode('');
             setCheckedProducts(new Set());
             setTimeout(() => inputRef.current?.focus(), 100);
+            fetchPackageDetail(pkg.packageId, 1, 10);
         }
-    }, [open]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, pkg.packageId]);
+
+    if (!open || !selectedPackage) return null;
+
+    const productsData = Array.isArray(selectedPackage.products) ? selectedPackage.products : selectedPackage.products.data;
+    const totalChecked = productsData.filter((p: any) => p.isChecked).length + checkedProducts.size;
 
     const handleScanQR = (e: React.FormEvent) => {
         e.preventDefault();
@@ -42,7 +48,7 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
         }
 
         // Check if product exists in package
-        const product = pkg.products.data.find((p) => p.qrCode === trimmedQr);
+        const product = productsData.find((p: any) => p.qrCode === trimmedQr);
         
         if (!product) {
             setQrCode('');
@@ -75,8 +81,12 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
             return;
         }
 
-        onConfirm(pkg.packageId, Array.from(checkedProducts));
+        onConfirm(selectedPackage.packageId, Array.from(checkedProducts));
         handleClose();
+    };
+
+    const handlePageChange = async (page: number) => {
+        await fetchPackageDetail(selectedPackage.packageId, page, 10);
     };
 
     const handleClose = () => {
@@ -84,8 +94,6 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
         setCheckedProducts(new Set());
         onClose();
     };
-
-    if (!open) return null;
 
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
@@ -119,17 +127,17 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
                             {
                                 icon: <Tag size={14} className='text-primary-400' />,
                                 label: 'Mã package',
-                                value: pkg.packageId,
+                                value: selectedPackage.packageId,
                             },
                             {
                                 icon: <MapPin size={14} className='text-primary-400' />,
                                 label: 'Điểm thu gom',
-                                value: pkg.smallCollectionPointsName,
+                                value: selectedPackage.smallCollectionPointsName,
                             },
                             {
                                 icon: <Home size={14} className='text-primary-400' />,
                                 label: 'Địa chỉ thu gom',
-                                value: pkg.smallCollectionPointsAddress,
+                                value: selectedPackage.smallCollectionPointsAddress,
                             },
                         ]}
                         singleRow={true}
@@ -159,7 +167,7 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
                                 </button>
                             </form>
                             <span className='text-sm font-semibold text-gray-700 whitespace-nowrap'>
-                                Tiến độ kiểm tra: <span className='text-primary-600 font-bold'>{totalChecked} / {pkg.products.totalItems}</span>
+                                Tiến độ kiểm tra: <span className='text-primary-600 font-bold'>{totalChecked} / {selectedPackage.products.totalItems}</span>
                             </span>
                         </div>
                     </div>
@@ -173,9 +181,12 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
                             Danh sách sản phẩm
                         </h3>
                             <ProductList
-                                products={pkg.products}
+                                products={selectedPackage.products}
                                 showStatus={true}
                                 checkedProducts={checkedProducts}
+                                showPagination={true}
+                                onPageChange={handlePageChange}
+                                maxHeight={260}
                             />
                     </div>
                 </div>

@@ -32,7 +32,7 @@ interface PackageContextType {
     selectedPackage: PackageType | null;
     setSelectedPackage: (pkg: PackageType | null) => void;
     fetchPackages: (customFilter?: Partial<PackageFilter>) => Promise<void>;
-    fetchPackageDetail: (packageId: string) => Promise<void>;
+    fetchPackageDetail: (packageId: string, page?: number, limit?: number) => Promise<void>;
     handleSendPackageToRecycler: (packageId: string) => Promise<void>;
     handleMarkProductsAsChecked: (data: { packageId: string; productQrCode: string[] }) => Promise<void>;
     filter: PackageFilter;
@@ -121,15 +121,12 @@ export const RecyclerPackageProvider: React.FC<Props> = ({ children }) => {
 
     const fetchPackageDetail = useCallback(
         async (packageId: string, page: number = 1, limit: number = 10) => {
-            setLoading(true);
             try {
                 const pkg = await getPackageById(packageId, page, limit);
                 setSelectedPackage(pkg);
             } catch (err) {
                 console.error('fetchPackageDetail error', err);
                 setSelectedPackage(null);
-            } finally {
-                setLoading(false);
             }
         },
         []

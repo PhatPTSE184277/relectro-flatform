@@ -21,6 +21,7 @@ const ShipperPackagePage: React.FC = () => {
         filter,
         setFilter,
         totalPages,
+        fetchPackageDetail,
         handleDeliverPackage,
         allStats
     } = useShipperPackageContext();
@@ -35,9 +36,9 @@ const ShipperPackagePage: React.FC = () => {
         return matchSearch;
     });
 
-    const handleViewDetail = (pkg: PackageType) => {
-        setSelectedPackage(pkg);
+    const handleViewDetail = async (pkg: PackageType) => {
         setShowDetailModal(true);
+        await fetchPackageDetail(pkg.packageId, 1, 10);
     };
 
     const handleCloseModal = () => {
@@ -115,7 +116,7 @@ const ShipperPackagePage: React.FC = () => {
             {/* Detail Modal */}
             {showDetailModal && selectedPackage && (
                 <PackageDetail
-                    package={selectedPackage}
+
                     onClose={handleCloseModal}
                 />
             )}
