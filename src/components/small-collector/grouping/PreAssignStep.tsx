@@ -8,6 +8,7 @@ interface PreAssignStepProps {
     loading: boolean;
     products: any[];
     totalItems?: number;
+    allProductIds?: string[]; // All product IDs from API
     loadThreshold: number;
     setLoadThreshold: (value: number) => void;
     onGetSuggestion: (selectedProductIds?: string[]) => void;
@@ -19,7 +20,7 @@ interface PreAssignStepProps {
 const PreAssignStep: React.FC<PreAssignStepProps> = ({
     loading,
     products,
-    totalItems = 0,
+    allProductIds,
     loadThreshold,
     setLoadThreshold,
     onGetSuggestion,
@@ -37,11 +38,18 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     };
 
     const handleToggleAll = () => {
-        // Toggle all products on current page
-        if (selectedProductIds.length === products.length) {
+        // Select all products from API (all pages)
+        const targetIds = allProductIds && allProductIds.length > 0 
+            ? allProductIds 
+            : products.map(p => p.productId);
+        
+        // Check if all are already selected
+        const allSelected = targetIds.every(id => selectedProductIds.includes(id));
+        
+        if (allSelected) {
             setSelectedProductIds([]);
         } else {
-            setSelectedProductIds(products.map(p => p.productId));
+            setSelectedProductIds(targetIds);
         }
     };
 
@@ -71,7 +79,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                     disabled={loading || selectedProductIds.length === 0}
                     className='py-2 px-4 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer ml-0 md:ml-4 whitespace-nowrap'
                 >
-                    {loading ? 'Đang xử lý...' : `Gom nhóm${selectedProductIds.length > 0 ? ` (${selectedProductIds.length}/${totalItems})` : ''}`}
+                    {loading ? 'Đang xử lý...' : `Gom nhóm${selectedProductIds.length > 0 ? ` (${selectedProductIds.length})` : ''}`}
                 </button>
             </div>
 
@@ -85,7 +93,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 selectedProductIds={selectedProductIds}
                 onToggleSelect={handleToggleSelect}
                 onToggleAll={handleToggleAll}
-                maxHeight={400}
+                maxHeight={365}
             />
         </div>
     );

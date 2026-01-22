@@ -1,5 +1,6 @@
 "use client";
 import { formatDimensionText, formatWeightKg } from "@/utils/formatNumber";
+import { formatDate } from "@/utils/FormatDate";
 import React, { useState, useEffect } from 'react';
 import {
     Truck,
@@ -85,7 +86,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
     const summaryItems: SummaryCardItem[] = [
         {
             label: 'Ngày thu gom',
-            value: new Date(grouping.groupDate).toLocaleDateString('vi-VN'),
+            value: grouping.groupDate ? formatDate(grouping.groupDate) : '',
             icon: <Calendar size={14} className='text-primary-400' />,
         },
         {

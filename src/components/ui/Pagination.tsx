@@ -31,7 +31,7 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="flex justify-center mt-6 gap-2 items-center">
+    <div className="flex justify-center mt-2 gap-2 items-center">
       <button
         className={`w-7 h-7 rounded-full bg-primary-50 border flex items-center justify-center text-primary-600 text-xs hover:bg-primary-100 transition ${page === 1 ? 'cursor-default opacity-50' : 'cursor-pointer'}`}
         disabled={page === 1}

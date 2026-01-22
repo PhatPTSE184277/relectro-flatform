@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { X, MapPin, Clock, CheckCircle, Package } from 'lucide-react';
+import { X, MapPin, Clock, CheckCircle, Package, User } from 'lucide-react';
 import { useTrackingContext } from '@/contexts/admin/TrackingContext';
 import SummaryCard from '@/components/ui/SummaryCard';
 
@@ -74,7 +74,7 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ product, onClose }) => {
                                 value: productInfo?.brandName || 'N/A',
                             },
                             {
-                                icon: <MapPin size={14} className='text-primary-400' />,
+                                icon: <User size={14} className='text-primary-400' />,
                                 label: 'Người gửi',
                                 value: productInfo?.sender?.name || product?.sender?.name || 'N/A',
                             }

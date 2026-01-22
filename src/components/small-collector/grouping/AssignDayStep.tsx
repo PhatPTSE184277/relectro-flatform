@@ -247,14 +247,18 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                     <ProductList
                         products={paginatedProducts}
                         loading={loading}
-                        showCheckbox={false}
-                        maxHeight={250}
-                    />
-                    <Pagination
                         page={productPage}
-                        totalPages={totalPages}
-                        onPageChange={setProductPage}
+                        itemsPerPage={itemsPerPage}
+                        showCheckbox={false}
+                        maxHeight={230}
                     />
+                    {totalPages > 1 && (
+                        <Pagination
+                            page={productPage}
+                            totalPages={totalPages}
+                            onPageChange={setProductPage}
+                        />
+                    )}
                 </>
             )}
 

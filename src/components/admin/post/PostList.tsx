@@ -106,7 +106,7 @@ const PostList = React.forwardRef<HTMLDivElement, PostListProps>(({
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full align-middle">
           <div className="overflow-hidden">
-            <div className="max-h-105 overflow-y-auto" ref={ref}>
+            <div className="max-h-100  overflow-y-auto" ref={ref}>
               <table className="min-w-full text-sm text-gray-800 table-fixed">
                 <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10">
                   <tr>

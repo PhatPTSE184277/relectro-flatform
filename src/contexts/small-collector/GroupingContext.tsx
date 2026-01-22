@@ -27,6 +27,7 @@ import {
     PreviewProductsPagingResponse
 } from '@/services/small-collector/GroupingService';
 import { useAuth } from '@/hooks/useAuth';
+import { getTodayString } from '@/utils/getDayString';
 
 interface SuggestedVehicle {
     id: number;
@@ -85,6 +86,7 @@ interface GroupingContextType {
     pendingProductsPage: number;
     pendingProductsLimit: number;
     pendingProductsTotalPages: number;
+    allProductIds: string[];
     preAssignResult: PreAssignResponse | null;
     autoGroupResult: any | null;
     groupDetail: any | null;
@@ -97,6 +99,7 @@ interface GroupingContextType {
     previewProductsPaging: PreviewProductsPagingResponse | null;
     fetchVehicles: () => Promise<void>;
     fetchPendingProducts: (workDate?: string, page?: number, limit?: number) => Promise<void>;
+    fetchAllProductIds: (workDate?: string) => Promise<void>;
     setPendingProductsPage: (page: number) => void;
     fetchGroups: (page?: number, limit?: number) => Promise<void>;
     setGroupsPage: (page: number) => void;
@@ -130,6 +133,7 @@ export function GroupingProvider({ children }: Props) {
     const [pendingProductsPage, setPendingProductsPage] = useState<number>(1);
     const [pendingProductsLimit, setPendingProductsLimit] = useState<number>(10);
     const [pendingProductsTotalPages, setPendingProductsTotalPages] = useState<number>(1);
+    const [allProductIds, setAllProductIds] = useState<string[]>([]);
     const [preAssignResult, setPreAssignResult] = useState<PreAssignResponse | null>(null);
     const [autoGroupResult, setAutoGroupResult] = useState<any | null>(null);
     const [groupDetail, setGroupDetail] = useState<any | null>(null);
@@ -170,7 +174,26 @@ export function GroupingProvider({ children }: Props) {
             setLoading(false);
         }
     }, [user?.smallCollectionPointId]);
-
+    const fetchAllProductIds = useCallback(async (workDate?: string) => {
+        if (!user?.smallCollectionPointId) {
+            console.log('No smallCollectionPointId', user);
+            return;
+        }
+        
+        try {
+            const data = await getPendingGroupingProducts(
+                String(user.smallCollectionPointId),
+                workDate || getTodayString(),
+                1,
+                999999 // Get all products
+            );
+            const ids = data.products?.map((p: any) => p.productId) || [];
+            setAllProductIds(ids);
+        } catch (err) {
+            console.error('fetchAllProductIds error', err);
+            setAllProductIds([]);
+        }
+    }, [user]);
     const fetchPendingProducts = useCallback(async (workDate?: string, page?: number, limit?: number) => {
         if (!user?.smallCollectionPointId) {
             console.warn('No smallCollectionPointId found in user profile:', user);
@@ -188,7 +211,7 @@ export function GroupingProvider({ children }: Props) {
             console.log('Products data received:', data);
             setPendingProductsData(data);
             setPendingProducts(data.products || []);
-            setPendingProductsTotalPages(Math.ceil((data.total || 0) / currentLimit));
+            setPendingProductsTotalPages(data.totalPages || 1);
         } catch (err) {
             console.error('fetchPendingProducts error', err);
         } finally {
@@ -350,6 +373,7 @@ export function GroupingProvider({ children }: Props) {
         pendingProductsPage,
         pendingProductsLimit,
         pendingProductsTotalPages,
+        allProductIds,
         preAssignResult,
         autoGroupResult,
         groupDetail,
@@ -362,6 +386,7 @@ export function GroupingProvider({ children }: Props) {
         previewProductsPaging,
         fetchVehicles,
         fetchPendingProducts,
+        fetchAllProductIds,
         setPendingProductsPage,
         fetchGroups,
         setGroupsPage,

@@ -80,19 +80,6 @@ const GroupingListPage: React.FC = () => {
                 </button>
             </div>
 
-            {/* Filter */}
-            {/* <GroupingFilter
-                status={filter.status}
-                onFilterChange={(status) => setFilter({ ...filter, status, page: 1 })}
-            /> */}
-
-            {/* Search */}
-            {/* <SearchBox
-                value={search}
-                onChange={setSearch}
-                placeholder='Tìm kiếm theo mã nhóm, phương tiện, người thu gom...'
-            /> */}
-
             {/* List */}
             <GroupingListComponent
                 groupings={filteredGroupings}

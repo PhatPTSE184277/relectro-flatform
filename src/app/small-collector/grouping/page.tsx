@@ -21,9 +21,11 @@ const GroupingPage: React.FC = () => {
         pendingProductsData,
         pendingProductsPage,
         pendingProductsTotalPages,
+        allProductIds,
         preAssignResult,
         fetchVehicles,
         fetchPendingProducts,
+        fetchAllProductIds,
         setPendingProductsPage,
         getPreAssignSuggestion,
         createGrouping,
@@ -46,6 +48,13 @@ const GroupingPage: React.FC = () => {
     useEffect(() => {
         fetchPendingProducts(selectedDate, pendingProductsPage);
     }, [selectedDate, pendingProductsPage, fetchPendingProducts]);
+
+    useEffect(() => {
+        // Fetch all product IDs when date changes or when data is loaded
+        if (pendingProductsData?.totalItems) {
+            fetchAllProductIds(selectedDate);
+        }
+    }, [selectedDate, pendingProductsData?.totalItems, fetchAllProductIds]);
 
     const handleGetSuggestion = async (selectedProductIds?: string[]) => {
         await getPreAssignSuggestion(loadThreshold, selectedProductIds);
@@ -106,23 +115,26 @@ const GroupingPage: React.FC = () => {
 
             {/* Content (no white box) */}
             {activeStep === 1 && (
-                <>
+                <div className='space-y-4'>
                     <PreAssignStep
                         loading={loading}
                         products={pendingProducts}
-                        totalItems={pendingProductsData?.total || 0}
+                        totalItems={pendingProductsData?.totalItems || 0}
+                        allProductIds={allProductIds}
                         loadThreshold={loadThreshold}
                         setLoadThreshold={setLoadThreshold}
                         onGetSuggestion={handleGetSuggestion}
                         page={pendingProductsPage}
                         itemsPerPage={10}
                     />
-                    <Pagination
-                        page={pendingProductsPage}
-                        totalPages={pendingProductsTotalPages}
-                        onPageChange={setPendingProductsPage}
-                    />
-                </>
+                    {pendingProductsTotalPages > 1 && (
+                        <Pagination
+                            page={pendingProductsPage}
+                            totalPages={pendingProductsTotalPages}
+                            onPageChange={setPendingProductsPage}
+                        />
+                    )}
+                </div>
             )}
 
             {activeStep === 2 && preAssignResult && (

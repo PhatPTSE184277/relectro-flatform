@@ -36,7 +36,7 @@ const AssignProductSelectList: React.FC<AssignProductSelectListProps> = ({
     return (
         <React.Fragment>
             <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
-                <div className='max-h-83 overflow-y-auto'>
+                <div className='max-h-75 overflow-y-auto'>
                     <table className='w-full text-sm text-gray-800 table-fixed'>
                         <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                             <tr>

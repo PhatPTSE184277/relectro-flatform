@@ -5,7 +5,8 @@ import { X } from 'lucide-react';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import CustomDatePicker from '@/components/ui/CustomDatePicker';
+import SummaryCard from '@/components/ui/SummaryCard';
+import { formatDate } from '@/utils/FormatDate';
 
 interface ReassignDriverModalProps {
     open: boolean;
@@ -20,28 +21,18 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
 }) => {
     const user = useSelector((state: RootState) => state.auth.user);
     const { driverCandidates, reassignLoading, fetchDriverCandidates, reassignDriver } = useGroupingContext();
-    const [selectedDate, setSelectedDate] = useState<string>('');
     const [selectedDriverId, setSelectedDriverId] = useState<string>('');
 
-    useEffect(() => {
-        if (open && grouping) {
-            // Set ngày mặc định là ngày của nhóm hoặc ngày hiện tại nếu không có
-            const groupDate = grouping.groupDate ? new Date(grouping.groupDate) : new Date();
-            if (!isNaN(groupDate.getTime())) {
-                setSelectedDate(groupDate.toISOString().split('T')[0]);
-            } else {
-                console.error('Invalid groupDate:', grouping.groupDate);
-                setSelectedDate(new Date().toISOString().split('T')[0]);
-            }
-            setSelectedDriverId('');
-        }
-    }, [open, grouping]);
+    // Removed setSelectedDriverId from useEffect to avoid cascading renders
 
     useEffect(() => {
-        if (open && selectedDate && user?.collectionCompanyId) {
-            fetchDriverCandidates(selectedDate);
+        if (open && grouping?.groupDate && user?.collectionCompanyId) {
+            const groupDate = new Date(grouping.groupDate);
+            if (!isNaN(groupDate.getTime())) {
+                fetchDriverCandidates(groupDate.toISOString().split('T')[0]);
+            }
         }
-    }, [open, selectedDate, user?.collectionCompanyId, fetchDriverCandidates]);
+    }, [open, grouping?.groupDate, user?.collectionCompanyId, fetchDriverCandidates]);
 
     const handleConfirm = async () => {
         if (!selectedDriverId) {
@@ -52,7 +43,6 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
     };
 
     const handleClose = () => {
-        setSelectedDate('');
         setSelectedDriverId('');
         onClose();
     };
@@ -89,31 +79,22 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
 
                 {/* Body */}
                 <div className='flex-1 p-6 bg-white space-y-6' style={{ overflow: 'visible' }}>
-                    {/* Current Driver Info and Date Picker */}
-                    <div className='bg-gray-50 rounded-xl p-4 border border-gray-200 flex items-center justify-between gap-4'>
-                        <div className='flex-1'>
-                            <h3 className='text-sm font-medium text-gray-700 mb-2'>
-                                Tài xế hiện tại
-                            </h3>
-                            <div className='flex items-center gap-2'>
-                                <span className='font-semibold text-gray-900'>
-                                    {grouping.collector}
-                                </span>
-                            </div>
-                        </div>
-                        <div className='flex-1'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>
-                                Ngày thu gom
-                            </label>
-                            <div style={{ position: 'relative', zIndex: 50 }}>
-                                <CustomDatePicker
-                                    value={selectedDate}
-                                    onChange={setSelectedDate}
-                                    placeholder='Chọn ngày thu gom'
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    {/* SummaryCard for current driver and date */}
+                    <SummaryCard
+                        items={[
+                            {
+                                label: 'Tài xế hiện tại',
+                                value: grouping.collector,
+                                icon: undefined,
+                            },
+                            {
+                                label: 'Ngày thu gom',
+                                value: grouping.groupDate ? formatDate(grouping.groupDate) : '',
+                                icon: undefined,
+                            },
+                        ]}
+                        singleRow={true}
+                    />
 
                     {/* Driver List */}
                     <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>

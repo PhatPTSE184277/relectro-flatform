@@ -107,7 +107,10 @@ export interface PendingProductsResponse {
     smallPointName: string;
     radiusMaxConfigKm: number;
     maxRoadDistanceKm: number;
-    total: number;
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
     totalWeightKg: number;
     totalVolumeM3: number;
     products: any[];

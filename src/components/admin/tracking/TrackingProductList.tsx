@@ -16,7 +16,7 @@ const TrackingProductList: React.FC<TrackingProductListProps & { tableRef?: Reac
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>
-                <div className='max-h-95 overflow-y-auto' ref={tableRef}>
+                <div className='max-h-90 overflow-y-auto' ref={tableRef}>
                     <table className='min-w-full text-sm text-gray-800 table-fixed'>
                         <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                             <tr>
