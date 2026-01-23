@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
-import AssignedProductShow from './AssignedProductShow';
-import AssignedProductSkeleton from './AssignedProductSkeleton';
+import AssignedProductShow from './AssignProductShow';
+import AssignedProductSkeleton from './AssignProductSkeleton';
 import { useAssignProductContext } from '@/contexts/admin/AssignProductContext';
 
 interface AssignedProductListProps {
@@ -8,7 +8,8 @@ interface AssignedProductListProps {
     loading: boolean;
 }
 
-const AssignedProductListInner = forwardRef<HTMLDivElement, AssignedProductListProps & { page: number; pageSize: number }>(
+
+const AssignProductList = forwardRef<HTMLDivElement, AssignedProductListProps & { page: number; pageSize: number }>(
     ({ products, loading, page, pageSize }, ref) => {
         return (
             <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -55,13 +56,13 @@ const AssignedProductListInner = forwardRef<HTMLDivElement, AssignedProductListP
     }
 );
 
-AssignedProductListInner.displayName = "AssignedProductListInner";
+AssignProductList.displayName = "AssignProductList";
 
-const AssignedProductList = forwardRef<HTMLDivElement, AssignedProductListProps>((props, ref) => {
+const AssignProductListWrapper = forwardRef<HTMLDivElement, AssignedProductListProps>((props, ref) => {
     const { page, pageSize } = useAssignProductContext();
-    return <AssignedProductListInner {...props} page={page} pageSize={pageSize} ref={ref} />;
+    return <AssignProductList {...props} page={page} pageSize={pageSize} ref={ref} />;
 });
 
-AssignedProductList.displayName = "AssignedProductList";
+AssignProductListWrapper.displayName = "AssignProductList";
 
-export default AssignedProductList;
+export default AssignProductListWrapper;

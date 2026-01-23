@@ -62,8 +62,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ items, singleRow = false, lab
                                     minWidth: 0,
                                     wordBreak: 'break-word',
                                     overflowWrap: 'break-word',
-                                    whiteSpace: 'normal',
-                                    ...(typeof item.value === 'number' ? { paddingLeft: '10.5em' } : {})
+                                    whiteSpace: 'normal'
                                 }}
                             >
                                 {formatValue(item.value, item.label)}

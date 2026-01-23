@@ -9,12 +9,13 @@ import { Package, ListChecks } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import SearchBox from '@/components/ui/SearchBox';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
-import AssignedProductList from '@/components/admin/assign-product/AssignedProductList';
-import AssignProductModal from '@/components/admin/assign-product/modal/AssignProductModal';
+import AssignProductList from '@/components/admin/assign-product/AssignProductList';
+import AssignProductConfirmModal from '@/components/admin/assign-product/modal/AssignProductConfirmModal';
 import Pagination from '@/components/ui/Pagination';
 import ProcessingModal from '@/components/admin/assign-product/modal/ProcessingModal';
 import { useNotifications } from '@/contexts/NotificationContext';
 import Toast from '@/components/ui/Toast';
+import { getUnassignedProducts } from '@/services/admin/AssignProductService';
 
 const AssignProductPage: React.FC = () => {
     const {
@@ -34,6 +35,7 @@ const AssignProductPage: React.FC = () => {
     const [search, setSearch] = useState('');
     const [selectedDate, setSelectedDate] = useState(getTodayString);
     const [showAssignModal, setShowAssignModal] = useState(false);
+    const [unassignedCount, setUnassignedCount] = useState(0);
     const [processing, setProcessing] = useState(() => {
         // Nếu có timestamp trong localStorage thì đang processing
         if (typeof window !== 'undefined') {
@@ -127,7 +129,22 @@ const AssignProductPage: React.FC = () => {
         fetchAssignedProducts(date, 1, pageSize);
     };
 
-    const handleAssignProducts = async (data: { workDate: string; productIds: string[] }) => {
+    const fetchUnassignedCount = async (date: string) => {
+        try {
+            const data = await getUnassignedProducts(date);
+            setUnassignedCount(data.length);
+        } catch (error) {
+            console.log(error);
+            setUnassignedCount(0);
+        }
+    };
+
+    const handleShowAssignModal = async () => {
+        await fetchUnassignedCount(selectedDate);
+        setShowAssignModal(true);
+    };
+
+    const handleAssignProducts = async () => {
         setShowAssignModal(false);
         setProcessing(true);
         
@@ -140,7 +157,11 @@ const AssignProductPage: React.FC = () => {
             localStorage.setItem('ewise_processing_time', timestamp);
         }
         try {
-            await assignProductsToDate(data);
+            // Lấy tất cả sản phẩm chưa phân công
+            const unassignedProducts = await getUnassignedProducts(selectedDate);
+            const productIds = unassignedProducts.map(p => p.productId);
+            
+            await assignProductsToDate({ workDate: selectedDate, productIds });
             // Không tắt processing ở đây, chờ SignalR notification
         } catch (error) {
             // Chỉ tắt processing nếu có lỗi
@@ -211,7 +232,7 @@ const AssignProductPage: React.FC = () => {
                 </div>
                 <div className='flex flex-1 justify-end w-full sm:w-auto mt-2 sm:mt-0'>
                     <button
-                        onClick={() => setShowAssignModal(true)}
+                        onClick={handleShowAssignModal}
                         disabled={processing}
                         className='px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition cursor-pointer shadow-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed'
                     >
@@ -222,7 +243,7 @@ const AssignProductPage: React.FC = () => {
             </div>
 
             {/* Product List */}
-            <AssignedProductList
+            <AssignProductList
                 products={filteredProducts}
                 loading={loading}
                 ref={tableScrollRef}
@@ -237,11 +258,12 @@ const AssignProductPage: React.FC = () => {
 
             {/* Assign Modal */}
             {showAssignModal && (
-                <AssignProductModal
+                <AssignProductConfirmModal
                     open={showAssignModal}
                     onClose={() => setShowAssignModal(false)}
                     onConfirm={handleAssignProducts}
-                    selectedDate={selectedDate}
+                    workDate={selectedDate}
+                    productCount={unassignedCount}
                 />
             )}
 
