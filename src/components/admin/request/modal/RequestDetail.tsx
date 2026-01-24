@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState } from 'react';
-import PostApprove from './PostApprove';
+import RequestApprove from './RequestApprove';
 import { formatDate } from '@/utils/FormatDate';
 import { groupScheduleByTimeRange } from '@/utils/groupScheduleByTimeRange';
 import {
@@ -18,11 +18,11 @@ import {
 import SummaryCard from '@/components/ui/SummaryCard';
 import UserInfo from '@/components/ui/UserInfo';
 
-interface PostDetailProps {
-    post: any;
+interface RequestDetailProps {
+    request: any;
     onClose: () => void;
-    onApprove: (postId: string) => void;
-    onReject: (postId: string, reason: string) => void;
+    onApprove: (requestId: string) => void;
+    onReject: (requestId: string, reason: string) => void;
 }
 
 // Normalize status for display and badge
@@ -35,8 +35,8 @@ function normalizeStatus(status: string = ''): string {
     return status;
 }
 
-const PostDetail: React.FC<PostDetailProps> = ({
-    post,
+const RequestDetail: React.FC<RequestDetailProps> = ({
+    request,
     onClose,
     onApprove,
     onReject
@@ -57,7 +57,7 @@ const PostDetail: React.FC<PostDetailProps> = ({
     const [customReason, setCustomReason] = useState("");
 
     const handleApproveConfirm = () => {
-        onApprove(post.id);
+        onApprove(request.id);
         setIsApproveModalOpen(false);
         onClose();
     };
@@ -67,14 +67,14 @@ const PostDetail: React.FC<PostDetailProps> = ({
         if (selectedTags.includes("Khác")) {
             if (customReason.trim()) reasons.push(customReason.trim());
         }
-        onReject(post.id, reasons.join("; "));
+        onReject(request.id, reasons.join("; "));
         setShowRejectForm(false);
         setSelectedTags([]);
         setCustomReason("");
         onClose();
     };
 
-    const isPending = normalizeStatus(post.status) === 'Chờ duyệt';
+    const isPending = normalizeStatus(request.status) === 'Chờ duyệt';
 
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
@@ -98,7 +98,7 @@ const PostDetail: React.FC<PostDetailProps> = ({
                             className="flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-primary-600 text-white"
                             style={{ minWidth: 110 }}
                         >
-                            {normalizeStatus(post.status)}
+                            {normalizeStatus(request.status)}
                         </span>
                         <button
                             onClick={onClose}
@@ -117,17 +117,17 @@ const PostDetail: React.FC<PostDetailProps> = ({
                         <div className='relative w-full flex flex-col items-center gap-4'>
                             <img
                                 src={
-                                    post.imageUrls?.[selectedImg] ||
+                                    request.imageUrls?.[selectedImg] ||
                                     '/placeholder.png'
                                 }
                                 alt='Ảnh sản phẩm'
                                 className='w-full max-w-[180px] h-40 object-contain rounded-xl border border-primary-200 bg-white cursor-zoom-in shadow-sm'
                                 onClick={() =>
-                                    setZoomImg(post.imageUrls?.[selectedImg])
+                                    setZoomImg(request.imageUrls?.[selectedImg])
                                 }
                             />
                             <div className='flex gap-2 flex-wrap justify-center'>
-                                {(post.imageUrls ?? []).map(
+                                {(request.imageUrls ?? []).map(
                                     (img: string, idx: number) => (
                                         <img
                                             key={idx}
@@ -146,8 +146,8 @@ const PostDetail: React.FC<PostDetailProps> = ({
                         </div>
 
                         {/* AI Labels - moved to left */}
-                        {Array.isArray(post.aggregatedAiLabels) &&
-                            post.aggregatedAiLabels.length > 0 && (
+                        {Array.isArray(request.aggregatedAiLabels) &&
+                            request.aggregatedAiLabels.length > 0 && (
                                 <div className='p-4 bg-primary-50 rounded-lg border border-primary-100 w-full mt-4'>
                                     <div className='flex items-center gap-2 mb-2'>
                                         <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
@@ -158,7 +158,7 @@ const PostDetail: React.FC<PostDetailProps> = ({
                                         </p>
                                     </div>
                                     <div className='flex gap-2 flex-wrap'>
-                                        {post.aggregatedAiLabels.map(
+                                        {request.aggregatedAiLabels.map(
                                             (label: any, idx: number) => (
                                                 <span
                                                     key={idx}
@@ -182,7 +182,7 @@ const PostDetail: React.FC<PostDetailProps> = ({
                     <div className='md:w-2/3 p-6 pt-6 space-y-2 overflow-y-visible max-h-full'>
                         {/* Product Details */}
 
-                        {post.product && (
+                        {request.product && (
                             <>
                                 <SummaryCard
                                     label={
@@ -196,27 +196,27 @@ const PostDetail: React.FC<PostDetailProps> = ({
                                         {
                                             icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><List className="w-4 h-4 text-primary-500" /></span>,
                                             label: 'Danh mục chính',
-                                            value: post.parentCategory || ''
+                                            value: request.parentCategory || ''
                                         },
                                         {
                                             icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><List className="w-4 h-4 text-primary-500" /></span>,
                                             label: 'Danh mục phụ',
-                                            value: post.subCategory || ''
+                                            value: request.subCategory || ''
                                         },
-                                        post.product.brandName && {
+                                        request.product.brandName && {
                                             icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><User className="w-4 h-4 text-primary-500" /></span>,
                                             label: 'Thương hiệu',
-                                            value: post.product.brandName
+                                            value: request.product.brandName
                                         },
-                                        post.product.description && {
+                                        request.product.description && {
                                             icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Info className="w-4 h-4 text-primary-500" /></span>,
                                             label: 'Mô tả',
-                                            value: post.product.description
+                                            value: request.product.description
                                         },
-                                        post.product.sizeTierName && {
+                                        request.product.sizeTierName && {
                                             icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Package className="w-4 h-4 text-primary-500" /></span>,
                                             label: 'Kích thước',
-                                            value: post.product.sizeTierName
+                                            value: request.product.sizeTierName
                                         }
                                     ].filter(Boolean)}
                                 />
@@ -230,44 +230,44 @@ const PostDetail: React.FC<PostDetailProps> = ({
                                 {
                                     icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Star className="w-4 h-4 text-primary-500" /></span>,
                                     label: 'Điểm ước tính',
-                                    value: post.estimatePoint != null ? post.estimatePoint : ''
+                                    value: request.estimatePoint != null ? request.estimatePoint : ''
                                 },
                                 {
                                     icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Calendar className="w-4 h-4 text-primary-500" /></span>,
                                     label: 'Ngày đăng',
-                                    value: post.date ? formatDate(post.date) : ''
+                                    value: request.date ? formatDate(request.date) : ''
                                 },
-                                ...(Array.isArray(post.schedule) && post.schedule.length > 0
+                                ...(Array.isArray(request.schedule) && request.schedule.length > 0
                                     ? [{
                                         icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Clock className="w-4 h-4 text-primary-500" /></span>,
                                         label: 'Lịch thu gom',
-                                        value: groupScheduleByTimeRange(post.schedule)
+                                        value: groupScheduleByTimeRange(request.schedule)
                                             .map(({ dateStr, range }) => `${range} | ${dateStr}`)
                                             .join(', '),
                                         colSpan: 2
                                     }]
                                     : []),
-                                ...(post.address
+                                ...(request.address
                                     ? [{
                                         icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><MapPin className="w-4 h-4 text-primary-500" /></span>,
                                         label: 'Địa chỉ',
-                                        value: <span className="block w-full wrap-break-word">{post.address}</span>,
+                                        value: <span className="block w-full wrap-break-word">{request.address}</span>,
                                         colSpan: 2
                                     }]
                                     : []),
-                                ...(post.postNote
+                                ...(request.postNote
                                     ? [{
                                         icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-yellow-50 border border-yellow-200"><Info className="w-4 h-4 text-yellow-500" /></span>,
                                         label: 'Ghi chú',
-                                        value: <span className="block w-full wrap-break-word text-yellow-700">{post.postNote}</span>,
+                                        value: <span className="block w-full wrap-break-word text-yellow-700">{request.postNote}</span>,
                                         colSpan: 2
                                     }]
                                     : []),
-                                ...(post.rejectMessage
+                                ...(request.rejectMessage
                                     ? [{
                                         icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-red-50 border border-red-200"><Info className="w-4 h-4 text-red-500" /></span>,
                                         label: 'Lý do từ chối',
-                                        value: <span className="block w-full wrap-break-word text-red-700">{post.rejectMessage}</span>,
+                                        value: <span className="block w-full wrap-break-word text-red-700">{request.rejectMessage}</span>,
                                         colSpan: 2
                                     }]
                                     : [])
@@ -276,7 +276,7 @@ const PostDetail: React.FC<PostDetailProps> = ({
 
                         {/* Sender Info */}
                         <div className='mt-2 mb-2'>
-                            <UserInfo user={post.sender} />
+                            <UserInfo user={request.sender} />
                         </div>
 
                         {/* Reject Message & Post Note moved to SummaryCard */}
@@ -399,7 +399,7 @@ const PostDetail: React.FC<PostDetailProps> = ({
             </div>
 
             {/* Modals */}
-            <PostApprove
+            <RequestApprove
                 open={isApproveModalOpen}
                 onClose={() => setIsApproveModalOpen(false)}
                 onConfirm={handleApproveConfirm}
@@ -428,4 +428,4 @@ const PostDetail: React.FC<PostDetailProps> = ({
     );
 };
 
-export default PostDetail;
+export default RequestDetail;

@@ -2,7 +2,7 @@ import { IoFilterOutline } from 'react-icons/io5';
 import React from 'react';
 import { PostStatus } from '@/enums/PostStatus';
 
-interface PostFilterProps {
+interface RequestFilterProps {
     status: PostStatus;
     stats: {
         total: number;
@@ -13,7 +13,7 @@ interface PostFilterProps {
     onFilterChange: (status: PostStatus) => void;
 }
 
-const PostFilter: React.FC<PostFilterProps> = ({
+const RequestFilter: React.FC<RequestFilterProps> = ({
     status,
     stats,
     onFilterChange
@@ -59,4 +59,4 @@ const PostFilter: React.FC<PostFilterProps> = ({
     );
 };
 
-export default PostFilter;
+export default RequestFilter;

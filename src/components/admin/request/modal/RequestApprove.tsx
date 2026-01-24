@@ -1,12 +1,12 @@
 import React from "react";
 
-interface PostApproveProps {
+interface RequestApproveProps {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
 }
 
-const PostApprove: React.FC<PostApproveProps> = ({
+const RequestApprove: React.FC<RequestApproveProps> = ({
   open,
   onClose,
   onConfirm,
@@ -23,7 +23,7 @@ const PostApprove: React.FC<PostApproveProps> = ({
       <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-fadeIn">
         <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-green-50 to-primary-100">
           <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            Xác nhận duyệt bài đăng
+            Xác nhận duyệt yêu cầu
           </h2>
           <button
             onClick={onClose}
@@ -36,7 +36,7 @@ const PostApprove: React.FC<PostApproveProps> = ({
         {/* Body */}
         <div className="p-6 flex-1 overflow-y-auto bg-gray-50 space-y-5">
           <div className="text-gray-700 text-base">
-            Bạn có chắc chắn muốn <span className="font-semibold text-green-600">duyệt</span> bài đăng này không?
+            Bạn có chắc chắn muốn <span className="font-semibold text-green-600">duyệt</span> yêu cầu này không?
           </div>
         </div>
 
@@ -77,4 +77,4 @@ const PostApprove: React.FC<PostApproveProps> = ({
   );
 };
 
-export default PostApprove;
+export default RequestApprove;

@@ -18,9 +18,9 @@ export const adminMenuItems = [
         icon: <LayoutDashboard size={20} />
     },
     {
-        id: 'post',
-        label: 'Bài đăng',
-        path: '/admin/post',
+        id: 'request',
+        label: 'Yêu cầu',
+        path: '/admin/request',
         icon: <ClipboardList size={20} />
     },
     {

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 
-interface PostRejectProps {
+interface RequestRejectProps {
   open: boolean;
   onClose: () => void;
   onConfirm: (reason: string) => void;
   showTags?: boolean;
 }
 
-const PostReject: React.FC<PostRejectProps> = ({
+const RequestReject: React.FC<RequestRejectProps> = ({
   open,
   onClose,
   onConfirm,
@@ -40,7 +40,7 @@ const PostReject: React.FC<PostRejectProps> = ({
       <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-fadeIn">
         
         <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-red-50 to-primary-100">
-          <h2 className="text-2xl font-bold text-gray-800">Từ chối bài đăng</h2>
+          <h2 className="text-2xl font-bold text-gray-800">Từ chối yêu cầu</h2>
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer"
@@ -120,7 +120,7 @@ const PostReject: React.FC<PostRejectProps> = ({
                 rows={4}
                 value={customReason}
                 onChange={(e) => setCustomReason(e.target.value)}
-                placeholder="Nhập lý do từ chối bài đăng..."
+                placeholder="Nhập lý do từ chối yêu cầu..."
               />
             )}
           </div>
@@ -182,4 +182,4 @@ const PostReject: React.FC<PostRejectProps> = ({
   );
 };
 
-export default PostReject;
+export default RequestReject;

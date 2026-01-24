@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PostRowSkeleton: React.FC = () => (
+const RequestRowSkeleton: React.FC = () => (
   <tr className="border-b border-gray-100 hover:bg-gray-50">
     <td className="py-3 px-4 text-center">
       <span className="w-7 h-7 rounded-full bg-gray-200 opacity-30 flex items-center justify-center mx-auto animate-pulse" />
@@ -28,4 +28,4 @@ const PostRowSkeleton: React.FC = () => (
   </tr>
 );
 
-export default PostRowSkeleton;
+export default RequestRowSkeleton;

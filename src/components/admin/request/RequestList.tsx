@@ -1,21 +1,21 @@
 import React, { useState } from "react";
 import type { Post } from "@/types/post";
-import PostShow from "./PostShow";
-import PostRowSkeleton from "./PostTableSkeleton";
-import PostReject from "./modal/PostReject";
-import PostApprove from "./modal/PostApprove";
+import RequestShow from "./RequestShow";
+import RequestRowSkeleton from "./RequestTableSkeleton";
+import RequestReject from "./modal/RequestReject";
+import RequestApprove from "./modal/RequestApprove";
 import { CheckSquare, Square, CheckCircle, XCircle } from 'lucide-react';
 import { PostStatus } from '@/enums/PostStatus';
 
-interface PostListProps {
-  posts: Post[];
+interface RequestListProps {
+  requests: Post[];
   loading: boolean;
   status: string;
-  onApprove: (postId: string) => void;
-  onReject: (postId: string, reason: string) => void;
-  onView: (post: Post) => void;
-  selectedPostIds: string[];
-  onToggleSelect: (postId: string) => void;
+  onApprove: (requestId: string) => void;
+  onReject: (requestId: string, reason: string) => void;
+  onView: (request: Post) => void;
+  selectedRequestIds: string[];
+  onToggleSelect: (requestId: string) => void;
   onToggleSelectAll: () => void;
   onBulkApprove: () => void;
   onBulkReject: () => void;
@@ -23,14 +23,14 @@ interface PostListProps {
   pageSize: number;
 }
 
-const PostList = React.forwardRef<HTMLDivElement, PostListProps>(({
-  posts,
+const RequestList = React.forwardRef<HTMLDivElement, RequestListProps>(({
+  requests,
   loading,
   status,
   onApprove,
   onReject,
   onView,
-  selectedPostIds,
+  selectedRequestIds,
   onToggleSelect,
   onToggleSelectAll,
   onBulkApprove,
@@ -39,34 +39,34 @@ const PostList = React.forwardRef<HTMLDivElement, PostListProps>(({
   pageSize,
 }, ref) => {
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
-  const [rejectingPostId, setRejectingPostId] = useState<string | null>(null);
+  const [rejectingRequestId, setRejectingRequestId] = useState<string | null>(null);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
-  const [approvingPostId, setApprovingPostId] = useState<string | null>(null);
+  const [approvingRequestId, setApprovingRequestId] = useState<string | null>(null);
 
-  const handleReject = (postId: string) => {
-    setRejectingPostId(postId);
+  const handleReject = (requestId: string) => {
+    setRejectingRequestId(requestId);
     setIsRejectModalOpen(true);
   };
 
   const handleConfirmReject = (reason: string) => {
-    if (onReject && rejectingPostId) {
-      onReject(rejectingPostId, reason);
+    if (onReject && rejectingRequestId) {
+      onReject(rejectingRequestId, reason);
     }
     setIsRejectModalOpen(false);
-    setRejectingPostId(null);
+    setRejectingRequestId(null);
   };
 
-  const handleApprove = (postId: string) => {
-    setApprovingPostId(postId);
+  const handleApprove = (requestId: string) => {
+    setApprovingRequestId(requestId);
     setIsApproveModalOpen(true);
   };
 
   const handleConfirmApprove = () => {
-    if (onApprove && approvingPostId) {
-      onApprove(approvingPostId);
+    if (onApprove && approvingRequestId) {
+      onApprove(approvingRequestId);
     }
     setIsApproveModalOpen(false);
-    setApprovingPostId(null);
+    setApprovingRequestId(null);
   };
 
   const handleBulkRejectClick = () => {
@@ -74,15 +74,15 @@ const PostList = React.forwardRef<HTMLDivElement, PostListProps>(({
   };
 
   const isPending = status === PostStatus.Pending || status === 'Chờ duyệt';
-  const allCurrentPageSelected = posts.length > 0 && posts.every(p => selectedPostIds.includes(p.id));
+  const allCurrentPageSelected = requests.length > 0 && requests.every(p => selectedRequestIds.includes(p.id));
 
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
       {/* Bulk Actions Bar */}
-      {isPending && selectedPostIds.length > 0 && (
+      {isPending && selectedRequestIds.length > 0 && (
         <div className="bg-primary-50 border-b border-primary-200 px-4 py-3 flex items-center justify-between">
           <span className="text-sm font-medium text-primary-700">
-            Đã chọn {selectedPostIds.length} bài đăng
+            Đã chọn {selectedRequestIds.length} yêu cầu
           </span>
           <div className="flex gap-2">
             <button
@@ -90,14 +90,14 @@ const PostList = React.forwardRef<HTMLDivElement, PostListProps>(({
               className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition flex items-center gap-2"
             >
               <CheckCircle size={16} />
-              Duyệt {selectedPostIds.length} bài
+              Duyệt {selectedRequestIds.length} yêu cầu
             </button>
             <button
               onClick={handleBulkRejectClick}
               className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition flex items-center gap-2"
             >
               <XCircle size={16} />
-              Từ chối {selectedPostIds.length} bài
+              Từ chối {selectedRequestIds.length} yêu cầu
             </button>
           </div>
         </div>
@@ -131,27 +131,27 @@ const PostList = React.forwardRef<HTMLDivElement, PostListProps>(({
                 <tbody>
                   {loading ? (
                     Array.from({ length: 6 }).map((_, idx) => (
-                      <PostRowSkeleton key={idx} />
+                      <RequestRowSkeleton key={idx} />
                     ))
-                  ) : posts.length > 0 ? (
-                    posts.map((p, idx) => (
-                      <PostShow
-                        key={p.id}
-                        post={p}
+                  ) : requests.length > 0 ? (
+                    requests.map((r, idx) => (
+                      <RequestShow
+                        key={r.id}
+                        post={r}
                         stt={(page - 1) * pageSize + idx + 1}
-                        onView={() => onView(p)}
+                        onView={() => onView(r)}
                         onApprove={handleApprove}
-                        onReject={() => handleReject(p.id)}
+                        onReject={() => handleReject(r.id)}
                         hideImage
-                        isLast={idx === posts.length - 1}
-                        isSelected={selectedPostIds.includes(p.id)}
+                        isLast={idx === requests.length - 1}
+                        isSelected={selectedRequestIds.includes(r.id)}
                         onToggleSelect={onToggleSelect}
                       />
                     ))
                   ) : (
                     <tr>
                       <td colSpan={7} className="text-center py-8 text-gray-400">
-                        Không có bài đăng nào.
+                        Không có yêu cầu nào.
                       </td>
                     </tr>
                   )}
@@ -162,14 +162,14 @@ const PostList = React.forwardRef<HTMLDivElement, PostListProps>(({
         </div>
       </div>
 
-      <PostReject
+      <RequestReject
         open={isRejectModalOpen}
         onClose={() => setIsRejectModalOpen(false)}
         onConfirm={handleConfirmReject}
         showTags={true}
       />
 
-      <PostApprove
+      <RequestApprove
         open={isApproveModalOpen}
         onClose={() => setIsApproveModalOpen(false)}
         onConfirm={handleConfirmApprove}
@@ -178,6 +178,6 @@ const PostList = React.forwardRef<HTMLDivElement, PostListProps>(({
   );
 });
 
-PostList.displayName = "PostList";
+RequestList.displayName = "RequestList";
 
-export default PostList;
+export default RequestList;

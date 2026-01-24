@@ -1,7 +1,8 @@
+
 import axios from '@/lib/axios';
 import type { Post } from '@/types/post';
 
-export interface FilterPostsResponse {
+export interface FilterRequestsResponse {
     page: number;
     limit: number;
     totalItems: number;
@@ -9,7 +10,7 @@ export interface FilterPostsResponse {
     data: Post[];
 }
 
-export const filterPosts = async ({
+export const filterRequests = async ({
     page = 1,
     limit = 10,
     search,
@@ -21,7 +22,7 @@ export const filterPosts = async ({
     search?: string;
     order?: string;
     status?: string;
-}): Promise<FilterPostsResponse> => {
+}): Promise<FilterRequestsResponse> => {
     // Chỉ gửi params có giá trị
     const params: Record<string, any> = { page, limit };
     
@@ -29,23 +30,26 @@ export const filterPosts = async ({
     if (order && order.trim()) params.order = order.trim();
     if (status && status.trim()) params.status = status.trim();
 
-    const response = await axios.get<FilterPostsResponse>('/posts/filter', {
+    const response = await axios.get<FilterRequestsResponse>('/posts/filter', {
         params
     });
     return response.data;
 };
 
-export const getPostById = async (postId: string): Promise<any> => {
-    const response = await axios.get<Post>(`/posts/${postId}`);
+
+export const getRequestById = async (requestId: string): Promise<any> => {
+    const response = await axios.get<Post>(`/posts/${requestId}`);
     return response.data;
 };
 
-export const approvePost = async (postIds: string[]) => {
-    const response = await axios.put('/posts/approve', { postIds });
+
+export const approveRequest = async (requestIds: string[]) => {
+    const response = await axios.put('/posts/approve', { postIds: requestIds });
     return response.data;
 };
 
-export const rejectPost = async (postIds: string[], rejectMessage: string) => {
-    const response = await axios.put('/posts/reject', { postIds, rejectMessage });
+
+export const rejectRequest = async (requestIds: string[], rejectMessage: string) => {
+    const response = await axios.put('/posts/reject', { postIds: requestIds, rejectMessage });
     return response.data;
 };

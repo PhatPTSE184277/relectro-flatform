@@ -3,7 +3,7 @@ import Sidebar from '@/components/ui/Sidebar';
 import { adminMenuItems } from '@/constants/admin/MenuItem';
 import { UserProvider } from '@/contexts/admin/UserContext';
 import { CollectionCompanyProvider } from '@/contexts/admin/CollectionCompanyContext';
-import { PostProvider } from '@/contexts/admin/PostContext';
+import { RequestProvider } from '@/contexts/admin/RequestContext';
 import { SystemConfigProvider } from '@/contexts/admin/SystemConfigContext';
 import { TrackingProvider } from '@/contexts/admin/TrackingContext';
 import { CompanyConfigProvider } from '@/contexts/admin/CompanyConfigContext';
@@ -22,7 +22,7 @@ export default function AdminLayout({
             <AssignRecyclingProvider>
                 <AssignProductProvider>
                     <CompanyConfigProvider>
-                    <PostProvider>
+                    <RequestProvider>
                         <UserProvider>
                             <CollectionCompanyProvider>
                                 <SystemConfigProvider>
@@ -48,7 +48,7 @@ export default function AdminLayout({
                                 </SystemConfigProvider>
                             </CollectionCompanyProvider>
                         </UserProvider>
-                    </PostProvider>
+                    </RequestProvider>
                 </CompanyConfigProvider>
             </AssignProductProvider>
         </AssignRecyclingProvider>

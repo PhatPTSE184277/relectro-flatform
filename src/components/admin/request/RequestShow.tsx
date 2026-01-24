@@ -13,7 +13,7 @@ function normalizeStatus(status: string = ''): PostStatus {
     return PostStatus.Pending;
 }
 
-interface PostShowProps {
+interface RequestShowProps {
     post: Post;
     stt?: number;
     onView?: () => void;
@@ -24,7 +24,7 @@ interface PostShowProps {
     onToggleSelect?: (postId: string) => void;
 }
 
-const PostShow: React.FC<PostShowProps & { isLast?: boolean }> = ({
+const RequestShow: React.FC<RequestShowProps & { isLast?: boolean }> = ({
     post,
     stt,
     onView,
@@ -111,4 +111,4 @@ const PostShow: React.FC<PostShowProps & { isLast?: boolean }> = ({
     );
 };
 
-export default PostShow;
+export default RequestShow;
