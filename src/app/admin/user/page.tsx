@@ -5,11 +5,17 @@ import { Users } from 'lucide-react';
 import SearchBox from '@/components/ui/SearchBox';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
 import UserList from "@/components/admin/user/UserList";
+import UserFilter from '@/components/admin/user/UserFilter';
+import UserBan from '@/components/admin/user/modal/UserBan';
 import { useUserContext } from '@/contexts/admin/UserContext';
+import type { User } from '@/services/admin/UserService';
 
 const UserPage = () => {
-  const { setFilterParams, setPage } = useUserContext();
+  const { setFilterParams, setPage, handleBanUser } = useUserContext();
   const [search, setSearch] = useState('');
+  const [filterStatus, setFilterStatus] = useState<string>('Đang hoạt động');
+  const [isBanModalOpen, setIsBanModalOpen] = useState(false);
+  const [selectedUserForBan, setSelectedUserForBan] = useState<User | null>(null);
   
   const [fromDate, setFromDate] = useState<string>(() => {
     const today = new Date();
@@ -27,9 +33,12 @@ const UserPage = () => {
   });
 
   useEffect(() => {
-    setFilterParams({ email: search || undefined });
+    const params: any = {};
+    if (search) params.email = search;
+    if (filterStatus !== 'all') params.status = filterStatus;
+    setFilterParams(params);
     setPage(1);
-  }, [search, setFilterParams, setPage]);
+  }, [search, filterStatus, setFilterParams, setPage]);
 
   const handleFromDateChange = (date: string) => {
     setFromDate(date);
@@ -41,6 +50,15 @@ const UserPage = () => {
     setToDate(date);
     setFilterParams({ toDate: date ? { year: parseInt(date.split('-')[0]), month: parseInt(date.split('-')[1]), dayOfMonth: parseInt(date.split('-')[2]) } : undefined });
     setPage(1);
+  };
+
+  const handleFilterChange = (status: string) => {
+    setFilterStatus(status);
+  };
+
+  const handleBanClick = (user: User) => {
+    setSelectedUserForBan(user);
+    setIsBanModalOpen(true);
   };
 
   return (
@@ -72,7 +90,28 @@ const UserPage = () => {
           </div>
         </div>
       </div>
-      <UserList />
+      <UserFilter 
+        status={filterStatus} 
+        onFilterChange={handleFilterChange} 
+      />
+      <UserList onBanClick={handleBanClick} />
+      
+      <UserBan
+        open={isBanModalOpen}
+        onClose={() => {
+          setIsBanModalOpen(false);
+          setSelectedUserForBan(null);
+        }}
+        onConfirm={async () => {
+          if (selectedUserForBan) {
+            await handleBanUser(selectedUserForBan.userId);
+          }
+          setIsBanModalOpen(false);
+          setSelectedUserForBan(null);
+        }}
+        userName={selectedUserForBan?.name || ''}
+        isActive={selectedUserForBan?.status === 'Đang hoạt động'}
+      />
     </div>
   );
 };

@@ -11,7 +11,13 @@ export interface VehicleFilterParams {
 
 // Lấy danh sách phương tiện theo filter
 export const getFilteredVehicles = async (params: VehicleFilterParams): Promise<any> => {
-  const response = await axios.get('/vehicle/filter', { params });
+  const mappedParams = { ...params };
+  if (mappedParams.status === 'active') {
+    mappedParams.status = 'Đang hoạt động';
+  } else if (mappedParams.status === 'inactive') {
+    mappedParams.status = 'Ngừng hoạt động';
+  }
+  const response = await axios.get('/vehicle/filter', { params: mappedParams });
   return response.data;
 };
 

@@ -39,6 +39,7 @@ export const CompanyConfigProvider: React.FC<Props> = ({ children }) => {
 			setConfig(res);
 			setCompaniesWithPoints(res.companies || []);
 		} catch (err) {
+			console.log(err);
 			setConfig(null);
 			setCompaniesWithPoints([]);
 		} finally {
@@ -53,6 +54,7 @@ export const CompanyConfigProvider: React.FC<Props> = ({ children }) => {
 			await fetchConfig();
 			return res;
 		} catch (err) {
+			console.log(err);
 			return null;
 		} finally {
 			setLoading(false);
@@ -82,6 +84,7 @@ export const CompanyConfigProvider: React.FC<Props> = ({ children }) => {
 		try {
 			return await getCompanyConfigDetail(String(companyId));
 		} catch (err) {
+			console.log(err);
 			return null;
 		}
 	}, []);

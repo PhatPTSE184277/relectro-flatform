@@ -85,8 +85,8 @@ const VehicleDetail: React.FC<VehicleDetailProps> = ({ vehicle, onClose }) => {
                             },
                             {
                                 icon: <Ruler size={14} className='text-primary-500' />,
-                                label: 'Thể tích',
-                                value: vehicle.capacityM3 ? `${vehicle.capacityM3} m³` : 'Chưa có',
+                                label: 'Trạng thái',
+                                value: vehicle.status || 'Chưa có',
                             },
                         ]}
                     />
@@ -99,9 +99,11 @@ const VehicleDetail: React.FC<VehicleDetailProps> = ({ vehicle, onClose }) => {
                                     value={vehicle.smallCollectionPointName || 'Chưa có'}
                                 />
                                 <InfoCard
-                                    icon={<MapPin className='w-4 h-4 text-primary-500' />}
-                                    label="Bán kính hoạt động"
-                                    value={vehicle.radiusKm ? `${vehicle.radiusKm} km` : 'Chưa có'}
+                                    icon={<Ruler className='w-4 h-4 text-primary-500' />}
+                                    label="Kích thước"
+                                    value={vehicle.lengthM && vehicle.widthM && vehicle.heightM 
+                                        ? `${vehicle.lengthM}m × ${vehicle.widthM}m × ${vehicle.heightM}m` 
+                                        : 'Chưa có'}
                                 />
                             </div>
                         </div>

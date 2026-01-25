@@ -48,6 +48,7 @@ export const AssignRecyclingProvider: React.FC<Props> = ({ children }) => {
             const data = await getRecyclingCompanies();
             setRecyclingCompanies(data);
         } catch (err) {
+            console.log(err);
             setRecyclingCompanies([]);
         } finally {
             setLoading(false);
@@ -60,6 +61,7 @@ export const AssignRecyclingProvider: React.FC<Props> = ({ children }) => {
             const data = await listSmallCollectionPoints();
             setSmallCollectionPoints(data);
         } catch (err) {
+            console.log(err);
             setSmallCollectionPoints([]);
         } finally {
             setLoading(false);
@@ -72,6 +74,7 @@ export const AssignRecyclingProvider: React.FC<Props> = ({ children }) => {
             const res = await assignSmallCollectionPoints(data);
             return res;
         } catch (err) {
+            console.log(err);
             return null;
         } finally {
             setLoading(false);
@@ -85,6 +88,7 @@ export const AssignRecyclingProvider: React.FC<Props> = ({ children }) => {
                 const res = await updateSmallCollectionPointAssignment(scpId, data);
                 return res;
             } catch (err) {
+                console.log(err);
                 return null;
             } finally {
                 setLoading(false);
@@ -99,6 +103,7 @@ export const AssignRecyclingProvider: React.FC<Props> = ({ children }) => {
             const data = await getRecyclingTasks(recyclingCompanyId);
             return data;
         } catch (err) {
+            console.log(err);
             return null;
         } finally {
             setLoading(false);
@@ -111,6 +116,7 @@ export const AssignRecyclingProvider: React.FC<Props> = ({ children }) => {
             const data = await fetchScpAssignmentDetail(id);
             return data;
         } catch (err) {
+            console.log(err);
             return null;
         } finally {
             setLoading(false);

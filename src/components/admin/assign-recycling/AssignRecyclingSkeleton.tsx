@@ -1,6 +1,6 @@
 import React from 'react';
 
-const AssignedRecyclingSkeleton: React.FC = () => (
+const AssignRecyclingSkeleton: React.FC = () => (
     <tr className='border-b border-gray-100 hover:bg-gray-50'>
         <td className='py-3 px-4'>
             <div className='flex items-center justify-center'>
@@ -27,4 +27,4 @@ const AssignedRecyclingSkeleton: React.FC = () => (
     </tr>
 );
 
-export default AssignedRecyclingSkeleton;
+export default AssignRecyclingSkeleton;

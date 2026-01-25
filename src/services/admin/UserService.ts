@@ -24,7 +24,8 @@ export interface UserFilterParams {
 
 export interface UserFilterResponse {
 	data: User[];
-	total: number;
+	totalItems: number;
+	totalPages: number;
 	page: number;
 	limit: number;
 }
@@ -32,4 +33,8 @@ export interface UserFilterResponse {
 export const getAllUsers = async (params?: UserFilterParams): Promise<UserFilterResponse> => {
 	const response = await axios.get<UserFilterResponse>('/users/filter', { params });
 	return response.data;
+};
+
+export const banUser = async (userId: string): Promise<void> => {
+  await axios.delete(`/users/ban/${userId}`);
 };

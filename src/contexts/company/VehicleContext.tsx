@@ -29,6 +29,7 @@ export const VehicleProvider = ({ children }: { children: ReactNode }) => {
       const data = await getFilteredVehicles(params || {});
       setVehicles(data?.data || []);
     } catch (err: any) {
+      console.log(err);
       setError(err?.response?.data?.message || 'Lỗi khi tải phương tiện');
       setVehicles([]);
     } finally {

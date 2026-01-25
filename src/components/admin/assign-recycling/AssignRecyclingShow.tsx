@@ -9,7 +9,7 @@ interface AssignedRecyclingShowProps {
     onViewDetail: (companyId: string) => void;
 }
 
-const AssignedRecyclingShow: React.FC<AssignedRecyclingShowProps> = ({
+const AssignRecyclingShow: React.FC<AssignedRecyclingShowProps> = ({
     company,
     isLast = false,
     index,
@@ -49,4 +49,4 @@ const AssignedRecyclingShow: React.FC<AssignedRecyclingShowProps> = ({
     );
 };
 
-export default AssignedRecyclingShow;
+export default AssignRecyclingShow;

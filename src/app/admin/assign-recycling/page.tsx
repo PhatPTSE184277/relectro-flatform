@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Recycle, Plus } from 'lucide-react';
-import AssignedRecyclingList from '@/components/admin/assign-recycling/AssignedRecyclingList';
+import AssignRecyclingList from '@/components/admin/assign-recycling/AssignRecyclingList';
 import AssignRecyclingModal from '@/components/admin/assign-recycling/modal/AssignRecyclingModal';
 import UpdateRecyclingModal from '@/components/admin/assign-recycling/modal/UpdateRecyclingModal';
 import SearchBox from '@/components/ui/SearchBox';
@@ -102,7 +102,7 @@ const AssignRecyclingPage: React.FC = () => {
             </div>
 
             {/* Company List */}
-            <AssignedRecyclingList
+            <AssignRecyclingList
                 companies={filteredCompanies}
                 loading={loading}
                 onViewTasks={() => {}}

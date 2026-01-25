@@ -1,15 +1,15 @@
 import React from 'react';
-import AssignedRecyclingShow from './AssignedRecyclingShow';
-import AssignedRecyclingSkeleton from './AssignedRecyclingSkeleton';
+import AssignedRecyclingShow from './AssignRecyclingShow';
+import AssignedRecyclingSkeleton from './AssignRecyclingSkeleton';
 
-interface AssignedRecyclingListProps {
+interface AssignRecyclingListProps {
     companies: any[];
     loading: boolean;
     onViewTasks: (companyId: string) => void;
     onViewDetail: (companyId: string) => void;
 }
 
-const AssignedRecyclingList: React.FC<AssignedRecyclingListProps> = ({ 
+const AssignRecyclingList: React.FC<AssignRecyclingListProps> = ({ 
     companies, 
     loading,
     onViewTasks,
@@ -61,4 +61,4 @@ const AssignedRecyclingList: React.FC<AssignedRecyclingListProps> = ({
     );
 };
 
-export default AssignedRecyclingList;
+export default AssignRecyclingList;
