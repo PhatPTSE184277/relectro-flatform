@@ -43,16 +43,10 @@ const RequestApprove: React.FC<RequestApproveProps> = ({
         {/* Footer */}
         <div className="flex justify-end gap-3 p-5 border-t border-gray-100 bg-gray-50">
           <button
-            onClick={onClose}
-            className="px-5 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium transition cursor-pointer"
-          >
-            Hủy
-          </button>
-          <button
             onClick={onConfirm}
             className="px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-primary-500 hover:bg-primary-600"
           >
-            Xác nhận duyệt
+            Xác nhận
           </button>
         </div>
       </div>
