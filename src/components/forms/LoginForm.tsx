@@ -41,7 +41,7 @@ const LoginForm = () => {
                     router.push('/admin/dashboard');
                     break;
                 case 'AdminCompany':
-                    router.push('/company/dashboard');
+                    router.push('/company/small-collection');
                     break;
                 case 'Collector':
                     router.push('/shipper/package');
