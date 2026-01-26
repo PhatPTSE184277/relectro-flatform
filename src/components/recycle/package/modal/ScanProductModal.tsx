@@ -186,7 +186,7 @@ const ScanProductModal: React.FC<ScanProductModalProps> = ({
                                 checkedProducts={checkedProducts}
                                 showPagination={true}
                                 onPageChange={handlePageChange}
-                                maxHeight={260}
+                                maxHeight={240}
                             />
                     </div>
                 </div>
