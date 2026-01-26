@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { formatDate } from '@/utils/FormatDate';
-// import EditGroupingModal from './modal/EditGroupingModal';
 import ProductList from './ProductList';
 import { useRouter } from 'next/navigation';
 import Pagination from '@/components/ui/Pagination';
@@ -24,14 +23,13 @@ interface AssignDayStepProps {
 const AssignDayStep: React.FC<AssignDayStepProps> = ({
     loading,
     preAssignResult,
-    vehicles,
     products,
     onCreateGrouping,
     onBack,
     calculateRoute
 }) => {
     const router = useRouter();
-    const [daySuggestions, setDaySuggestions] = useState<any[]>(
+    const [daySuggestions] = useState<any[]>(
         (preAssignResult?.days || []).map((day: any) => ({
             ...day,
             products: (day.products || []).map((dayProduct: any) => {
@@ -41,8 +39,6 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
             })
         }))
     );
-    const [showModal, setShowModal] = useState(false);
-    const [selectedDay, setSelectedDay] = useState<any>(null);
     const [selectedDateFilter, setSelectedDateFilter] = useState<string>(
         (preAssignResult?.days || [])[0]?.workDate || ''
     );
@@ -66,49 +62,6 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         (productPage - 1) * itemsPerPage,
         productPage * itemsPerPage
     );
-
-    const handleOpenEditModal = (day: any) => {
-        setSelectedDay(day);
-        setShowModal(true);
-    };
-
-    const handleConfirmEdit = (data: {
-        workDate: string;
-        vehicleId: string;
-        productIds: string[];
-    }) => {
-        // Cập nhật lại xe và sản phẩm của nhóm đang chỉnh sửa
-        setDaySuggestions((prev) => prev.map((day) => {
-            // Tìm đúng day dựa trên cả workDate và vehicleId
-            if (day.workDate === data.workDate && (day.suggestedVehicle.id === data.vehicleId || day.suggestedVehicle.id?.toString() === data.vehicleId)) {
-                const selectedVehicle = vehicles.find(v => 
-                    v.vehicleId === data.vehicleId || 
-                    v.id === data.vehicleId || 
-                    (v.id && v.id.toString() === data.vehicleId)
-                );
-                const updatedProducts = data.productIds.map(productId => {
-                    const found = products.find(p => p.productId === productId)
-                    return found ? { ...found } : { productId };
-                });
-
-                // Tính lại tổng khối lượng và thể tích
-                const totalWeight = updatedProducts.reduce((sum, p) => sum + (p.weight || 0), 0);
-                const totalVolume = updatedProducts.reduce((sum, p) => sum + (p.volume || 0), 0);
-
-                return {
-                    ...day,
-                    suggestedVehicle: selectedVehicle,
-                    products: updatedProducts,
-                    totalWeight,
-                    totalVolume
-                };
-            }
-            return day;
-        }));
-
-        setShowModal(false);
-        setSelectedDay(null);
-    };
 
     // Xử lý tạo nhóm thu gom cho TẤT CẢ xe của ngày đó
     const handleCreateGrouping = async () => {
@@ -268,20 +221,6 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                     <p className='text-gray-500'>Không có xe nào được gợi ý cho ngày này.</p>
                 </div>
             )}
-
-            {/* Edit Modal */}
-            {/* <EditGroupingModal
-                open={showModal}
-                onClose={() => {
-                    setShowModal(false);
-                    setSelectedDay(null);
-                }}
-                onConfirm={handleConfirmEdit}
-                day={selectedDay}
-                vehicles={vehicles}
-                allProducts={selectedDay?.products || []}
-                loading={loading}
-            /> */}
         </div>
     );
 };
