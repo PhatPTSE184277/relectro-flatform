@@ -37,7 +37,7 @@ interface GroupingDetailData {
     collector: string;
     groupDate: string;
     collectionPoint: string;
-    totalPosts: number;
+    totalProduct: number;
     totalWeightKg: number;
     totalVolumeM3: number;
     totalRoutes?: number;
@@ -143,7 +143,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                 Tổng bưu phẩm
                             </span>
                             <span className='text-2xl font-bold text-blue-900'>
-                                {grouping.totalPosts}
+                                {grouping.totalProduct}
                             </span>
                         </div>
                         <div className='bg-purple-50 rounded-xl p-4 border border-purple-100 shadow-sm flex items-center justify-between'>
