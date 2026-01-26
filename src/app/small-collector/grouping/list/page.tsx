@@ -86,6 +86,7 @@ const GroupingListPage: React.FC = () => {
                 loading={loading}
                 onViewDetail={handleViewDetail}
                 onReassignDriver={handleReassignDriver}
+                startIndex={(groupsPage - 1) * 10}
             />
             <Pagination
                 page={groupsPage}

@@ -3,11 +3,13 @@ import CollectionRouteTableSkeleton from './CollectionRouteTableSkeleton';
 import type { CollectionRoute } from '@/types/CollectionRoute';
 
 
+
 interface CollectionRouteListProps {
     routes: CollectionRoute[];
     loading: boolean;
     onViewDetail: (id: string) => void;
     tableRef?: React.Ref<HTMLDivElement>;
+    startIndex?: number;
 }
 
 
@@ -15,7 +17,8 @@ const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
     routes,
     loading,
     onViewDetail,
-    tableRef
+    tableRef,
+    startIndex = 0
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
@@ -47,7 +50,7 @@ const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
                                                 route={route}
                                                 onView={() => onViewDetail(route.collectionRouteId)}
                                                 isLast={idx === routes.length - 1}
-                                                stt={idx + 1}
+                                                stt={startIndex + idx + 1}
                                             />
                                         ))
                                     ) : (

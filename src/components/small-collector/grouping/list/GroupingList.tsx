@@ -2,18 +2,21 @@ import React from 'react';
 import GroupingShow from './GroupingShow';
 import GroupingTableSkeleton from './GroupingTableSkeleton';
 
+
 interface GroupingListProps {
     groupings: any[];
     loading: boolean;
     onViewDetail: (grouping: any) => void;
     onReassignDriver: (grouping: any) => void;
+    startIndex?: number;
 }
 
 const GroupingList: React.FC<GroupingListProps> = ({
     groupings,
     loading,
     onViewDetail,
-    onReassignDriver
+    onReassignDriver,
+    startIndex = 0
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -44,7 +47,7 @@ const GroupingList: React.FC<GroupingListProps> = ({
                                     onViewDetail={onViewDetail}
                                     onReassignDriver={onReassignDriver}
                                     isLast={idx === groupings.length - 1}
-                                    stt={idx + 1}
+                                    stt={startIndex + idx + 1}
                                 />
                             ))
                         ) : (

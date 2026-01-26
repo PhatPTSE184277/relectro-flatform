@@ -114,6 +114,7 @@ const CollectionRoutePage: React.FC = () => {
                     loading={loading}
                     onViewDetail={handleViewDetail}
                     tableRef={tableScrollRef}
+                    startIndex={(currentPage - 1) * 10}
                 />
             </div>
 
