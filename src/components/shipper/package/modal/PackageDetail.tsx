@@ -4,7 +4,6 @@ import React from 'react';
 import { List, Tag, Boxes, CheckCircle2 } from 'lucide-react';
 import SummaryCard from '@/components/ui/SummaryCard';
 import ProductList from './ProductList';
-import { PackageStatus } from '@/enums/PackageStatus';
 import { useShipperPackageContext } from '@/contexts/shipper/PackageContext';
 
 interface PackageDetailProps {
@@ -39,17 +38,8 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             label: 'Trạng thái',
             value: (
                 <span
-                    className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                        pkg.status === PackageStatus.Packing
-                            ? 'bg-yellow-100 text-yellow-700'
-                            : pkg.status === PackageStatus.Closed
-                            ? 'bg-green-100 text-green-700'
-                            : pkg.status === PackageStatus.Shipping
-                            ? 'bg-blue-100 text-blue-700'
-                            : pkg.status === PackageStatus.Recycling
-                            ? 'bg-purple-100 text-purple-700'
-                            : 'bg-gray-100 text-gray-600'
-                    }`}
+                    className="flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-primary-600 text-white"
+                    style={{ minWidth: 110 }}
                 >
                     {pkg.status}
                 </span>
@@ -65,7 +55,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh]'>
+            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[92vh]'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
@@ -83,23 +73,28 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                 </div>
 
                 {/* Main content */}
-                <div className='flex-1 p-6'>
+                <div className='flex-1 p-6 flex flex-col gap-6 overflow-hidden bg-gray-50'>
                     {/* Package Info Card (SummaryCard) */}
-                    <SummaryCard items={summaryItems} singleRow={true} />
+                    <div className='w-full mb-2'>
+                        <SummaryCard items={summaryItems} singleRow={true} />
+                    </div>
 
                     {/* Products List */}
-                    <div>
-                        <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
+                    <div className='bg-white rounded-xl shadow-sm border border-gray-100 flex-1 min-h-0 flex flex-col'>
+                        <h3 className='text-lg font-semibold text-gray-900 p-4 flex items-center gap-2'>
                             <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                 <List className='w-5 h-5 text-primary-500' />
                             </span>
                             Danh sách sản phẩm
                         </h3>
-                        <ProductList 
-                            products={pkg.products}
-                            showPagination={true}
-                            onPageChange={handlePageChange}
-                        />
+                        <div className='flex-1 overflow-hidden'>
+                            <ProductList 
+                                products={pkg.products}
+                                showPagination={true}
+                                onPageChange={handlePageChange}
+                                maxHeight={230}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

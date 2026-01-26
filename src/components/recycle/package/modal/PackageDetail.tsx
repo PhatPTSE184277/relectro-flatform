@@ -69,25 +69,29 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                 </div>
 
                 {/* Main content */}
-                <div className='flex-1 overflow-y-auto p-6'>
+                <div className='flex-1 p-6 flex flex-col gap-6 overflow-hidden bg-gray-50'>
                     {/* Package Info Summary */}
-                    <SummaryCard items={summaryItems} singleRow={true} />
+                    <div className='w-full mb-2'>
+                        <SummaryCard items={summaryItems} singleRow={true} />
+                    </div>
 
                     {/* Products List */}
-                    <div>
-                        <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
+                    <div className='bg-white rounded-xl shadow-sm border border-gray-100 flex-1 min-h-0 flex flex-col'>
+                        <h3 className='text-lg font-semibold text-gray-900 p-4 flex items-center gap-2'>
                             <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                 <List className='w-5 h-5 text-primary-500' />
                             </span>
                             Danh sách sản phẩm ({pkg.products.totalItems})
                         </h3>
-                        <ProductList
-                            products={pkg.products}
-                            showStatus={isRecycling}
-                            showPagination={true}
-                            onPageChange={handlePageChange}
-                            maxHeight={300}
-                        />
+                        <div className='flex-1 overflow-hidden'>
+                            <ProductList
+                                products={pkg.products}
+                                showStatus={isRecycling}
+                                showPagination={true}
+                                onPageChange={handlePageChange}
+                                maxHeight={300}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

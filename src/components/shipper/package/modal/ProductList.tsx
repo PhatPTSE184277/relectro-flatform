@@ -24,8 +24,11 @@ const ProductList: React.FC<ProductListProps> = ({
     const startIndex = !Array.isArray(products) ? (products.page - 1) * products.limit : 0;
     
     return (
-        <div className='bg-white rounded-xl shadow-sm border border-gray-100 flex-1 min-h-0 flex flex-col'>
-            <div className='relative w-full' style={{ maxHeight, overflowY: 'auto' }}>
+        <>
+            <div
+                className='relative w-full overflow-y-auto'
+                style={{ maxHeight }}
+            >
                 <table className='w-full text-sm text-gray-800 table-fixed'>
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                         <tr>
@@ -46,7 +49,6 @@ const ProductList: React.FC<ProductListProps> = ({
                                     <td className='py-3 px-4 text-center w-16'>
                                         <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold mx-auto'>
                                             {startIndex + index + 1}
-                                            {index + 1}
                                         </span>
                                     </td>
                                     <td className='py-3 px-4 font-medium w-40'>
@@ -69,7 +71,7 @@ const ProductList: React.FC<ProductListProps> = ({
                 </table>
             </div>
             {showPagination && onPageChange && totalPages > 1 && (
-                <div className='px-4 pb-4'>
+                <div className='px-4 pb-4 border-t'>
                     <Pagination
                         page={currentPage}
                         totalPages={totalPages}
@@ -77,7 +79,7 @@ const ProductList: React.FC<ProductListProps> = ({
                     />
                 </div>
             )}
-        </div>
+        </>
     );
 };
 

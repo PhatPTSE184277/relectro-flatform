@@ -80,7 +80,7 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className={`relative w-full ${scannedPackage ? 'max-w-6xl' : 'max-w-xl'} bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[85vh] animate-fadeIn transition-all duration-300`}> 
+            <div className={`relative w-full ${scannedPackage ? 'max-w-6xl' : 'max-w-xl'} bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn transition-all duration-300`}> 
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
@@ -98,7 +98,7 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                 </div>
 
                 {/* Body */}
-                <div className='flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50'>
+                <div className='flex-1 p-6 space-y-4 bg-gray-50'>
                     {/* Mã package - chỉ hiện khi chưa quét */}
                     {!scannedPackage && (
                         <>
@@ -155,17 +155,8 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                                         label: 'Trạng thái',
                                         value: (
                                             <span
-                                                className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                                                    scannedPackage.status === PackageStatus.Packing
-                                                        ? 'bg-yellow-100 text-yellow-700'
-                                                        : scannedPackage.status === PackageStatus.Closed
-                                                        ? 'bg-green-100 text-green-700'
-                                                        : scannedPackage.status === PackageStatus.Shipping
-                                                        ? 'bg-blue-100 text-blue-700'
-                                                        : scannedPackage.status === PackageStatus.Recycling
-                                                        ? 'bg-purple-100 text-purple-700'
-                                                        : 'bg-gray-100 text-gray-600'
-                                                }`}
+                                                className="flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-primary-600 text-white"
+                                                style={{ minWidth: 110 }}
                                             >
                                                 {scannedPackage.status}
                                             </span>
@@ -176,16 +167,14 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
                             })()}
 
                             {/* Products List */}
-                            <div>
-                                <h3 className='text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2'>
+                            <div className='bg-white rounded-xl shadow-sm border border-gray-100'>
+                                <h3 className='text-lg font-semibold text-gray-900 p-4 flex items-center gap-2'>
                                     <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                         <List className='w-5 h-5 text-primary-500' />
                                     </span>
                                     Danh sách sản phẩm
                                 </h3>
-                                <div className='max-h-64'>
-                                    <ProductList products={scannedPackage.products} />
-                                </div>
+                                <ProductList products={scannedPackage.products} maxHeight={230} />
                             </div>
                         </>
                     )}
