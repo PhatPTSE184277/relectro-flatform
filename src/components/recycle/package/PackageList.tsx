@@ -16,11 +16,11 @@ const PackageList: React.FC<PackageListProps> = ({
     onViewDetail,
     onCheckProducts
 }) => {
-    const bodyRef = useRef<HTMLDivElement>(null);
+    const tableRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (bodyRef.current) {
-            bodyRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        if (tableRef.current) {
+            tableRef.current.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }, [packages]);
 
@@ -28,7 +28,7 @@ const PackageList: React.FC<PackageListProps> = ({
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>
                 <div className='inline-block min-w-full align-middle'>
-                    <div style={{ maxHeight: 390, overflowY: 'auto' }} ref={bodyRef}>
+                    <div className='max-h-90 overflow-y-auto' ref={tableRef}>
                         <table className='min-w-full text-sm text-gray-800 table-fixed'>
                             <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                 <tr>

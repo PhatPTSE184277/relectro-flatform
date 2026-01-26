@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { List, Tag, Boxes, CheckCircle2 } from 'lucide-react';
-import { PackageType } from '@/types/Package';
 import SummaryCard from '@/components/ui/SummaryCard';
 import ProductList from './ProductList';
 import { PackageStatus } from '@/enums/PackageStatus';

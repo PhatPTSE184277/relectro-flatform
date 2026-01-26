@@ -64,19 +64,6 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
         }
     };
 
-    const handlePageChange = async (page: number) => {
-        if (!scannedPackage || loading) return;
-        setLoading(true);
-        try {
-            const pkg = await getPackageById(scannedPackage.packageId, page, 10);
-            setScannedPackage(pkg);
-        } catch (err) {
-            console.error('Failed to fetch page:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleClose = () => {
         setPackageId('');
         setScannedPackage(null);
