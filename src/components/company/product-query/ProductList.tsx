@@ -31,8 +31,8 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                                         <th className='py-3 px-4 text-left w-60'>Sản phẩm</th>
                                         <th className='py-3 px-4 text-left w-60'>Người gửi</th>
                                         <th className='py-3 px-4 text-left w-88'>Địa chỉ</th>
-                                        <th className='py-3 px-4 text-left w-40'>Khoảng cách</th>
-                                        <th className='py-3 px-4 text-left w-32'>Khối lượng</th>
+                                        <th className='py-3 px-4 text-right w-40'>Khoảng cách(KM)</th>
+                                        <th className='py-3 px-4 text-right w-32'>Khối lượng</th>
                                     </tr>
                                 </thead>
                                 <tbody>

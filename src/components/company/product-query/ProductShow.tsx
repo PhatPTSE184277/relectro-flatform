@@ -32,8 +32,8 @@ const ProductShow: React.FC<ProductShowProps> = ({ product, isLast = false, stt 
             <td className='py-3 px-4 text-gray-700 max-w-xs w-88'>
                 <div className='line-clamp-2'>{product.address || 'N/A'}</div>
             </td>
-            <td className='py-3 px-4 text-gray-700 w-40'>
-                <div className='flex flex-col gap-1'>
+            <td className='py-3 px-4 text-gray-700 w-40 text-right'>
+                <div className='flex flex-col gap-1 items-end'>
                     <span className='text-xs'>
                         <span className='font-medium'>Bán kính:</span> {product.radiusKm || 'N/A'}
                     </span>
@@ -42,8 +42,8 @@ const ProductShow: React.FC<ProductShowProps> = ({ product, isLast = false, stt 
                     </span>
                 </div>
             </td>
-            <td className='py-3 px-4 text-gray-700 w-32'>
-                <div className='flex flex-col gap-1'>
+            <td className='py-3 px-4 text-gray-700 w-32 text-right'>
+                <div className='flex flex-col gap-1 items-end'>
                     <span className='text-xs'>
                         <span className='font-medium'>{product.weightKg || 0}</span> kg
                     </span>
