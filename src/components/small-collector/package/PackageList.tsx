@@ -24,45 +24,43 @@ const PackageList = forwardRef<HTMLDivElement, PackageListProps>(
                 <div className='overflow-x-auto'>
                     <div className='inline-block min-w-full align-middle'>
                         <div className='overflow-hidden'>
-                            <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
-                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
-                                    <tr>
-                                        <th className='py-3 px-4 text-center' style={{ width: '60px' }}>STT</th>
-                                        <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Mã Package</th>
-                                        <th className='py-3 px-4 text-left' style={{ width: '160px' }}>Số sản phẩm</th>
-                                        <th className='py-3 px-4 text-center' style={{ width: '120px' }}>Hành động</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                        <div className='max-h-90 overflow-y-auto' ref={ref}>
-                            <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
-                                <tbody>
-                                    {loading ? (
-                                        Array.from({ length: 6 }).map((_, idx) => (
-                                            <PackageTableSkeleton key={idx} />
-                                        ))
-                                    ) : packages.length > 0 ? (
-                                        packages.map((pkg, idx) => (
-                                            <PackageShow
-                                                key={pkg.packageId}
-                                                package={pkg}
-                                                stt={idx + 1}
-                                                onView={() => onViewDetail(pkg)}
-                                                onUpdate={onUpdate}
-                                                onUpdateStatus={onUpdateStatus}
-                                                isLast={idx === packages.length - 1}
-                                            />
-                                        ))
-                                    ) : (
+                            <div className='max-h-90 overflow-y-auto' ref={ref}>
+                                <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
+                                    <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                         <tr>
-                                            <td colSpan={4} className='text-center py-8 text-gray-400'>
-                                                Không có package nào.
-                                            </td>
+                                            <th className='py-3 px-4 text-center' style={{ width: '60px' }}>STT</th>
+                                            <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Mã Package</th>
+                                            <th className='py-3 px-4 text-left' style={{ width: '160px' }}>Số sản phẩm</th>
+                                            <th className='py-3 px-4 text-center' style={{ width: '120px' }}>Hành động</th>
                                         </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {loading ? (
+                                            Array.from({ length: 6 }).map((_, idx) => (
+                                                <PackageTableSkeleton key={idx} />
+                                            ))
+                                        ) : packages.length > 0 ? (
+                                            packages.map((pkg, idx) => (
+                                                <PackageShow
+                                                    key={pkg.packageId}
+                                                    package={pkg}
+                                                    stt={idx + 1}
+                                                    onView={() => onViewDetail(pkg)}
+                                                    onUpdate={onUpdate}
+                                                    onUpdateStatus={onUpdateStatus}
+                                                    isLast={idx === packages.length - 1}
+                                                />
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan={4} className='text-center py-8 text-gray-400'>
+                                                    Không có package nào.
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
