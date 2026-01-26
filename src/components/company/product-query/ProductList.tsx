@@ -23,7 +23,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
             <div className='overflow-x-auto'>
                 <div className='inline-block min-w-full align-middle'>
                     <div className='overflow-hidden'>
-                        <div className='max-h-115 overflow-y-auto' ref={bodyRef}>
+                        <div className='max-h-110 overflow-y-auto' ref={bodyRef}>
                             <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
                                 <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                     <tr>
