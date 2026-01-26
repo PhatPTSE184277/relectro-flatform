@@ -86,6 +86,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                             showStatus={isRecycling}
                             showPagination={true}
                             onPageChange={handlePageChange}
+                            maxHeight={300}
                         />
                     </div>
                 </div>
