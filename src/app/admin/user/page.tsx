@@ -94,7 +94,7 @@ const UserPage = () => {
         status={filterStatus} 
         onFilterChange={handleFilterChange} 
       />
-      <UserList onBanClick={handleBanClick} />
+      <UserList onBanClick={handleBanClick} filterStatus={filterStatus} />
       
       <UserBan
         open={isBanModalOpen}

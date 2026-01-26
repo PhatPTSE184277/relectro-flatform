@@ -7,9 +7,10 @@ interface UserShowProps {
   onView?: () => void;
   onBan?: () => void;
   isLast?: boolean;
+  showActionColumn?: boolean;
 }
 
-const UserShow: React.FC<UserShowProps> = ({ user, stt, onBan, isLast = false }) => {
+const UserShow: React.FC<UserShowProps> = ({ user, stt, onBan, isLast = false, showActionColumn = true }) => {
   const isActive = user.status === 'Đang hoạt động';
   
   return (
@@ -23,21 +24,21 @@ const UserShow: React.FC<UserShowProps> = ({ user, stt, onBan, isLast = false })
       <td className="py-3 px-4 text-gray-700 w-64">{user.email}</td>
       <td className="py-3 px-4 text-gray-700 w-36">{user.role || 'User'}</td>
       <td className="py-3 px-4 text-gray-700 w-36">{user.phone || "-"}</td>
-      <td className="py-3 px-4 w-24">
-        <div className="flex justify-center">
-          <button
-            onClick={onBan}
-            className={`${
-              isActive 
-                ? 'text-red-600 hover:text-red-800' 
-                : 'text-green-600 hover:text-green-800'
-            } flex items-center gap-1 font-medium transition cursor-pointer`}
-            title={isActive ? 'Cấm người dùng' : 'Mở cấm người dùng'}
-          >
-            <Ban size={16} />
-          </button>
-        </div>
-      </td>
+      {showActionColumn && (
+        <td className="py-3 px-4 w-24">
+          <div className="flex justify-center">
+            {isActive && (
+              <button
+                onClick={onBan}
+                className="text-red-600 hover:text-red-800 flex items-center gap-1 font-medium transition cursor-pointer"
+                title="Cấm người dùng"
+              >
+                <Ban size={16} />
+              </button>
+            )}
+          </div>
+        </td>
+      )}
     </tr>
   );
 };

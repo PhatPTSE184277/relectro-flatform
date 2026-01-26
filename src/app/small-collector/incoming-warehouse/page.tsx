@@ -25,7 +25,8 @@ const IncomingWarehousePage: React.FC = () => {
         setSelectedProduct,
         createProduct,
         getProductById,
-        allStats
+        allStats,
+        fetchProducts
     } = useIWProductContext() as any;
 
     const [search, setSearch] = useState('');
@@ -110,6 +111,8 @@ const IncomingWarehousePage: React.FC = () => {
             data.description,
             data.point
         );
+        // Fetch lại danh sách sản phẩm sau khi nhận hàng
+        await fetchProducts(fromDate, toDate);
     };
 
     return (
@@ -207,6 +210,8 @@ const IncomingWarehousePage: React.FC = () => {
                     onClose={() => setShowCreateModal(false)}
                     onConfirm={async (productData) => {
                         await createProduct(productData);
+                        // Fetch lại danh sách sản phẩm sau khi tạo sản phẩm mới
+                        await fetchProducts(fromDate, toDate);
                         setShowCreateModal(false);
                     }}
                 />
