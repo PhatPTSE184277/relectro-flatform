@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { IoLogOutOutline, IoSparklesOutline, IoChevronDownOutline, IoPersonOutline, IoNotificationsOutline } from 'react-icons/io5';
+import { IoLogOutOutline, IoSparklesOutline, IoChevronDownOutline, IoPersonOutline, IoNotificationsOutline, IoMenuOutline } from 'react-icons/io5';
 import { useState, useRef, useEffect } from 'react';
 import { useAppDispatch } from '@/redux/hooks';
 import { logout } from '@/redux/reducers/authReducer';
@@ -15,10 +15,11 @@ interface HeaderProps {
     title?: string;
     href?: string;
     profileHref?: string;
+    onMenuClick?: () => void;
 }
 
 
-const Header = ({ title, href, profileHref }: HeaderProps) => {
+const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useAppDispatch();
@@ -70,20 +71,30 @@ const Header = ({ title, href, profileHref }: HeaderProps) => {
 
     return (
         <nav className='bg-white shadow-sm sticky top-0 z-50'>
-            <div className='max-w-full px-6 lg:px-8'>
-                <div className='flex justify-between items-center h-16'>
-                    <div className='flex items-center space-x-8'>
+            <div className='max-w-full px-3 sm:px-4 md:px-6 lg:px-8'>
+                <div className='flex justify-between items-center h-14 sm:h-16'>
+                    <div className='flex items-center space-x-2 sm:space-x-4 md:space-x-8'>
+                        {/* Hamburger Menu Button */}
+                        {onMenuClick && (
+                            <button
+                                onClick={onMenuClick}
+                                className='xl:hidden p-2 rounded-lg hover:bg-primary-50 transition'
+                                aria-label='Toggle menu'
+                            >
+                                <IoMenuOutline className='text-gray-700' size={24} />
+                            </button>
+                        )}
                         <Link
                             href={finalHref ?? '/'}
-                            className="text-2xl font-bold bg-linear-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent flex items-center gap-2 cursor-pointer"
+                            className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold bg-linear-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap"
                             onClick={handleReload}
                         >
-                            <IoSparklesOutline className="text-primary-400 text-2xl" />
-                            {finalTitle}
+                            <IoSparklesOutline className="text-primary-400 text-lg sm:text-xl md:text-2xl shrink-0" />
+                            <span className='truncate max-w-[150px] sm:max-w-[200px] md:max-w-none'>{finalTitle}</span>
                         </Link>
                     </div>
 
-                    <div className='flex items-center space-x-4'>
+                    <div className='flex items-center space-x-1.5 sm:space-x-3 md:space-x-4'>
                         {isAuthenticated && user && (
                             <>
                                 {/* Notification Bell: Only for Admin */}
@@ -91,11 +102,11 @@ const Header = ({ title, href, profileHref }: HeaderProps) => {
                                     <div className='relative' ref={notifDropdownRef}>
                                         <button
                                             onClick={() => setNotifDropdownOpen((v) => !v)}
-                                            className='relative p-2 rounded-full hover:bg-primary-50 transition cursor-pointer'
+                                            className='relative p-1.5 sm:p-2 rounded-full hover:bg-primary-50 transition cursor-pointer'
                                         >
-                                            <IoNotificationsOutline className='text-gray-700' size={24} />
+                                            <IoNotificationsOutline className='text-gray-700' size={20} />
                                             {unreadCount > 0 && (
-                                                <span className='absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse'>
+                                                <span className='absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center animate-pulse'>
                                                     {unreadCount > 9 ? '9+' : unreadCount}
                                                 </span>
                                             )}
@@ -103,7 +114,7 @@ const Header = ({ title, href, profileHref }: HeaderProps) => {
 
                                         {/* Notification Dropdown */}
                                         {notifDropdownOpen && (
-                                            <div className='absolute right-0 mt-2 w-96 bg-white border border-primary-200 rounded-2xl shadow-2xl z-50 animate-fade-in overflow-hidden max-h-[500px] flex flex-col'>
+                                            <div className='absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 bg-white border border-primary-200 rounded-2xl shadow-2xl z-50 animate-fade-in overflow-hidden max-h-[500px] flex flex-col'>
                                                 {/* Header */}
                                                 <div className='flex items-center justify-between p-4 border-b border-primary-100 bg-primary-50'>
                                                     <h3 className='font-bold text-gray-900'>Thông báo</h3>
@@ -164,25 +175,25 @@ const Header = ({ title, href, profileHref }: HeaderProps) => {
                                 <div className='relative' ref={dropdownRef}>
                                 <div
                                     className={
-                                        `flex items-center space-x-3 bg-white border border-primary-100 rounded-full px-3 py-1.5 shadow cursor-pointer hover:shadow-lg transition min-w-12 relative group ${dropdownOpen ? 'ring-2 ring-primary-300 border-primary-300' : ''}`
+                                        `flex items-center space-x-1.5 sm:space-x-2 md:space-x-3 bg-white border border-primary-100 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 shadow cursor-pointer hover:shadow-lg transition min-w-10 sm:min-w-12 relative group ${dropdownOpen ? 'ring-2 ring-primary-300 border-primary-300' : ''}`
                                     }
                                     onClick={() => setDropdownOpen((v) => !v)}
                                 >
-                                    <div className="w-9 h-9 rounded-full bg-linear-to-tr from-primary-600 to-primary-400 text-white flex items-center justify-center font-bold text-lg shadow ring-2 ring-primary-200 border-2 border-white">
+                                    <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full bg-linear-to-tr from-primary-600 to-primary-400 text-white flex items-center justify-center font-bold text-sm sm:text-base md:text-lg shadow ring-2 ring-primary-200 border-2 border-white">
                                         {user.name?.charAt(0).toUpperCase() || 'U'}
                                     </div>
                                     <span 
-                                        className='hidden sm:block text-base font-semibold text-gray-800 pr-1 truncate max-w-[150px] overflow-hidden' 
+                                        className='hidden md:block text-sm md:text-base font-semibold text-gray-800 pr-1 truncate max-w-[100px] lg:max-w-[150px] overflow-hidden' 
                                         title={user.name}
                                     >
                                         {user.name}
                                     </span>
-                                    <IoChevronDownOutline className={`ml-1 text-primary-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} size={20} />
+                                    <IoChevronDownOutline className={`hidden sm:block text-primary-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} size={18} />
                                 </div>
                                 {dropdownOpen && (
                                     <>
                                         {/* Dropdown menu */}
-                                        <div className="absolute right-0 mt-3 w-64 bg-white/95 border border-primary-200 rounded-2xl shadow-2xl z-50 animate-fade-in overflow-hidden backdrop-blur-sm">
+                                        <div className="absolute right-0 mt-3 w-56 sm:w-64 bg-white/95 border border-primary-200 rounded-2xl shadow-2xl z-50 animate-fade-in overflow-hidden backdrop-blur-sm">
                                             <div className="flex flex-col divide-y divide-primary-50">
                                                 <button
                                                     onClick={() => {

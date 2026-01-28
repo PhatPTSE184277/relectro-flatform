@@ -25,7 +25,6 @@ const UserList: React.FC<UserListProps> = ({ onBanClick, filterStatus }) => {
                   <th className="py-3 px-4 text-center w-16">STT</th>
                   <th className="py-3 px-4 text-left w-52">Tên</th>
                   <th className="py-3 px-4 text-left w-64">Email</th>
-                  <th className="py-3 px-4 text-left w-36">Vai trò</th>
                   <th className="py-3 px-4 text-left w-36">Số điện thoại</th>
                   {showActionColumn && <th className="py-3 px-4 text-center w-24">Hành động</th>}
                 </tr>

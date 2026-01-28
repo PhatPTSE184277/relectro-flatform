@@ -24,7 +24,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
 }) => {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="bg-gray-200 p-6 rounded-xl animate-pulse">
             <div className="h-4 bg-gray-300 rounded w-20 mb-4"></div>
@@ -63,7 +63,7 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat, idx) => {
         const isPrimary = idx % 2 === 1;
         // Ensure all values are numbers and fallback to 0 if NaN or undefined

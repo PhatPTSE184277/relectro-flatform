@@ -52,33 +52,35 @@ const DashboardPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
             {/* Header with Mode Toggle and Date Picker */}
             <div className="mb-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-                    <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-2">
+                    <div className="flex items-center gap-3 justify-center sm:justify-start">
                         <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center">
                             <LayoutDashboard className="text-white" size={20} />
                         </div>
                         <h1 className="text-3xl font-bold text-gray-900">Thống kê</h1>
                     </div>
-                    <div className="flex gap-4 items-center flex-1 justify-end">
-                        {viewMode === 'day' ? (
-                            <div className="w-full max-w-xs">
-                                <CustomDatePicker
-                                    value={selectedDate}
-                                    onChange={setSelectedDate}
-                                    placeholder="Chọn ngày"
-                                />
-                            </div>
-                        ) : (
-                            <div className="w-full max-w-xl">
-                                <CustomDateRangePicker
-                                    fromDate={fromDate}
-                                    toDate={toDate}
-                                    onFromDateChange={setFromDate}
-                                    onToDateChange={setToDate}
-                                />
-                            </div>
-                        )}
-                             <div className="flex items-center bg-gray-100 rounded-lg">
+                    <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-row sm:gap-4 sm:items-center sm:justify-end">
+                        <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-row sm:gap-4 sm:items-center">
+                            {viewMode === 'day' ? (
+                                <div className="w-full max-w-xs mx-auto sm:mx-0">
+                                    <CustomDatePicker
+                                        value={selectedDate}
+                                        onChange={setSelectedDate}
+                                        placeholder="Chọn ngày"
+                                    />
+                                </div>
+                            ) : (
+                                <div className="w-full max-w-xl mx-auto sm:mx-0">
+                                    <CustomDateRangePicker
+                                        fromDate={fromDate}
+                                        toDate={toDate}
+                                        onFromDateChange={setFromDate}
+                                        onToDateChange={setToDate}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex items-center bg-gray-100 rounded-lg w-full justify-center sm:w-auto sm:justify-start">
                             <button
                                 onClick={() => setViewMode('day')}
                                 className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
@@ -111,7 +113,6 @@ const DashboardPage = () => {
                 totalProducts={normalizeStatDetail(summary?.totalProducts)}
                 loading={loading}
             />
-            
             {/* Danh sách danh mục sản phẩm */}
             <div>
                 <ProductCategoryList

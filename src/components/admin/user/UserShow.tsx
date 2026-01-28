@@ -22,7 +22,6 @@ const UserShow: React.FC<UserShowProps> = ({ user, stt, onBan, isLast = false, s
       </td>
       <td className="py-3 px-4 font-medium text-gray-900 w-52">{user.name}</td>
       <td className="py-3 px-4 text-gray-700 w-64">{user.email}</td>
-      <td className="py-3 px-4 text-gray-700 w-36">{user.role || 'User'}</td>
       <td className="py-3 px-4 text-gray-700 w-36">{user.phone || "-"}</td>
       {showActionColumn && (
         <td className="py-3 px-4 w-24">

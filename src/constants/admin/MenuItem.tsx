@@ -7,7 +7,8 @@ import {
     ClipboardList,
     Wrench,
     MapPin,
-    Recycle
+    Recycle,
+    Bell
 } from 'lucide-react';
 
 export const adminMenuItems = [
@@ -64,5 +65,11 @@ export const adminMenuItems = [
         label: 'Người dùng',
         path: '/admin/user',
         icon: <Users size={20} />
+    },
+    {
+        id: 'send-notification',
+        label: 'Gửi thông báo',
+        path: '/admin/send-notification',
+        icon: <Bell size={20} />
     }
 ];

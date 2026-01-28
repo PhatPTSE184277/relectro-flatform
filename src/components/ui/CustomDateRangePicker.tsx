@@ -22,6 +22,7 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
                     onChange={onFromDateChange}
                     placeholder='Từ ngày'
                     showIcon={false}
+                    dropdownAlign='left'
                 />
             </div>
             <span className='text-gray-300 text-lg px-1 select-none'>–</span>
@@ -31,6 +32,7 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
                     onChange={onToDateChange}
                     placeholder='Đến ngày'
                     showIcon={false}
+                    dropdownAlign='right'
                 />
             </div>
         </div>
