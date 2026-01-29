@@ -18,17 +18,16 @@ const VehicleList: React.FC<VehicleListProps> = ({
             <div className='overflow-x-auto w-full'>
                 <div className='inline-block min-w-full align-middle'>
                     <div className='overflow-hidden'>
-                        <div className='max-h-96 overflow-y-auto w-full min-w-full'>
-                            <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
+                        <div className='max-h-56vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[48vh] xl:max-h-[56vh] overflow-y-auto w-full'>
+                            <table className='w-full text-sm text-gray-800 table-fixed'>
                                 <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                     <tr>
-                                        <th className='py-3 px-4 text-center w-16'>STT</th>
-                                        <th className='py-3 px-4 text-left w-40'>Biển số xe</th>
-                                        <th className='py-3 px-4 text-left w-32'>Loại xe</th>
-                                        <th className='py-3 px-4 text-left w-56'>Điểm thu gom</th>
-                                        <th className='py-3 px-4 text-left w-32'>Tải trọng</th>
-                                        <th className='py-3 px-4 text-left w-24'>Bán kính</th>
-                                        <th className='py-3 px-4 text-center w-24'>Hành động</th>
+                                        <th className='py-3 px-4 text-center w-[6vw]'>STT</th>
+                                        <th className='py-3 px-4 text-left w-[13vw]'>Biển số xe</th>
+                                        <th className='py-3 px-4 text-left w-[15vw]'>Loại xe</th>
+                                        <th className='py-3 px-4 text-left w-[13vw]'>Điểm thu gom</th>
+                                        <th className='py-3 px-4 text-right w-[12vw]'>Tải trọng(Kg)</th>
+                                        <th className='py-3 px-4 text-center w-[7vw]'>Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>

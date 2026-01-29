@@ -16,20 +16,32 @@ export interface ProductListProps {
     maxHeight?: number;
 }
 
-const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, itemsPerPage = 10, showCheckbox, selectedProductIds = [], onToggleSelect, onToggleProduct, onToggleAll, maxHeight = 330 }) => {
+const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, itemsPerPage = 10, showCheckbox, selectedProductIds = [], onToggleSelect, onToggleProduct, onToggleAll, maxHeight }) => {
     // Check if all products on current page are selected
     const allSelected = showCheckbox && products.length > 0 && products.every(p => selectedProductIds.includes(p.productId));
+    // Determine maxHeight style
+    let maxHeightStyle: React.CSSProperties | undefined = undefined;
+    if (maxHeight !== undefined) {
+        if (typeof maxHeight === 'number') {
+            maxHeightStyle = { maxHeight: `${maxHeight}vh`, overflowY: 'auto' };
+        } else if (typeof maxHeight === 'string') {
+            maxHeightStyle = { maxHeight: maxHeight, overflowY: 'auto' };
+        }
+    }
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>
                 <div className='inline-block min-w-full align-middle'>
                     <div className='overflow-hidden'>
-                        <div style={{ maxHeight, overflowY: 'auto' }}>
+                        <div
+                            className={maxHeight === undefined ? 'max-h-[59vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[53vh] xl:max-h-[59vh] overflow-y-auto' : 'overflow-y-auto'}
+                            style={maxHeightStyle}
+                        >
                             <table className='w-full text-sm text-gray-800 table-fixed'>
                                 <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                     <tr>
                                         {showCheckbox && (
-                                            <th className='py-3 px-4 text-center w-13'>
+                                            <th className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>
                                                 <input
                                                     type='checkbox'
                                                     checked={allSelected}
@@ -38,10 +50,10 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                                                 />
                                             </th>
                                         )}
-                                        <th className='py-3 px-4 text-left w-18'>STT</th>
-                                        <th className='py-3 px-4 text-left w-64'>Người gửi</th>
-                                        <th className='py-3 px-4 text-left'>Địa chỉ</th>
-                                        <th className='py-3 px-4 text-right w-64'>Khối lượng / Kích thước (kg, cm)</th>
+                                        <th className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>STT</th>
+                                        <th className='py-3 px-4 text-left w-[14vw] min-w-[10vw]'>Người gửi</th>
+                                        <th className='py-3 px-4 text-left w-[22vw] min-w-[14vw]'>Địa chỉ</th>
+                                        <th className='py-3 px-4 text-right w-[18vw] min-w-[12vw]'>Khối lượng / Kích thước (kg, cm)</th>
                                     </tr>
                                 </thead>
                                 <tbody>

@@ -106,11 +106,11 @@ const RequestList = React.forwardRef<HTMLDivElement, RequestListProps>(({
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full align-middle">
           <div className="overflow-hidden">
-            <div className="max-h-100  overflow-y-auto" ref={ref}>
+            <div className="max-h-[59vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[53vh] xl:max-h-[59vh] overflow-y-auto" ref={ref}>
               <table className="min-w-full text-sm text-gray-800 table-fixed">
                 <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10">
                   <tr>
-                    <th className="py-3 px-4 text-center" style={{ width: '60px' }}>
+                    <th className="py-3 px-4 text-center w-[5vw] min-w-[5vw]">
                       {isPending && (
                         <button
                           onClick={onToggleSelectAll}
@@ -120,12 +120,12 @@ const RequestList = React.forwardRef<HTMLDivElement, RequestListProps>(({
                         </button>
                       )}
                     </th>
-                    <th className="py-3 px-4 text-center w-16">STT</th>
-                    <th className="py-3 px-4 text-left w-60">Người gửi</th>
-                    <th className="py-3 px-4 text-left w-88">Danh mục</th>
-                    <th className="py-3 px-4 text-left w-[550px]">Địa chỉ</th>
-                    <th className="py-3 px-4 text-right w-72">Ngày đăng</th>
-                    <th className="py-3 px-4 text-center w-36">Hành động</th>
+                    <th className="py-3 px-4 text-center w-[5vw] min-w-[5vw]">STT</th>
+                    <th className="py-3 px-4 text-left w-[14vw] min-w-[10vw]">Người gửi</th>
+                    <th className="py-3 px-4 text-left w-[18vw] min-w-[12vw]">Danh mục</th>
+                    <th className="py-3 px-4 text-left w-[28vw] min-w-[18vw]">Địa chỉ</th>
+                    <th className="py-3 px-4 text-right w-[12vw] min-w-[8vw]">Ngày đăng</th>
+                    <th className="py-3 px-4 text-center w-[10vw] min-w-[7vw]">Hành động</th>
                   </tr>
                 </thead>
                 <tbody>

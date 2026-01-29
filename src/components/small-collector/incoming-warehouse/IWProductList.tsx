@@ -29,17 +29,16 @@ const IWProductList = forwardRef<HTMLDivElement, IWProductListProps>(
                 <div className='overflow-x-auto'>
                     <div className='inline-block min-w-full align-middle'>
                         <div className='overflow-hidden'>
-                            <div className='max-h-75 overflow-y-auto' ref={ref}>
+                            <div className='max-h-[44vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[45vh] xl:max-h-[44vh] overflow-y-auto' ref={ref}>
                                 <table className='min-w-full text-sm text-gray-800 table-fixed'>
                                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                         <tr>
-                                            <th className='py-3 px-4 text-center' style={{ width: '60px' }}>STT</th>
-                                            <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Loại sản phẩm</th>
-                                            <th className='py-3 px-4 text-left' style={{ width: '160px' }}>Mã QR</th>
-                                            <th className='py-3 px-4 text-left' style={{ width: '140px' }}>Thương hiệu</th>
-                                            <th className='py-3 px-4 text-left' style={{ width: '200px' }}>Mô tả</th>
-                                            {/* Bỏ cột điểm */}
-                                            <th className='py-3 px-4 text-center' style={{ width: '100px' }}>Hành động</th>
+                                            <th className='py-3 px-2 text-center w-[5vw] min-w-10'>STT</th>
+                                            <th className='py-3 px-2 text-left w-[14vw] min-w-20'>Loại sản phẩm</th>
+                                            <th className='py-3 px-2 text-left w-[14vw] min-w-20'>Mã QR</th>
+                                            <th className='py-3 px-2 text-left w-[12vw] min-w-20'>Thương hiệu</th>
+                                            <th className='py-3 px-2 text-left w-[18vw] min-w-30'>Mô tả</th>
+                                            <th className='py-3 px-2 text-center w-[7vw] min-w-12'>Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>

@@ -16,15 +16,15 @@ const TrackingProductList: React.FC<TrackingProductListProps & { tableRef?: Reac
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>
-                <div className='max-h-90 overflow-y-auto' ref={tableRef}>
+                <div className='max-h-[59vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[53vh] xl:max-h-[59vh] overflow-y-auto' ref={tableRef}>
                     <table className='min-w-full text-sm text-gray-800 table-fixed'>
                         <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                             <tr>
-                                <th className='py-3 px-4 text-center w-16'>STT</th>
-                                <th className='py-3 px-4 text-left w-52'>Sản phẩm</th>
-                                <th className='py-3 px-4 text-left w-44'>Người gửi</th>
-                                <th className='py-3 px-4 text-left w-44'>Ngày thu gom</th>
-                                <th className='py-3 px-4 text-center w-32'>Hành động</th>
+                                <th className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>STT</th>
+                                <th className='py-3 px-4 text-left w-[18vw] min-w-[12vw]'>Sản phẩm</th>
+                                <th className='py-3 px-4 text-left w-[14vw] min-w-[10vw]'>Người gửi</th>
+                                <th className='py-3 px-4 text-left w-[14vw] min-w-[10vw]'>Ngày thu gom</th>
+                                <th className='py-3 px-4 text-center w-[10vw] min-w-[7vw]'>Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -46,12 +46,12 @@ const TrackingProductList: React.FC<TrackingProductListProps & { tableRef?: Reac
                                             key={product.productId}
                                             className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}
                                         >
-                                            <td className='py-3 px-4 text-center w-16'>
+                                            <td className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>
                                                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                                                     {product.stt}
                                                 </span>
                                             </td>
-                                            <td className='py-3 px-4 text-gray-700 w-52'>
+                                            <td className='py-3 px-4 text-gray-700 w-[18vw] min-w-[12vw]'>
                                                 <div className='flex items-center gap-2'>
                                                     <div>
                                                         <div className='font-medium'>{product.categoryName || 'N/A'}</div>
@@ -61,17 +61,17 @@ const TrackingProductList: React.FC<TrackingProductListProps & { tableRef?: Reac
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className='py-3 px-4 text-gray-700 w-44'>
+                                            <td className='py-3 px-4 text-gray-700 w-[14vw] min-w-[10vw]'>
                                                 <div className='flex items-center gap-2'>
                                                     <span>{product.sender?.name || product.userName || 'N/A'}</span>
                                                 </div>
                                             </td>
-                                            <td className='py-3 px-4 text-gray-700 w-44'>
+                                            <td className='py-3 px-4 text-gray-700 w-[14vw] min-w-[10vw]'>
                                                 <div className='flex items-center gap-2'>
                                                     <span>{formatDate(product.pickUpDate) || 'Chưa có'}</span>
                                                 </div>
                                             </td>
-                                            <td className='py-3 px-4 text-center align-middle w-32'>
+                                            <td className='py-3 px-4 text-center align-middle w-[10vw] min-w-[7vw]'>
                                                 <div className='flex items-center justify-center h-full'>
                                                     <button
                                                         onClick={() => onProductClick(product)}

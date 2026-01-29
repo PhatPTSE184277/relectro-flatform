@@ -12,36 +12,36 @@ interface GroupingShowProps {
 const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean; stt?: number }> = ({ grouping, onViewDetail, onReassignDriver, isLast = false, stt }) => {
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`} style={{ tableLayout: 'fixed' }}>
-            <td className='py-3 px-4 text-left w-16'>
+            <td className='py-3 px-4 text-left w-[5vw] min-w-[5vw]'>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {stt}
                 </span>
             </td>
-            <td className='py-3 px-4 font-medium w-48'>
+            <td className='py-3 px-4 font-medium w-[14vw] min-w-[10vw]'>
                 <div className='text-gray-900'>{grouping.groupCode}</div>
             </td>
-            <td className='py-3 px-4 text-center text-gray-700 w-48'>
+            <td className='py-3 px-4 text-center text-gray-700 w-[12vw] min-w-[8vw]'>
                 {formatDate(grouping.groupDate)}
             </td>
-            <td className='py-3 px-4 text-center text-gray-700 w-48'>
+            <td className='py-3 px-4 text-center text-gray-700 w-[14vw] min-w-[10vw]'>
                 <div className='flex items-center justify-center gap-2'>
                     <span>{grouping.vehicle?.replace(/\s*\(.*\)/, '')}</span>
                 </div>
             </td>
-            <td className='py-3 px-4 text-gray-700 w-48'>
+            <td className='py-3 px-4 text-gray-700 w-[14vw] min-w-[10vw]'>
                 {grouping.collector}
             </td>
-            <td className='py-3 px-4 text-gray-700 text-right w-32'>
+                <td className='py-3 px-4 text-gray-700 text-right w-[10vw] min-w-[8vw]'>
                     {grouping.totalPosts}
-            </td>
-            <td className='py-3 px-4 text-gray-700 text-right w-48'>
+                </td>
+            <td className='py-3 px-4 text-gray-700 text-right w-[14vw] min-w-[10vw]'>
                 <div className='flex flex-col gap-1 items-end'>
                     <span className='text-xs'>
                         <span className='font-medium'>{formatWeightKg(grouping.totalWeightKg)}</span>
                     </span>
                 </div>
             </td>
-            <td className='py-3 px-4 w-32'>
+            <td className='py-3 px-4 w-[8vw] min-w-[6vw]'>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={() => onViewDetail(grouping)}

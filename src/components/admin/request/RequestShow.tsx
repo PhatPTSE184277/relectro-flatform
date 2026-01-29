@@ -55,29 +55,29 @@ const RequestShow: React.FC<RequestShowProps & { isLast?: boolean }> = ({
                     <div className="w-4 h-4"></div>
                 )}
             </td>
-            <td className="py-3 px-4 text-center w-16">
+            <td className="py-3 px-4 text-center w-[5vw] min-w-[5vw]">
                 <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
                     {stt}
                 </span>
             </td>
             {/* Ảnh đã bị ẩn */}
-            <td className='py-3 px-4 font-medium w-60'>
+            <td className='py-3 px-4 font-medium w-[14vw] min-w-[10vw]'>
                 <div className='text-sm text-gray-500 mt-1'>
                     {post.senderName || 'Không rõ'}
                 </div>
             </td>
 
-            <td className='py-3 px-4 text-gray-700 w-88'>
+            <td className='py-3 px-4 text-gray-700 w-[18vw] min-w-[12vw]'>
                 {post.category}
             </td>
-            <td className='py-3 px-4 text-gray-700 w-[550px]'>
+            <td className='py-3 px-4 text-gray-700 w-[28vw] min-w-[18vw]'>
                 <div className='line-clamp-2 wrap-break-word'>{post.address}</div>
             </td>
-            <td className='py-3 px-4 text-sm text-gray-600 text-right w-72'>
+            <td className='py-3 px-4 text-sm text-gray-600 text-right w-[12vw] min-w-[8vw]'>
                 {formatDate(post.date)}
             </td>
 
-            <td className='py-3 px-4 w-36'>
+            <td className='py-3 px-4 w-[10vw] min-w-[7vw]'>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}

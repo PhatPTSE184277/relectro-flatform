@@ -20,18 +20,18 @@ const GroupingList: React.FC<GroupingListProps> = ({
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
-            <div className='overflow-x-auto max-h-110 overflow-y-auto'>
+            <div className='overflow-x-auto max-h-[62vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[55vh] xl:max-h-[62vh] overflow-y-auto'>
                 <table className='min-w-full text-sm text-gray-800 table-fixed'>
                     <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                         <tr>
-                            <th className='py-3 px-4 text-left w-16'>STT</th>
-                            <th className='py-3 px-4 text-left w-48'>Mã nhóm</th>
-                            <th className='py-3 px-4 text-center w-48'>Ngày thu gom</th>
-                            <th className='py-3 px-4 text-center w-48'>Phương tiện</th>
-                            <th className='py-3 px-4 text-left w-48'>Người thu gom</th>
-                            <th className='py-3 px-4 text-left w-32'>Số sản phẩm</th>
-                            <th className='py-3 px-4 text-right w-48'>Khối lượng (kg)</th>
-                            <th className='py-3 px-4 text-center w-32'>Hành động</th>
+                            <th className='py-3 px-4 text-left w-[5vw] min-w-[5vw]'>STT</th>
+                            <th className='py-3 px-4 text-left w-[14vw] min-w-[10vw]'>Mã nhóm</th>
+                            <th className='py-3 px-4 text-center w-[12vw] min-w-[8vw]'>Ngày thu gom</th>
+                            <th className='py-3 px-4 text-center w-[14vw] min-w-[10vw]'>Phương tiện</th>
+                            <th className='py-3 px-4 text-left w-[14vw] min-w-[10vw]'>Người thu gom</th>
+                            <th className='py-3 px-4 text-right w-[10vw] min-w-[8vw]'>Số sản phẩm</th>
+                            <th className='py-3 px-4 text-right w-[14vw] min-w-[10vw]'>Khối lượng (kg)</th>
+                            <th className='py-3 px-4 text-center w-[8vw] min-w-[6vw]'>Hành động</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -50,7 +50,7 @@ const PackageList: React.FC<DailyPackageStatsProps> = ({ dailyStats, loading }) 
                     className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50 transition-colors`}
                   >
                     <td className='py-3 px-4 font-medium w-16'>
-                      <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold'>
+                      <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-xs flex items-center justify-center font-semibold'>
                         {idx + 1}
                       </span>
                     </td>

@@ -32,11 +32,11 @@ const ProductCategoryList: React.FC<ProductCategoryListProps & { total?: number 
               <table className='min-w-full text-sm text-gray-800 table-fixed'>
                 <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                   <tr>
-                    <th className='py-3 px-2 text-center w-[5vw] min-w-[6vh]'>STT</th>
-                    <th className='py-3 px-4 text-left min-w-[22vw] w-[32vw]'>Danh mục sản phẩm</th>
-                    <th className='py-3 px-2 text-right w-[13vw] min-w-[11vh]'>Số lượng</th>
-                    <th className='py-3 px-2 text-right w-[13vw] min-w-[11vh]'>Thay đổi</th>
-                    <th className='py-3 px-2 text-right w-[10vw] min-w-[9vh]'>% Tổng</th>
+                    <th className='py-3 px-2 text-center w-[5vw] min-w-[5vw]'>STT</th>
+                    <th className='py-3 px-4 text-left min-w-[18vw] w-[28vw]'>Danh mục sản phẩm</th>
+                    <th className='py-3 px-2 text-right w-[10vw] min-w-[8vw]'>Số lượng</th>
+                    <th className='py-3 px-2 text-right w-[10vw] min-w-[8vw]'>Thay đổi</th>
+                    <th className='py-3 px-2 text-right w-[8vw] min-w-[7vw]'>% Tổng</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -47,23 +47,23 @@ const ProductCategoryList: React.FC<ProductCategoryListProps & { total?: number 
                       return (
                         <tr
                           key={idx}
-                          className={`${!isLast ? 'border-b border-primary-100' : ''} bg-primary-50/30 hover:bg-primary-100/40 transition-colors`}
+                          className={`${!isLast ? 'border-b border-primary-100' : ''} bg-primary-50/30 hover:bg-primary-100/40 transition-colors`} style={{ height: '4.5vh', minHeight: '44px' }}
                         >
-                          <td className="py-3 px-4 text-center w-[5vw] min-w-[6vh]">
-                            <span className="w-8 h-8 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
+                          <td className="py-3 px-4 text-center w-[5vw] min-w-[5vw]">
+                            <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
                               {idx + 1}
                             </span>
                           </td>
-                          <td className="py-3 px-4 font-medium text-gray-900 min-w-[22vw] w-[32vw]">
+                          <td className="py-3 px-4 font-medium text-gray-900 min-w-[18vw] w-[28vw]">
                             {category.categoryName}
                           </td>
-                          <td className="py-3 px-4 text-right text-gray-700 font-semibold w-[13vw] min-w-[11vh]">
+                          <td className="py-3 px-4 text-right text-gray-700 font-semibold w-[10vw] min-w-[8vw]">
                             {category.currentValue}
                           </td>
-                          <td className="py-3 px-4 text-right text-gray-700 font-semibold w-[13vw] min-w-[11vh]">
+                          <td className="py-3 px-4 text-right text-gray-700 font-semibold w-[10vw] min-w-[8vw]">
                             {category.trend === 'Increase' ? '▲' : category.trend === 'Decrease' ? '▼' : ''} {category.absoluteChange > 0 ? '+' : ''}{category.absoluteChange} ({category.percentChange}%)
                           </td>
-                          <td className="py-3 px-4 text-right text-gray-700 font-semibold w-[10vw] min-w-[9vh]">
+                          <td className="py-3 px-4 text-right text-gray-700 font-semibold w-[8vw] min-w-[7vw]">
                             {percentOfTotal}
                           </td>
                         </tr>

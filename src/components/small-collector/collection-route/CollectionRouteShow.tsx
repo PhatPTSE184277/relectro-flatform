@@ -16,27 +16,27 @@ const CollectionRouteShow: React.FC<CollectionRouteShowProps & { isLast?: boolea
 }) => {
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
-            <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
+            <td className='py-3 px-2 text-center w-[4vw] min-w-10'>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {stt}
                 </span>
             </td>
-            <td className='py-3 px-4 font-medium' style={{ width: '180px' }}>
+            <td className='py-3 px-2 font-medium w-[10vw] min-w-20'>
                 <div className='text-gray-900 line-clamp-2'>{route.brandName || 'Không rõ'}</div>
             </td>
-            <td className='py-3 px-4 text-gray-700' style={{ width: '160px' }}>
+            <td className='py-3 px-2 text-gray-700 w-[12vw] min-w-[90px]'>
                 {route.sender?.name || 'Không rõ'}
             </td>
-            <td className='py-3 px-4 text-gray-700' style={{ width: '160px' }}>
+            <td className='py-3 px-2 text-gray-700 w-[12vw] min-w-[90px]'>
                 {route.collector?.name || 'Không rõ'}
             </td>
-            <td className='py-3 px-4 text-gray-700' style={{ width: '250px' }}>
+            <td className='py-3 px-2 text-gray-700 w-[18vw] min-w-[120px]'>
                 <div className='line-clamp-2'>{route.address}</div>
             </td>
-            <td className='py-3 px-4 text-sm text-gray-600 text-center' style={{ width: '140px' }}>
+            <td className='py-3 px-2 text-sm text-gray-600 text-center w-[8vw] min-w-[60px]'>
                 {formatTime(route.estimatedTime)}
             </td>
-            <td className='py-3 px-4' style={{ width: '100px' }}>
+            <td className='py-3 px-2 w-[5vw] min-w-12'>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}

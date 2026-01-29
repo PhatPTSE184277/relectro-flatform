@@ -64,28 +64,28 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     );
 
     // Xử lý tạo nhóm thu gom cho TẤT CẢ xe của ngày đó
+    const [createDisabled, setCreateDisabled] = useState(false);
     const handleCreateGrouping = async () => {
+        setCreateDisabled(true);
         try {
             // Lấy tất cả xe của ngày đang chọn
             const allVehiclesOfDay = vehiclesForSelectedDate;
-            
             // Gom tất cả assignments của ngày này vào một mảng
             const assignments = allVehiclesOfDay.map(vehicleGroup => ({
                 workDate: vehicleGroup.workDate,
                 vehicleId: vehicleGroup.suggestedVehicle.id.toString(),
                 productIds: vehicleGroup.products.map((p: any) => p.productId)
             }));
-            
             console.log(`Đang tạo nhóm cho ${assignments.length} xe cùng lúc`);
-            
             // Gọi API một lần duy nhất cho tất cả xe
             await onCreateGrouping(assignments);
-            
             // Sau khi tạo xong, tính route và chuyển trang
             await calculateRoute(true);
             router.push("/small-collector/grouping/list");
         } catch (error) {
             console.error('Error creating grouping:', error);
+        } finally {
+            setCreateDisabled(false);
         }
     };
 
@@ -179,18 +179,12 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                                 </div>
                             </div>
                             <div className='flex items-center gap-2'>
-                                {/* <button
-                                    onClick={() => handleOpenEditModal(currentVehicleGroup)}
-                                    className='px-4 py-2 bg-white border border-primary-200 text-primary-600 rounded-lg hover:bg-primary-50 transition cursor-pointer font-medium'
-                                >
-                                    Chỉnh sửa
-                                </button> */}
                                 <button
                                     onClick={handleCreateGrouping}
-                                    className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition cursor-pointer shadow-md font-medium'
-                                    disabled={loading}
+                                    className={`px-4 py-2 bg-primary-600 text-white rounded-lg transition cursor-pointer shadow-md font-medium ${loading || createDisabled ? 'opacity-60 cursor-not-allowed' : 'hover:bg-primary-700'}`}
+                                    disabled={loading || createDisabled}
                                 >
-                                    {loading ? 'Đang tạo...' : `Tạo nhóm (${vehiclesForSelectedDate.length} xe)`}
+                                    {loading || createDisabled ? 'Đang tạo...' : `Tạo nhóm (${vehiclesForSelectedDate.length} xe)`}
                                 </button>
                             </div>
                         </div>
