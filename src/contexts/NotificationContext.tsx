@@ -5,17 +5,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNotificationHub } from '@/hooks/useNotificationHub';
 import { getUserNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '@/services/NotificationService';
 
-export interface Notification {
-    notificationId: string;
-    userId: string;
-    title: string;
-    message: string;
-    isRead: boolean;
-    createdAt: string;
-}
 
 interface NotificationContextType {
-    notifications: Notification[];
+    notifications: any[];
     unreadCount: number;
     loading: boolean;
     fetchNotifications: () => Promise<void>;
@@ -27,7 +19,7 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { user } = useAuth();
-    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [notifications, setNotifications] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
 
     const fetchNotifications = useCallback(async () => {

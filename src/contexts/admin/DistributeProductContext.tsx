@@ -9,19 +9,37 @@ import React, {
 } from 'react';
 import {
     distributeProducts,
-    getDistributedProductsByDate
+    getDistributedProductsByDate,
+    getUndistributedProducts,
+    getCompanyMetricsByDate,
+    getSCPProductsStatus
 } from '@/services/admin/DistributeProductService';
 import { AssignedProduct, AssignProductsRequest } from '@/types/AssignProduct';
 
 interface DistributeProductContextType {
     distributedProducts: AssignedProduct[];
+    undistributedProducts: any[];
+    allUndistributedProducts: any[];
+    companies: any[];
+    scpProducts: any[];
+    scpProductsData: any;
     loading: boolean;
+    companyLoading: boolean;
+    scpLoading: boolean;
+    activeFilter: 'undistributed' | 'distributed';
+    setActiveFilter: (filter: 'undistributed' | 'distributed') => void;
     fetchDistributedProducts: (workDate: string, page?: number, pageSize?: number) => Promise<void>;
+    fetchUndistributedProducts: (workDate: string, page?: number, limit?: number) => Promise<void>;
+    fetchCompanies: (workDate: string) => Promise<void>;
+    fetchSCPProducts: (smallPointId: string, workDate: string, page?: number, limit?: number) => Promise<void>;
     distributeProductsToDate: (data: AssignProductsRequest) => Promise<any>;
     page: number;
     setPage: (page: number) => void;
     totalPages: number;
     pageSize: number;
+    scpPage: number;
+    setScpPage: (page: number) => void;
+    scpTotalPages: number;
 }
 
 const DistributeProductContext = createContext<
@@ -32,9 +50,19 @@ type Props = { children: ReactNode };
 
 export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
     const [distributedProducts, setDistributedProducts] = useState<AssignedProduct[]>([]);
+    const [undistributedProducts, setUndistributedProducts] = useState<any[]>([]);
+    const [allUndistributedProducts, setAllUndistributedProducts] = useState<any[]>([]);
+    const [companies, setCompanies] = useState<any[]>([]);
+    const [scpProducts, setScpProducts] = useState<any[]>([]);
+    const [scpProductsData, setScpProductsData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
+    const [companyLoading, setCompanyLoading] = useState(false);
+    const [scpLoading, setScpLoading] = useState(false);
+    const [activeFilter, setActiveFilter] = useState<'undistributed' | 'distributed'>('undistributed');
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [scpPage, setScpPage] = useState(1);
+    const [scpTotalPages, setScpTotalPages] = useState(1);
     const pageSize = 10;
 
     const fetchDistributedProducts = useCallback(async (workDate: string, pageArg?: number, pageSizeArg?: number) => {
@@ -62,6 +90,89 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
         }
     }, [page, pageSize]);
 
+    const fetchUndistributedProducts = useCallback(async (workDate: string, pageArg?: number, limitArg?: number) => {
+        setLoading(true);
+        try {
+            const currentPage = pageArg ?? page;
+            const currentLimit = limitArg ?? pageSize;
+            
+            // Fetch all products once (use very large limit)
+            const data = await getUndistributedProducts(workDate, 1, 999999);
+            
+            let allProducts: any[] = [];
+            // API returns array directly or object with products property
+            if (Array.isArray(data)) {
+                allProducts = data;
+            } else if (data && data.products) {
+                allProducts = data.products;
+            }
+            
+            // Store all products
+            setAllUndistributedProducts(allProducts);
+            
+            // Calculate total pages
+            const totalPagesCalc = Math.max(1, Math.ceil(allProducts.length / currentLimit));
+            setTotalPages(totalPagesCalc);
+            
+            // Client-side pagination: slice array for current page
+            const startIndex = (currentPage - 1) * currentLimit;
+            const endIndex = startIndex + currentLimit;
+            const paginatedProducts = allProducts.slice(startIndex, endIndex);
+            
+            setUndistributedProducts(paginatedProducts);
+        } catch (err) {
+            console.log(err);
+            setAllUndistributedProducts([]);
+            setUndistributedProducts([]);
+            setTotalPages(1);
+        } finally {
+            setLoading(false);
+        }
+    }, [page, pageSize]);
+
+    const fetchCompanies = useCallback(async (workDate: string) => {
+        setCompanyLoading(true);
+        try {
+            const data = await getCompanyMetricsByDate(workDate);
+            if (Array.isArray(data)) {
+                setCompanies(data);
+            } else {
+                setCompanies([]);
+            }
+        } catch (err) {
+            console.log(err);
+            setCompanies([]);
+        } finally {
+            setCompanyLoading(false);
+        }
+    }, []);
+
+    const fetchSCPProducts = useCallback(async (smallPointId: string, workDate: string, pageArg?: number, limitArg?: number) => {
+        setScpLoading(true);
+        try {
+            const currentPage = pageArg ?? scpPage;
+            const currentLimit = limitArg ?? pageSize;
+            const data = await getSCPProductsStatus(smallPointId, workDate, currentPage, currentLimit);
+            
+            if (data && data.products) {
+                setScpProducts(data.products);
+                setScpProductsData(data);
+                setScpTotalPages(data.totalPages || 1);
+            } else {
+                setScpProducts([]);
+                setScpProductsData(null);
+                setScpTotalPages(1);
+            }
+        } catch (err) {
+            console.log(err);
+            setScpProducts([]);
+            setScpProductsData(null);
+            setScpTotalPages(1);
+        } finally {
+            setScpLoading(false);
+        }
+    }, [scpPage, pageSize]);
+
     const distributeProductsToDate = useCallback(
         async (data: AssignProductsRequest) => {
             setLoading(true);
@@ -80,13 +191,28 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
 
     const value: DistributeProductContextType = {
         distributedProducts,
+        undistributedProducts,
+        allUndistributedProducts,
+        companies,
+        scpProducts,
+        scpProductsData,
         loading,
+        companyLoading,
+        scpLoading,
+        activeFilter,
+        setActiveFilter,
         fetchDistributedProducts,
+        fetchUndistributedProducts,
+        fetchCompanies,
+        fetchSCPProducts,
         distributeProductsToDate,
         page,
         setPage,
         totalPages,
-        pageSize
+        pageSize,
+        scpPage,
+        setScpPage,
+        scpTotalPages
     };
 
     return (

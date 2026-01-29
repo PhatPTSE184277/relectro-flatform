@@ -14,7 +14,6 @@ import { DistributeProductProvider } from '@/contexts/admin/DistributeProductCon
 import { AssignRecyclingProvider } from '@/contexts/admin/AssignRecyclingContext';
 import { DashboardProvider } from '@/contexts/admin/DashboardContext';
 import { SendNotiProvider } from '@/contexts/admin/SendNotiContext';
-import { DistributedProductProvider } from '@/contexts/admin/DistributedProductContext';
 
 export default function AdminLayout({
     children
@@ -41,7 +40,6 @@ export default function AdminLayout({
         <SendNotiProvider>
             <AssignRecyclingProvider>
                 <DistributeProductProvider>
-                    <DistributedProductProvider>
                     <CompanyConfigProvider>
                     <RequestProvider>
                         <UserProvider>
@@ -76,7 +74,6 @@ export default function AdminLayout({
                         </UserProvider>
                     </RequestProvider>
                 </CompanyConfigProvider>
-                </DistributedProductProvider>
             </DistributeProductProvider>
         </AssignRecyclingProvider>
     </SendNotiProvider>
