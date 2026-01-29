@@ -15,7 +15,7 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
     onToDateChange
 }) => {
     return (
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-1'>
             <div className='flex-1 min-w-[110px]'>
                 <CustomDatePicker
                     value={fromDate}
@@ -25,7 +25,7 @@ const CustomDateRangePicker: React.FC<CustomDateRangePickerProps> = ({
                     dropdownAlign='left'
                 />
             </div>
-            <span className='text-gray-300 text-lg px-1 select-none'>–</span>
+            <span className='text-gray-300 text-base px-0.5 select-none'>–</span>
             <div className='flex-1 min-w-[110px]'>
                 <CustomDatePicker
                     value={toDate}

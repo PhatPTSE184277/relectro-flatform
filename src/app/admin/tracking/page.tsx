@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MapPin, Factory } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { useTrackingContext } from '@/contexts/admin/TrackingContext';
 import TrackingProductList from '@/components/admin/tracking/TrackingProductList';
 import TrackingModal from '@/components/admin/tracking/modal/TrackingModal';
 import TrackingProductFilter from '@/components/admin/tracking/TrackingProductFilter';
-import CompanySelectModal from '@/components/admin/tracking/modal/CompanySelectModal';
+import SearchableSelect from '@/components/ui/SearchableSelect';
+import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
+import { getFirstDayOfMonthString, getTodayString } from '@/utils/getDayString';
 import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
 
@@ -15,12 +17,14 @@ const TrackingPage: React.FC = () => {
     const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
     const [showModal, setShowModal] = useState(false);
-    const [showCompanyModal, setShowCompanyModal] = useState(false);
+    // const [showCompanyModal, setShowCompanyModal] = useState(false);
     const [statusFilter, setStatusFilter] = useState('Chờ Duyệt');
     const [page, setPage] = useState(1);
     const itemsPerPage = 10;
     const [search, setSearch] = useState<string>("");
     const tableScrollRef = useRef<HTMLDivElement>(null);
+    const [fromDate, setFromDate] = useState(getFirstDayOfMonthString);
+    const [toDate, setToDate] = useState(getTodayString);
 
     // Auto-select first company when companies load
     useEffect(() => {
@@ -33,14 +37,16 @@ const TrackingPage: React.FC = () => {
     // Fetch products when company or date changes
     useEffect(() => {
         if (selectedCompanyId) {
-            fetchProducts(selectedCompanyId); // Removed the fourth argument 'search' to match expected parameters
+            fetchProducts(selectedCompanyId, fromDate, toDate);
         }
-    }, [selectedCompanyId, fetchProducts]);
+    }, [selectedCompanyId, fromDate, toDate, fetchProducts]);
 
     const handleCompanySelect = (companyId: string) => {
         setSelectedCompanyId(companyId);
         setPage(1);
     };
+
+
 
     const handleProductClick = (product: any) => {
         setSelectedProduct(product);
@@ -80,10 +86,7 @@ const TrackingPage: React.FC = () => {
 
     const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
-    const selectedCompany = companies.find((company: any) => {
-        const companyId = company.id || company.companyId || String(company.collectionCompanyId);
-        return companyId === selectedCompanyId;
-    });
+
 
     return (
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8'>
@@ -97,26 +100,29 @@ const TrackingPage: React.FC = () => {
                         <h1 className='text-3xl font-bold text-gray-900'>Theo dõi sản phẩm</h1>
                     </div>
                     <div className='flex gap-4 items-center flex-1 justify-end'>
-                        <button
-                            onClick={() => setShowCompanyModal(true)}
-                            className='w-full sm:w-auto px-6 py-3 bg-white border-2 border-primary-200 rounded-xl hover:border-primary-400 transition-all shadow-sm cursor-pointer flex items-center gap-3'
-                        >
-                            <Factory className='text-primary-600' size={20} />
-                            <div className='text-left flex-1'>
-                                <div className='text-xs text-gray-500 font-medium'>Công ty đang chọn</div>
-                                <div className='font-semibold text-gray-900'>
-                                    {selectedCompany ? (selectedCompany.name || selectedCompany.companyName || 'N/A') : 'Chọn công ty'}
-                                </div>
-                            </div>
-                            <svg className='w-5 h-5 text-gray-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
-                            </svg>
-                        </button>
+                        <div className='w-72'>
+                            <SearchableSelect
+                                options={companies}
+                                value={selectedCompanyId ?? ''}
+                                onChange={handleCompanySelect}
+                                getLabel={(c: any) => c.name || c.companyName || 'N/A'}
+                                getValue={(c: any) => c.id || c.companyId || String(c.collectionCompanyId)}
+                                placeholder='Chọn công ty...'
+                            />
+                        </div>
                         <div className='flex-1 max-w-md'>
                             <SearchBox
                                 value={search}
                                 onChange={setSearch}
                                 placeholder="Tìm kiếm sản phẩm..."
+                            />
+                        </div>
+                        <div className='min-w-fit'>
+                            <CustomDateRangePicker
+                                fromDate={fromDate}
+                                toDate={toDate}
+                                onFromDateChange={setFromDate}
+                                onToDateChange={setToDate}
                             />
                         </div>
                     </div>
@@ -160,14 +166,7 @@ const TrackingPage: React.FC = () => {
                 </>
             )}
 
-            {/* Company Select Modal */}
-            <CompanySelectModal
-                open={showCompanyModal}
-                companies={companies}
-                selectedCompanyId={selectedCompanyId}
-                onClose={() => setShowCompanyModal(false)}
-                onSelect={handleCompanySelect}
-            />
+
 
             {/* Tracking Modal */}
             {showModal && selectedProduct && (

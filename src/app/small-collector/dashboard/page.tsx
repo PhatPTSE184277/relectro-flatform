@@ -95,7 +95,7 @@ const DashboardPage = () => {
                                 />
                             </div>
                         ) : (
-                            <div className="w-full max-w-xl">
+                            <div className="min-w-fit">
                                 <CustomDateRangePicker
                                     fromDate={fromDate}
                                     toDate={toDate}

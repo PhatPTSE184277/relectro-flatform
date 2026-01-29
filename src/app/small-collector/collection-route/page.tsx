@@ -80,7 +80,7 @@ const CollectionRoutePage: React.FC = () => {
                     </h1>
                 </div>
                 <div className='flex gap-4 items-center flex-1 justify-end'>
-                    <div className='w-64'>
+                    <div className='min-w-fit'>
                         <CustomDatePicker
                             value={selectedDate}
                             onChange={setSelectedDate}

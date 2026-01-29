@@ -153,11 +153,12 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
         <div className="relative" ref={datePickerRef}>
             <div
                 onClick={() => { if (!disabled) { setIsOpen(!isOpen); setMode('day'); } }}
-                className={`h-12 flex items-center justify-between transition-all duration-300 bg-white border border-primary-200 rounded-xl px-4 shadow-sm ${
+                className={`h-12 flex items-center justify-between transition-all duration-300 bg-white border border-primary-200 rounded-xl px-3 shadow-sm min-w-32 w-auto max-w-xs ${
                     disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                 } ${isOpen ? 'ring-2 ring-primary-400 border-primary-400' : ''}`}
+                style={{ width: 'fit-content' }}
             >
-                <span className={selectedDate ? 'text-gray-900 w-full flex justify-center' : 'text-gray-400 w-full flex justify-center'}>
+                <span className={selectedDate ? 'text-gray-900 flex justify-center' : 'text-gray-400 flex justify-center'}>
                     {selectedDate ? formatDisplayDate(selectedDate) : (placeholder || 'Chọn ngày')}
                 </span>
                 <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>

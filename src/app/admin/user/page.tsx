@@ -73,7 +73,7 @@ const UserPage = () => {
           </h1>
         </div>
         <div className='flex items-center gap-3 flex-1 justify-end max-w-3xl'>
-          <div className='w-full'>
+          <div className='min-w-fit'>
             <CustomDateRangePicker
               fromDate={fromDate}
               toDate={toDate}

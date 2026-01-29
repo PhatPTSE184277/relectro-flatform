@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useProductQueryContext } from '@/contexts/company/ProductQueryContext';
-import { Package, MapPin } from 'lucide-react';
+import { Package } from 'lucide-react';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import ProductList from '@/components/company/product-query/ProductList';
 import Pagination from '@/components/ui/Pagination';
-import PointSelectModal from '@/components/company/product-query/modal/PointSelectModal';
+import SearchableSelect from '@/components/ui/SearchableSelect';
 import { useAuth } from '@/hooks/useAuth';
 
 const ProductQueryPage: React.FC = () => {
@@ -14,7 +14,6 @@ const ProductQueryPage: React.FC = () => {
     const { loading, products, fetchProducts, smallPoints, fetchSmallPoints } = useProductQueryContext();
     const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
     const [selectedPointId, setSelectedPointId] = useState<number | null>(null);
-    const [showPointModal, setShowPointModal] = useState(false);
     const [page, setPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -47,17 +46,14 @@ const ProductQueryPage: React.FC = () => {
         }
     }, [smallPoints, selectedPointId]);
 
-    const handlePointSelect = (pointId: number) => {
-        setSelectedPointId(pointId);
+    const handlePointSelect = (pointId: string) => {
+        setSelectedPointId(Number(pointId));
         setPage(1);
-    };
+    }
 
     // Get products from selected point (from products response)
     const selectedPointData = points.find((point: any) => Number(point.smallPointId) === Number(selectedPointId));
     const pointProducts = selectedPointData?.products || [];
-    
-    // Get selected point info for display (from smallPoints)
-    const selectedPoint = smallPoints.find((point: any) => Number(point.smallPointId) === Number(selectedPointId));
     
     // Paginate products
     const paginatedProducts = pointProducts.slice(
@@ -81,25 +77,24 @@ const ProductQueryPage: React.FC = () => {
                         </h1>
                     </div>
                     <div className='flex items-center gap-4 justify-center sm:justify-end w-full sm:w-auto'>
-                        <div className='w-[280px]'>
+                        <div className='min-w-fit'>
                             <CustomDatePicker
                                 value={selectedDate}
                                 onChange={handleDateChange}
                                 placeholder='Chọn ngày'
                             />
                         </div>
-                        <button
-                            onClick={() => setShowPointModal(true)}
-                            className='px-8 py-2 bg-white border-2 border-primary-200 rounded-lg hover:border-primary-400 transition-all shadow-sm cursor-pointer flex items-center gap-3 w-[280px] text-center'
-                        >
-                            <MapPin className='text-primary-600 shrink-0' size={20} />
-                            <span className='font-semibold text-gray-900 truncate block max-w-[180px] mx-auto'>
-                                {selectedPoint ? (selectedPoint.name || selectedPoint.smallPointName || 'N/A') : 'Chọn điểm thu gom'}
-                            </span>
-                            <svg className='w-5 h-5 text-gray-400 shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
-                            </svg>
-                        </button>
+                        <div className='min-w-fit'>
+                            <SearchableSelect
+                                options={smallPoints}
+                                value={selectedPointId ? String(selectedPointId) : ''}
+                                onChange={handlePointSelect}
+                                getLabel={(p: any) => p.name || p.smallPointName || 'N/A'}
+                                getValue={(p: any) => String(p.smallPointId)}
+                                placeholder='Chọn điểm thu gom'
+                                className='w-72'
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -131,14 +126,7 @@ const ProductQueryPage: React.FC = () => {
                 </>
             )}
 
-            {/* Point Select Modal */}
-            <PointSelectModal
-                open={showPointModal}
-                points={smallPoints}
-                selectedPointId={selectedPointId}
-                onClose={() => setShowPointModal(false)}
-                onSelect={handlePointSelect}
-            />
+            {/* Point Select Modal removed, now using SearchableSelect above */}
         </div>
     );
 };

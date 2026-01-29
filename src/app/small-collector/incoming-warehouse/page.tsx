@@ -139,7 +139,7 @@ const IncomingWarehousePage: React.FC = () => {
 
             {/* Date Range Picker + Action Buttons */}
             <div className='mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-                <div className='max-w-xl w-full'>
+                <div className='min-w-fit'>
                     <CustomDateRangePicker
                         fromDate={fromDate}
                         toDate={toDate}

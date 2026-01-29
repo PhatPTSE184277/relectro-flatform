@@ -194,7 +194,7 @@ const DistributeProductPage: React.FC = () => {
                 </div>
             </div>
             <div className='mt-6 mb-4 flex flex-col sm:flex-row sm:items-center sm:gap-4'>
-                <div className='w-64'>
+                <div className="w-full max-w-xs mx-auto sm:mx-0">
                     <CustomDatePicker
                         value={selectedDate}
                         onChange={handleDateChange}

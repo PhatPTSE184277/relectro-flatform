@@ -58,22 +58,27 @@ const SearchableSelect = <T,>({
 				   </div>
 			</div>
 
-			{isOpen && !disabled && (
-				   <div className='absolute top-full left-0 right-0 mt-2 bg-white border border-primary-100 rounded-xl overflow-hidden z-50 animate-slide-up shadow-2xl w-full max-h-64 overflow-y-auto'>
-					   <div className='p-2 border-b border-primary-100 bg-gray-50'>
-						   <input
-							   type='text'
-							   value={search}
-							   onChange={e => setSearch(e.target.value)}
-							   className='w-full px-3 py-2 rounded-lg border border-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-400 text-sm text-gray-900 placeholder-gray-400'
-							   placeholder='Tìm kiếm...'
-							   autoFocus
-						   />
-					   </div>
-					{filteredOptions.length === 0 ? (
-						<div className='p-4 text-gray-400 text-center'>Không có lựa chọn</div>
-					) : (
-						filteredOptions.map((opt) => (
+		{isOpen && !disabled && (
+			<div className='absolute top-full left-0 right-0 mt-2 bg-white border border-primary-100 rounded-xl overflow-hidden z-50 animate-slide-up shadow-2xl w-full max-h-64 overflow-y-auto'>
+				<div className='p-2 border-b border-primary-100 bg-gray-50'>
+					<input
+						type='text'
+						value={search}
+						onChange={e => setSearch(e.target.value)}
+						className='w-full px-3 py-2 rounded-lg border border-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-400 text-sm text-gray-900 placeholder-gray-400'
+						placeholder='Tìm kiếm...'
+						autoFocus
+					/>
+				</div>
+				{filteredOptions.length === 0 ? (
+					<div className='p-4 text-gray-400 text-center'>Không có lựa chọn</div>
+				) : (
+					filteredOptions.map((opt) => {
+						// Lấy thông tin phụ: address/city/phone nếu có
+						const address = (opt as any).address;
+						const city = (opt as any).city;
+						const phone = (opt as any).phone;
+						return (
 							<button
 								key={getValue(opt)}
 								onClick={() => {
@@ -81,18 +86,30 @@ const SearchableSelect = <T,>({
 									setIsOpen(false);
 									setSearch('');
 								}}
-								   className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors ${
-									   value === getValue(opt)
-										   ? 'bg-linear-to-r from-primary-500 to-primary-400 text-white'
-										   : 'text-gray-700 hover:bg-primary-50'
-								   }`}
+								className={`w-full text-left px-4 py-2 text-sm font-medium transition-colors ${
+									value === getValue(opt)
+										? 'bg-linear-to-r from-primary-500 to-primary-400 text-white'
+										: 'text-gray-700 hover:bg-primary-50'
+								}`}
 							>
-								{getLabel(opt)}
+								<div className='font-medium'>
+									{getLabel(opt)}
+								</div>
+								{(address || city || phone) && (
+									<div className={`text-xs ${value === getValue(opt) ? 'text-primary-100/90' : 'text-gray-500'} mt-0.5 leading-tight line-clamp-3`}
+										style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+									>
+										{address ? address : city}
+										{address && city ? `, ${city}` : ''}
+										{phone ? ` | ${phone}` : ''}
+									</div>
+								)}
 							</button>
-						))
-					)}
-				</div>
-			)}
+						);
+					})
+				)}
+			</div>
+		)}
 		</div>
 	);
 };
