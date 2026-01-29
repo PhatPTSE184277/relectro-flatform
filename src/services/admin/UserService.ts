@@ -6,6 +6,7 @@ export interface User {
 	email: string;
 	phone: string;
 	avatar: string;
+	createAt?: string;
 	role: string;
 	smallCollectionPointId: number;
 	collectionCompanyId: number;

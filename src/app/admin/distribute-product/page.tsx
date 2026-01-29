@@ -49,15 +49,9 @@ const DistributeProductPage: React.FC = () => {
     const [undistributedCount, setUndistributedCount] = useState(0);
     const [processing, setProcessing] = useState(() => {
         if (typeof window !== 'undefined') {
-            return !!localStorage.getItem('ewise_processing_time');
+            return !!localStorage.getItem('ewise_processing_date');
         }
         return false;
-    });
-    const [processingTimestamp, setProcessingTimestamp] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('ewise_processing_time') || '';
-        }
-        return '';
     });
     const [processingDate, setProcessingDate] = useState(() => {
         if (typeof window !== 'undefined') {
@@ -71,25 +65,19 @@ const DistributeProductPage: React.FC = () => {
     const [selectedSCP, setSelectedSCP] = useState<any>(null);
 
     React.useEffect(() => {
-        if (processing && notifications.length > 0 && processingTimestamp) {
+        if (processing && notifications.length > 0 && processingDate) {
             const lastNotification = notifications[notifications.length - 1];
             if (lastNotification?.type === 'AssignCompleted') {
-                const notificationTime = new Date(lastNotification.timestamp).getTime();
-                const processingTime = new Date(processingTimestamp).getTime();
-                if (notificationTime >= processingTime) {
-                    handleDistributeCompleted(lastNotification);
-                }
+                handleDistributeCompleted(lastNotification);
             }
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [processing, notifications, processingTimestamp]);
+    }, [processing, notifications, processingDate]);
 
     const handleDistributeCompleted = useCallback((data: any) => {
         setProcessing(false);
-        setProcessingTimestamp('');
         setProcessingDate('');
         if (typeof window !== 'undefined') {
-            localStorage.removeItem('ewise_processing_time');
             localStorage.removeItem('ewise_processing_date');
         }
         const { success, failed, totalRequested } = data?.data || {};
@@ -184,24 +172,23 @@ const DistributeProductPage: React.FC = () => {
 
     const handleDistributeProducts = async () => {
         setShowDistributeModal(false);
+        const dateToProcess = selectedDate;
         setProcessing(true);
-        const timestamp = new Date().toISOString();
-        setProcessingTimestamp(timestamp);
-        setProcessingDate(selectedDate);
+        setProcessingDate(dateToProcess);
         if (typeof window !== 'undefined') {
-            localStorage.setItem('ewise_processing_time', timestamp);
-            localStorage.setItem('ewise_processing_date', selectedDate);
+            localStorage.setItem('ewise_processing_date', dateToProcess);
         }
+        // Reset date picker về ngày hiện tại
+        setSelectedDate(getTodayString());
+        setPage(1);
         try {
             const productIds = allUndistributedProducts.map((p: any) => p.productId);
-            await distributeProductsToDate({ workDate: selectedDate, productIds });
+            await distributeProductsToDate({ workDate: dateToProcess, productIds });
         } catch (error) {
             console.log(error);
             setProcessing(false);
-            setProcessingTimestamp('');
             setProcessingDate('');
             if (typeof window !== 'undefined') {
-                localStorage.removeItem('ewise_processing_time');
                 localStorage.removeItem('ewise_processing_date');
             }
             setNotification({
@@ -271,12 +258,11 @@ const DistributeProductPage: React.FC = () => {
                             value={selectedDate}
                             onChange={handleDateChange}
                             placeholder='Chọn ngày chia'
-                            disabled={processing}
                         />
                     </div>
                     <button
                         onClick={handleShowDistributeModal}
-                        disabled={(processingDate && processingDate === selectedDate) || activeFilter !== 'undistributed' || allUndistributedProducts.length === 0}
+                        disabled={processing || (processingDate && processingDate === selectedDate) || activeFilter !== 'undistributed' || allUndistributedProducts.length === 0}
                         className='px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition cursor-pointer shadow-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed'
                     >
                         <Package size={18} />

@@ -92,16 +92,16 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
 
             setScannedProducts((prev) => {
                 const updated = [
-                    ...prev,
                     {
                         qrCode: product.qrCode,
                         categoryName: product.categoryName,
                         brandName: product.brandName,
                         description: product.description,
                         productImage: product.productImages?.[0]
-                    }
+                    },
+                    ...prev
                 ];
-                setSelectedIndex(updated.length - 1); // select the newly added product
+                setSelectedIndex(0); // newly added product is at the top
                 return updated;
             });
 

@@ -26,6 +26,7 @@ const UserList: React.FC<UserListProps> = ({ onBanClick, filterStatus }) => {
                   <th className="py-3 px-4 text-left w-[18vw] min-w-[12vw]">Tên</th>
                   <th className="py-3 px-4 text-left w-[22vw] min-w-[14vw]">Email</th>
                   <th className="py-3 px-4 text-left w-[12vw] min-w-[8vw]">Số điện thoại</th>
+                  <th className="py-3 px-4 text-left w-[14vw] min-w-[10vw]">Ngày tạo</th>
                   {showActionColumn && <th className="py-3 px-4 text-center w-[8vw] min-w-[6vw]">Hành động</th>}
                 </tr>
               </thead>
@@ -34,7 +35,7 @@ const UserList: React.FC<UserListProps> = ({ onBanClick, filterStatus }) => {
                   Array.from({ length: 6 }).map((_, idx: number) => (
                     <UserTableSkeleton key={idx} />
                   ))
-                ) : users.length > 0 ? (
+                  ) : users.length > 0 ? (
                   users.map((user: any, idx: number) => (
                     <UserShow 
                       key={user.userId} 
@@ -48,7 +49,7 @@ const UserList: React.FC<UserListProps> = ({ onBanClick, filterStatus }) => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={showActionColumn ? 6 : 5} className="text-center py-8 text-gray-400">
+                    <td colSpan={showActionColumn ? 7 : 6} className="text-center py-8 text-gray-400">
                       Không có người dùng nào.
                     </td>
                   </tr>

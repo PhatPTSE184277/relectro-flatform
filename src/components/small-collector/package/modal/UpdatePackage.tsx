@@ -107,16 +107,16 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
 
             setScannedProducts((prev) => {
                 const updated = [
-                    ...prev,
                     {
                         qrCode: product.qrCode,
                         categoryName: product.categoryName,
                         brandName: product.brandName,
                         description: product.description,
                         productImage: product.productImages?.[0]
-                    }
+                    },
+                    ...prev
                 ];
-                setSelectedIndex(updated.length - 1);
+                setSelectedIndex(0);
                 return updated;
             });
 

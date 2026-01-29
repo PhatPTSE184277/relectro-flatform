@@ -22,13 +22,16 @@ const UserList: React.FC<UserListProps> = ({
     onToggleSelect,
     onToggleSelectAll,
     page,
-    pageSize,
+    pageSize
 }) => {
     const selectAllRef = useRef<HTMLInputElement>(null);
 
     // Check if all users across all pages are selected
-    const allSelected = allUserIds.length > 0 && selectedUserIds.length === allUserIds.length;
-    const someSelected = selectedUserIds.length > 0 && selectedUserIds.length < allUserIds.length;
+    const allSelected =
+        allUserIds.length > 0 && selectedUserIds.length === allUserIds.length;
+    const someSelected =
+        selectedUserIds.length > 0 &&
+        selectedUserIds.length < allUserIds.length;
 
     useEffect(() => {
         if (selectAllRef.current) {
@@ -50,35 +53,61 @@ const UserList: React.FC<UserListProps> = ({
                                                 ref={selectAllRef}
                                                 type='checkbox'
                                                 checked={allSelected}
-                                                onChange={() => onToggleSelectAll()}
+                                                onChange={() =>
+                                                    onToggleSelectAll()
+                                                }
                                                 className='w-4 h-4 text-primary-600 bg-white rounded focus:ring-2 focus:ring-primary-500 cursor-pointer'
                                             />
                                         </th>
-                                        <th className='py-3 px-4 text-center w-16'>STT</th>
-                                        <th className='py-3 px-4 text-left w-52'>Tên</th>
-                                        <th className='py-3 px-4 text-left w-64'>Email</th>
-                                        <th className='py-3 px-4 text-left w-36'>Số điện thoại</th>
+                                        <th className='py-3 px-4 text-center w-16'>
+                                            STT
+                                        </th>
+                                        <th className='py-3 px-4 text-left w-52'>
+                                            Tên
+                                        </th>
+                                        <th className='py-3 px-4 text-left w-64'>
+                                            Email
+                                        </th>
+                                        <th className='py-3 px-4 text-left w-36'>
+                                            Số điện thoại
+                                        </th>
+                                        <th className='py-3 px-4 text-left w-36'>
+                                            Ngày tạo
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {loading ? (
-                                        Array.from({ length: 5 }).map((_, idx) => (
-                                            <UserListSkeleton key={idx} />
-                                        ))
+                                        Array.from({ length: 5 }).map(
+                                            (_, idx) => (
+                                                <UserListSkeleton key={idx} />
+                                            )
+                                        )
                                     ) : users.length > 0 ? (
                                         users.map((user, idx) => (
                                             <UserShow
                                                 key={user.userId}
                                                 user={user}
-                                                stt={(page - 1) * pageSize + idx + 1}
-                                                isLast={idx === users.length - 1}
-                                                isSelected={selectedUserIds.includes(user.userId)}
+                                                stt={
+                                                    (page - 1) * pageSize +
+                                                    idx +
+                                                    1
+                                                }
+                                                isLast={
+                                                    idx === users.length - 1
+                                                }
+                                                isSelected={selectedUserIds.includes(
+                                                    user.userId
+                                                )}
                                                 onToggleSelect={onToggleSelect}
                                             />
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={5} className='text-center py-8 text-gray-400'>
+                                            <td
+                                                colSpan={6}
+                                                className='text-center py-8 text-gray-400'
+                                            >
                                                 Không có người dùng nào.
                                             </td>
                                         </tr>

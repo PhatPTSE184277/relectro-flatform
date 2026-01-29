@@ -16,14 +16,12 @@ const GroupingPage: React.FC = () => {
     const { user } = useAuth();
     const {
         loading,
-        vehicles,
         pendingProducts,
         pendingProductsData,
         pendingProductsPage,
         pendingProductsTotalPages,
         allProductIds,
         preAssignResult,
-        fetchVehicles,
         fetchPendingProducts,
         fetchAllProductIds,
         setPendingProductsPage,
@@ -40,10 +38,6 @@ const GroupingPage: React.FC = () => {
         console.log('User profile:', user);
         console.log('smallCollectionPointId:', user?.smallCollectionPointId);
     }, [user]);
-
-    useEffect(() => {
-        fetchVehicles();
-    }, [fetchVehicles]);
 
     useEffect(() => {
         fetchPendingProducts(selectedDate, pendingProductsPage);
@@ -140,9 +134,7 @@ const GroupingPage: React.FC = () => {
             {activeStep === 2 && preAssignResult && (
                 <AssignDayStep
                     loading={loading}
-                    preAssignResult={preAssignResult}
-                    vehicles={vehicles}
-                    products={pendingProducts}
+                    workDate={selectedDate}
                     onCreateGrouping={handleCreateGrouping}
                     onBack={() => setActiveStep(1)}
                     calculateRoute={calculateRoute}

@@ -26,7 +26,7 @@ export const adminMenuItems = [
     },
     {
         id: 'distribute-product',
-        label: 'Sản phẩm chờ chia',
+        label: 'Chia sản phẩm',
         path: '/admin/distribute-product',
         icon: <Package size={20} />
     },

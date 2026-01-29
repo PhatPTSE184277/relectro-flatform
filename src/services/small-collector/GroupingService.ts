@@ -58,8 +58,34 @@ export const autoGroup = async (payload: AutoGroupPayload, collectionPointId: st
     return response.data;
 };
 
-export const getVehicles = async (smallCollectionPointId: string): Promise<Vehicle[]> => {
-    const response = await axios.get(`/grouping/vehicles/${smallCollectionPointId}`);
+export const getVehicles = async (smallCollectionPointId: string, workDate?: string): Promise<Vehicle[]> => {
+    const params: any = { pointId: smallCollectionPointId };
+    if (workDate !== undefined) params.date = workDate;
+    const response = await axios.get('/grouping/preview-vehicles', { params });
+    return response.data;
+};
+
+// Lấy danh sách sản phẩm preview theo xe và ngày làm việc
+export interface PreviewProductsPagingResponse {
+    vehicleId: string;
+    plateNumber: string;
+    vehicleType: string;
+    totalProduct: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    products: any[];
+}
+
+export const previewProducts = async (
+    vehicleId: string,
+    workDate: string,
+    page: number = 1,
+    pageSize: number = 10
+): Promise<PreviewProductsPagingResponse> => {
+    const response = await axios.get('/grouping/preview-products', {
+        params: { vehicleId, workDate, page, pageSize }
+    });
     return response.data;
 };
 
@@ -151,30 +177,9 @@ export const confirmReassignDriver = async (groupId: number, newCollectorId: str
 
 
 // Lấy danh sách xe preview theo ngày làm việc
-export const previewVehicles = async (workDate: string): Promise<any> => {
+export const previewVehicles = async (pointId: string, workDate: string): Promise<any> => {
     const response = await axios.get('/grouping/preview-vehicles', {
-        params: { workDate }
-    });
-    return response.data;
-};
-
-// Lấy danh sách sản phẩm preview theo xe và ngày làm việc
-export interface PreviewProductsPagingResponse {
-    page: number;
-    pageSize: number;
-    totalItems: number;
-    totalPages: number;
-    data: any[];
-}
-
-export const previewProducts = async (
-    vehicleId: string,
-    workDate: { year: number; month: number; day: number; dayOfWeek: number },
-    page: number = 1,
-    pageSize: number = 10
-): Promise<PreviewProductsPagingResponse> => {
-    const response = await axios.get('/grouping/preview-products', {
-        params: { vehicleId, workDate, page, pageSize }
+        params: { pointId, date: workDate }
     });
     return response.data;
 };

@@ -1,8 +1,8 @@
-import type { User } from "@/services/admin/UserService";
 import { Ban } from "lucide-react";
+import { formatDate } from '@/utils/FormatDate';
 
 interface UserShowProps {
-  user: User;
+  user: any;
   stt?: number;
   onView?: () => void;
   onBan?: () => void;
@@ -23,6 +23,7 @@ const UserShow: React.FC<UserShowProps> = ({ user, stt, onBan, isLast = false, s
       <td className="py-3 px-4 font-medium text-gray-900 w-[18vw] min-w-[12vw]">{user.name}</td>
       <td className="py-3 px-4 text-gray-700 w-[22vw] min-w-[14vw]">{user.email}</td>
       <td className="py-3 px-4 text-gray-700 w-[12vw] min-w-[8vw]">{user.phone || "-"}</td>
+      <td className="py-3 px-4 text-gray-700 w-[14vw] min-w-[10vw]">{formatDate(user.createAt)}</td>
       {showActionColumn && (
         <td className="py-3 px-4 w-[8vw] min-w-[6vw]">
           <div className="flex justify-center">

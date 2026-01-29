@@ -27,7 +27,6 @@ const ProductList: React.FC<ProductListProps> = ({
                                         <th className='py-3 px-4 text-center w-[6vw]'>STT</th>
                                         <th className='py-3 px-4 text-left w-[15vw]'>Khách hàng</th>
                                         <th className='py-3 px-4 text-left w-[20vw]'>Địa chỉ</th>
-                                        {/* <th className='py-3 px-4 text-right w-[12vw]'>Khối lượng & Kích thước</th> */}
                                     </tr>
                                 </thead>
                                 <tbody>

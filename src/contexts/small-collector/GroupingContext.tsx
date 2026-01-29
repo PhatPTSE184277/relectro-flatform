@@ -24,7 +24,8 @@ import {
     PendingProductsResponse,
     GroupingPageResponse,
     previewProducts,
-    PreviewProductsPagingResponse
+    PreviewProductsPagingResponse,
+    previewVehicles as previewVehiclesAPI
 } from '@/services/small-collector/GroupingService';
 import { useAuth } from '@/hooks/useAuth';
 import { getTodayString } from '@/utils/getDayString';
@@ -76,49 +77,8 @@ interface PendingProduct {
     brandName?: string;
 }
 
-interface GroupingContextType {
-    loading: boolean;
-    groupDetailLoading: boolean;
-    reassignLoading: boolean;
-    vehicles: Vehicle[];
-    pendingProducts: PendingProduct[];
-    pendingProductsData: PendingProductsResponse | null;
-    pendingProductsPage: number;
-    pendingProductsLimit: number;
-    pendingProductsTotalPages: number;
-    allProductIds: string[];
-    preAssignResult: PreAssignResponse | null;
-    autoGroupResult: any | null;
-    groupDetail: any | null;
-    groups: any[];
-    groupsPaging: GroupingPageResponse | null;
-    groupsPage: number;
-    groupsLimit: number;
-    groupsTotalPage: number;
-    driverCandidates: any[];
-    previewProductsPaging: PreviewProductsPagingResponse | null;
-    fetchVehicles: () => Promise<void>;
-    fetchPendingProducts: (workDate?: string, page?: number, limit?: number) => Promise<void>;
-    fetchAllProductIds: (workDate?: string) => Promise<void>;
-    setPendingProductsPage: (page: number) => void;
-    fetchGroups: (page?: number, limit?: number) => Promise<void>;
-    setGroupsPage: (page: number) => void;
-    setGroupsLimit: (limit: number) => void;
-    getPreAssignSuggestion: (loadThresholdPercent: number, selectedProductIds?: string[]) => Promise<void>;
-    createGrouping: (assignments: { workDate: string; vehicleId: string; productIds: string[] }[]) => Promise<void>;
-    calculateRoute: (saveResult: boolean) => Promise<void>;
-    fetchGroupDetail: (groupId: number, page?: number, limit?: number) => Promise<void>;
-    fetchDriverCandidates: (date: string) => Promise<void>;
-    reassignDriver: (groupId: number, newCollectorId: string) => Promise<void>;
-    fetchPreviewProducts: (
-        vehicleId: string,
-        workDate: { year: number; month: number; day: number; dayOfWeek: number },
-        page?: number,
-        pageSize?: number
-    ) => Promise<void>;
-}
 
-const GroupingContext = createContext<GroupingContextType | undefined>(undefined);
+const GroupingContext = createContext<any | undefined>(undefined);
 
 type Props = { children: ReactNode };
 
@@ -144,6 +104,7 @@ export function GroupingProvider({ children }: Props) {
     const [groupsTotalPage, setGroupsTotalPage] = useState<number>(1);
     const [driverCandidates, setDriverCandidates] = useState<any[]>([]);
     const [previewProductsPaging, setPreviewProductsPaging] = useState<PreviewProductsPagingResponse | null>(null);
+    const [previewVehicles, setPreviewVehicles] = useState<any[]>([]);
 
     const fetchGroups = useCallback(async (page: number = groupsPage, limit: number = groupsLimit) => {
         if (!user?.smallCollectionPointId) return;
@@ -162,11 +123,12 @@ export function GroupingProvider({ children }: Props) {
         }
     }, [user?.smallCollectionPointId, groupsPage, groupsLimit]);
 
-    const fetchVehicles = useCallback(async () => {
+    const fetchVehicles = useCallback(async (workDate?: string) => {
         if (!user?.smallCollectionPointId) return;
         setLoading(true);
         try {
-            const data = await getVehicles(user.smallCollectionPointId);
+            const date = workDate || getTodayString();
+            const data = await getVehicles(String(user.smallCollectionPointId), date);
             setVehicles(data);
         } catch (err) {
             console.error('fetchVehicles error', err);
@@ -346,7 +308,7 @@ export function GroupingProvider({ children }: Props) {
     const fetchPreviewProducts = useCallback(
         async (
             vehicleId: string,
-            workDate: { year: number; month: number; day: number; dayOfWeek: number },
+            workDate: string,
             page: number = 1,
             pageSize: number = 10
         ) => {
@@ -354,8 +316,10 @@ export function GroupingProvider({ children }: Props) {
             try {
                 const data = await previewProducts(vehicleId, workDate, page, pageSize);
                 setPreviewProductsPaging(data);
+                return data; // Return data for direct usage
             } catch (err) {
                 console.error('fetchPreviewProducts error', err);
+                return null;
             } finally {
                 setLoading(false);
             }
@@ -363,7 +327,24 @@ export function GroupingProvider({ children }: Props) {
         []
     );
 
-    const value: GroupingContextType = {
+    const fetchPreviewVehicles = useCallback(
+        async (workDate: string) => {
+            if (!user?.smallCollectionPointId) return;
+            setLoading(true);
+            try {
+                const data = await previewVehiclesAPI(String(user.smallCollectionPointId), workDate);
+                setPreviewVehicles(data);
+            } catch (err) {
+                console.error('fetchPreviewVehicles error', err);
+                setPreviewVehicles([]);
+            } finally {
+                setLoading(false);
+            }
+        },
+        [user?.smallCollectionPointId]
+    );
+
+    const value: any = {
         loading,
         groupDetailLoading,
         reassignLoading,
@@ -384,6 +365,7 @@ export function GroupingProvider({ children }: Props) {
         groupsTotalPage,
         driverCandidates,
         previewProductsPaging,
+        previewVehicles,
         fetchVehicles,
         fetchPendingProducts,
         fetchAllProductIds,
@@ -397,7 +379,8 @@ export function GroupingProvider({ children }: Props) {
         fetchGroupDetail,
         fetchDriverCandidates,
         reassignDriver,
-        fetchPreviewProducts
+        fetchPreviewProducts,
+        fetchPreviewVehicles
     };
 
     return (
@@ -407,7 +390,7 @@ export function GroupingProvider({ children }: Props) {
     );
 }
 
-export const useGroupingContext = (): GroupingContextType => {
+export const useGroupingContext = (): any => {
     const ctx = useContext(GroupingContext);
     if (!ctx)
         throw new Error('useGroupingContext must be used within GroupingProvider');

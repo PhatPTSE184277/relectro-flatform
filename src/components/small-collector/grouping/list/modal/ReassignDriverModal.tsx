@@ -135,7 +135,7 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                                             </td>
                                         </tr>
                                     ) : (
-                                        driverCandidates.map((driver) => {
+                                        driverCandidates.map((driver: any) => {
                                             const isSelected = selectedDriverId === driver.userId;
                                             return (
                                                 <tr

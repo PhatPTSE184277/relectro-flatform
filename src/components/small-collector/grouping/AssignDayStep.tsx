@@ -1,16 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
-import { formatDate } from '@/utils/FormatDate';
-import ProductList from './ProductList';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
+import ProductList from './ProductList';
 import Pagination from '@/components/ui/Pagination';
+import { formatDate } from '@/utils/FormatDate';
 
 interface AssignDayStepProps {
     loading: boolean;
-    preAssignResult: any;
-    vehicles: any[];
-    products: any[];
+    workDate: string;
     onCreateGrouping: (assignments: {
         workDate: string;
         vehicleId: string;
@@ -22,64 +21,81 @@ interface AssignDayStepProps {
 
 const AssignDayStep: React.FC<AssignDayStepProps> = ({
     loading,
-    preAssignResult,
-    products,
+    workDate,
     onCreateGrouping,
     onBack,
     calculateRoute
 }) => {
     const router = useRouter();
-    const [daySuggestions] = useState<any[]>(
-        (preAssignResult?.days || []).map((day: any) => ({
-            ...day,
-            products: (day.products || []).map((dayProduct: any) => {
-                // Tìm product đầy đủ từ mảng products để lấy categoryName và brandName
-                const fullProduct = products.find(p => p.productId === dayProduct.productId);
-                return fullProduct ? { ...dayProduct, ...fullProduct } : dayProduct;
-            })
-        }))
-    );
-    const [selectedDateFilter, setSelectedDateFilter] = useState<string>(
-        (preAssignResult?.days || [])[0]?.workDate || ''
-    );
+    const { 
+        fetchPreviewVehicles, 
+        previewVehicles, 
+        fetchPreviewProducts, 
+        previewProductsPaging 
+    } = useGroupingContext();
+    
     const [selectedVehicleIndex, setSelectedVehicleIndex] = useState<number>(0);
     const [productPage, setProductPage] = useState(1);
+    const [createDisabled, setCreateDisabled] = useState(false);
     const itemsPerPage = 10;
 
-    // Get unique dates for filter
-    const uniqueDates = Array.from(new Set(daySuggestions.map(d => d.workDate)));
-    
-    // Get all vehicles for selected date
-    const vehiclesForSelectedDate = daySuggestions.filter(day => day.workDate === selectedDateFilter);
-    
-    // Get current selected vehicle group
-    const currentVehicleGroup = vehiclesForSelectedDate[selectedVehicleIndex];
+    // Fetch vehicles on mount
+    useEffect(() => {
+        fetchPreviewVehicles(workDate);
+    }, [workDate, fetchPreviewVehicles]);
 
-    // Client-side pagination for products
-    const allProductsForVehicle = currentVehicleGroup?.products || [];
-    const totalPages = Math.ceil(allProductsForVehicle.length / itemsPerPage);
-    const paginatedProducts = allProductsForVehicle.slice(
-        (productPage - 1) * itemsPerPage,
-        productPage * itemsPerPage
-    );
+    // Get current selected vehicle
+    const currentVehicle = previewVehicles[selectedVehicleIndex];
 
-    // Xử lý tạo nhóm thu gom cho TẤT CẢ xe của ngày đó
-    const [createDisabled, setCreateDisabled] = useState(false);
+    // Fetch preview products when vehicle or page changes
+    useEffect(() => {
+        if (currentVehicle) {
+            const vehicleId = currentVehicle.vehicleId?.toString() || currentVehicle.id?.toString();
+            if (vehicleId) {
+                fetchPreviewProducts(vehicleId, workDate, productPage, itemsPerPage);
+            }
+        }
+    }, [currentVehicle, workDate, productPage, fetchPreviewProducts]);
+
+    // Use data from API preview
+    const displayProducts = previewProductsPaging?.products || [];
+    const totalPages = previewProductsPaging?.totalPages || 1;
+
     const handleCreateGrouping = async () => {
         setCreateDisabled(true);
         try {
-            // Lấy tất cả xe của ngày đang chọn
-            const allVehiclesOfDay = vehiclesForSelectedDate;
-            // Gom tất cả assignments của ngày này vào một mảng
-            const assignments = allVehiclesOfDay.map(vehicleGroup => ({
-                workDate: vehicleGroup.workDate,
-                vehicleId: vehicleGroup.suggestedVehicle.id.toString(),
-                productIds: vehicleGroup.products.map((p: any) => p.productId)
-            }));
-            console.log(`Đang tạo nhóm cho ${assignments.length} xe cùng lúc`);
-            // Gọi API một lần duy nhất cho tất cả xe
+            // Fetch all products for each vehicle to get productIds
+            const assignmentsPromises = previewVehicles.map(async (vehicleData: any) => {
+                const vehicleId = vehicleData.vehicleId?.toString() || vehicleData.id?.toString();
+                
+                // Fetch all products for this vehicle (using large pageSize to get all at once)
+                const totalProduct = vehicleData.totalProduct || 0;
+                if (totalProduct > 0) {
+                    const response = await fetchPreviewProducts(vehicleId, workDate, 1, totalProduct);
+                    const productIds = response?.products?.map((p: any) => p.productId) || [];
+                    
+                    return {
+                        workDate: workDate,
+                        vehicleId: vehicleId,
+                        productIds: productIds
+                    };
+                } else {
+                    return {
+                        workDate: workDate,
+                        vehicleId: vehicleId,
+                        productIds: []
+                    };
+                }
+            });
+            
+            const assignments = await Promise.all(assignmentsPromises);
+            
+            console.log(`Đang tạo nhóm cho ${assignments.length} xe cùng lúc`, assignments);
+            
+            // Call API to create grouping
             await onCreateGrouping(assignments);
-            // Sau khi tạo xong, tính route và chuyển trang
+            
+            // Calculate route and redirect
             await calculateRoute(true);
             router.push("/small-collector/grouping/list");
         } catch (error) {
@@ -91,30 +107,11 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
 
     return (
         <div className='space-y-2'>
-            {/* Filter bar with dates */}
-            <div className='flex flex-col md:flex-row md:items-center md:gap-2 gap-1 bg-gray-50 rounded-lg px-2 py-2'>
-                <h2 className='text-lg font-bold text-gray-900 mb-0 md:mb-0 md:mr-4 whitespace-nowrap'>
-                    Bước 2: Tạo nhóm thu gom
+            {/* Header */}
+            <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-2 bg-gray-50 rounded-lg px-2 py-2'>
+                <h2 className='text-lg font-bold text-gray-900 mb-0'>
+                    Bước 2: Tạo nhóm thu gom - {formatDate(workDate)}
                 </h2>
-                <div className='flex items-center gap-2 flex-wrap flex-1'>
-                    {uniqueDates.map((date: string) => (
-                        <button
-                            key={date}
-                            onClick={() => {
-                                setSelectedDateFilter(date);
-                                setSelectedVehicleIndex(0); // Reset về xe đầu tiên khi đổi ngày
-                                setProductPage(1); // Reset page when date changes
-                            }}
-                            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[120px] ${
-                                selectedDateFilter === date
-                                    ? 'bg-primary-600 text-white shadow-md'
-                                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-primary-50'
-                            }`}
-                        >
-                            {formatDate(date)}
-                        </button>
-                    ))}
-                </div>
                 <button
                     onClick={onBack}
                     className='px-4 py-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors'
@@ -124,30 +121,35 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
             </div>
 
             {/* Filter bar for vehicles */}
-            {vehiclesForSelectedDate.length > 0 && (
+            {previewVehicles.length > 0 && (
                 <div className='flex items-center gap-2 bg-white rounded-lg px-4 py-3 shadow-sm border border-gray-100 overflow-x-auto'>
                     <span className='text-sm font-semibold text-gray-700 whitespace-nowrap mr-2'>Chọn xe:</span>
-                    {vehiclesForSelectedDate.map((vehicleGroup: any, index: number) => (
-                        <button
-                            key={`${vehicleGroup.suggestedVehicle.id}-${index}`}
-                            onClick={() => {
-                                setSelectedVehicleIndex(index);
-                                setProductPage(1); // Reset page when vehicle changes
-                            }}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
-                                selectedVehicleIndex === index
-                                    ? 'bg-primary-600 text-white shadow-md'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-primary-50'
-                            }`}
-                        >
-                            {vehicleGroup.suggestedVehicle.plate_Number}
-                        </button>
-                    ))}
+                    {previewVehicles.map((vehicleData: any, index: number) => {
+                        const vehicleId = vehicleData.vehicleId || vehicleData.id;
+                        const plateNumber = vehicleData.plateNumber || vehicleData.plate_Number || vehicleData.vehicleName || 'N/A';
+                        
+                        return (
+                            <button
+                                key={`${vehicleId}-${index}`}
+                                onClick={() => {
+                                    setSelectedVehicleIndex(index);
+                                    setProductPage(1); // Reset page when vehicle changes
+                                }}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
+                                    selectedVehicleIndex === index
+                                        ? 'bg-primary-600 text-white shadow-md'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-primary-50'
+                                }`}
+                            >
+                                {plateNumber}
+                            </button>
+                        );
+                    })}
                 </div>
             )}
 
             {/* Current vehicle info and products */}
-            {currentVehicleGroup && (
+            {currentVehicle && (
                 <>
                     {/* Vehicle Header Card */}
                     <div className='bg-primary-50 p-4 rounded-lg'>
@@ -161,19 +163,15 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                                 <div className='flex-1'>
                                     <div className='flex items-center gap-4 flex-wrap'>
                                         <h3 className='text-lg font-bold text-gray-900'>
-                                            Biển số: {currentVehicleGroup.suggestedVehicle.plate_Number}
+                                            Biển số: {currentVehicle.plateNumber || currentVehicle.plate_Number || currentVehicle.vehicleName || 'N/A'}
                                         </h3>
                                         <span className='text-sm text-gray-600 flex items-center gap-1'>
-                                            <strong>Tải trọng:</strong> {currentVehicleGroup.suggestedVehicle.capacity_Kg} kg
-                                            <span className='text-xs text-gray-500'>({currentVehicleGroup.suggestedVehicle.allowedCapacityKg} kg cho phép)</span>
+                                            <strong>Loại xe:</strong> {currentVehicle.vehicleType || currentVehicle.vehicle_Type || 'N/A'}
                                         </span>
                                     </div>
                                     <div className='flex items-center gap-4 mt-1 text-sm'>
                                         <span className='text-primary-600 font-semibold'>
-                                            {currentVehicleGroup.products.length} sản phẩm
-                                        </span>
-                                        <span className='text-gray-600'>
-                                            Tổng: {currentVehicleGroup.totalWeight.toFixed(2)} kg • {currentVehicleGroup.totalVolume.toFixed(2)} m³
+                                            {previewProductsPaging?.totalProduct || currentVehicle.totalProduct || 0} sản phẩm
                                         </span>
                                     </div>
                                 </div>
@@ -184,7 +182,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                                     className={`px-4 py-2 bg-primary-600 text-white rounded-lg transition cursor-pointer shadow-md font-medium ${loading || createDisabled ? 'opacity-60 cursor-not-allowed' : 'hover:bg-primary-700'}`}
                                     disabled={loading || createDisabled}
                                 >
-                                    {loading || createDisabled ? 'Đang tạo...' : `Tạo nhóm (${vehiclesForSelectedDate.length} xe)`}
+                                    {loading || createDisabled ? 'Đang tạo...' : `Tạo nhóm (${previewVehicles.length} xe)`}
                                 </button>
                             </div>
                         </div>
@@ -192,13 +190,14 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
 
                     {/* Products List for this vehicle */}
                     <ProductList
-                        products={paginatedProducts}
+                        products={displayProducts}
                         loading={loading}
                         page={productPage}
                         itemsPerPage={itemsPerPage}
                         showCheckbox={false}
-                        maxHeight={230}
+                        maxHeight={33}
                     />
+                    
                     {totalPages > 1 && (
                         <Pagination
                             page={productPage}
@@ -210,7 +209,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
             )}
 
             {/* No vehicles message */}
-            {vehiclesForSelectedDate.length === 0 && (
+            {previewVehicles.length === 0 && (
                 <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center'>
                     <p className='text-gray-500'>Không có xe nào được gợi ý cho ngày này.</p>
                 </div>

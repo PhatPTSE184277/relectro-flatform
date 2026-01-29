@@ -1,5 +1,6 @@
 import React from 'react';
 import { User } from '@/services/admin/SendNotiService';
+import { formatDate } from '@/utils/FormatDate';
 
 interface UserShowProps {
     user: User;
@@ -18,23 +19,32 @@ const UserShow: React.FC<UserShowProps> = ({
     onToggleSelect
 }) => {
     return (
-        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${isSelected ? 'bg-primary-50' : ''} hover:bg-primary-50/40 transition-colors`}>
-            <td className="py-3 px-4 text-center w-12">
+        <tr
+            className={`${!isLast ? 'border-b border-primary-100' : ''} ${isSelected ? 'bg-primary-50' : ''} hover:bg-primary-50/40 transition-colors`}
+        >
+            <td className='py-3 px-4 text-center w-12'>
                 <input
-                    type="checkbox"
+                    type='checkbox'
                     checked={isSelected}
                     onChange={() => onToggleSelect(user.userId)}
-                    className="w-4 h-4 text-primary-600 bg-white rounded focus:ring-2 focus:ring-primary-500 cursor-pointer"
+                    className='w-4 h-4 text-primary-600 bg-white rounded focus:ring-2 focus:ring-primary-500 cursor-pointer'
                 />
             </td>
-            <td className="py-3 px-4 text-center w-16">
-                <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
+            <td className='py-3 px-4 text-center w-16'>
+                <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {stt}
                 </span>
             </td>
-            <td className="py-3 px-4 font-medium text-gray-900 w-52">{user.name || 'Không rõ'}</td>
-            <td className="py-3 px-4 text-gray-700 w-64">{user.email}</td>
-            <td className="py-3 px-4 text-gray-700 w-36">{user.phone || '-'}</td>
+            <td className='py-3 px-4 font-medium text-gray-900 w-52'>
+                {user.name || 'Không rõ'}
+            </td>
+            <td className='py-3 px-4 text-gray-700 w-64'>{user.email}</td>
+            <td className='py-3 px-4 text-gray-700 w-36'>
+                {user.phone || '-'}
+            </td>
+            <td className='py-3 px-4 text-gray-700 w-36'>
+                {formatDate((user as any).createAt)}
+            </td>
         </tr>
     );
 };

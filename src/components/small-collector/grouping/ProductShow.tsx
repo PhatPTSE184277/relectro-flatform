@@ -10,8 +10,11 @@ interface ProductShowProps {
 }
 
 const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({ product, isLast = false, stt, showCheckbox, isSelected, onToggleSelect }) => {
+    // Ưu tiên dùng dimensionText từ API nếu có
     let dimensionDisplay = '';
-    if (!product.dimensions || product.dimensions === 'Chưa cập nhật') {
+    if (product.dimensionText && product.dimensionText !== 'Chưa cập nhật') {
+        dimensionDisplay = product.dimensionText;
+    } else if (!product.dimensions || product.dimensions === 'Chưa cập nhật') {
         dimensionDisplay = '0 x 0 x 0';
     } else {
         const l = product.length ?? 0;
