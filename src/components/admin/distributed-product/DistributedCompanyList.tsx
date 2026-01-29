@@ -1,14 +1,14 @@
 import React, { useRef, useEffect } from 'react';
-import CompanyShow from './CompanyShow';
-import CompanySkeleton from './CompanySkeleton';
+import DistributedCompanyShow from './DistributedCompanyShow';
+import DistributedCompanySkeleton from './DistributedCompanySkeleton';
 
-interface CompanyListProps {
+interface DistributedCompanyListProps {
     companies: any[];
     loading: boolean;
     onViewPoints: (company: any) => void;
 }
 
-const CompanyList: React.FC<CompanyListProps> = ({ companies, loading, onViewPoints }) => {
+const DistributedCompanyList: React.FC<DistributedCompanyListProps> = ({ companies, loading, onViewPoints }) => {
     const bodyRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -34,11 +34,11 @@ const CompanyList: React.FC<CompanyListProps> = ({ companies, loading, onViewPoi
                             <tbody>
                                 {loading ? (
                                     Array.from({ length: 6 }).map((_, idx) => (
-                                        <CompanySkeleton key={idx} />
+                                        <DistributedCompanySkeleton key={idx} />
                                     ))
                                 ) : companies.length > 0 ? (
                                     companies.map((company, idx) => (
-                                        <CompanyShow
+                                        <DistributedCompanyShow
                                             key={company.companyId}
                                             company={company}
                                             stt={idx + 1}
@@ -62,4 +62,4 @@ const CompanyList: React.FC<CompanyListProps> = ({ companies, loading, onViewPoi
     );
 };
 
-export default CompanyList;
+export default DistributedCompanyList;

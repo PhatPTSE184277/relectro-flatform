@@ -1,13 +1,13 @@
 import React from 'react';
 import { formatDimensionText } from '@/utils/formatNumber';
 
-interface ProductShowProps {
+interface DistributedProductShowProps {
     product: any;
     stt: number;
     isLast?: boolean;
 }
 
-const ProductShow: React.FC<ProductShowProps> = ({ product, stt, isLast = false }) => {
+const DistributedProductShow: React.FC<DistributedProductShowProps> = ({ product, stt, isLast = false }) => {
     let dimensionDisplay = '';
     if (!product.dimensions || product.dimensions === 'Chưa cập nhật') {
         dimensionDisplay = '0 x 0 x 0';
@@ -52,4 +52,4 @@ const ProductShow: React.FC<ProductShowProps> = ({ product, stt, isLast = false 
     );
 };
 
-export default ProductShow;
+export default DistributedProductShow;

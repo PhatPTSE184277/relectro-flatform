@@ -1,14 +1,14 @@
 import React from 'react';
 import { Eye } from 'lucide-react';
 
-interface CompanyShowProps {
+interface DistributedCompanyShowProps {
     company: any;
     stt: number;
     onViewPoints: () => void;
     isLast?: boolean;
 }
 
-const CompanyShow: React.FC<CompanyShowProps> = ({ company, stt, onViewPoints, isLast = false }) => {
+const DistributedCompanyShow: React.FC<DistributedCompanyShowProps> = ({ company, stt, onViewPoints, isLast = false }) => {
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
             <td className='py-3 px-4 text-center'>
@@ -37,4 +37,4 @@ const CompanyShow: React.FC<CompanyShowProps> = ({ company, stt, onViewPoints, i
     );
 };
 
-export default CompanyShow;
+export default DistributedCompanyShow;

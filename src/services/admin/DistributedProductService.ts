@@ -1,7 +1,7 @@
 import axios from '@/lib/axios';
 
-// Lấy danh sách sản phẩm đã phân công về một điểm thu gom cụ thể trong ngày
-export interface AssignedPointProductsResponse {
+// Get list of products already distributed to a specific collection point on a given day
+export interface DistributedPointProductsResponse {
 	smallPointId: string;
 	smallPointName: string;
 	radiusMaxConfigKm: number;
@@ -15,12 +15,12 @@ export interface AssignedPointProductsResponse {
 	products: any[];
 }
 
-export const getAssignedProductsByCollectionPoint = async (
+export const getDistributedProductsByCollectionPoint = async (
 	smallPointId: string,
 	workDate: string,
 	page?: number,
 	limit?: number
-): Promise<AssignedPointProductsResponse> => {
+): Promise<DistributedPointProductsResponse> => {
 	const params: any = { workDate };
 	if (page !== undefined) params.page = page;
 	if (limit !== undefined) params.limit = limit;
@@ -31,8 +31,8 @@ export const getAssignedProductsByCollectionPoint = async (
 	return response.data;
 };
 
-// Lấy tổng hợp sản phẩm đã phân công về các điểm thu gom theo ngày
-export const getAssignedCollectionPointsSummary = async (workDate: string): Promise<any> => {
+// Get summary of products already distributed to collection points by date
+export const getDistributedCollectionPointsSummary = async (workDate: string): Promise<any> => {
 	const response = await axios.get('/product-query/daily-summary', {
 		params: { workDate },
 	});

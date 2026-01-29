@@ -1,14 +1,14 @@
 import React from 'react';
 import { Eye } from 'lucide-react';
 
-interface CollectionPointShowProps {
+interface DistributedCollectionPointShowProps {
     point: any;
     stt: number;
     onViewProducts: () => void;
     isLast?: boolean;
 }
 
-const CollectionPointShow: React.FC<CollectionPointShowProps> = ({ point, stt, onViewProducts, isLast = false }) => {
+const DistributedCollectionPointShow: React.FC<DistributedCollectionPointShowProps> = ({ point, stt, onViewProducts, isLast = false }) => {
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
             <td className='py-3 px-4 text-center'>
@@ -37,4 +37,4 @@ const CollectionPointShow: React.FC<CollectionPointShowProps> = ({ point, stt, o
     );
 };
 
-export default CollectionPointShow;
+export default DistributedCollectionPointShow;

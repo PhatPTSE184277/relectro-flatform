@@ -8,65 +8,65 @@ import React, {
     ReactNode
 } from 'react';
 import {
-    assignProducts,
-    getAssignedProductsByDate
-} from '@/services/admin/AssignProductService';
+    distributeProducts,
+    getDistributedProductsByDate
+} from '@/services/admin/DistributeProductService';
 import { AssignedProduct, AssignProductsRequest } from '@/types/AssignProduct';
 
-interface AssignProductContextType {
-    assignedProducts: AssignedProduct[];
+interface DistributeProductContextType {
+    distributedProducts: AssignedProduct[];
     loading: boolean;
-    fetchAssignedProducts: (workDate: string, page?: number, pageSize?: number) => Promise<void>;
-    assignProductsToDate: (data: AssignProductsRequest) => Promise<any>;
+    fetchDistributedProducts: (workDate: string, page?: number, pageSize?: number) => Promise<void>;
+    distributeProductsToDate: (data: AssignProductsRequest) => Promise<any>;
     page: number;
     setPage: (page: number) => void;
     totalPages: number;
     pageSize: number;
 }
 
-const AssignProductContext = createContext<
-    AssignProductContextType | undefined
+const DistributeProductContext = createContext<
+    DistributeProductContextType | undefined
 >(undefined);
 
 type Props = { children: ReactNode };
 
-export const AssignProductProvider: React.FC<Props> = ({ children }) => {
-    const [assignedProducts, setAssignedProducts] = useState<AssignedProduct[]>([]);
+export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
+    const [distributedProducts, setDistributedProducts] = useState<AssignedProduct[]>([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const pageSize = 10;
 
-    const fetchAssignedProducts = useCallback(async (workDate: string, pageArg?: number, pageSizeArg?: number) => {
+    const fetchDistributedProducts = useCallback(async (workDate: string, pageArg?: number, pageSizeArg?: number) => {
         setLoading(true);
         try {
             const currentPage = pageArg ?? page;
             const currentPageSize = pageSizeArg ?? pageSize;
-            const data = await getAssignedProductsByDate(workDate);
-            
+            const data = await getDistributedProductsByDate(workDate);
+
             // API returns AssignedProduct[]
             if (Array.isArray(data)) {
                 // Client-side pagination
                 setTotalPages(Math.max(1, Math.ceil(data.length / currentPageSize)));
-                setAssignedProducts(data.slice((currentPage - 1) * currentPageSize, currentPage * currentPageSize));
+                setDistributedProducts(data.slice((currentPage - 1) * currentPageSize, currentPage * currentPageSize));
             } else {
-                setAssignedProducts([]);
+                setDistributedProducts([]);
                 setTotalPages(1);
             }
         } catch (err) {
             console.log(err);
-            setAssignedProducts([]);
+            setDistributedProducts([]);
             setTotalPages(1);
         } finally {
             setLoading(false);
         }
     }, [page, pageSize]);
 
-    const assignProductsToDate = useCallback(
+    const distributeProductsToDate = useCallback(
         async (data: AssignProductsRequest) => {
             setLoading(true);
             try {
-                const res = await assignProducts(data);
+                const res = await distributeProducts(data);
                 return res;
             } catch (err) {
                 console.log(err);
@@ -78,11 +78,11 @@ export const AssignProductProvider: React.FC<Props> = ({ children }) => {
         []
     );
 
-    const value: AssignProductContextType = {
-        assignedProducts,
+    const value: DistributeProductContextType = {
+        distributedProducts,
         loading,
-        fetchAssignedProducts,
-        assignProductsToDate,
+        fetchDistributedProducts,
+        distributeProductsToDate,
         page,
         setPage,
         totalPages,
@@ -90,17 +90,17 @@ export const AssignProductProvider: React.FC<Props> = ({ children }) => {
     };
 
     return (
-        <AssignProductContext.Provider value={value}>
+        <DistributeProductContext.Provider value={value}>
             {children}
-        </AssignProductContext.Provider>
+        </DistributeProductContext.Provider>
     );
 };
 
-export const useAssignProductContext = (): AssignProductContextType => {
-    const ctx = useContext(AssignProductContext);
+export const useDistributeProductContext = (): DistributeProductContextType => {
+    const ctx = useContext(DistributeProductContext);
     if (!ctx)
         throw new Error(
-            'useAssignProductContext must be used within AssignProductProvider'
+            'useDistributeProductContext must be used within DistributeProductProvider'
         );
     return ctx;
 };

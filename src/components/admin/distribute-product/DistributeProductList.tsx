@@ -1,15 +1,14 @@
 import React, { forwardRef } from 'react';
-import AssignedProductShow from './AssignProductShow';
-import AssignedProductSkeleton from './AssignProductSkeleton';
-import { useAssignProductContext } from '@/contexts/admin/AssignProductContext';
+import DistributeProductShow from './DistributeProductShow';
+import DistributeProductSkeleton from './DistributeProductSkeleton';
+import { useDistributeProductContext } from '@/contexts/admin/DistributeProductContext';
 
-interface AssignedProductListProps {
+interface DistributeProductListProps {
     products: any[];
     loading: boolean;
 }
 
-
-const AssignProductList = forwardRef<HTMLDivElement, AssignedProductListProps & { page: number; pageSize: number }>(
+const DistributeProductList = forwardRef<HTMLDivElement, DistributeProductListProps & { page: number; pageSize: number }>(
     ({ products, loading, page, pageSize }, ref) => {
         return (
             <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -28,11 +27,11 @@ const AssignProductList = forwardRef<HTMLDivElement, AssignedProductListProps & 
                                 <tbody>
                                     {loading ? (
                                         Array.from({ length: 6 }).map((_, idx) => (
-                                            <AssignedProductSkeleton key={idx} />
+                                            <DistributeProductSkeleton key={idx} />
                                         ))
                                     ) : products.length > 0 ? (
                                         products.map((product, idx) => (
-                                            <AssignedProductShow
+                                            <DistributeProductShow
                                                 key={product.productId}
                                                 product={product}
                                                 isLast={idx === products.length - 1}
@@ -56,13 +55,13 @@ const AssignProductList = forwardRef<HTMLDivElement, AssignedProductListProps & 
     }
 );
 
-AssignProductList.displayName = "AssignProductList";
+DistributeProductList.displayName = "DistributeProductList";
 
-const AssignProductListWrapper = forwardRef<HTMLDivElement, AssignedProductListProps>((props, ref) => {
-    const { page, pageSize } = useAssignProductContext();
-    return <AssignProductList {...props} page={page} pageSize={pageSize} ref={ref} />;
+const DistributeProductListWrapper = forwardRef<HTMLDivElement, DistributeProductListProps>((props, ref) => {
+    const { page, pageSize } = useDistributeProductContext();
+    return <DistributeProductList {...props} page={page} pageSize={pageSize} ref={ref} />;
 });
 
-AssignProductListWrapper.displayName = "AssignProductList";
+DistributeProductListWrapper.displayName = "DistributeProductList";
 
-export default AssignProductListWrapper;
+export default DistributeProductListWrapper;

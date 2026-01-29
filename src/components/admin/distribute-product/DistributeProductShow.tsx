@@ -1,12 +1,12 @@
 import React from 'react';
 
-interface AssignProductShowProps {
+interface DistributeProductShowProps {
     product: any;
     isLast?: boolean;
     index?: number;
 }
 
-const AssignProductShow: React.FC<AssignProductShowProps> = ({
+const DistributeProductShow: React.FC<DistributeProductShowProps> = ({
     product,
     isLast = false,
     index
@@ -35,4 +35,4 @@ const AssignProductShow: React.FC<AssignProductShowProps> = ({
     );
 };
 
-export default AssignProductShow;
+export default DistributeProductShow;

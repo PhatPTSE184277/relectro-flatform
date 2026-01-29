@@ -2,42 +2,41 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { getTodayString } from '@/utils/getDayString';
-import { useAssignProductContext } from '@/contexts/admin/AssignProductContext';
+import { useDistributeProductContext } from '@/contexts/admin/DistributeProductContext';
 import { useNotificationHub } from '@/hooks/useNotificationHub';
 import { useAuth } from '@/hooks/useAuth';
 import { Package, ListChecks } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import SearchBox from '@/components/ui/SearchBox';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
-import AssignProductList from '@/components/admin/assign-product/AssignProductList';
-import AssignProductConfirmModal from '@/components/admin/assign-product/modal/AssignProductConfirmModal';
+import DistributeProductList from '@/components/admin/distribute-product/DistributeProductList';
+import DistributeProductConfirmModal from '@/components/admin/distribute-product/modal/DistributeProductConfirmModal';
 import Pagination from '@/components/ui/Pagination';
-import ProcessingModal from '@/components/admin/assign-product/modal/ProcessingModal';
+import DistributeProcessingModal from '@/components/admin/distribute-product/modal/DistributeProcessingModal';
 import { useNotifications } from '@/contexts/NotificationContext';
 import Toast from '@/components/ui/Toast';
-import { getUnassignedProducts } from '@/services/admin/AssignProductService';
+import { getUndistributedProducts } from '@/services/admin/DistributeProductService';
 
-const AssignProductPage: React.FC = () => {
+const DistributeProductPage: React.FC = () => {
     const {
-        assignedProducts,
+        distributedProducts,
         loading,
-        fetchAssignedProducts,
-        assignProductsToDate,
+        fetchDistributedProducts,
+        distributeProductsToDate,
         page,
         setPage,
         totalPages,
         pageSize
-    } = useAssignProductContext();
+    } = useDistributeProductContext();
 
     const { user } = useAuth();
     const { notifications } = useNotifications();
     const router = useRouter();
     const [search, setSearch] = useState('');
     const [selectedDate, setSelectedDate] = useState(getTodayString);
-    const [showAssignModal, setShowAssignModal] = useState(false);
-    const [unassignedCount, setUnassignedCount] = useState(0);
+    const [showDistributeModal, setShowDistributeModal] = useState(false);
+    const [undistributedCount, setUndistributedCount] = useState(0);
     const [processing, setProcessing] = useState(() => {
-        // Nếu có timestamp trong localStorage thì đang processing
         if (typeof window !== 'undefined') {
             return !!localStorage.getItem('ewise_processing_time');
         }
@@ -52,23 +51,15 @@ const AssignProductPage: React.FC = () => {
     const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
     const tableScrollRef = useRef<HTMLDivElement>(null);
 
-    // Kiểm tra notification khi mount để tự động tắt processing nếu đã có thông báo
     React.useEffect(() => {
         if (processing && notifications.length > 0 && processingTimestamp) {
-            // Kiểm tra xem có notification "Phân bổ hoàn tất" mới hơn timestamp đang xử lý không
             const hasCompletionNotif = notifications.some(n => {
-                if (!n.title.includes('Phân bổ hoàn tất')) return false;
-                
-                // So sánh createdAt của notification với processingTimestamp
+                if (!n.title.includes('Chia sản phẩm hoàn tất')) return false;
                 const notifTime = new Date(n.createdAt).getTime();
                 const processingTime = new Date(processingTimestamp).getTime();
-                
-                // Notification phải mới hơn hoặc bằng thời điểm bắt đầu xử lý
                 return notifTime >= processingTime;
             });
-            
             if (hasCompletionNotif) {
-                // Có notification hoàn tất rồi, tắt processing
                 setProcessing(false);
                 setProcessingTimestamp('');
                 if (typeof window !== 'undefined') {
@@ -78,44 +69,35 @@ const AssignProductPage: React.FC = () => {
         }
     }, [processing, notifications, processingTimestamp]);
 
-    // Lắng nghe notification từ SignalR
-    const handleAssignCompleted = useCallback((data: any) => {
+    const handleDistributeCompleted = useCallback((data: any) => {
         setProcessing(false);
         setProcessingTimestamp('');
-        // Xóa timestamp từ localStorage
         if (typeof window !== 'undefined') {
             localStorage.removeItem('ewise_processing_time');
         }
-        
         const { success, failed, totalRequested } = data?.data || {};
-        
         if (failed === 0) {
             setNotification({
                 type: 'success',
-                message: `Phân công thành công ${success}/${totalRequested} sản phẩm!`
+                message: `Chia thành công ${success}/${totalRequested} sản phẩm!`
             });
         } else {
             setNotification({
                 type: 'error',
-                message: `Phân công hoàn tất: ${success} thành công, ${failed} thất bại`
+                message: `Chia hoàn tất: ${success} thành công, ${failed} thất bại`
             });
         }
-        
-        // Reload danh sách
-        fetchAssignedProducts(selectedDate, page, pageSize);
-        
-        // Tự động ẩn notification sau 5 giây
+        fetchDistributedProducts(selectedDate, page, pageSize);
         setTimeout(() => setNotification(null), 5000);
-    }, [selectedDate, page, pageSize, fetchAssignedProducts]);
+    }, [selectedDate, page, pageSize, fetchDistributedProducts]);
 
-    // Kết nối SignalR
     useNotificationHub({
-        onAssignCompleted: handleAssignCompleted,
+        onAssignCompleted: handleDistributeCompleted,
         token: typeof window !== 'undefined' ? (localStorage.getItem('ewise_token') || sessionStorage.getItem('ewise_token') || '') : '',
         userId: user?.userId || ''
     });
 
-    const filteredProducts = assignedProducts.filter((product) => {
+    const filteredProducts = distributedProducts.filter((product) => {
         const matchSearch = 
             product.productName?.toLowerCase().includes(search.toLowerCase()) ||
             product.userName?.toLowerCase().includes(search.toLowerCase()) ||
@@ -126,45 +108,37 @@ const AssignProductPage: React.FC = () => {
     const handleDateChange = (date: string) => {
         setSelectedDate(date);
         setPage(1);
-        fetchAssignedProducts(date, 1, pageSize);
+        fetchDistributedProducts(date, 1, pageSize);
     };
 
-    const fetchUnassignedCount = async (date: string) => {
+    const fetchUndistributedCount = async (date: string) => {
         try {
-            const data = await getUnassignedProducts(date);
-            setUnassignedCount(data.length);
+            const data = await getUndistributedProducts(date);
+            setUndistributedCount(data.length);
         } catch (error) {
             console.log(error);
-            setUnassignedCount(0);
+            setUndistributedCount(0);
         }
     };
 
-    const handleShowAssignModal = async () => {
-        await fetchUnassignedCount(selectedDate);
-        setShowAssignModal(true);
+    const handleShowDistributeModal = async () => {
+        await fetchUndistributedCount(selectedDate);
+        setShowDistributeModal(true);
     };
 
-    const handleAssignProducts = async () => {
-        setShowAssignModal(false);
+    const handleDistributeProducts = async () => {
+        setShowDistributeModal(false);
         setProcessing(true);
-        
-        // Lưu timestamp hiện tại khi bắt đầu phân công
         const timestamp = new Date().toISOString();
         setProcessingTimestamp(timestamp);
-        
-        // Lưu timestamp vào localStorage
         if (typeof window !== 'undefined') {
             localStorage.setItem('ewise_processing_time', timestamp);
         }
         try {
-            // Lấy tất cả sản phẩm chưa phân công
-            const unassignedProducts = await getUnassignedProducts(selectedDate);
-            const productIds = unassignedProducts.map(p => p.productId);
-            
-            await assignProductsToDate({ workDate: selectedDate, productIds });
-            // Không tắt processing ở đây, chờ SignalR notification
+            const undistributedProducts = await getUndistributedProducts(selectedDate);
+            const productIds = undistributedProducts.map(p => p.productId);
+            await distributeProductsToDate({ workDate: selectedDate, productIds });
         } catch (error) {
-            // Chỉ tắt processing nếu có lỗi
             console.log(error);
             setProcessing(false);
             setProcessingTimestamp('');
@@ -173,7 +147,7 @@ const AssignProductPage: React.FC = () => {
             }
             setNotification({
                 type: 'error',
-                message: 'Có lỗi xảy ra khi phân công sản phẩm'
+                message: 'Có lỗi xảy ra khi chia sản phẩm'
             });
         }
     };
@@ -186,31 +160,29 @@ const AssignProductPage: React.FC = () => {
     };
 
     React.useEffect(() => {
-        fetchAssignedProducts(selectedDate, page, pageSize);
-    }, [selectedDate, page, pageSize, fetchAssignedProducts]);
+        fetchDistributedProducts(selectedDate, page, pageSize);
+    }, [selectedDate, page, pageSize, fetchDistributedProducts]);
 
     return (
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 relative'>
-            {/* Processing Overlay cho toàn bộ content khi đang xử lý */}
-            {processing && <ProcessingModal />}
-
+            {processing && <DistributeProcessingModal />}
             <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3'>
                 <div className='flex items-center gap-3'>
                     <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
                         <Package className='text-white' size={20} />
                     </div>
                     <h1 className='text-3xl font-bold text-gray-900'>
-                        Phân công sản phẩm
+                        Chia sản phẩm
                     </h1>
                 </div>
                 <div className='flex flex-nowrap items-center gap-2 w-full max-w-2xl justify-end'>
                     <button
                         onClick={() => router.push('/admin/assigned-product')}
                         className='px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition cursor-pointer shadow-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed'
-                        title='Xem sản phẩm đã phân công'
+                        title='Xem sản phẩm đã chia'
                     >
                         <ListChecks size={18} />
-                        Sản phẩm đã phân công
+                        Sản phẩm đã chia
                     </button>
                     <div className='flex-1 min-w-0'>
                         <SearchBox
@@ -226,48 +198,40 @@ const AssignProductPage: React.FC = () => {
                     <CustomDatePicker
                         value={selectedDate}
                         onChange={handleDateChange}
-                        placeholder='Chọn ngày phân công'
+                        placeholder='Chọn ngày chia'
                         disabled={processing}
                     />
                 </div>
                 <div className='flex flex-1 justify-end w-full sm:w-auto mt-2 sm:mt-0'>
                     <button
-                        onClick={handleShowAssignModal}
+                        onClick={handleShowDistributeModal}
                         disabled={processing}
                         className='px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition cursor-pointer shadow-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed'
                     >
                         <Package size={18} />
-                        Phân công sản phẩm
+                        Chia sản phẩm
                     </button>
                 </div>
             </div>
-
-            {/* Product List */}
-            <AssignProductList
+            <DistributeProductList
                 products={filteredProducts}
                 loading={loading}
                 ref={tableScrollRef}
             />
-
-            {/* Pagination */}
             <Pagination
                 page={page}
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
             />
-
-            {/* Assign Modal */}
-            {showAssignModal && (
-                <AssignProductConfirmModal
-                    open={showAssignModal}
-                    onClose={() => setShowAssignModal(false)}
-                    onConfirm={handleAssignProducts}
+            {showDistributeModal && (
+                <DistributeProductConfirmModal
+                    open={showDistributeModal}
+                    onClose={() => setShowDistributeModal(false)}
+                    onConfirm={handleDistributeProducts}
                     workDate={selectedDate}
-                    productCount={unassignedCount}
+                    productCount={undistributedCount}
                 />
             )}
-
-            {/* Notification Toast */}
             <Toast
                 open={!!notification}
                 type={notification?.type}
@@ -279,4 +243,4 @@ const AssignProductPage: React.FC = () => {
     );
 };
 
-export default AssignProductPage;
+export default DistributeProductPage;

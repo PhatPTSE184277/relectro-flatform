@@ -1,14 +1,14 @@
 import React from 'react';
-import CollectionPointShow from './CollectionPointShow';
-import CompanySkeleton from './CompanySkeleton';
+import DistributedProductShow from './DistributedProductShow';
+import DistributedCompanySkeleton from './DistributedCompanySkeleton';
 
-interface CollectionPointListProps {
-    points: any[];
+interface DistributedProductListProps {
+    products: any[];
     loading: boolean;
-    onViewProducts: (point: any) => void;
+    page?: number;
 }
 
-const CollectionPointList: React.FC<CollectionPointListProps> = ({ points, loading, onViewProducts }) => {
+const DistributedProductList: React.FC<DistributedProductListProps> = ({ products, loading, page = 1 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>
@@ -18,30 +18,29 @@ const CollectionPointList: React.FC<CollectionPointListProps> = ({ points, loadi
                             <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                 <tr>
                                     <th className='py-3 px-4 text-center w-16'>STT</th>
-                                    <th className='py-3 px-4 text-left'>Điểm thu gom</th>
-                                    <th className='py-3 px-4 text-left w-40'>Số sản phẩm</th>
-                                    <th className='py-3 px-4 text-center w-32'>Hành động</th>
+                                    <th className='py-3 px-4 text-left w-64'>Người gửi</th>
+                                    <th className='py-3 px-4 text-left'>Địa chỉ</th>
+                                    <th className='py-3 px-4 text-right w-64'>Khối lượng / Kích thước</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {loading ? (
                                     Array.from({ length: 6 }).map((_, idx) => (
-                                        <CompanySkeleton key={idx} />
+                                        <DistributedCompanySkeleton key={idx} />
                                     ))
-                                ) : points.length > 0 ? (
-                                    points.map((point, idx) => (
-                                        <CollectionPointShow
-                                            key={point.smallCollectionId}
-                                            point={point}
-                                            stt={idx + 1}
-                                            onViewProducts={() => onViewProducts(point)}
-                                            isLast={idx === points.length - 1}
+                                ) : products.length > 0 ? (
+                                    products.map((product, idx) => (
+                                        <DistributedProductShow
+                                            key={product.productId}
+                                            product={product}
+                                            stt={(page - 1) * 10 + idx + 1}
+                                            isLast={idx === products.length - 1}
                                         />
                                     ))
                                 ) : (
                                     <tr>
                                         <td colSpan={4} className='text-center py-8 text-gray-400'>
-                                            Không có điểm thu gom nào.
+                                            Không có sản phẩm nào.
                                         </td>
                                     </tr>
                                 )}
@@ -54,4 +53,4 @@ const CollectionPointList: React.FC<CollectionPointListProps> = ({ points, loadi
     );
 };
 
-export default CollectionPointList;
+export default DistributedProductList;

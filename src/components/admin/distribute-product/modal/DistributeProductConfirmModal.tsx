@@ -3,7 +3,7 @@ import { X, Package, Calendar, List } from 'lucide-react';
 import { formatDate } from '@/utils/FormatDate';
 import SummaryCard from '@/components/ui/SummaryCard';
 
-interface AssignProductConfirmModalProps {
+interface DistributeProductConfirmModalProps {
     open: boolean;
     onClose: () => void;
     onConfirm: () => void;
@@ -12,7 +12,7 @@ interface AssignProductConfirmModalProps {
     loading?: boolean;
 }
 
-const AssignProductConfirmModal: React.FC<AssignProductConfirmModalProps> = ({
+const DistributeProductConfirmModal: React.FC<DistributeProductConfirmModalProps> = ({
     open,
     onClose,
     onConfirm,
@@ -34,7 +34,7 @@ const AssignProductConfirmModal: React.FC<AssignProductConfirmModalProps> = ({
                             <Package className='text-white' size={20} />
                         </div>
                         <h2 className='text-xl font-bold text-gray-900'>
-                            Xác nhận phân công
+                            Xác nhận chia sản phẩm
                         </h2>
                     </div>
                     <button
@@ -53,7 +53,7 @@ const AssignProductConfirmModal: React.FC<AssignProductConfirmModalProps> = ({
                     <SummaryCard
                         items={[
                             {
-                                label: 'Ngày phân công',
+                                label: 'Ngày chia',
                                 value: formatDate(workDate),
                                 icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Calendar className="w-4 h-4 text-primary-500" /></span>
                             },
@@ -66,7 +66,7 @@ const AssignProductConfirmModal: React.FC<AssignProductConfirmModalProps> = ({
                     />
                     <div className='bg-amber-50 border border-amber-200 rounded-lg p-4'>
                         <p className='text-sm text-amber-800'>
-                            <span className='font-semibold'>Lưu ý:</span> Tất cả {productCount} sản phẩm chưa được phân công sẽ được xử lý tự động bởi hệ thống.
+                            <span className='font-semibold'>Lưu ý:</span> Tất cả {productCount} sản phẩm chưa được chia sẽ được xử lý tự động bởi hệ thống.
                         </p>
                     </div>
                 </div>
@@ -97,4 +97,4 @@ const AssignProductConfirmModal: React.FC<AssignProductConfirmModalProps> = ({
     );
 };
 
-export default AssignProductConfirmModal;
+export default DistributeProductConfirmModal;

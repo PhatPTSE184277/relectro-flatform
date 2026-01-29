@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAssignedProductContext } from '@/contexts/admin/AssignedProductContext';
+import { useDistributedProductContext } from '@/contexts/admin/DistributedProductContext';
 import { ArrowLeft, Building2, MapPin, Package } from 'lucide-react';
-import CompanyList from '@/components/admin/assigned-product/CompanyList';
-import CollectionPointList from '@/components/admin/assigned-product/CollectionPointList';
-import ProductList from '@/components/admin/assigned-product/ProductList';
+import DistributedCompanyList from '@/components/admin/distributed-product/DistributedCompanyList';
+import DistributedCollectionPointList from '@/components/admin/distributed-product/DistributedCollectionPointList';
+import DistributedProductList from '@/components/admin/distributed-product/DistributedProductList';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import Pagination from '@/components/ui/Pagination';
 
-const AssignedProductPage: React.FC = () => {
+const DistributedProductPage: React.FC = () => {
     const {
         companies,
         loading,
@@ -23,7 +23,7 @@ const AssignedProductPage: React.FC = () => {
         productTotalPages,
         setProductPage,
         fetchPointProducts
-    } = useAssignedProductContext();
+    } = useDistributedProductContext();
 
     const [selectedDate, setSelectedDate] = useState<string>(
         new Date().toISOString().split('T')[0]
@@ -98,7 +98,7 @@ const AssignedProductPage: React.FC = () => {
                         <div>
                             <h1 className='text-2xl font-bold text-gray-900'>
                                 {view === 'companies'
-                                    ? 'Sản phẩm đã phân công'
+                                    ? 'Sản phẩm đã phân chia'
                                     : view === 'points'
                                       ? 'Các điểm thu gom'
                                       : 'Danh sách sản phẩm'}
@@ -129,7 +129,7 @@ const AssignedProductPage: React.FC = () => {
 
             {/* Main Content */}
             {view === 'companies' && (
-                <CompanyList
+                <DistributedCompanyList
                     companies={companies}
                     loading={loading}
                     onViewPoints={handleViewPoints}
@@ -137,7 +137,7 @@ const AssignedProductPage: React.FC = () => {
             )}
 
             {view === 'points' && selectedCompany && (
-                <CollectionPointList
+                <DistributedCollectionPointList
                     points={selectedCompany.points}
                     loading={loading}
                     onViewProducts={handleViewProducts}
@@ -146,7 +146,7 @@ const AssignedProductPage: React.FC = () => {
 
             {view === 'products' && pointProducts && (
                 <>
-                    <ProductList
+                    <DistributedProductList
                         products={pointProducts.products}
                         loading={loading}
                         page={productPage}
@@ -167,4 +167,4 @@ const AssignedProductPage: React.FC = () => {
     );
 };
 
-export default AssignedProductPage;
+export default DistributedProductPage;

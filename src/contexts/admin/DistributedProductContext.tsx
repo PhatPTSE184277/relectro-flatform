@@ -2,10 +2,10 @@
 
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import {
-  getAssignedCollectionPointsSummary,
-  getAssignedProductsByCollectionPoint,
-  AssignedPointProductsResponse
-} from '@/services/admin/AssignedProductService';
+  getDistributedCollectionPointsSummary,
+  getDistributedProductsByCollectionPoint,
+  DistributedPointProductsResponse
+} from '@/services/admin/DistributedProductService';
 
 interface CollectionPoint {
   smallCollectionId: string;
@@ -20,7 +20,7 @@ interface CompanySummary {
   points: CollectionPoint[];
 }
 
-interface AssignedProductContextType {
+interface DistributedProductContextType {
   companies: CompanySummary[];
   loading: boolean;
   fetchCompanies: (workDate: string) => Promise<void>;
@@ -28,30 +28,30 @@ interface AssignedProductContextType {
   setSelectedCompany: (company: CompanySummary | null) => void;
   selectedPoint: CollectionPoint | null;
   setSelectedPoint: (point: CollectionPoint | null) => void;
-  pointProducts: AssignedPointProductsResponse | null;
+  pointProducts: DistributedPointProductsResponse | null;
   productPage: number;
   productTotalPages: number;
   setProductPage: (page: number) => void;
   fetchPointProducts: (smallPointId: string, workDate: string, page?: number, limit?: number) => Promise<void>;
 }
 
-const AssignedProductContext = createContext<AssignedProductContextType | undefined>(undefined);
+const DistributedProductContext = createContext<DistributedProductContextType | undefined>(undefined);
 
 type Props = { children: ReactNode };
 
-export const AssignedProductProvider: React.FC<Props> = ({ children }) => {
+export const DistributedProductProvider: React.FC<Props> = ({ children }) => {
   const [companies, setCompanies] = useState<CompanySummary[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<CompanySummary | null>(null);
   const [selectedPoint, setSelectedPoint] = useState<CollectionPoint | null>(null);
-  const [pointProducts, setPointProducts] = useState<AssignedPointProductsResponse | null>(null);
+  const [pointProducts, setPointProducts] = useState<DistributedPointProductsResponse | null>(null);
   const [productPage, setProductPage] = useState<number>(1);
   const [productTotalPages, setProductTotalPages] = useState<number>(1);
 
   const fetchCompanies = useCallback(async (workDate: string) => {
     setLoading(true);
     try {
-      const res = await getAssignedCollectionPointsSummary(workDate);
+      const res = await getDistributedCollectionPointsSummary(workDate);
       if (res && res.data) {
         setCompanies(res.data);
       } else {
@@ -68,7 +68,7 @@ export const AssignedProductProvider: React.FC<Props> = ({ children }) => {
   const fetchPointProducts = useCallback(async (smallPointId: string, workDate: string, page: number = 1, limit: number = 10) => {
     setLoading(true);
     try {
-      const res = await getAssignedProductsByCollectionPoint(smallPointId, workDate, page, limit);
+      const res = await getDistributedProductsByCollectionPoint(smallPointId, workDate, page, limit);
       setPointProducts(res);
       setProductTotalPages(res.totalPages || 1);
     } catch (err) {
@@ -79,7 +79,7 @@ export const AssignedProductProvider: React.FC<Props> = ({ children }) => {
     }
   }, []);
 
-  const value: AssignedProductContextType = {
+  const value: DistributedProductContextType = {
     companies,
     loading,
     fetchCompanies,
@@ -95,14 +95,14 @@ export const AssignedProductProvider: React.FC<Props> = ({ children }) => {
   };
 
   return (
-    <AssignedProductContext.Provider value={value}>
+    <DistributedProductContext.Provider value={value}>
       {children}
-    </AssignedProductContext.Provider>
+    </DistributedProductContext.Provider>
   );
 };
 
-export const useAssignedProductContext = (): AssignedProductContextType => {
-  const ctx = useContext(AssignedProductContext);
-  if (!ctx) throw new Error('useAssignedProductContext must be used within AssignedProductProvider');
+export const useDistributedProductContext = (): DistributedProductContextType => {
+  const ctx = useContext(DistributedProductContext);
+  if (!ctx) throw new Error('useDistributedProductContext must be used within DistributedProductProvider');
   return ctx;
 };

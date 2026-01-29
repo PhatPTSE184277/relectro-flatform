@@ -25,9 +25,9 @@ export const adminMenuItems = [
         icon: <ClipboardList size={20} />
     },
     {
-        id: 'assign-product',
-        label: 'Phân công sản phẩm',
-        path: '/admin/assign-product',
+        id: 'distribute-product',
+        label: 'Sản phẩm chờ chia',
+        path: '/admin/distribute-product',
         icon: <Package size={20} />
     },
     {

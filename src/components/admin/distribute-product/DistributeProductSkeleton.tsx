@@ -1,6 +1,6 @@
 import React from 'react';
 
-const AssignProductSkeleton: React.FC = () => (
+const DistributeProductSkeleton: React.FC = () => (
     <tr className='border-b border-gray-100 hover:bg-gray-50'>
         <td className='py-3 px-4'>
             <div className='flex items-center justify-center'>
@@ -19,4 +19,4 @@ const AssignProductSkeleton: React.FC = () => (
     </tr>
 );
 
-export default AssignProductSkeleton;
+export default DistributeProductSkeleton;
