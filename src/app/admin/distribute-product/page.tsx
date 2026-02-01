@@ -120,6 +120,9 @@ const DistributeProductPage: React.FC = () => {
             // Don't fetch if this date is being processed
             if (!isProcessingThisDate) {
                 fetchUndistributedProducts(date, 1, pageSize);
+            } else {
+                // Clear old data when switching to processing date
+                clearUndistributedProducts();
             }
         } else {
             fetchCompanies(date);
@@ -139,6 +142,9 @@ const DistributeProductPage: React.FC = () => {
             // Don't fetch if this date is being processed
             if (!isProcessingThisDate) {
                 fetchUndistributedProducts(selectedDate, 1, pageSize);
+            } else {
+                // Clear old data when switching to processing date
+                clearUndistributedProducts();
             }
         } else {
             fetchCompanies(selectedDate);
@@ -261,11 +267,14 @@ const DistributeProductPage: React.FC = () => {
             // Don't fetch if this date is being processed
             if (!isProcessingThisDate) {
                 fetchUndistributedProducts(selectedDate, page, pageSize);
+            } else {
+                // Clear old data when date is processing
+                clearUndistributedProducts();
             }
         } else {
             fetchCompanies(selectedDate);
         }
-    }, [selectedDate, activeFilter, page, pageSize, processingDate, fetchUndistributedProducts, fetchCompanies]);
+    }, [selectedDate, activeFilter, page, pageSize, processingDate, fetchUndistributedProducts, fetchCompanies, clearUndistributedProducts]);
 
     return (
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 relative'>
