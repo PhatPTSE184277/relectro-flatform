@@ -1,5 +1,6 @@
 import { Eye, CheckCircle, XCircle } from 'lucide-react';
 import { formatDate } from '@/utils/FormatDate';
+import { formatAddress } from '@/utils/FormatAddress';
 import type { Post } from '@/types/post';
 import { PostStatus } from '@/enums/PostStatus';
 
@@ -71,7 +72,7 @@ const RequestShow: React.FC<RequestShowProps & { isLast?: boolean }> = ({
                 {post.category}
             </td>
             <td className='py-3 px-4 text-gray-700 w-[28vw] min-w-[18vw]'>
-                <div className='line-clamp-2 wrap-break-word'>{post.address}</div>
+                <div className='line-clamp-2 wrap-break-word'>{formatAddress(post.address) || post.address}</div>
             </td>
             <td className='py-3 px-4 text-sm text-gray-600 text-right w-[12vw] min-w-[8vw]'>
                 {formatDate(post.date)}

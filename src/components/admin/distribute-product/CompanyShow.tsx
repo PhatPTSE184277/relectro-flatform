@@ -26,10 +26,10 @@ const CompanyShow: React.FC<CompanyShowProps> = ({
             <td className='py-3 px-4 w-[20vw]'>
                 <div className='text-gray-900 font-medium'>{company.companyName || 'N/A'}</div>
             </td>
-            <td className='py-3 px-4 text-center w-[10vw]'>
-                <span className='inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800'>
-                    {company.totalOrders || 0} đơn
-                </span>
+            <td className='py-3 pr-4 text-right w-auto'>
+                <div className='text-gray-900 font-medium'>
+                    {company.totalProducts ?? company.totalOrders ?? 0}
+                </div>
             </td>
         </tr>
     );

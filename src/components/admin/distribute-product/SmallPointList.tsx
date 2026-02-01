@@ -27,8 +27,8 @@ const SmallPointList: React.FC<SmallPointListProps> = ({
                                 <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                     <tr>
                                         <th className='py-3 px-4 text-center w-[6vw]'>STT</th>
-                                        <th className='py-3 px-4 text-left w-[20vw]'>Điểm thu gom</th>
-                                        <th className='py-3 px-4 text-center w-[10vw]'>Tổng sản phẩm</th>
+                                        <th className='py-3 px-4 text-left w-[18vw]'>Điểm thu gom</th>
+                                        <th className='py-3 pr-4 text-right w-auto'>Tổng sản phẩm</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -41,8 +41,8 @@ const SmallPointList: React.FC<SmallPointListProps> = ({
                                                 <td className='py-3 px-4'>
                                                     <div className='h-4 bg-gray-200 rounded w-48 animate-pulse' />
                                                 </td>
-                                                <td className='py-3 px-4 text-center'>
-                                                    <div className='h-6 bg-gray-200 rounded-full w-16 animate-pulse mx-auto' />
+                                                <td className='py-3 pr-4 text-right'>
+                                                    <div className='h-6 bg-gray-200 rounded w-10 animate-pulse ml-auto' />
                                                 </td>
                                             </tr>
                                         ))
@@ -62,15 +62,15 @@ const SmallPointList: React.FC<SmallPointListProps> = ({
                                                         {idx + 1}
                                                     </span>
                                                 </td>
-                                                <td className='py-3 px-4 w-[20vw]'>
+                                                <td className='py-3 px-4 w-[18vw]'>
                                                     <div className='text-gray-900 font-medium'>
                                                         {point.pointName || 'N/A'}
                                                     </div>
                                                 </td>
-                                                <td className='py-3 px-4 text-center w-[10vw]'>
-                                                    <span className='inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800'>
-                                                        {point.totalOrders} sản phẩm
-                                                    </span>
+                                                <td className='py-3 pr-4 text-right w-auto'>
+                                                    <div className='text-gray-900 font-medium'>
+                                                        {point.totalOrders ?? 0}
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))

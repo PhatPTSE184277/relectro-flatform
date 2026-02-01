@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import AssignRecyclingPointList from './AssignRecyclingPointList';
 import RecyclingCompanySelectModal from './RecyclingSelectModal';
@@ -16,25 +16,41 @@ interface SmallCollectionPoint {
 interface UpdateRecyclingModalProps {
     open: boolean;
     onClose: () => void;
+    companyId: string;
     companyName: string;
-    smallPoints: SmallCollectionPoint[];
-    recyclingCompanies: any[];
     onUpdateAssignment: (scpId: string, newRecyclingCompanyId: string) => void;
 }
 
 const UpdateRecyclingModal: React.FC<UpdateRecyclingModalProps> = ({
     open,
     onClose,
+    companyId,
     companyName,
-    smallPoints,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    recyclingCompanies: _recyclingCompanies,
     onUpdateAssignment
 }) => {
     const [showRecyclingModal, setShowRecyclingModal] = useState(false);
     const [selectedPointForUpdate, setSelectedPointForUpdate] = useState<string | null>(null);
     const [pointRecyclingAssignments, setPointRecyclingAssignments] = useState<Record<string, string>>({});
-    const { fetchRecyclingCompanies, recyclingCompanies } = useAssignRecyclingContext();
+    const [smallPoints, setSmallPoints] = useState<SmallCollectionPoint[]>([]);
+    const [loading, setLoading] = useState(false);
+    const { fetchRecyclingCompanies, recyclingCompanies, getScpAssignmentDetail } = useAssignRecyclingContext();
+
+    // Fetch small points when modal opens
+    useEffect(() => {
+        if (open && companyId) {
+            setLoading(true);
+            getScpAssignmentDetail(companyId)
+                .then((data) => {
+                    setSmallPoints(data?.smallPoints || []);
+                })
+                .catch(() => {
+                    setSmallPoints([]);
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }
+    }, [open, companyId, getScpAssignmentDetail]);
 
     const handleOpenCompanyModal = async (pointId: string) => {
         await fetchRecyclingCompanies();
@@ -42,7 +58,7 @@ const UpdateRecyclingModal: React.FC<UpdateRecyclingModalProps> = ({
         setShowRecyclingModal(true);
     };
 
-    const handleSelectRecyclingCompany = (recyclingCompanyId: string) => {
+    const handleSelectRecyclingCompany = async (recyclingCompanyId: string) => {
         if (selectedPointForUpdate) {
             // Lưu lại mapping giữa điểm và công ty tái chế
             setPointRecyclingAssignments(prev => ({
@@ -50,7 +66,10 @@ const UpdateRecyclingModal: React.FC<UpdateRecyclingModalProps> = ({
                 [selectedPointForUpdate]: recyclingCompanyId
             }));
             // Gọi API update luôn
-            onUpdateAssignment(selectedPointForUpdate, recyclingCompanyId);
+            await onUpdateAssignment(selectedPointForUpdate, recyclingCompanyId);
+            // Refresh data after update
+            const data = await getScpAssignmentDetail(companyId);
+            setSmallPoints(data?.smallPoints || []);
             setSelectedPointForUpdate(null);
         }
     };
@@ -90,7 +109,7 @@ const UpdateRecyclingModal: React.FC<UpdateRecyclingModalProps> = ({
                         </label>
                         <AssignRecyclingPointList
                             points={smallPoints}
-                            loading={false}
+                            loading={loading}
                             onSelectCompany={handleOpenCompanyModal}
                             pointRecyclingAssignments={pointRecyclingAssignments}
                             recyclingCompanies={recyclingCompanies}

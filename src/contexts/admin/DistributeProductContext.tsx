@@ -12,7 +12,8 @@ import {
     getDistributedProductsByDate,
     getUndistributedProducts,
     getCompanyMetricsByDate,
-    getSCPProductsStatus
+    getSCPProductsStatus,
+    getCollectionCompanies
 } from '@/services/admin/DistributeProductService';
 import { AssignedProduct, AssignProductsRequest } from '@/types/AssignProduct';
 
@@ -21,16 +22,20 @@ interface DistributeProductContextType {
     undistributedProducts: any[];
     allUndistributedProducts: any[];
     companies: any[];
+    collectionCompanies: any[];
     scpProducts: any[];
     scpProductsData: any;
     loading: boolean;
     companyLoading: boolean;
+    collectionCompaniesLoading: boolean;
     scpLoading: boolean;
     activeFilter: 'undistributed' | 'distributed';
     setActiveFilter: (filter: 'undistributed' | 'distributed') => void;
     fetchDistributedProducts: (workDate: string, page?: number, pageSize?: number) => Promise<void>;
     fetchUndistributedProducts: (workDate: string, page?: number, limit?: number) => Promise<void>;
     fetchCompanies: (workDate: string) => Promise<void>;
+    fetchCollectionCompanies: (page?: number, limit?: number) => Promise<void>;
+    clearUndistributedProducts: () => void;
     fetchSCPProducts: (smallPointId: string, workDate: string, page?: number, limit?: number) => Promise<void>;
     distributeProductsToDate: (data: AssignProductsRequest) => Promise<any>;
     page: number;
@@ -53,10 +58,12 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
     const [undistributedProducts, setUndistributedProducts] = useState<any[]>([]);
     const [allUndistributedProducts, setAllUndistributedProducts] = useState<any[]>([]);
     const [companies, setCompanies] = useState<any[]>([]);
+    const [collectionCompanies, setCollectionCompanies] = useState<any[]>([]);
     const [scpProducts, setScpProducts] = useState<any[]>([]);
     const [scpProductsData, setScpProductsData] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [companyLoading, setCompanyLoading] = useState(false);
+    const [collectionCompaniesLoading, setCollectionCompaniesLoading] = useState(false);
     const [scpLoading, setScpLoading] = useState(false);
     const [activeFilter, setActiveFilter] = useState<'undistributed' | 'distributed'>('undistributed');
     const [page, setPage] = useState(1);
@@ -130,6 +137,12 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
         }
     }, [page, pageSize]);
 
+    const clearUndistributedProducts = useCallback(() => {
+        setAllUndistributedProducts([]);
+        setUndistributedProducts([]);
+        setTotalPages(1);
+    }, []);
+
     const fetchCompanies = useCallback(async (workDate: string) => {
         setCompanyLoading(true);
         try {
@@ -144,6 +157,28 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
             setCompanies([]);
         } finally {
             setCompanyLoading(false);
+        }
+    }, []);
+
+    const fetchCollectionCompanies = useCallback(async (pageArg?: number, limitArg?: number) => {
+        setCollectionCompaniesLoading(true);
+        try {
+            const currentPage = pageArg ?? 1;
+            const currentLimit = limitArg ?? 9999;
+            const response = await getCollectionCompanies(currentPage, currentLimit);
+            
+            if (response && response.data) {
+                setCollectionCompanies(response.data);
+            } else if (Array.isArray(response)) {
+                setCollectionCompanies(response);
+            } else {
+                setCollectionCompanies([]);
+            }
+        } catch (err) {
+            console.log(err);
+            setCollectionCompanies([]);
+        } finally {
+            setCollectionCompaniesLoading(false);
         }
     }, []);
 
@@ -194,17 +229,21 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
         undistributedProducts,
         allUndistributedProducts,
         companies,
+        collectionCompanies,
         scpProducts,
         scpProductsData,
         loading,
         companyLoading,
+        collectionCompaniesLoading,
         scpLoading,
         activeFilter,
         setActiveFilter,
         fetchDistributedProducts,
         fetchUndistributedProducts,
         fetchCompanies,
+        fetchCollectionCompanies,
         fetchSCPProducts,
+        clearUndistributedProducts,
         distributeProductsToDate,
         page,
         setPage,

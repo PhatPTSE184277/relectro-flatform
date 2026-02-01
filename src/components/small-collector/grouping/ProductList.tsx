@@ -31,7 +31,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>
-                <div className='inline-block min-w-full align-middle'>
+                <div className='inline-block w-full align-middle'>
                     <div className='overflow-hidden'>
                         <div
                             className={maxHeight === undefined ? 'max-h-[59vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[53vh] xl:max-h-[59vh] overflow-y-auto' : 'overflow-y-auto'}
@@ -41,7 +41,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                                 <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                     <tr>
                                         {showCheckbox && (
-                                            <th className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>
+                                            <th className='py-3 px-4 text-center w-[5vw]'>
                                                 <input
                                                     type='checkbox'
                                                     checked={allSelected}
@@ -50,10 +50,10 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                                                 />
                                             </th>
                                         )}
-                                        <th className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>STT</th>
-                                        <th className='py-3 px-4 text-left w-[14vw] min-w-[10vw]'>Người gửi</th>
-                                        <th className='py-3 px-4 text-left w-[22vw] min-w-[14vw]'>Địa chỉ</th>
-                                        <th className='py-3 px-4 text-right w-[18vw] min-w-[12vw]'>Khối lượng / Kích thước (kg, cm)</th>
+                                        <th className='py-3 px-4 text-center w-[5vw]'>STT</th>
+                                        <th className='py-3 px-4 text-left w-[14vw]'>Người gửi</th>
+                                        <th className='py-3 px-4 text-left w-[22vw]'>Địa chỉ</th>
+                                        <th className='py-3 px-4 text-right w-[18vw]'>Khối lượng / Kích thước (kg, cm)</th>
                                     </tr>
                                 </thead>
                                 <tbody>

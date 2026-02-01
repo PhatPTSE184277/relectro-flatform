@@ -8,9 +8,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { Package } from 'lucide-react';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import Breadcrumb from '@/components/ui/Breadcrumb';
-import DistributeProductConfirmModal from '@/components/admin/distribute-product/modal/DistributeProductConfirmModal';
+import SelectCompanyModal from '@/components/admin/distribute-product/modal/SelectCompanyModal';
 import Pagination from '@/components/ui/Pagination';
-import { useNotifications } from '@/contexts/NotificationContext';
 import Toast from '@/components/ui/Toast';
 import DistributeProductFilter from '@/components/admin/distribute-product/DistributeProductFilter';
 import CompanyList from '@/components/admin/distribute-product/CompanyList';
@@ -23,14 +22,17 @@ const DistributeProductPage: React.FC = () => {
         undistributedProducts,
         allUndistributedProducts,
         companies,
+        collectionCompanies,
         scpProducts,
         loading,
         companyLoading,
+        collectionCompaniesLoading,
         scpLoading,
         activeFilter,
         setActiveFilter,
         fetchUndistributedProducts,
         fetchCompanies,
+        fetchCollectionCompanies,
         fetchSCPProducts,
         distributeProductsToDate,
         page,
@@ -39,14 +41,16 @@ const DistributeProductPage: React.FC = () => {
         pageSize,
         scpPage,
         setScpPage,
-        scpTotalPages
+        scpTotalPages,
+        clearUndistributedProducts
     } = useDistributeProductContext();
 
     const { user } = useAuth();
-    const { notifications } = useNotifications();
     const [selectedDate, setSelectedDate] = useState(getTodayString);
     const [showDistributeModal, setShowDistributeModal] = useState(false);
     const [undistributedCount, setUndistributedCount] = useState(0);
+    const [selectedCompanyIds, setSelectedCompanyIds] = useState<string[]>([]);
+    const [distributing, setDistributing] = useState(false);
     const [processing, setProcessing] = useState(() => {
         if (typeof window !== 'undefined') {
             return !!localStorage.getItem('ewise_processing_date');
@@ -64,23 +68,19 @@ const DistributeProductPage: React.FC = () => {
     const [selectedCompany, setSelectedCompany] = useState<any>(null);
     const [selectedSCP, setSelectedSCP] = useState<any>(null);
 
-    React.useEffect(() => {
-        if (processing && notifications.length > 0 && processingDate) {
-            const lastNotification = notifications[notifications.length - 1];
-            if (lastNotification?.type === 'AssignCompleted') {
-                handleDistributeCompleted(lastNotification);
-            }
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [processing, notifications, processingDate]);
-
     const handleDistributeCompleted = useCallback((data: any) => {
+        console.log('Distribution completed callback:', data);
+        
         setProcessing(false);
         setProcessingDate('');
         if (typeof window !== 'undefined') {
             localStorage.removeItem('ewise_processing_date');
+            console.log('localStorage cleared');
         }
+        
         const { success, failed, totalRequested } = data?.data || {};
+        console.log('Stats:', { success, failed, totalRequested });
+        
         if (failed === 0) {
             setNotification({
                 type: 'success',
@@ -92,12 +92,13 @@ const DistributeProductPage: React.FC = () => {
                 message: `Chia hoàn tất: ${success} thành công, ${failed} thất bại`
             });
         }
+        
+        // Refresh data
         if (activeFilter === 'undistributed') {
             fetchUndistributedProducts(selectedDate, page, pageSize);
         } else {
             fetchCompanies(selectedDate);
         }
-        setTimeout(() => setNotification(null), 5000);
     }, [selectedDate, page, pageSize, activeFilter, fetchUndistributedProducts, fetchCompanies]);
 
     useNotificationHub({
@@ -167,25 +168,60 @@ const DistributeProductPage: React.FC = () => {
 
     const handleShowDistributeModal = () => {
         setUndistributedCount(allUndistributedProducts.length);
+        fetchCollectionCompanies();
         setShowDistributeModal(true);
     };
 
-    const handleDistributeProducts = async () => {
+    const handleToggleSelectCompany = (companyId: string) => {
+        setSelectedCompanyIds(prev => 
+            prev.includes(companyId) 
+                ? prev.filter(id => id !== companyId)
+                : [...prev, companyId]
+        );
+    };
+
+    const handleToggleSelectAllCompanies = () => {
+        if (selectedCompanyIds.length === collectionCompanies.length) {
+            setSelectedCompanyIds([]);
+        } else {
+            setSelectedCompanyIds(collectionCompanies.map(c => c.id));
+        }
+    };
+
+    // Auto-select all companies when modal opens
+    React.useEffect(() => {
+        if (showDistributeModal && collectionCompanies.length > 0) {
+            setSelectedCompanyIds(collectionCompanies.map(c => c.id));
+        }
+    }, [showDistributeModal, collectionCompanies]);
+
+    const handleCompanySelectionConfirm = async (companyIds: string[]) => {
+        if (companyIds.length === 0 || undistributedCount === 0) return;
+        
         setShowDistributeModal(false);
+        setDistributing(true);
+        
         const dateToProcess = selectedDate;
+        console.log('🚀 Starting distribution for date:', dateToProcess);
+        
         setProcessing(true);
         setProcessingDate(dateToProcess);
         if (typeof window !== 'undefined') {
             localStorage.setItem('ewise_processing_date', dateToProcess);
         }
-        // Reset date picker về ngày hiện tại
-        setSelectedDate(getTodayString());
-        setPage(1);
+        
+        // Clear undistributed products
+        clearUndistributedProducts();
+        setActiveFilter('distributed');
+        
         try {
             const productIds = allUndistributedProducts.map((p: any) => p.productId);
+            console.log('📦 Distributing', productIds.length, 'products');
+            
             await distributeProductsToDate({ workDate: dateToProcess, productIds });
+            await fetchCompanies(dateToProcess);
         } catch (error) {
-            console.log(error);
+            console.error('❌ Distribution error:', error);
             setProcessing(false);
             setProcessingDate('');
             if (typeof window !== 'undefined') {
@@ -195,6 +231,8 @@ const DistributeProductPage: React.FC = () => {
                 type: 'error',
                 message: 'Có lỗi xảy ra khi chia sản phẩm'
             });
+        } finally {
+            setDistributing(false);
         }
     };
 
@@ -331,12 +369,18 @@ const DistributeProductPage: React.FC = () => {
             )}
 
             {showDistributeModal && (
-                <DistributeProductConfirmModal
+                <SelectCompanyModal
                     open={showDistributeModal}
                     onClose={() => setShowDistributeModal(false)}
-                    onConfirm={handleDistributeProducts}
+                    onConfirm={handleCompanySelectionConfirm}
+                    companies={collectionCompanies}
+                    loading={collectionCompaniesLoading}
+                    selectedCompanyIds={selectedCompanyIds}
+                    onToggleSelect={handleToggleSelectCompany}
+                    onToggleSelectAll={handleToggleSelectAllCompanies}
                     workDate={selectedDate}
                     productCount={undistributedCount}
+                    distributing={distributing}
                 />
             )}
             <Toast

@@ -25,7 +25,7 @@ const ProductList: React.FC<ProductListProps> = ({
                                 <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
                                     <tr>
                                         <th className='py-3 px-4 text-center w-[6vw]'>STT</th>
-                                        <th className='py-3 px-4 text-left w-[15vw]'>Khách hàng</th>
+                                        <th className='py-3 px-4 text-left w-[15vw]'>Danh mục - Thương hiệu</th>
                                         <th className='py-3 px-4 text-left w-[20vw]'>Địa chỉ</th>
                                     </tr>
                                 </thead>
@@ -33,21 +33,15 @@ const ProductList: React.FC<ProductListProps> = ({
                                     {loading ? (
                                         Array.from({ length: 6 }).map((_, idx) => (
                                             <tr key={idx} className='border-b border-primary-100'>
-                                                <td className='py-3 px-4 text-center'>
+                                                <td className='py-3 px-4 text-center w-[6vw]'>
                                                     <div className='h-7 w-7 bg-gray-200 rounded-full animate-pulse mx-auto' />
                                                 </td>
-                                                <td className='py-3 px-4'>
+                                                <td className='py-3 px-4 w-[15vw]'>
                                                     <div className='h-4 bg-gray-200 rounded w-32 animate-pulse mb-2' />
                                                     <div className='h-3 bg-gray-200 rounded w-24 animate-pulse' />
                                                 </td>
-                                                <td className='py-3 px-4'>
+                                                <td className='py-3 px-4 w-[20vw]'>
                                                     <div className='h-4 bg-gray-200 rounded w-48 animate-pulse' />
-                                                </td>
-                                                <td className='py-3 px-4'>
-                                                    <div className='flex flex-col gap-1 items-end'>
-                                                        <div className='h-3 bg-gray-200 rounded w-16 animate-pulse' />
-                                                        <div className='h-3 bg-gray-200 rounded w-20 animate-pulse' />
-                                                    </div>
                                                 </td>
                                             </tr>
                                         ))

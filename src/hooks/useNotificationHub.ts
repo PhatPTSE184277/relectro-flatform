@@ -41,8 +41,7 @@ export function useNotificationHub({
                 }
             })
             .catch((err) => {
-                // Optionally log error
-                // console.error('SignalR connection error:', err);
+                console.log('SignalR connection error:', err);
             });
         connectionRef.current = connection;
 

@@ -23,7 +23,7 @@ const CompanyList: React.FC<CompanyListProps> = ({
                                     <tr>
                                         <th className='py-3 px-4 text-center w-[6vw]'>STT</th>
                                         <th className='py-3 px-4 text-left w-[20vw]'>Công ty</th>
-                                        <th className='py-3 px-4 text-center w-[10vw]'>Tổng đơn</th>
+                                        <th className='py-3 pr-4 text-right w-auto'>Tổng sản phẩm</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -36,8 +36,8 @@ const CompanyList: React.FC<CompanyListProps> = ({
                                                 <td className='py-3 px-4'>
                                                     <div className='h-4 bg-gray-200 rounded w-48 animate-pulse' />
                                                 </td>
-                                                <td className='py-3 px-4 text-center'>
-                                                    <div className='h-6 bg-gray-200 rounded-full w-16 animate-pulse mx-auto' />
+                                                <td className='py-3 pr-4 text-right'>
+                                                    <div className='h-6 bg-gray-200 rounded w-10 animate-pulse ml-auto' />
                                                 </td>
                                             </tr>
                                         ))

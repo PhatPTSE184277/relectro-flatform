@@ -25,7 +25,6 @@ const AssignRecyclingPage: React.FC = () => {
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedCompany, setSelectedCompany] = useState<any>(null);
-    const [companySmallPoints, setCompanySmallPoints] = useState<any[]>([]);
     const [collectionCompanies, setCollectionCompanies] = useState<any[]>([]);
 
     useEffect(() => {
@@ -47,12 +46,10 @@ const AssignRecyclingPage: React.FC = () => {
         setShowAssignModal(false);
     };
 
-    const handleViewDetail = async (companyId: string) => {
+    const handleViewDetail = (companyId: string) => {
         const company = collectionCompanies.find(c => (c.companyId || c.id) === companyId);
         if (company) {
             setSelectedCompany(company);
-            const data = await getScpAssignmentDetail(companyId);
-            setCompanySmallPoints(data?.smallPoints || []);
             setShowUpdateModal(true);
         }
     };
@@ -61,11 +58,6 @@ const AssignRecyclingPage: React.FC = () => {
         await updateSmallPointAssignment(scpId, { newRecyclingCompanyId });
         await fetchRecyclingCompanies();
         await fetchSmallCollectionPoints();
-        // Refresh detail modal
-        if (selectedCompany) {
-            const data = await getScpAssignmentDetail(selectedCompany.companyId || selectedCompany.id);
-            setCompanySmallPoints(data?.smallPoints || []);
-        }
     };
 
     return (
@@ -128,9 +120,8 @@ const AssignRecyclingPage: React.FC = () => {
                         setShowUpdateModal(false);
                         setSelectedCompany(null);
                     }}
+                    companyId={selectedCompany.companyId || selectedCompany.id}
                     companyName={selectedCompany.name || selectedCompany.companyName || ''}
-                    smallPoints={companySmallPoints}
-                    recyclingCompanies={recyclingCompanies}
                     onUpdateAssignment={handleUpdateAssignment}
                 />
             )}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatAddress } from '../../../utils/FormatAddress';
 
 interface ProductShowProps {
     product: any;
@@ -16,13 +17,12 @@ const ProductShow: React.FC<ProductShowProps> = ({ product, stt, isLast = false 
                 </span>
             </td>
             <td className='py-3 px-4 w-[15vw]'>
-                <div>{product.userName || 'N/A'}</div>
-                <div className='text-xs text-gray-500 mt-1'>
+                <div className='text-gray-900 font-medium truncate' title={`${product.categoryName ?? 'Không rõ'} - ${product.brandName ?? 'Không rõ'}`}>
                     {product.categoryName ? product.categoryName : 'Không rõ'}{' - '}{product.brandName ? product.brandName : 'Không rõ'}
                 </div>
             </td>
             <td className='py-3 px-4 w-[20vw]'>
-                <div className='line-clamp-2'>{product.address || 'N/A'}</div>
+                <div className='line-clamp-2'>{formatAddress(product.address) || 'N/A'}</div>
             </td>
         </tr>
     );

@@ -7,6 +7,13 @@ export const getUndistributedProducts = async (workDate: string, page: number = 
 	return response.data;
 };
 
+export const getCollectionCompanies = async (page: number = 1, limit: number = 10): Promise<any> => {
+  const response = await axios.get('/collection-company', {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
 export const getDistributedProductsByDate = async (workDate: string) => {
   const response = await axios.get('/assign/products-by-date', {
     params: { workDate },

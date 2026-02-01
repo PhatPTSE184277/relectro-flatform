@@ -29,7 +29,7 @@ const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({ produc
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
             {showCheckbox && (
-                <td className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>
+                <td className='py-3 px-4 text-center w-[5vw]'>
                     <input
                         type='checkbox'
                         checked={isSelected}
@@ -38,23 +38,23 @@ const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({ produc
                     />
                 </td>
             )}
-            <td className='py-3 px-4 w-[5vw] min-w-[5vw]'>
+            <td className='py-3 px-4 w-[5vw]'>
                 <div className='flex items-center justify-center h-full'>
                     <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold'>
                         {stt}
                     </span>
                 </div>
             </td>
-            <td className='py-3 px-4 text-left w-[14vw] min-w-[10vw]'>
+            <td className='py-3 px-4 text-left w-[14vw]'>
                 <div>{product.userName || 'N/A'}</div>
                 <div className='text-xs text-gray-500 mt-1'>
                     {product.categoryName ? product.categoryName : 'Không rõ'}{' - '}{product.brandName ? product.brandName : 'Không rõ'}
                 </div>
             </td>
-            <td className='py-3 px-4 text-left w-[22vw] min-w-[14vw]'>
+            <td className='py-3 px-4 text-left w-[22vw]'>
                 <div className='line-clamp-2'>{product.address || 'N/A'}</div>
             </td>
-            <td className='py-3 px-4 text-right w-[18vw] min-w-[12vw]'>
+            <td className='py-3 px-4 text-right w-[18vw]'>
                 <div className='flex flex-col gap-1 items-end'>
                     <span className='text-xs'>
                         <span className='font-medium'>{product.weight || product.weightKg || 0}</span>
