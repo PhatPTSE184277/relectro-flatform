@@ -27,9 +27,9 @@ export function useNotificationHub({
             .build();
 
         connection.on('ReceiveNotification', (data) => {
-            if (data?.data?.action === 'ASSIGN_COMPLETED') {
-                onAssignCompleted(data);
-            }
+            console.log('SignalR ReceiveNotification:', data);
+            // Trigger callback cho tất cả notification, không filter theo action
+            onAssignCompleted(data);
         });
 
         let started = false;

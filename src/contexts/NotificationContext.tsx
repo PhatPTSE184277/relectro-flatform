@@ -10,9 +10,11 @@ interface NotificationContextType {
     notifications: any[];
     unreadCount: number;
     loading: boolean;
+    toast: { type: 'success' | 'error'; message: string } | null;
     fetchNotifications: () => Promise<void>;
     markAsRead: (notificationId: string) => Promise<void>;
     markAllAsRead: () => Promise<void>;
+    hideToast: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -21,6 +23,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     const { user } = useAuth();
     const [notifications, setNotifications] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
     const fetchNotifications = useCallback(async () => {
         if (!user?.userId) return;
@@ -65,6 +68,24 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     const handleNewNotification = useCallback((data: any) => {
         console.log('SignalR notification received:', data);
         
+        // Xóa processing date khỏi localStorage khi nhận notification hoàn thành
+        if (typeof window !== 'undefined') {
+            const action = data?.data?.action;
+            
+            // Xóa processing date cho cả ASSIGN_COMPLETED và WAREHOUSE_RECEIVED
+            if (action === 'ASSIGN_COMPLETED' || action === 'WAREHOUSE_RECEIVED') {
+                localStorage.removeItem('ewise_processing_date');
+                localStorage.removeItem('ewise_processing');
+                console.log('Cleared processing state from localStorage');
+            }
+        }
+        
+        // Hiển thị toast notification
+        if (data?.title && data?.message) {
+            const type = data.type === 'error' ? 'error' : 'success';
+            setToast({ type, message: `${data.title}\n${data.message}` });
+        }
+        
         // Thay vì tự parse notification, gọi lại fetchNotifications để lấy data đúng từ server
         if (user?.userId) {
             fetchNotifications();
@@ -85,15 +106,21 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
         }
     }, [user?.userId, fetchNotifications]);
 
+    const hideToast = useCallback(() => {
+        setToast(null);
+    }, []);
+
     const unreadCount = notifications.filter(n => !n.isRead).length;
 
     const value: NotificationContextType = {
         notifications,
         unreadCount,
         loading,
+        toast,
         fetchNotifications,
         markAsRead,
-        markAllAsRead
+        markAllAsRead,
+        hideToast
     };
 
     return (

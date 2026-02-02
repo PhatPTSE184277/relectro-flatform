@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useCallback } from 'react';
 import Header from '@/components/ui/Header';
 import Sidebar from '@/components/ui/Sidebar';
 import Toast from '@/components/ui/Toast';
@@ -11,30 +10,10 @@ import { ProductQueryProvider } from '@/contexts/company/ProductQueryContext';
 import { ShiftProvider } from '@/contexts/company/ShiftContext';
 import { VehicleProvider } from '@/contexts/company/VehicleContext';
 import { SettingGroupProvider } from '@/contexts/company/SettingGroupContext';
-import { NotificationProvider } from '@/contexts/NotificationContext';
-import { useNotificationHub } from '@/hooks/useNotificationHub';
-import { useAuth } from '@/hooks/useAuth';
+import { NotificationProvider, useNotifications } from '@/contexts/NotificationContext';
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
-    const { user } = useAuth();
-    const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-
-    const handleWarehouseNotification = useCallback((data: any) => {
-        console.log('Warehouse received notification:', data);
-        
-        if (data?.data?.action === 'WAREHOUSE_RECEIVED') {
-            setNotification({
-                type: data.type === 'error' ? 'error' : 'success',
-                message: `${data.title}\n${data.message}`
-            });
-        }
-    }, []);
-
-    useNotificationHub({
-        onAssignCompleted: handleWarehouseNotification,
-        token: typeof window !== 'undefined' ? (localStorage.getItem('ewise_token') || sessionStorage.getItem('ewise_token') || '') : '',
-        userId: user?.userId || ''
-    });
+    const { toast, hideToast } = useNotifications();
 
     return (
         <>
@@ -50,10 +29,10 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 </div>
             </div>
             <Toast 
-                open={!!notification} 
-                type={notification?.type} 
-                message={notification?.message || ''} 
-                onClose={() => setNotification(null)}
+                open={!!toast} 
+                type={toast?.type} 
+                message={toast?.message || ''} 
+                onClose={hideToast}
             />
         </>
     );
