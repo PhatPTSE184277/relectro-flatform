@@ -14,14 +14,15 @@ import {
     getVehicles,
     getGroupById,
     getGroupsByCollectionPointId,
-    getPendingGroupingProducts,
+    getUnassignedProducts,
+    getVehiclesBySmallCollectionPoint,
     getReassignDriverCandidates,
     confirmReassignDriver,
     Vehicle,
+    getPendingGroupingProducts,
     PreAssignGroupingPayload,
     AssignDayGroupingPayload,
     AutoGroupPayload,
-    PendingProductsResponse,
     GroupingPageResponse,
     previewProducts,
     PreviewProductsPagingResponse,
@@ -88,8 +89,10 @@ export function GroupingProvider({ children }: Props) {
     const [groupDetailLoading, setGroupDetailLoading] = useState<boolean>(false);
     const [reassignLoading, setReassignLoading] = useState<boolean>(false);
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+    const [availableVehicles, setAvailableVehicles] = useState<Vehicle[]>([]);
+    const [vehiclesLoading, setVehiclesLoading] = useState<boolean>(false);
     const [pendingProducts, setPendingProducts] = useState<PendingProduct[]>([]);
-    const [pendingProductsData, setPendingProductsData] = useState<PendingProductsResponse | null>(null);
+    const [pendingProductsData, setPendingProductsData] = useState<any | null>(null);
     const [pendingProductsPage, setPendingProductsPage] = useState<number>(1);
     const [pendingProductsLimit, setPendingProductsLimit] = useState<number>(10);
     const [pendingProductsTotalPages, setPendingProductsTotalPages] = useState<number>(1);
@@ -105,6 +108,9 @@ export function GroupingProvider({ children }: Props) {
     const [driverCandidates, setDriverCandidates] = useState<any[]>([]);
     const [previewProductsPaging, setPreviewProductsPaging] = useState<PreviewProductsPagingResponse | null>(null);
     const [previewVehicles, setPreviewVehicles] = useState<any[]>([]);
+    const [unassignedProducts, setUnassignedProducts] = useState<any[]>([]);
+    const [unassignedProductsData, setUnassignedProductsData] = useState<any | null>(null);
+    const [unassignedProductsLoading, setUnassignedProductsLoading] = useState<boolean>(false);
 
     const fetchGroups = useCallback(async (page: number = groupsPage, limit: number = groupsLimit) => {
         if (!user?.smallCollectionPointId) return;
@@ -156,6 +162,7 @@ export function GroupingProvider({ children }: Props) {
             setAllProductIds([]);
         }
     }, [user]);
+    
     const fetchPendingProducts = useCallback(async (workDate?: string, page?: number, limit?: number) => {
         if (!user?.smallCollectionPointId) {
             console.warn('No smallCollectionPointId found in user profile:', user);
@@ -181,23 +188,67 @@ export function GroupingProvider({ children }: Props) {
         }
     }, [user, pendingProductsPage, pendingProductsLimit]);
 
+    const fetchAvailableVehicles = useCallback(async () => {
+        if (!user?.smallCollectionPointId) {
+            console.warn('No smallCollectionPointId found in user profile:', user);
+            return;
+        }
+        
+        setVehiclesLoading(true);
+        try {
+            const data = await getVehiclesBySmallCollectionPoint(user.smallCollectionPointId);
+            console.log('Available vehicles received:', data);
+            setAvailableVehicles(data || []);
+        } catch (err) {
+            console.error('fetchAvailableVehicles error', err);
+            setAvailableVehicles([]);
+        } finally {
+            setVehiclesLoading(false);
+        }
+    }, [user]);
+
+    const fetchUnassignedProducts = useCallback(async (workDate: string, page: number = 1, pageSize: number = 10) => {
+        if (!user?.smallCollectionPointId) {
+            console.warn('No smallCollectionPointId found in user profile:', user);
+            return;
+        }
+        
+        setUnassignedProductsLoading(true);
+        try {
+            const data = await getUnassignedProducts(user.smallCollectionPointId, workDate, page, pageSize);
+            console.log('Unassigned products received:', data);
+            setUnassignedProductsData(data);
+            setUnassignedProducts(data.items || []);
+        } catch (err) {
+            console.error('fetchUnassignedProducts error', err);
+            setUnassignedProducts([]);
+            setUnassignedProductsData(null);
+        } finally {
+            setUnassignedProductsLoading(false);
+        }
+    }, [user]);
+
     const getPreAssignSuggestion = useCallback(
-        async (loadThresholdPercent: number, selectedProductIds?: string[]) => {
+        async (workDate: string, vehicleIds: string[], loadThresholdPercent: number, selectedProductIds?: string[]) => {
             if (!user?.smallCollectionPointId) {
                 return;
             }
             setLoading(true);
             try {
                 const payload: PreAssignGroupingPayload = {
+                    workDate,
+                    vehicleIds,
+                    collectionPointId: user.smallCollectionPointId,
                     loadThresholdPercent,
                     productIds: selectedProductIds
                 };
-                const data = await preAssignGrouping(payload, user.smallCollectionPointId);
+                const data = await preAssignGrouping(payload);
                 console.log('PreAssign result:', data);
                 console.log('Days structure:', data?.days);
                 setPreAssignResult(data);
             } catch (err: any) {
                 console.error('getPreAssignSuggestion error', err);
+                throw err;
             } finally {
                 setLoading(false);
             }
@@ -349,6 +400,8 @@ export function GroupingProvider({ children }: Props) {
         groupDetailLoading,
         reassignLoading,
         vehicles,
+        availableVehicles,
+        vehiclesLoading,
         pendingProducts,
         pendingProductsData,
         pendingProductsPage,
@@ -366,9 +419,14 @@ export function GroupingProvider({ children }: Props) {
         driverCandidates,
         previewProductsPaging,
         previewVehicles,
+        unassignedProducts,
+        unassignedProductsData,
+        unassignedProductsLoading,
         fetchVehicles,
         fetchPendingProducts,
         fetchAllProductIds,
+        fetchAvailableVehicles,
+        fetchUnassignedProducts,
         setPendingProductsPage,
         fetchGroups,
         setGroupsPage,

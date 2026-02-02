@@ -49,10 +49,7 @@ const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({ produc
                 </div>
             </td>
             <td className='py-3 px-4 text-left w-[14vw]'>
-                <div>{product.userName || 'N/A'}</div>
-                <div className='text-xs text-gray-500 mt-1'>
-                    {product.categoryName ? product.categoryName : 'Không rõ'}{' - '}{product.brandName ? product.brandName : 'Không rõ'}
-                </div>
+                <div>   {product.categoryName ? product.categoryName : 'Không rõ'}{' - '}{product.brandName ? product.brandName : 'Không rõ'}</div>
             </td>
             <td className='py-3 px-4 text-left w-[22vw]'>
                 <div className='line-clamp-2'>{product.address || 'N/A'}</div>

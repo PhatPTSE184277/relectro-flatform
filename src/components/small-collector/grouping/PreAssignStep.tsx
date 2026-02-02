@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
 import ProductList from './ProductList';
+import VehicleSelectionModal from './modal/VehicleSelectionModal';
+import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
+import { Vehicle } from '@/services/small-collector/GroupingService';
 
 interface PreAssignStepProps {
     loading: boolean;
@@ -11,10 +14,11 @@ interface PreAssignStepProps {
     allProductIds?: string[]; // All product IDs from API
     loadThreshold: number;
     setLoadThreshold: (value: number) => void;
-    onGetSuggestion: (selectedProductIds?: string[]) => void;
+    onGetSuggestion: (workDate: string, vehicleIds: string[], selectedProductIds?: string[]) => void;
     onSkip?: () => void;
     page?: number;
     itemsPerPage?: number;
+    workDate: string;
 }
 
 const PreAssignStep: React.FC<PreAssignStepProps> = ({
@@ -25,9 +29,25 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     setLoadThreshold,
     onGetSuggestion,
     page = 1,
-    itemsPerPage = 10
+    itemsPerPage = 10,
+    workDate
 }) => {
+    const { availableVehicles, vehiclesLoading, fetchAvailableVehicles } = useGroupingContext();
     const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+    const [showVehicleModal, setShowVehicleModal] = useState(false);
+    const [selectedVehicleIds, setSelectedVehicleIds] = useState<string[]>([]);
+    const [confirming, setConfirming] = useState(false);
+
+    useEffect(() => {
+        fetchAvailableVehicles();
+    }, [fetchAvailableVehicles]);
+
+    useEffect(() => {
+        // Auto select all vehicles when loaded
+        if (availableVehicles && availableVehicles.length > 0) {
+            setSelectedVehicleIds(availableVehicles.map((v: Vehicle) => v.vehicleId));
+        }
+    }, [availableVehicles]);
 
     const handleToggleSelect = (productId: string) => {
         setSelectedProductIds(prev => 
@@ -53,8 +73,42 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
         }
     };
 
-    const handleGetSuggestion = () => {
-        onGetSuggestion(selectedProductIds.length > 0 ? selectedProductIds : undefined);
+    const handleShowModal = () => {
+        if (selectedProductIds.length === 0) return;
+        setShowVehicleModal(true);
+    };
+
+    const handleToggleVehicle = (vehicleId: string) => {
+        setSelectedVehicleIds(prev => 
+            prev.includes(vehicleId) 
+                ? prev.filter(id => id !== vehicleId)
+                : [...prev, vehicleId]
+        );
+    };
+
+    const handleToggleAllVehicles = () => {
+        const allSelected = availableVehicles.every((v: Vehicle) => selectedVehicleIds.includes(v.vehicleId));
+        if (allSelected) {
+            setSelectedVehicleIds([]);
+        } else {
+            setSelectedVehicleIds(availableVehicles.map((v: Vehicle) => v.vehicleId));
+        }
+    };
+
+    const handleConfirmVehicles = async (vehicleIds: string[]) => {
+        setConfirming(true);
+        try {
+            await onGetSuggestion(
+                workDate,
+                vehicleIds,
+                selectedProductIds.length > 0 ? selectedProductIds : undefined
+            );
+            setShowVehicleModal(false);
+        } catch (error) {
+            console.error('Error getting suggestion:', error);
+        } finally {
+            setConfirming(false);
+        }
     };
     return (
         <div className='space-y-4'>
@@ -75,7 +129,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                     <span className='text-primary-600 font-semibold'>%</span>
                 </div>
                 <button
-                    onClick={handleGetSuggestion}
+                    onClick={handleShowModal}
                     disabled={loading || selectedProductIds.length === 0}
                     className='py-2 px-4 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer ml-0 md:ml-4 whitespace-nowrap'
                 >
@@ -94,6 +148,20 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 onToggleSelect={handleToggleSelect}
                 onToggleAll={handleToggleAll}
                 maxHeight={54}
+            />
+
+            {/* Vehicle Selection Modal */}
+            <VehicleSelectionModal
+                open={showVehicleModal}
+                onClose={() => setShowVehicleModal(false)}
+                onConfirm={handleConfirmVehicles}
+                vehicles={availableVehicles}
+                loading={vehiclesLoading}
+                selectedVehicleIds={selectedVehicleIds}
+                onToggleSelect={handleToggleVehicle}
+                onToggleSelectAll={handleToggleAllVehicles}
+                loadThreshold={loadThreshold}
+                confirming={confirming}
             />
         </div>
     );

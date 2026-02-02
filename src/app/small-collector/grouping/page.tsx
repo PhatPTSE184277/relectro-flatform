@@ -50,8 +50,8 @@ const GroupingPage: React.FC = () => {
         }
     }, [selectedDate, pendingProductsData?.totalItems, fetchAllProductIds]);
 
-    const handleGetSuggestion = async (selectedProductIds?: string[]) => {
-        await getPreAssignSuggestion(loadThreshold, selectedProductIds);
+    const handleGetSuggestion = async (workDate: string, vehicleIds: string[], selectedProductIds?: string[]) => {
+        await getPreAssignSuggestion(workDate, vehicleIds, loadThreshold, selectedProductIds);
         setActiveStep(2);
     };
 
@@ -120,6 +120,7 @@ const GroupingPage: React.FC = () => {
                         onGetSuggestion={handleGetSuggestion}
                         page={pendingProductsPage}
                         itemsPerPage={10}
+                        workDate={selectedDate}
                     />
                     {pendingProductsTotalPages > 1 && (
                         <Pagination

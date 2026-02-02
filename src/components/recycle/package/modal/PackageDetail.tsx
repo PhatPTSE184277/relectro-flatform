@@ -51,7 +51,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[95vh]'>
+            <div className={`relative w-full ${isRecycling ? 'max-w-8xl' : 'max-w-7xl'} bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[98vh]`}>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>

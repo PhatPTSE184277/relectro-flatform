@@ -1,6 +1,9 @@
 import axios from '@/lib/axios';
 
 export interface PreAssignGroupingPayload {
+    workDate: string;
+    vehicleIds: string[];
+    collectionPointId: string;
     loadThresholdPercent: number;
     productIds?: string[];
 }
@@ -14,14 +17,18 @@ export interface AssignDayGroupingPayload {
 }
 
 export interface Vehicle {
-    id: number;
+    id?: number;
+    vehicleId: string;
     plate_Number: string;
     vehicle_Type: string;
     capacity_Kg: number;
-    capacity_M3: number;
-    radius_Km: number;
+    capacity_M3?: number;
+    length_M?: number;
+    width_M?: number;
+    height_M?: number;
+    radius_Km?: number;
     status: string;
-    small_Collection_Point: number;
+    small_Collection_Point: string;
 }
 
 export interface AutoGroupPayload {
@@ -30,12 +37,8 @@ export interface AutoGroupPayload {
 
 export const preAssignGrouping = async (
     payload: PreAssignGroupingPayload,
-    collectionPointId: string
 ): Promise<any> => {
-    const response = await axios.post('/grouping/pre-assign', {
-        collectionPointId,
-        ...payload
-    });
+    const response = await axios.post('/grouping/pre-assign', payload);
     return response.data;
 };
 
@@ -50,6 +53,23 @@ export const assignDayGrouping = async (
     return response.data;
 };
 
+export const getPendingGroupingProducts = async (
+    smallPointId: string,
+    workDate: string,
+    page?: number,
+    limit?: number
+): Promise<any> => {
+    const params: any = { workDate };
+    if (page !== undefined) params.page = page;
+    if (limit !== undefined) params.limit = limit;
+    const response = await axios.get(
+        `/product-query/small-point/${smallPointId}`,
+        { params }
+    );
+    return response.data;
+};
+
+
 export const autoGroup = async (payload: AutoGroupPayload, collectionPointId: string): Promise<any> => {
     const response = await axios.post('/grouping/auto-group', {
         collectionPointId,
@@ -62,6 +82,12 @@ export const getVehicles = async (smallCollectionPointId: string, workDate?: str
     const params: any = { pointId: smallCollectionPointId };
     if (workDate !== undefined) params.date = workDate;
     const response = await axios.get('/grouping/preview-vehicles', { params });
+    return response.data;
+};
+
+// Lấy danh sách xe theo SmallCollectionPointId (endpoint: /grouping/vehicles/{SmallCollectionPointId})
+export const getVehiclesBySmallCollectionPoint = async (smallCollectionPointId: string): Promise<Vehicle[]> => {
+    const response = await axios.get(`/grouping/vehicles/${smallCollectionPointId}`);
     return response.data;
 };
 
@@ -128,31 +154,18 @@ export const getGroupById = async (
     return response.data;
 };
 
-export interface PendingProductsResponse {
-    smallPointId: string;
-    smallPointName: string;
-    radiusMaxConfigKm: number;
-    maxRoadDistanceKm: number;
-    page: number;
-    limit: number;
-    totalItems: number;
-    totalPages: number;
-    totalWeightKg: number;
-    totalVolumeM3: number;
-    products: any[];
-}
-
-export const getPendingGroupingProducts = async (
-    smallPointId: string,
-    workDate: string,
+export const getUnassignedProducts = async (
+    collectionPointId: string,
+    workDate?: string,
     page?: number,
-    limit?: number
-): Promise<PendingProductsResponse> => {
-    const params: any = { workDate };
+    pageSize?: number
+): Promise<any> => {
+    const params: any = {};
+    if (workDate !== undefined) params.workDate = workDate;
     if (page !== undefined) params.page = page;
-    if (limit !== undefined) params.limit = limit;
+    if (pageSize !== undefined) params.pageSize = pageSize;
     const response = await axios.get(
-        `/product-query/small-point/${smallPointId}`,
+        `/grouping/unassigned-products/${collectionPointId}`,
         { params }
     );
     return response.data;

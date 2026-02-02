@@ -51,14 +51,14 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                                             </th>
                                         )}
                                         <th className='py-3 px-4 text-center w-[5vw]'>STT</th>
-                                        <th className='py-3 px-4 text-left w-[14vw]'>Người gửi</th>
+                                        <th className='py-3 px-4 text-left w-[14vw]'>Sản phẩm</th>
                                         <th className='py-3 px-4 text-left w-[22vw]'>Địa chỉ</th>
                                         <th className='py-3 px-4 text-right w-[18vw]'>Khối lượng / Kích thước (kg, cm)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {loading ? (
-                                        Array.from({ length: 6 }).map((_, idx) => (
+                                        Array.from({ length: 5 }).map((_, idx) => (
                                             <ProductSkeleton key={idx} />
                                         ))
                                     ) : products?.length === 0 ? (

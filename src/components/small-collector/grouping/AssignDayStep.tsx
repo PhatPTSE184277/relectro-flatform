@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import ProductList from './ProductList';
 import Pagination from '@/components/ui/Pagination';
+import UnassignedProductsModal from './modal/UnassignedProductsModal';
 import { formatDate } from '@/utils/FormatDate';
+import { AlertTriangle } from 'lucide-react';
 
 interface AssignDayStepProps {
     loading: boolean;
@@ -31,12 +33,18 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         fetchPreviewVehicles, 
         previewVehicles, 
         fetchPreviewProducts, 
-        previewProductsPaging 
+        previewProductsPaging,
+        unassignedProducts,
+        unassignedProductsData,
+        unassignedProductsLoading,
+        fetchUnassignedProducts
     } = useGroupingContext();
     
     const [selectedVehicleIndex, setSelectedVehicleIndex] = useState<number>(0);
     const [productPage, setProductPage] = useState(1);
     const [createDisabled, setCreateDisabled] = useState(false);
+    const [showUnassignedModal, setShowUnassignedModal] = useState(false);
+    const [unassignedPage, setUnassignedPage] = useState(1);
     const itemsPerPage = 10;
 
     // Fetch vehicles on mount
@@ -105,13 +113,32 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         }
     };
 
+    const handleShowUnassignedProducts = () => {
+        setShowUnassignedModal(true);
+        fetchUnassignedProducts(workDate, unassignedPage, 10);
+    };
+
+    const handleUnassignedPageChange = (page: number) => {
+        setUnassignedPage(page);
+        fetchUnassignedProducts(workDate, page, 10);
+    };
+
     return (
         <div className='space-y-2'>
             {/* Header */}
             <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-2 bg-gray-50 rounded-lg px-2 py-2'>
-                <h2 className='text-lg font-bold text-gray-900 mb-0'>
-                    Bước 2: Tạo nhóm thu gom - {formatDate(workDate)}
-                </h2>
+                <div className='flex items-center gap-4'>
+                    <h2 className='text-lg font-bold text-gray-900 mb-0'>
+                        Bước 2: Tạo nhóm thu gom - {formatDate(workDate)}
+                    </h2>
+                    <button
+                        onClick={handleShowUnassignedProducts}
+                        className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2'
+                    >
+                        <AlertTriangle size={18} />
+                        Xem sản phẩm chưa được chia
+                    </button>
+                </div>
                 <button
                     onClick={onBack}
                     className='px-4 py-2 text-primary-600 hover:bg-primary-50 rounded-lg transition-colors'
@@ -214,6 +241,18 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                     <p className='text-gray-500'>Không có xe nào được gợi ý cho ngày này.</p>
                 </div>
             )}
+
+            {/* Unassigned Products Modal */}
+            <UnassignedProductsModal
+                open={showUnassignedModal}
+                onClose={() => setShowUnassignedModal(false)}
+                products={unassignedProducts}
+                loading={unassignedProductsLoading}
+                totalPages={Math.ceil((unassignedProductsData?.total || 0) / 10)}
+                currentPage={unassignedPage}
+                onPageChange={handleUnassignedPageChange}
+                totalCount={unassignedProductsData?.total || 0}
+            />
         </div>
     );
 };

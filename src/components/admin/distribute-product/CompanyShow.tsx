@@ -14,6 +14,9 @@ const CompanyShow: React.FC<CompanyShowProps> = ({
     index
 }) => {
     const rowBg = (index ?? 0) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+    const total = company.totalProducts ?? company.totalOrders ?? 0;
+    const isCustomer = !!company.isCustomer || /ute/i.test(company.companyName ?? '');
+
     return (
         <tr
             className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg} cursor-pointer`}
@@ -25,11 +28,18 @@ const CompanyShow: React.FC<CompanyShowProps> = ({
                 </span>
             </td>
             <td className='py-3 px-4 w-[20vw]'>
-                <div className='text-gray-900 font-medium'>{company.companyName || 'N/A'}</div>
+                <div className='flex items-center gap-2'>
+                    <div className='text-gray-900 font-medium'>{company.companyName || 'N/A'}</div>
+                    {isCustomer ? (
+                        <span className='text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full'>
+                            Công ty khách
+                        </span>
+                    ) : null}
+                </div>
             </td>
             <td className='py-3 pr-4 text-right w-auto'>
                 <div className='text-gray-900 font-medium'>
-                    {company.totalProducts ?? company.totalOrders ?? 0}
+                    {total}
                 </div>
             </td>
         </tr>
