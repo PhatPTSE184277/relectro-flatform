@@ -97,8 +97,8 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
                     <div className='flex items-center space-x-1.5 sm:space-x-3 md:space-x-4'>
                         {isAuthenticated && user && (
                             <>
-                                {/* Notification Bell: Only for Admin */}
-                                {user.role === 'Admin' && (
+                                {/* Notification Bell: For Admin, AdminWarehouse, AdminCompany, RecyclingCompany */}
+                                {['Admin', 'AdminWarehouse'].includes(user.role) && (
                                     <div className='relative' ref={notifDropdownRef}>
                                         <button
                                             onClick={() => setNotifDropdownOpen((v) => !v)}
