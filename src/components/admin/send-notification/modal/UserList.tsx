@@ -45,8 +45,8 @@ const UserList: React.FC<UserListProps> = ({
                 <div className='inline-block min-w-full align-middle'>
                     <div className='overflow-hidden'>
                         <div className='max-h-83 overflow-y-auto'>
-                            <table className='min-w-full text-sm text-gray-800'>
-                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+                            <table className='table-fixed min-w-full text-sm text-gray-800'>
+                                <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                                     <tr>
                                         <th className='py-3 px-4 text-center w-12'>
                                             <input

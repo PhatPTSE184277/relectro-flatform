@@ -1,6 +1,7 @@
 import React from 'react';
 import { User } from '@/services/admin/SendNotiService';
 import { formatDate } from '@/utils/FormatDate';
+// removed masking per request
 
 interface UserShowProps {
     user: User;
@@ -18,10 +19,10 @@ const UserShow: React.FC<UserShowProps> = ({
     isSelected,
     onToggleSelect
 }) => {
+    const rowBgClass = isSelected ? 'bg-primary-50' : (stt - 1) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+
     return (
-        <tr
-            className={`${!isLast ? 'border-b border-primary-100' : ''} ${isSelected ? 'bg-primary-50' : ''} hover:bg-primary-50/40 transition-colors`}
-        >
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBgClass}`}> 
             <td className='py-3 px-4 text-center w-12'>
                 <input
                     type='checkbox'

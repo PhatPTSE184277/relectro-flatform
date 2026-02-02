@@ -30,36 +30,39 @@ const ProductList: React.FC<ProductListProps> = ({
                 style={{ maxHeight }}
             >
                 <table className='w-full text-sm text-gray-800 table-fixed'>
-                    <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+                    <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                         <tr>
-                            <th className='py-3 px-4 text-center w-16'>STT</th>
-                            <th className='py-3 px-4 text-left w-40'>Danh mục</th>
-                            <th className='py-3 px-4 text-left w-32'>Thương hiệu</th>
-                            <th className='py-3 px-4 text-left w-56'>Ghi chú</th>
+                            <th className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>STT</th>
+                            <th className='py-3 px-4 text-left w-[20vw] min-w-[10vw]'>Danh mục</th>
+                            <th className='py-3 px-4 text-left w-[16vw] min-w-[8vw]'>Thương hiệu</th>
+                            <th className='py-3 px-4 text-left w-[30vw] min-w-[14vw]'>Ghi chú</th>
                         </tr>
                     </thead>
                     <tbody>
                         {productsArray.map((product: any, index: number) => {
                             const isLast = index === productsArray.length - 1;
+                            const rowBg = index % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+
                             return (
                                 <tr
                                     key={product.productId}
-                                    className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}
+                                    className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg} transition-colors`}
+                                    style={{ tableLayout: 'fixed' }}
                                 >
-                                    <td className='py-3 px-4 text-center w-16'>
+                                    <td className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>
                                         <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold mx-auto'>
                                             {startIndex + index + 1}
                                         </span>
                                     </td>
-                                    <td className='py-3 px-4 font-medium w-40'>
+                                    <td className='py-3 px-4 font-medium w-[20vw] min-w-[10vw]'>
                                         <div className='text-gray-900'>
                                             {product.categoryName}
                                         </div>
                                     </td>
-                                    <td className='py-3 px-4 text-left text-gray-700 w-32'>
+                                    <td className='py-3 px-4 text-left text-gray-700 w-[16vw] min-w-[8vw]'>
                                         {product.brandName}
                                     </td>
-                                    <td className='py-3 px-4 text-gray-600 text-xs w-56'>
+                                    <td className='py-3 px-4 text-gray-600 text-xs w-[30vw] min-w-[14vw]'>
                                         <div className='line-clamp-2 break-all'>
                                             {product.description || '-'}
                                         </div>

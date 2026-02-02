@@ -38,7 +38,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                             style={maxHeightStyle}
                         >
                             <table className='w-full text-sm text-gray-800 table-fixed'>
-                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+                                <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                                     <tr>
                                         {showCheckbox && (
                                             <th className='py-3 px-4 text-center w-[5vw]'>
@@ -63,7 +63,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                                         ))
                                     ) : products?.length === 0 ? (
                                         <tr>
-                                            <td colSpan={4} className='text-center py-8 text-gray-400'>
+                                            <td colSpan={showCheckbox ? 5 : 4} className='text-center py-8 text-gray-400'>
                                                 Không có sản phẩm nào chưa gom nhóm.
                                             </td>
                                         </tr>

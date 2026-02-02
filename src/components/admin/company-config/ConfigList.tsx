@@ -18,21 +18,20 @@ const ConfigList: React.FC<ConfigListProps> = ({
             <div className='overflow-x-auto'>
                 <div className='inline-block min-w-full align-middle'>
                     <div className='overflow-hidden'>
-                        <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
-                            <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
+                        <table className='min-w-full text-sm text-gray-800 table-fixed'>
+                            <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-200'>
                                 <tr>
-                                    <th className='py-3 px-4 text-center' style={{ width: '60px' }}>STT</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '180px' }}>Công ty</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '120px' }}>Tỷ lệ (%)</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '250px' }}>Điểm thu gom</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '120px' }}>Số điểm thu gom</th>
-                                    <th className='py-3 px-4 text-center' style={{ width: '140px' }}>Hành động</th>
+                                    <th className='py-3 px-4 text-center w-[5vw]'>STT</th>
+                                    <th className='py-3 px-4 text-left w-[28vw]'>Công ty</th>
+                                    <th className='py-3 px-4 text-right w-[12vw]'>Tỷ lệ (%)</th>
+                                    <th className='py-3 px-4 text-right w-[12vw]'>Số điểm thu gom</th>
+                                    <th className='py-3 px-4 text-center w-[10vw]'>Hành động</th>
                                 </tr>
                             </thead>
                         </table>
                     </div>
-                    <div className='max-h-90 overflow-y-auto'>
-                        <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
+                    <div className='max-h-[59vh] overflow-y-auto'>
+                        <table className='min-w-full text-sm text-gray-800 table-fixed'>
                             <tbody>
                                 {loading ? (
                                     Array.from({ length: 6 }).map((_, idx) => (
@@ -50,7 +49,7 @@ const ConfigList: React.FC<ConfigListProps> = ({
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={6} className='text-center py-8 text-gray-400'>
+                                        <td colSpan={5} className='text-center py-8 text-gray-400'>
                                             Không có cấu hình nào.
                                         </td>
                                     </tr>

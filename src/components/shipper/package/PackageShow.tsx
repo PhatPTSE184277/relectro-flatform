@@ -16,25 +16,27 @@ const PackageShow: React.FC<PackageShowProps & { isLast?: boolean }> = ({
     onScan,
     isLast = false
 }) => {
+    const rowBg = ((stt ?? 1) - 1) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+
     return (
-        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
-            <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg} transition-colors`} style={{ tableLayout: 'fixed' }}>
+            <td className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {stt}
                 </span>
             </td>
 
-            <td className='py-3 px-4 font-medium' style={{ width: '200px' }}>
+            <td className='py-3 px-4 font-medium w-[20vw] min-w-[10vw]'>
                 <div className='text-gray-900'>{pkg.packageId}</div>
             </td>
 
-            <td className='py-3 px-4 text-gray-700' style={{ width: '200px' }}>
+            <td className='py-3 px-4 text-gray-700 w-[20vw] min-w-[10vw]'>
                 <span className='px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700'>
                     {pkg.products.totalItems} sản phẩm
                 </span>
             </td>
 
-            <td className='py-3 px-4' style={{ width: '120px' }}>
+            <td className='py-3 px-4 w-[12vw] min-w-[8vw]'>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}

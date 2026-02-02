@@ -18,13 +18,13 @@ const TrackingProductList: React.FC<TrackingProductListProps & { tableRef?: Reac
             <div className='overflow-x-auto'>
                 <div className='max-h-[59vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[53vh] xl:max-h-[59vh] overflow-y-auto' ref={tableRef}>
                     <table className='min-w-full text-sm text-gray-800 table-fixed'>
-                        <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+                        <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-200'>
                             <tr>
-                                <th className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>STT</th>
-                                <th className='py-3 px-4 text-left w-[18vw] min-w-[12vw]'>Sản phẩm</th>
-                                <th className='py-3 px-4 text-left w-[14vw] min-w-[10vw]'>Người gửi</th>
-                                <th className='py-3 px-4 text-left w-[14vw] min-w-[10vw]'>Ngày thu gom</th>
-                                <th className='py-3 px-4 text-center w-[10vw] min-w-[7vw]'>Hành động</th>
+                                <th className='py-3 px-4 text-center w-[5vw]'>STT</th>
+                                <th className='py-3 px-4 text-left w-[18vw]'>Sản phẩm</th>
+                                <th className='py-3 px-4 text-left w-[14vw]'>Người gửi</th>
+                                <th className='py-3 px-4 text-left w-[14vw]'>Ngày thu gom</th>
+                                <th className='py-3 px-4 text-center w-[10vw]'>Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -41,17 +41,18 @@ const TrackingProductList: React.FC<TrackingProductListProps & { tableRef?: Reac
                             ) : (
                                 products.map((product, index) => {
                                     const isLast = index === products.length - 1;
+                                    const rowBg = index % 2 === 0 ? 'bg-white' : 'bg-primary-50';
                                     return (
                                         <tr
                                             key={product.productId}
-                                            className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}
+                                            className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}
                                         >
-                                            <td className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>
+                                            <td className='py-3 px-4 text-center w-[5vw]'>
                                                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                                                     {product.stt}
                                                 </span>
                                             </td>
-                                            <td className='py-3 px-4 text-gray-700 w-[18vw] min-w-[12vw]'>
+                                            <td className='py-3 px-4 text-gray-700 w-[18vw]'>
                                                 <div className='flex items-center gap-2'>
                                                     <div>
                                                         <div className='font-medium'>{product.categoryName || 'N/A'}</div>
@@ -61,17 +62,17 @@ const TrackingProductList: React.FC<TrackingProductListProps & { tableRef?: Reac
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className='py-3 px-4 text-gray-700 w-[14vw] min-w-[10vw]'>
+                                            <td className='py-3 px-4 text-gray-700 w-[14vw]'>
                                                 <div className='flex items-center gap-2'>
                                                     <span>{product.sender?.name || product.userName || 'N/A'}</span>
                                                 </div>
                                             </td>
-                                            <td className='py-3 px-4 text-gray-700 w-[14vw] min-w-[10vw]'>
+                                            <td className='py-3 px-4 text-gray-700 w-[14vw]'>
                                                 <div className='flex items-center gap-2'>
                                                     <span>{formatDate(product.pickUpDate) || 'Chưa có'}</span>
                                                 </div>
                                             </td>
-                                            <td className='py-3 px-4 text-center align-middle w-[10vw] min-w-[7vw]'>
+                                            <td className='py-3 px-4 text-center align-middle w-[10vw]'>
                                                 <div className='flex items-center justify-center h-full'>
                                                     <button
                                                         onClick={() => onProductClick(product)}

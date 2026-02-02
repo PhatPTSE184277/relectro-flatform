@@ -10,6 +10,9 @@ interface ProductShowProps {
 }
 
 const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({ product, isLast = false, stt, showCheckbox, isSelected, onToggleSelect }) => {
+    // compute alternating row background; selection no longer changes row color
+    const sttIndex = stt ?? 1;
+    const rowBg = (sttIndex - 1) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
     // Ưu tiên dùng dimensionText từ API nếu có
     let dimensionDisplay = '';
     if (product.dimensionText && product.dimensionText !== 'Chưa cập nhật') {
@@ -27,7 +30,7 @@ const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({ produc
         }
     }
     return (
-        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}>
             {showCheckbox && (
                 <td className='py-3 px-4 text-center w-[5vw]'>
                     <input

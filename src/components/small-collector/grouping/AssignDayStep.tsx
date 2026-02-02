@@ -195,7 +195,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                         page={productPage}
                         itemsPerPage={itemsPerPage}
                         showCheckbox={false}
-                        maxHeight={38}
+                        maxHeight={33}
                     />
                     
                     {totalPages > 1 && (

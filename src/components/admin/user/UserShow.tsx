@@ -12,20 +12,22 @@ interface UserShowProps {
 
 const UserShow: React.FC<UserShowProps> = ({ user, stt, onBan, isLast = false, showActionColumn = true }) => {
   const isActive = user.status === 'Đang hoạt động';
-  
+  const idx = (stt ?? 1) - 1;
+  const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+
   return (
-    <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
-      <td className="py-3 px-4 text-center w-[5vw] min-w-[5vw]">
+    <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}>
+      <td className="py-3 px-4 text-center w-[5vw]">
         <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
           {stt}
         </span>
       </td>
-      <td className="py-3 px-4 font-medium text-gray-900 w-[18vw] min-w-[12vw]">{user.name}</td>
-      <td className="py-3 px-4 text-gray-700 w-[22vw] min-w-[14vw]">{user.email}</td>
-      <td className="py-3 px-4 text-gray-700 w-[12vw] min-w-[8vw]">{user.phone || "-"}</td>
-      <td className="py-3 px-4 text-gray-700 w-[14vw] min-w-[10vw]">{formatDate(user.createAt)}</td>
+      <td className="py-3 px-4 font-medium text-gray-900 w-[18vw]">{user.name}</td>
+      <td className="py-3 px-4 text-gray-700 w-[22vw]">{user.email}</td>
+      <td className="py-3 px-4 text-gray-700 w-[12vw]">{user.phone || "-"}</td>
+      <td className="py-3 px-4 text-gray-700 w-[14vw]">{formatDate(user.createAt)}</td>
       {showActionColumn && (
-        <td className="py-3 px-4 w-[8vw] min-w-[6vw]">
+        <td className="py-3 px-4 w-[8vw]">
           <div className="flex justify-center">
             {isActive && (
               <button

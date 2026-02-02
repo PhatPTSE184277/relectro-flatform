@@ -12,15 +12,19 @@ import { PackageProvider } from '@/contexts/small-collector/PackageContext';
 import { UserProvider } from '@/contexts/UserContext';
 import { DashboardProvider } from '@/contexts/small-collector/DashboardContext';
 import { NotificationProvider, useNotifications } from '@/contexts/NotificationContext';
+import { useAuth } from '@/hooks/useAuth';
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
     const { toast, hideToast } = useNotifications();
+    const { user } = useAuth();
+    
+    const headerTitle = user?.smallCollectionName || 'Bảng điều khiển thu gom';
 
     return (
         <>
             <div className='h-screen flex flex-col bg-gray-50'>
                 <Header
-                    title='Bảng điều khiển thu gom'
+                    title={headerTitle}
                     href='/small-collector/dashboard'
                     profileHref='/employee/profile'
                 />

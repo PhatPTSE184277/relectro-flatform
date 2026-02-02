@@ -17,17 +17,17 @@ const UserList: React.FC<UserListProps> = ({ onBanClick, filterStatus }) => {
   return (
     <>
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-        <div className="overflow-x-auto">
+      <div className="overflow-x-auto">
           <div className="max-h-[57vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[50vh] xl:max-h-[57vh] overflow-y-auto">
             <table className="min-w-full text-sm text-gray-800 table-fixed">
-              <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10">
+              <thead className="bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-200">
                 <tr>
-                  <th className="py-3 px-4 text-center w-[5vw] min-w-[5vw]">STT</th>
-                  <th className="py-3 px-4 text-left w-[18vw] min-w-[12vw]">Tên</th>
-                  <th className="py-3 px-4 text-left w-[22vw] min-w-[14vw]">Email</th>
-                  <th className="py-3 px-4 text-left w-[12vw] min-w-[8vw]">Số điện thoại</th>
-                  <th className="py-3 px-4 text-left w-[14vw] min-w-[10vw]">Ngày tạo</th>
-                  {showActionColumn && <th className="py-3 px-4 text-center w-[8vw] min-w-[6vw]">Hành động</th>}
+                  <th className="py-3 px-4 text-center w-[5vw]">STT</th>
+                  <th className="py-3 px-4 text-left w-[18vw]">Tên</th>
+                  <th className="py-3 px-4 text-left w-[22vw]">Email</th>
+                  <th className="py-3 px-4 text-left w-[12vw]">Số điện thoại</th>
+                  <th className="py-3 px-4 text-left w-[14vw]">Ngày tạo</th>
+                  {showActionColumn && <th className="py-3 px-4 text-center w-[8vw]">Hành động</th>}
                 </tr>
               </thead>
               <tbody>

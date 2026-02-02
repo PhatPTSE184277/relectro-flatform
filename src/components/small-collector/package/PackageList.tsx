@@ -26,12 +26,12 @@ const PackageList = forwardRef<HTMLDivElement, PackageListProps>(
                         <div className='overflow-hidden'>
                             <div className='max-h-[59vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[53vh] xl:max-h-[59vh] overflow-y-auto' ref={ref}>
                                 <table className='min-w-full text-sm text-gray-800 table-fixed'>
-                                    <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+                                    <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                                         <tr>
-                                            <th className='py-3 px-2 text-center w-[6vw]'>STT</th>
-                                            <th className='py-3 px-2 text-left w-[13vw]'>Mã Package</th>
-                                            <th className='py-3 px-2 text-right w-[9vw]'>Số sản phẩm</th>
-                                            <th className='py-3 px-2 text-center w-[12vw]'>Hành động</th>
+                                            <th className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>STT</th>
+                                            <th className='py-3 px-4 text-left w-[13vw] min-w-[10vw]'>Mã Package</th>
+                                            <th className='py-3 px-4 text-right w-[9vw] min-w-[8vw]'>Số sản phẩm</th>
+                                            <th className='py-3 px-4 text-center w-[12vw] min-w-[10vw]'>Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>

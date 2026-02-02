@@ -13,10 +13,11 @@ interface SystemConfigShowProps {
 const SystemConfigShow: React.FC<SystemConfigShowProps> = ({
     config,
     onEdit,
-    index
+    index,
+    isLast
 }) => {
     const isUrl = config.value?.startsWith('http://') || config.value?.startsWith('https://');
-    
+    const rowBg = (index ?? 0) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
     const handleDownload = () => {
         if (config.value) {
             const link = document.createElement('a');
@@ -29,11 +30,7 @@ const SystemConfigShow: React.FC<SystemConfigShowProps> = ({
     };
     
     return (
-        <tr
-            className={`$
-                !isLast ? 'border-b border-primary-100' : ''
-            } hover:bg-primary-50/40 transition-colors`}
-        >
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}>
             <td className='py-3 px-4 text-center' style={{ width: '60px' }}>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-base flex items-center justify-center font-bold mx-auto shadow-sm'>
                     {index !== undefined ? index + 1 : ''}

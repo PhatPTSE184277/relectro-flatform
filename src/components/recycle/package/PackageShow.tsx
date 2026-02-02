@@ -19,22 +19,23 @@ const PackageShow: React.FC<PackageShowProps> = ({
     isLast = false
 }) => {
     const isRecycling = pkg.status === PackageStatus.Recycling;
+    const rowBg = ((stt ?? 1) - 1) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
     return (
-        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`} style={{ tableLayout: 'fixed' }}>
-            <td className='py-3 px-4 text-center w-16'>
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg} transition-colors`} style={{ tableLayout: 'fixed' }}>
+            <td className='py-3 px-4 text-center w-[5vw]'>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {stt}
                 </span>
             </td>
-            <td className='py-3 px-4 font-medium w-48'>
+            <td className='py-3 px-4 font-medium w-[20vw]'>
                 <div className='text-gray-900'>{pkg.packageId}</div>
             </td>
-            <td className='py-3 px-4 text-gray-700 w-40'>
-                <span className='px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-700'>
-                    {pkg.products.totalItems} sản phẩm
+            <td className='py-3 px-4 text-gray-700 text-right w-[20vw]'>
+                <span className='text-sm font-medium text-gray-900'>
+                    {pkg.products.totalItems}
                 </span>
             </td>
-            <td className='py-3 px-4 w-32'>
+            <td className='py-3 px-4 w-[12vw]'>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}

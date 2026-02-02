@@ -8,6 +8,8 @@ export interface UserProfile {
     points: number;
     smallCollectionPointId?: string;
     collectionCompanyId?: string;
+    smallCollectionName?: string;
+    companyName?: string;
     isFirstLogin?: boolean;
 }
 

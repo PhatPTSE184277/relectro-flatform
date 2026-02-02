@@ -9,6 +9,7 @@ import { useAppDispatch } from '@/redux/hooks';
 import { logout } from '@/redux/reducers/authReducer';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/contexts/NotificationContext';
+import { formatTimeWithDate } from '@/utils/FormatTime';
 
 
 interface HeaderProps {
@@ -158,7 +159,7 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
                                                                             {notif.message}
                                                                         </p>
                                                                         <p className='text-xs text-gray-400 mt-1'>
-                                                                            {new Date(notif.createdAt).toLocaleString('vi-VN')}
+                                                                            {formatTimeWithDate(notif.createdAt, true)}
                                                                         </p>
                                                                     </div>
                                                                 </div>

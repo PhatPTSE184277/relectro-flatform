@@ -30,7 +30,7 @@ const ProductCategoryList: React.FC<ProductCategoryListProps & { total?: number 
           <div className='overflow-hidden'>
            <div className='max-h-[60vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[45vh] xl:max-h-[85vh] 2xl:max-h-[55vh] overflow-y-auto'>
               <table className='min-w-full text-sm text-gray-800 table-fixed'>
-                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+                <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                   <tr>
                     <th className='py-3 px-2 text-center w-[5vw] min-w-[5vw]'>STT</th>
                     <th className='py-3 px-4 text-left min-w-[18vw] w-[28vw]'>Danh mục sản phẩm</th>
@@ -41,14 +41,15 @@ const ProductCategoryList: React.FC<ProductCategoryListProps & { total?: number 
                 </thead>
                 <tbody>
                   {data.length > 0 ? (
-                    data.map((category, idx) => {
-                      const isLast = idx === data.length - 1;
-                      const percentOfTotal = totalProducts > 0 ? Math.round((category.currentValue / totalProducts) * 100) : 0;
-                      return (
-                        <tr
-                          key={idx}
-                          className={`${!isLast ? 'border-b border-primary-100' : ''} bg-primary-50/30 hover:bg-primary-100/40 transition-colors`} style={{ height: '4.5vh', minHeight: '44px' }}
-                        >
+                      data.map((category, idx) => {
+                        const isLast = idx === data.length - 1;
+                        const percentOfTotal = totalProducts > 0 ? Math.round((category.currentValue / totalProducts) * 100) : 0;
+                        const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+                        return (
+                          <tr
+                            key={idx}
+                            className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`} style={{ height: '4.5vh', minHeight: '44px' }}
+                          >
                           <td className="py-3 px-4 text-center w-[5vw] min-w-[5vw]">
                             <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
                               {idx + 1}

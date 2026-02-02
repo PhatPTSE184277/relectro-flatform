@@ -4,7 +4,7 @@ import RequestShow from "./RequestShow";
 import RequestRowSkeleton from "./RequestTableSkeleton";
 import RequestReject from "./modal/RequestReject";
 import RequestApprove from "./modal/RequestApprove";
-import { CheckSquare, Square, CheckCircle, XCircle } from 'lucide-react';
+import { CheckSquare, Square } from 'lucide-react';
 import { PostStatus } from '@/enums/PostStatus';
 
 interface RequestListProps {
@@ -33,8 +33,6 @@ const RequestList = React.forwardRef<HTMLDivElement, RequestListProps>(({
   selectedRequestIds,
   onToggleSelect,
   onToggleSelectAll,
-  onBulkApprove,
-  onBulkReject,
   page,
   pageSize,
 }, ref) => {
@@ -69,48 +67,20 @@ const RequestList = React.forwardRef<HTMLDivElement, RequestListProps>(({
     setApprovingRequestId(null);
   };
 
-  const handleBulkRejectClick = () => {
-    onBulkReject(); // Mở modal từ page.tsx
-  };
-
   const isPending = status === PostStatus.Pending || status === 'Chờ duyệt';
   const allCurrentPageSelected = requests.length > 0 && requests.every(p => selectedRequestIds.includes(p.id));
 
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-      {/* Bulk Actions Bar */}
-      {isPending && selectedRequestIds.length > 0 && (
-        <div className="bg-primary-50 border-b border-primary-200 px-4 py-3 flex items-center justify-between">
-          <span className="text-sm font-medium text-primary-700">
-            Đã chọn {selectedRequestIds.length} yêu cầu
-          </span>
-          <div className="flex gap-2">
-            <button
-              onClick={onBulkApprove}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition flex items-center gap-2"
-            >
-              <CheckCircle size={16} />
-              Duyệt {selectedRequestIds.length} yêu cầu
-            </button>
-            <button
-              onClick={handleBulkRejectClick}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition flex items-center gap-2"
-            >
-              <XCircle size={16} />
-              Từ chối {selectedRequestIds.length} yêu cầu
-            </button>
-          </div>
-        </div>
-      )}
       
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full align-middle">
           <div className="overflow-hidden">
             <div className="max-h-[59vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[53vh] xl:max-h-[59vh] overflow-y-auto" ref={ref}>
               <table className="min-w-full text-sm text-gray-800 table-fixed">
-                <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10">
+                <thead className="bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-200">
                   <tr>
-                    <th className="py-3 px-4 text-center w-[5vw] min-w-[5vw]">
+                    <th className="py-3 px-4 text-center w-[5vw] min-w-[5vw] tracking-wide">
                       {isPending && (
                         <button
                           onClick={onToggleSelectAll}
@@ -120,12 +90,12 @@ const RequestList = React.forwardRef<HTMLDivElement, RequestListProps>(({
                         </button>
                       )}
                     </th>
-                    <th className="py-3 px-4 text-center w-[5vw] min-w-[5vw]">STT</th>
-                    <th className="py-3 px-4 text-left w-[14vw] min-w-[10vw]">Người gửi</th>
-                    <th className="py-3 px-4 text-left w-[18vw] min-w-[12vw]">Danh mục</th>
-                    <th className="py-3 px-4 text-left w-[28vw] min-w-[18vw]">Địa chỉ</th>
-                    <th className="py-3 px-4 text-right w-[12vw] min-w-[8vw]">Ngày đăng</th>
-                    <th className="py-3 px-4 text-center w-[10vw] min-w-[7vw]">Hành động</th>
+                    <th className="py-3 px-4 text-center w-[5vw] tracking-wide">STT</th>
+                    <th className="py-3 px-4 text-left w-[14vw] tracking-wide">Người gửi</th>
+                    <th className="py-3 px-4 text-left w-[18vw] tracking-wide">Danh mục</th>
+                    <th className="py-3 px-4 text-left w-[28vw] tracking-wide">Địa chỉ</th>
+                    <th className="py-3 px-4 text-right w-[12vw] tracking-wide">Ngày đăng</th>
+                    <th className="py-3 px-4 text-center w-[10vw] tracking-wide">Hành động</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -146,6 +116,7 @@ const RequestList = React.forwardRef<HTMLDivElement, RequestListProps>(({
                         isLast={idx === requests.length - 1}
                         isSelected={selectedRequestIds.includes(r.id)}
                         onToggleSelect={onToggleSelect}
+                        rowIndex={idx}
                       />
                     ))
                   ) : (

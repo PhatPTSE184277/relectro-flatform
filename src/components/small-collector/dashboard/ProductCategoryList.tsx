@@ -25,9 +25,9 @@ const ProductCategoryList: React.FC<ProductCategoryListProps & { total?: number 
 
   return (
     <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
-      <div className='overflow-x-auto max-h-105 overflow-y-auto'>
+      <div className='overflow-x-auto max-h-95 overflow-y-auto'>
         <table className='w-full text-sm text-gray-800 table-fixed'>
-          <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+          <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
             <tr>
               <th className='py-3 px-4 text-left w-16'>STT</th>
               <th className='py-3 px-4 text-left'>Danh mục sản phẩm</th>
@@ -41,10 +41,11 @@ const ProductCategoryList: React.FC<ProductCategoryListProps & { total?: number 
               data.map((category, idx) => {
                 const isLast = idx === data.length - 1;
                 const percentOfTotal = totalProducts > 0 ? Math.round((category.currentValue / totalProducts) * 100) : 0;
+                const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-primary-50';
                 return (
                   <tr
                     key={idx}
-                    className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50 transition-colors`}
+                    className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}
                   >
                     <td className='py-3 px-4 font-medium w-16'>
                       <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-xs flex items-center justify-center font-semibold'>

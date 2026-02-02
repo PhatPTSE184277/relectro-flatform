@@ -13,9 +13,10 @@ const CompanyShow: React.FC<CompanyShowProps & { isLast?: boolean }> = ({
     isLast = false,
     index
 }) => {
+    const rowBg = (index ?? 0) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
 
     return (
-        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}>
             <td className='py-3 px-4 text-center w-16'>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-base flex items-center justify-center font-bold mx-auto shadow-sm'>
                     {typeof index === 'number' ? index + 1 : ''}

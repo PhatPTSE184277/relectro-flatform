@@ -80,7 +80,7 @@ const ScanPackageModal: React.FC<ScanPackageModalProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className={`relative w-full ${scannedPackage ? 'max-w-6xl' : 'max-w-xl'} bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn transition-all duration-300`}> 
+            <div className={`relative w-full ${scannedPackage ? 'max-w-7xl' : 'max-w-3xl'} bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn transition-all duration-300`}> 
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>

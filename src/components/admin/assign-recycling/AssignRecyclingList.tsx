@@ -20,7 +20,7 @@ const AssignRecyclingList: React.FC<AssignRecyclingListProps> = ({
             <div className='overflow-x-auto'>
                 <div className='max-h-105 overflow-y-auto'>
                     <table className='min-w-full text-sm text-gray-800 table-fixed'>
-                        <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+                        <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                             <tr>
                                 <th className='py-3 px-4 text-center w-16'>STT</th>
                                 <th className='py-3 px-4 text-left w-48'>Tên công ty</th>

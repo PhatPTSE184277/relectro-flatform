@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import { maskEmail, maskPhone } from '@/utils/mask';
 
 interface UserInfoProps {
     user?: {
@@ -48,13 +49,13 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, label }) => {
                     {user.phone && (
                         <>
                             <span className='mx-1 text-gray-400 font-normal'>•</span>
-                            <span className='text-gray-700 font-normal'>{user.phone}</span>
+                            <span className='text-gray-700 font-normal'>{maskPhone(user.phone)}</span>
                         </>
                     )}
                     {user.email && (
                         <>
                             <span className='mx-1 text-gray-400 font-normal'>•</span>
-                            <span className='text-gray-700 font-normal'>{user.email}</span>
+                            <span className='text-gray-700 font-normal'>{maskEmail(user.email)}</span>
                         </>
                     )}
                         {(user.points !== undefined && user.points !== null) && (

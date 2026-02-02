@@ -13,9 +13,10 @@ const CompanyShow: React.FC<CompanyShowProps> = ({
     isLast,
     index
 }) => {
+    const rowBg = (index ?? 0) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
     return (
         <tr
-            className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors cursor-pointer`}
+            className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg} cursor-pointer`}
             onClick={onSelect}
         >
             <td className='py-3 px-4 text-center w-[6vw]'>

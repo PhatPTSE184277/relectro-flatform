@@ -11,15 +11,20 @@ import { ShiftProvider } from '@/contexts/company/ShiftContext';
 import { VehicleProvider } from '@/contexts/company/VehicleContext';
 import { SettingGroupProvider } from '@/contexts/company/SettingGroupContext';
 import { NotificationProvider, useNotifications } from '@/contexts/NotificationContext';
+import { UserProvider } from '@/contexts/UserContext';
+import { useAuth } from '@/hooks/useAuth';
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
     const { toast, hideToast } = useNotifications();
+    const { user } = useAuth();
+    
+    const headerTitle = user?.companyName || 'Bảng điều khiển thu gom lớn';
 
     return (
         <>
             <div className='h-screen flex flex-col bg-gray-50'>
                 <Header 
-                    title="Bảng điều khiển thu gom lớn" 
+                    title={headerTitle} 
                     href="/large-collector/dashboard" 
                     profileHref="/employee/profile" 
                 />
@@ -45,19 +50,21 @@ export default function LargeCollectorLayout({
 }) {
     return (
         <NotificationProvider>
-            <CollectorProvider>
-                <SmallCollectionProvider>
-                    <ProductQueryProvider>
-                        <ShiftProvider>
-                            <VehicleProvider>
-                                <SettingGroupProvider>
-                                    <LayoutContent>{children}</LayoutContent>
-                                </SettingGroupProvider>
-                            </VehicleProvider>
-                        </ShiftProvider>
-                    </ProductQueryProvider>
-                </SmallCollectionProvider>
-            </CollectorProvider>
+            <UserProvider>
+                <CollectorProvider>
+                    <SmallCollectionProvider>
+                        <ProductQueryProvider>
+                            <ShiftProvider>
+                                <VehicleProvider>
+                                    <SettingGroupProvider>
+                                        <LayoutContent>{children}</LayoutContent>
+                                    </SettingGroupProvider>
+                                </VehicleProvider>
+                            </ShiftProvider>
+                        </ProductQueryProvider>
+                    </SmallCollectionProvider>
+                </CollectorProvider>
+            </UserProvider>
         </NotificationProvider>
     );
 }

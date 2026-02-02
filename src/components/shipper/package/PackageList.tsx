@@ -31,12 +31,12 @@ const PackageList: React.FC<PackageListProps> = ({
                 <div className='inline-block min-w-full align-middle'>
                     <div style={{ maxHeight: 340, overflowY: 'auto' }} ref={bodyRef}>
                         <table className='min-w-full text-sm text-gray-800 table-fixed'>
-                            <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+                            <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                                 <tr>
-                                    <th className='py-3 px-4 text-center' style={{ width: '60px' }}>STT</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '200px' }}>Mã Package</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '200px' }}>Số sản phẩm</th>
-                                    <th className='py-3 px-4 text-center' style={{ width: '120px' }}>Hành động</th>
+                                    <th className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>STT</th>
+                                    <th className='py-3 px-4 text-left w-[20vw] min-w-[10vw]'>Mã Package</th>
+                                    <th className='py-3 px-4 text-left w-[20vw] min-w-[10vw]'>Số sản phẩm</th>
+                                    <th className='py-3 px-4 text-center w-[12vw] min-w-[8vw]'>Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>

@@ -14,18 +14,16 @@ const CollectionRouteShow: React.FC<CollectionRouteShowProps & { isLast?: boolea
     isLast = false,
     stt
 }) => {
+    const rowBg = ((stt ?? 1) - 1) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
     return (
-        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
-            <td className='py-3 px-2 text-center w-[4vw'>
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}>
+            <td className='py-3 px-2 text-center w-[4vw]'>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {stt}
                 </span>
             </td>
             <td className='py-3 px-2 font-medium w-[10vw]'>
                 <div className='text-gray-900 line-clamp-2'>{route.brandName || 'Không rõ'}</div>
-            </td>
-            <td className='py-3 px-2 text-gray-700 w-[12vw]'>
-                {route.sender?.name || 'Không rõ'}
             </td>
             <td className='py-3 px-2 text-gray-700 w-[12vw]'>
                 {route.collector?.name || 'Không rõ'}

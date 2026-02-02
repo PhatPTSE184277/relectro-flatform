@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 import React, { useEffect, useState, useRef } from 'react';
 import type { Post } from '@/types/post';
 
@@ -10,7 +10,7 @@ import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
 import { useRequestContext } from '@/contexts/admin/RequestContext';
 import { PostStatus } from '@/enums/PostStatus';
-import { ClipboardList } from 'lucide-react';
+import { ClipboardList, CheckCircle, XCircle } from 'lucide-react';
 import { filterRequests } from '@/services/admin/RequestService';
 
 type Stats = {
@@ -151,6 +151,24 @@ const RequestPage: React.FC = () => {
                         <ClipboardList className='text-white' size={20} />
                     </div>
                     <h1 className='text-3xl font-bold text-gray-900'>Yêu cầu đăng bài</h1>
+                    {selectedRequestIds.length > 0 && filterStatus === PostStatus.Pending && (
+                        <div className='ml-4 flex items-center gap-2'>
+                            <button
+                                onClick={handleBulkApproveClick}
+                                className='px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition flex items-center gap-2'
+                            >
+                                <CheckCircle size={16} />
+                                Duyệt {selectedRequestIds.length} yêu cầu
+                            </button>
+                            <button
+                                onClick={handleBulkRejectModalOpen}
+                                className='px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition flex items-center gap-2'
+                            >
+                                <XCircle size={16} />
+                                Từ chối {selectedRequestIds.length} yêu cầu
+                            </button>
+                        </div>
+                    )}
                 </div>
                 <div className='w-full sm:max-w-md'>
                     <SearchBox

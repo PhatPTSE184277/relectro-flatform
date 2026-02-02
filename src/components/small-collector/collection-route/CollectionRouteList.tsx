@@ -30,11 +30,10 @@ const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
                             ref={tableRef}
                         >
                             <table className='w-full text-sm text-gray-800 table-fixed'>
-                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+                                <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                                     <tr>
                                         <th className='py-3 px-2 text-center w-[4vw]'>STT</th>
                                         <th className='py-3 px-2 text-left w-[10vw]'>Thương hiệu</th>
-                                        <th className='py-3 px-2 text-left w-[12vw]'>Người gửi</th>
                                         <th className='py-3 px-2 text-left w-[12vw]'>Người thu gom</th>
                                         <th className='py-3 px-2 text-left w-[18vw]'>Địa chỉ</th>
                                         <th className='py-3 px-2 text-center w-[8vw]'>Thời gian dự kiến</th>
@@ -58,7 +57,7 @@ const CollectionRouteList: React.FC<CollectionRouteListProps> = ({
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={7} className='text-center py-8 text-gray-400'>
+                                            <td colSpan={6} className='text-center py-8 text-gray-400'>
                                                 Không có tuyến thu gom nào.
                                             </td>
                                         </tr>

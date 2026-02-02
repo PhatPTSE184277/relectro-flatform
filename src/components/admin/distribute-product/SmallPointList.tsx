@@ -24,7 +24,7 @@ const SmallPointList: React.FC<SmallPointListProps> = ({
                     <div className='overflow-hidden'>
                         <div className='max-h-[56vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[48vh] xl:max-h-[56vh] overflow-y-auto w-full'>
                             <table className='w-full text-sm text-gray-800 table-fixed'>
-                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+                                <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                                     <tr>
                                         <th className='py-3 px-4 text-center w-[6vw]'>STT</th>
                                         <th className='py-3 px-4 text-left w-[18vw]'>Điểm thu gom</th>
@@ -47,13 +47,15 @@ const SmallPointList: React.FC<SmallPointListProps> = ({
                                             </tr>
                                         ))
                                     ) : points.length > 0 ? (
-                                        points.map((point, idx) => (
+                                        points.map((point, idx) => {
+                                            const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+                                            return (
                                             <tr
                                                 key={point.pointId}
                                                 onClick={() => onSelectPoint?.(point)}
                                                 className={`${
                                                     idx !== points.length - 1 ? 'border-b border-primary-100' : ''
-                                                } hover:bg-primary-50/40 transition-colors ${
+                                                } ${rowBg} ${
                                                     onSelectPoint ? 'cursor-pointer' : ''
                                                 }`}
                                             >
@@ -73,7 +75,8 @@ const SmallPointList: React.FC<SmallPointListProps> = ({
                                                     </div>
                                                 </td>
                                             </tr>
-                                        ))
+                                            );
+                                        })
                                     ) : (
                                         <tr>
                                             <td colSpan={3} className='text-center py-8 text-gray-400'>

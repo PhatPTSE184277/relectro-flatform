@@ -50,14 +50,14 @@ const ProductList: React.FC<ProductListProps> = ({
     return (
         <div className="relative w-full max-h-[40vh] overflow-y-auto">
             <table className="w-full text-sm text-gray-800 table-fixed">
-                <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10">
+                <thead className="bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100">
                     <tr>
-                        <th className="py-3 px-4 text-center w-16">STT</th>
-                        <th className="py-3 px-4 text-left w-40">Danh mục</th>
-                        <th className="py-3 px-4 text-left w-32">Thương hiệu</th>
-                        <th className="py-3 px-4 text-left w-56">Ghi chú</th>
+                        <th className="py-3 px-4 text-center w-[5vw] min-w-[5vw]">STT</th>
+                        <th className="py-3 px-4 text-left w-[20vw] min-w-[10vw]">Danh mục</th>
+                        <th className="py-3 px-4 text-left w-[16vw] min-w-[8vw]">Thương hiệu</th>
+                        <th className="py-3 px-4 text-left w-[30vw] min-w-[14vw]">Ghi chú</th>
                         {mode === 'edit' && (
-                            <th className="py-3 px-4 text-center w-24">Hành động</th>
+                            <th className="py-3 px-4 text-center w-[12vw] min-w-[8vw]">Hành động</th>
                         )}
                     </tr>
                 </thead>
@@ -65,17 +65,16 @@ const ProductList: React.FC<ProductListProps> = ({
                     {products.map((product, index) => {
                         const isLast = index === products.length - 1;
                         const isSelected = selectedIndex === index;
+                        const rowBg = index % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+
                         return (
                             <tr
                                 key={product.qrCode || product.productId || index}
                                 ref={isSelected ? lastProductRef : null}
                                 className={`${
                                     !isLast ? 'border-b border-primary-100' : ''
-                                } ${
-                                    isSelected
-                                        ? 'bg-blue-50'
-                                        : 'hover:bg-primary-50'
-                                } transition-colors`}
+                                } ${rowBg} transition-colors`}
+                                style={{ tableLayout: 'fixed' }}
                             >
                                 <td className="py-3 px-4 font-medium text-center">
                                     <span className="w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold mx-auto">
