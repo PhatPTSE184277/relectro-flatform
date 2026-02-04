@@ -1,4 +1,5 @@
 import React from 'react';
+import { TrendingUp } from 'lucide-react';
 
 interface SmallPoint {
     pointId: string;
@@ -10,12 +11,14 @@ interface SmallPointListProps {
     points: SmallPoint[];
     loading?: boolean;
     onSelectPoint?: (point: SmallPoint) => void;
+    increasedSCPIds?: Set<string>;
 }
 
 const SmallPointList: React.FC<SmallPointListProps> = ({
     points,
     loading = false,
-    onSelectPoint
+    onSelectPoint,
+    increasedSCPIds = new Set()
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -49,6 +52,7 @@ const SmallPointList: React.FC<SmallPointListProps> = ({
                                     ) : points.length > 0 ? (
                                         points.map((point, idx) => {
                                             const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+                                            const isIncreased = increasedSCPIds.has(point.pointId);
                                             return (
                                             <tr
                                                 key={point.pointId}
@@ -70,7 +74,12 @@ const SmallPointList: React.FC<SmallPointListProps> = ({
                                                     </div>
                                                 </td>
                                                 <td className='py-3 pr-4 text-right w-auto'>
-                                                    <div className='text-gray-900 font-medium'>
+                                                    <div className='text-gray-900 font-medium flex items-center justify-end gap-2'>
+                                                        {isIncreased && (
+                                                            <span title='Số lượng đã tăng'>
+                                                                <TrendingUp size={18} className='text-green-600 animate-pulse' />
+                                                            </span>
+                                                        )}
                                                         {point.totalOrders ?? 0}
                                                     </div>
                                                 </td>

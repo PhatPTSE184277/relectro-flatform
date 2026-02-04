@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { getTodayString } from '@/utils/getDayString';
 import { useDistributeProductContext } from '@/contexts/admin/DistributeProductContext';
 import { useNotificationHub } from '@/hooks/useNotificationHub';
@@ -18,9 +19,9 @@ import SmallPointList from '@/components/admin/distribute-product/SmallPointList
 
 
 const DistributeProductPage: React.FC = () => {
+    const router = useRouter();
     const {
         undistributedProducts,
-        allUndistributedProducts,
         allUndistributedProductIds,
         companies,
         collectionCompanies,
@@ -70,6 +71,8 @@ const DistributeProductPage: React.FC = () => {
     const tableScrollRef = useRef<HTMLDivElement>(null);
     const [selectedCompany, setSelectedCompany] = useState<any>(null);
     const [selectedSCP, setSelectedSCP] = useState<any>(null);
+    const [increasedCompanyIds, setIncreasedCompanyIds] = useState<Set<string>>(new Set());
+    const [increasedSCPIds, setIncreasedSCPIds] = useState<Set<string>>(new Set());
 
     // Handle sessionStorage params from notification (no URL params)
     useEffect(() => {
@@ -276,6 +279,29 @@ const DistributeProductPage: React.FC = () => {
         const dateToProcess = selectedDate;
         console.log('🚀 Starting distribution for date:', dateToProcess);
         
+        // Save current company counts snapshot to sessionStorage
+        if (typeof window !== 'undefined') {
+            const companySnapshot: Record<string, number> = {};
+            const scpSnapshot: Record<string, Record<string, number>> = {};
+            
+            companies.forEach(company => {
+                const total = company.totalProducts ?? company.totalOrders ?? 0;
+                companySnapshot[company.companyId] = total;
+                
+                // Save SCP counts for each company
+                if (company.smallCollectionPoints && Array.isArray(company.smallCollectionPoints)) {
+                    scpSnapshot[company.companyId] = {};
+                    company.smallCollectionPoints.forEach((scp: any) => {
+                        scpSnapshot[company.companyId][scp.pointId] = scp.totalOrders ?? 0;
+                    });
+                }
+            });
+            
+            sessionStorage.setItem(`distribute_snapshot_${dateToProcess}`, JSON.stringify(companySnapshot));
+            sessionStorage.setItem(`distribute_scp_snapshot_${dateToProcess}`, JSON.stringify(scpSnapshot));
+            sessionStorage.setItem('distribute_snapshot_date', dateToProcess);
+        }
+        
         setProcessing(true);
         setProcessingDate(dateToProcess);
         if (typeof window !== 'undefined') {
@@ -295,6 +321,8 @@ const DistributeProductPage: React.FC = () => {
                 targetCompanyIds: companyIds.length > 0 ? companyIds : undefined
             });
             await fetchCompanies(dateToProcess);
+            // Navigate to admin dashboard after successful distribution
+            router.push('/admin/dashboard');
         } catch (error) {
             console.error('❌ Distribution error:', error);
             setProcessing(false);
@@ -325,6 +353,72 @@ const DistributeProductPage: React.FC = () => {
             fetchSCPProducts(selectedSCP.pointId, selectedDate, newPage, pageSize);
         }
     };
+
+    // Compare snapshot with current data to show increase indicators
+    React.useEffect(() => {
+        if (typeof window === 'undefined' || activeFilter !== 'distributed' || companies.length === 0) return;
+        
+        const snapshotDate = sessionStorage.getItem('distribute_snapshot_date');
+        if (snapshotDate !== selectedDate) {
+            setIncreasedCompanyIds(new Set());
+            setIncreasedSCPIds(new Set());
+            return;
+        }
+        
+        const snapshotStr = sessionStorage.getItem(`distribute_snapshot_${selectedDate}`);
+        const scpSnapshotStr = sessionStorage.getItem(`distribute_scp_snapshot_${selectedDate}`);
+        
+        if (!snapshotStr) {
+            setIncreasedCompanyIds(new Set());
+            setIncreasedSCPIds(new Set());
+            return;
+        }
+        
+        try {
+            const snapshot: Record<string, number> = JSON.parse(snapshotStr);
+            const scpSnapshot: Record<string, Record<string, number>> = scpSnapshotStr ? JSON.parse(scpSnapshotStr) : {};
+            
+            const increasedCompanies = new Set<string>();
+            const increasedSCPs = new Set<string>();
+            
+            companies.forEach(company => {
+                const currentTotal = company.totalProducts ?? company.totalOrders ?? 0;
+                const previousTotal = snapshot[company.companyId] ?? 0;
+                
+                if (currentTotal > previousTotal) {
+                    increasedCompanies.add(company.companyId);
+                }
+                
+                // Check SCPs within this company
+                if (company.smallCollectionPoints && Array.isArray(company.smallCollectionPoints)) {
+                    company.smallCollectionPoints.forEach((scp: any) => {
+                        const currentScpTotal = scp.totalOrders ?? 0;
+                        const previousScpTotal = scpSnapshot[company.companyId]?.[scp.pointId] ?? 0;
+                        
+                        if (currentScpTotal > previousScpTotal) {
+                            increasedSCPs.add(scp.pointId);
+                        }
+                    });
+                }
+            });
+            
+            setIncreasedCompanyIds(increasedCompanies);
+            setIncreasedSCPIds(increasedSCPs);
+            
+            // Clear snapshot after 5 minutes
+            setTimeout(() => {
+                sessionStorage.removeItem(`distribute_snapshot_${selectedDate}`);
+                sessionStorage.removeItem(`distribute_scp_snapshot_${selectedDate}`);
+                sessionStorage.removeItem('distribute_snapshot_date');
+                setIncreasedCompanyIds(new Set());
+                setIncreasedSCPIds(new Set());
+            }, 5 * 60 * 1000);
+        } catch (error) {
+            console.error('Error parsing snapshot:', error);
+            setIncreasedCompanyIds(new Set());
+            setIncreasedSCPIds(new Set());
+        }
+    }, [companies, selectedDate, activeFilter]);
 
     React.useEffect(() => {
         // Check if selected date is currently being processed
@@ -419,6 +513,7 @@ const DistributeProductPage: React.FC = () => {
                     companies={companies}
                     loading={companyLoading}
                     onSelectCompany={handleSelectCompany}
+                    increasedCompanyIds={increasedCompanyIds}
                 />
             )}
 
@@ -428,6 +523,7 @@ const DistributeProductPage: React.FC = () => {
                     points={selectedCompany.smallCollectionPoints || []}
                     loading={false}
                     onSelectPoint={handleSelectSCP}
+                    increasedSCPIds={increasedSCPIds}
                 />
             )}
 

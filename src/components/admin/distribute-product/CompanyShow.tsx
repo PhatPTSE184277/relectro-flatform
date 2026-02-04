@@ -1,17 +1,20 @@
 import React from 'react';
+import { TrendingUp } from 'lucide-react';
 
 interface CompanyShowProps {
     company: any;
     onSelect: () => void;
     isLast?: boolean;
     index: number;
+    isIncreased?: boolean;
 }
 
 const CompanyShow: React.FC<CompanyShowProps> = ({
     company,
     onSelect,
     isLast,
-    index
+    index,
+    isIncreased = false
 }) => {
     const rowBg = (index ?? 0) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
     const total = company.totalProducts ?? company.totalOrders ?? 0;
@@ -38,8 +41,18 @@ const CompanyShow: React.FC<CompanyShowProps> = ({
                 </div>
             </td>
             <td className='py-3 pr-4 text-right w-auto'>
-                <div className='text-gray-900 font-medium'>
-                    {total}
+                <div className='flex items-center justify-end gap-2'>
+                    {isIncreased && (
+                        <span title='Số lượng đã tăng'>
+                            <TrendingUp 
+                                size={18} 
+                                className='text-green-600 animate-pulse' 
+                            />
+                        </span>
+                    )}
+                    <span className='text-gray-900 font-medium'>
+                        {total}
+                    </span>
                 </div>
             </td>
         </tr>

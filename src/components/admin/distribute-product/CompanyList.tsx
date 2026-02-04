@@ -5,12 +5,14 @@ interface CompanyListProps {
     companies: any[];
     loading: boolean;
     onSelectCompany: (company: any) => void;
+    increasedCompanyIds?: Set<string>;
 }
 
 const CompanyList: React.FC<CompanyListProps> = ({
     companies,
     loading,
-    onSelectCompany
+    onSelectCompany,
+    increasedCompanyIds = new Set()
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -49,6 +51,7 @@ const CompanyList: React.FC<CompanyListProps> = ({
                                                 onSelect={() => onSelectCompany(company)}
                                                 isLast={idx === companies.length - 1}
                                                 index={idx}
+                                                isIncreased={increasedCompanyIds.has(company.companyId)}
                                             />
                                         ))
                                     ) : (
