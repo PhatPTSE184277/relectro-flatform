@@ -32,6 +32,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
     // const [packageName, setPackageName] = useState('');
     const [qrCodeInput, setQrCodeInput] = useState('');
     const [scannedProducts, setScannedProducts] = useState<ScannedProduct[]>([]);
+    const [newlyAdded, setNewlyAdded] = useState<Set<string>>(new Set());
     const [loading, setLoading] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const lastProductRef = useRef<HTMLTableRowElement>(null);
@@ -57,6 +58,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                     }
                 }
                 setScannedProducts(products);
+                setNewlyAdded(new Set());
             };
             loadExistingProducts();
             setQrCodeInput('');
@@ -117,6 +119,12 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                     ...prev
                 ];
                 setSelectedIndex(0);
+                // mark this qr as newly added in this session
+                setNewlyAdded((s) => {
+                    const copy = new Set(s);
+                    if (product.qrCode) copy.add(product.qrCode);
+                    return copy;
+                });
                 return updated;
             });
 
@@ -133,6 +141,11 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
 
     const handleRemoveProduct = (qrCode: string) => {
         setScannedProducts((prev) => prev.filter((p) => p.qrCode !== qrCode));
+        setNewlyAdded((s) => {
+            const copy = new Set(s);
+            copy.delete(qrCode);
+            return copy;
+        });
     };
 
     const handleSubmit = () => {
@@ -154,6 +167,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
     const handleClose = () => {
         setQrCodeInput('');
         setScannedProducts([]);
+        setNewlyAdded(new Set());
         onClose();
     };
 
@@ -167,7 +181,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
             ></div>
 
             {/* Modal container */}
-            <div className='relative w-full max-w-8xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[96vh] animate-fadeIn'>
+            <div className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[96vh] animate-fadeIn'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
@@ -232,7 +246,9 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                             onRemoveProduct={handleRemoveProduct}
                             selectedIndex={selectedIndex}
                             lastProductRef={lastProductRef}
+                            striped={false}
                             loading={loading}
+                            newItems={newlyAdded}
                         />
                     </div>
                 </div>
@@ -240,10 +256,21 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                 {/* Footer */}
                 <div className='flex justify-between items-center gap-3 p-5 border-t border-gray-100 bg-white'>
                     <div className='text-sm text-gray-600 flex items-center'>
-                        <span className='font-medium text-gray-900'>
-                            {scannedProducts.length}
-                        </span>
-                        <span className='ml-1'>sản phẩm đã thêm</span>
+                        {newlyAdded.size > 0 ? (
+                            <>
+                                <span className='font-medium text-green-700'>
+                                    {newlyAdded.size}
+                                </span>
+                                <span className='ml-1 text-green-700'>sản phẩm mới đã thêm</span>
+                            </>
+                        ) : (
+                            <>
+                                <span className='font-medium text-gray-900'>
+                                    {scannedProducts.length}
+                                </span>
+                                <span className='ml-1'>sản phẩm đã thêm</span>
+                            </>
+                        )}
                     </div>
                     <div className='flex gap-3'>
                         <button

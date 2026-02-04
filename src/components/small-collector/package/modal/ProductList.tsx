@@ -18,6 +18,8 @@ interface ProductListProps {
     selectedIndex?: number | null;
     lastProductRef?: React.RefObject<HTMLTableRowElement | null>;
     loading?: boolean;
+    striped?: boolean;
+    newItems?: Set<string>;
 }
 
 const ProductList: React.FC<ProductListProps> = ({
@@ -26,7 +28,9 @@ const ProductList: React.FC<ProductListProps> = ({
     onRemoveProduct,
     selectedIndex,
     lastProductRef,
-    loading = false
+    loading = false,
+    striped = true,
+    newItems
 }) => {
     if (loading) {
         return <ProductListSkeleton />;
@@ -52,12 +56,12 @@ const ProductList: React.FC<ProductListProps> = ({
             <table className="w-full text-sm text-gray-800 table-fixed">
                 <thead className="bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100">
                     <tr>
-                        <th className="py-3 px-4 text-center w-[5vw] min-w-[5vw]">STT</th>
-                        <th className="py-3 px-4 text-left w-[20vw] min-w-[10vw]">Danh mục</th>
-                        <th className="py-3 px-4 text-left w-[16vw] min-w-[8vw]">Thương hiệu</th>
-                        <th className="py-3 px-4 text-left w-[30vw] min-w-[14vw]">Ghi chú</th>
+                        <th className="py-3 px-4 text-center w-[4vw]">STT</th>
+                        <th className="py-3 px-4 text-left w-[14vw]">Danh mục</th>
+                        <th className="py-3 px-4 text-left w-[12vw]">Thương hiệu</th>
+                        <th className="py-3 px-4 text-left w-[22vw]">Ghi chú</th>
                         {mode === 'edit' && (
-                            <th className="py-3 px-4 text-center w-[12vw] min-w-[8vw]">Hành động</th>
+                            <th className="py-3 px-4 text-center w-[8vw]">Hành động</th>
                         )}
                     </tr>
                 </thead>
@@ -65,7 +69,8 @@ const ProductList: React.FC<ProductListProps> = ({
                     {products.map((product, index) => {
                         const isLast = index === products.length - 1;
                         const isSelected = selectedIndex === index;
-                        const rowBg = index % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+                        const isNew = product.qrCode && newItems && newItems.has(product.qrCode);
+                        const rowBg = isNew ? 'bg-green-50' : (striped ? (index % 2 === 0 ? 'bg-white' : 'bg-primary-50') : 'bg-white');
 
                         return (
                             <tr

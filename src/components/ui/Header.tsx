@@ -11,14 +11,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { formatTimeWithDate } from '@/utils/FormatTime';
 
-
 interface HeaderProps {
     title?: string;
     href?: string;
     profileHref?: string;
     onMenuClick?: () => void;
 }
-
 
 const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
     const router = useRouter();
@@ -67,6 +65,108 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
         if (pathname === finalHref) {
             e.preventDefault();
             window.location.reload();
+        }
+    };
+
+    // Handle notification click (moved out of map so it's reusable)
+    const handleNotificationClick = (notif: any) => {
+        if (!notif.isRead) {
+            markAsRead(notif.notificationId);
+        }
+
+        const isDistributionNotif = notif.title?.includes('Phân bố') ||
+            notif.title?.includes('phân bố') ||
+            notif.title?.includes('phân phối') ||
+            notif.title?.includes('Phân phối') ||
+            notif.title?.includes('hoàn tất') ||
+            notif.message?.includes('Phân bố') ||
+            notif.message?.includes('phân bố');
+
+        const isGroupingNotif = notif.title?.includes('Hàng về kho') ||
+            notif.title?.includes('hàng về kho') ||
+            notif.title?.includes('Gom nhóm') ||
+            notif.title?.includes('gom nhóm') ||
+            notif.title?.includes('Thu gom') ||
+            notif.title?.includes('thu gom') ||
+            notif.message?.includes('Hàng về kho') ||
+            notif.message?.includes('hàng về kho') ||
+            notif.message?.includes('nhận được') ||
+            notif.message?.includes('Gom nhóm') ||
+            notif.message?.includes('gom nhóm') ||
+            notif.message?.includes('Thu gom') ||
+            notif.message?.includes('thu gom');
+
+        if (isDistributionNotif) {
+            // Extract date from message or use createdAt
+            let distributionDate = '';
+            
+            // Try to extract date from message first (format: DD/MM/YYYY)
+            const dateMatch = notif.message?.match(/\d{2}\/\d{2}\/\d{4}/);
+            if (dateMatch) {
+                const [day, month, year] = dateMatch[0].split('/');
+                distributionDate = `${year}-${month}-${day}`;
+            } else if (notif.createdAt) {
+                // Fallback to createdAt
+                const createdDate = new Date(notif.createdAt);
+                const year = createdDate.getFullYear();
+                const month = String(createdDate.getMonth() + 1).padStart(2, '0');
+                const day = String(createdDate.getDate()).padStart(2, '0');
+                distributionDate = `${year}-${month}-${day}`;
+            }
+
+            if (distributionDate) {
+                // Set navigation parameters
+                sessionStorage.setItem('distribute_nav_date', distributionDate);
+                sessionStorage.setItem('distribute_nav_filter', 'distributed');
+                sessionStorage.setItem('distribute_nav_trigger', 'notification');
+            }
+        }
+
+        if (isGroupingNotif) {
+            // Extract date from message or use createdAt
+            let groupingDate = '';
+            
+            // Try to extract date from message first (format: DD/MM/YYYY)
+            const dateMatch = notif.message?.match(/\d{2}\/\d{2}\/\d{4}/);
+            if (dateMatch) {
+                const [day, month, year] = dateMatch[0].split('/');
+                groupingDate = `${year}-${month}-${day}`;
+            } else if (notif.createdAt) {
+                // Fallback to createdAt
+                const createdDate = new Date(notif.createdAt);
+                const year = createdDate.getFullYear();
+                const month = String(createdDate.getMonth() + 1).padStart(2, '0');
+                const day = String(createdDate.getDate()).padStart(2, '0');
+                groupingDate = `${year}-${month}-${day}`;
+            }
+
+            if (groupingDate) {
+                // Set navigation parameters for grouping
+                sessionStorage.setItem('grouping_nav_date', groupingDate);
+                sessionStorage.setItem('grouping_nav_trigger', 'notification');
+            }
+        }
+
+        setNotifDropdownOpen(false);
+
+        // Navigate to distribute product page if it's a distribution notification
+        if (isDistributionNotif && typeof window !== 'undefined') {
+            if (window.location.pathname !== '/admin/distribute-product') {
+                router.push('/admin/distribute-product');
+            } else {
+                // Already on the page, trigger a reload to apply new params
+                window.location.reload();
+            }
+        }
+
+        // Navigate to grouping page if it's a grouping notification
+        if (isGroupingNotif && typeof window !== 'undefined') {
+            if (window.location.pathname !== '/small-collector/grouping') {
+                router.push('/small-collector/grouping');
+            } else {
+                // Already on the page, trigger a reload to apply new params
+                window.location.reload();
+            }
         }
     };
 
@@ -137,14 +237,27 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
                                                             <p>Không có thông báo</p>
                                                         </div>
                                                     ) : (
-                                                        notifications.map((notif) => (
-                                                            <div
-                                                                key={notif.notificationId}
-                                                                onClick={() => !notif.isRead && markAsRead(notif.notificationId)}
-                                                                className={`p-4 border-b border-primary-50 cursor-pointer transition ${
-                                                                    notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-primary-50/50 hover:bg-primary-50'
-                                                                }`}
-                                                            >
+                                                        notifications.map((notif) => {
+                                                            // Check if notification is about distribution completion
+                                                            const isDistributionNotif = notif.title?.includes('Phân bố') || 
+                                                                notif.title?.includes('phân bố') || 
+                                                                notif.title?.includes('phân phối') || 
+                                                                notif.title?.includes('Phân phối') || 
+                                                                notif.title?.includes('chia');
+                                                            
+                                                            // Extract date from createdAt
+                                                            let distributionDate = '';
+                                                            if (isDistributionNotif && notif.createdAt) {
+                                                                const createdDate = new Date(notif.createdAt);
+                                                                const year = createdDate.getFullYear();
+                                                                const month = String(createdDate.getMonth() + 1).padStart(2, '0');
+                                                                const day = String(createdDate.getDate()).padStart(2, '0');
+                                                                distributionDate = `${year}-${month}-${day}`;
+                                                            }
+                                                            
+                                                            
+                                                            
+                                                            const content = (
                                                                 <div className='flex items-start gap-3'>
                                                                     <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${
                                                                         notif.isRead ? 'bg-gray-300' : 'bg-primary-600'
@@ -163,8 +276,37 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
                                                                         </p>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        ))
+                                                            );
+                                                            
+                                                            // If it's a distribution notification, wrap in Link
+                                                            if (isDistributionNotif && distributionDate) {
+                                                                return (
+                                                                    <Link
+                                                                        key={notif.notificationId}
+                                                                        href='/admin/distribute-product'
+                                                                        onClick={() => handleNotificationClick(notif)}
+                                                                        className={`block p-4 border-b border-primary-50 cursor-pointer transition ${
+                                                                            notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-primary-50/50 hover:bg-primary-50'
+                                                                        }`}
+                                                                    >
+                                                                        {content}
+                                                                    </Link>
+                                                                );
+                                                            }
+                                                            
+                                                            // Otherwise, just a div with onClick
+                                                            return (
+                                                                <div
+                                                                    key={notif.notificationId}
+                                                                    onClick={() => handleNotificationClick(notif)}
+                                                                    className={`p-4 border-b border-primary-50 cursor-pointer transition ${
+                                                                        notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-primary-50/50 hover:bg-primary-50'
+                                                                    }`}
+                                                                >
+                                                                    {content}
+                                                                </div>
+                                                            );
+                                                        })
                                                     )}
                                                 </div>
                                             </div>

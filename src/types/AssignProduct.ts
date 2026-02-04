@@ -1,6 +1,7 @@
 export interface AssignProductsRequest {
   workDate: string;
   productIds: string[];
+  targetCompanyIds?: string[];
 }
 
 export interface AssignedProduct {

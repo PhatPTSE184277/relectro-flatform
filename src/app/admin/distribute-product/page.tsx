@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { getTodayString } from '@/utils/getDayString';
 import { useDistributeProductContext } from '@/contexts/admin/DistributeProductContext';
 import { useNotificationHub } from '@/hooks/useNotificationHub';
@@ -21,6 +21,7 @@ const DistributeProductPage: React.FC = () => {
     const {
         undistributedProducts,
         allUndistributedProducts,
+        allUndistributedProductIds,
         companies,
         collectionCompanies,
         scpProducts,
@@ -31,6 +32,7 @@ const DistributeProductPage: React.FC = () => {
         activeFilter,
         setActiveFilter,
         fetchUndistributedProducts,
+        updatePagination,
         fetchCompanies,
         fetchCollectionCompanies,
         fetchSCPProducts,
@@ -50,6 +52,7 @@ const DistributeProductPage: React.FC = () => {
     const [showDistributeModal, setShowDistributeModal] = useState(false);
     const [undistributedCount, setUndistributedCount] = useState(0);
     const [selectedCompanyIds, setSelectedCompanyIds] = useState<string[]>([]);
+    const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
     const [distributing, setDistributing] = useState(false);
     const [processing, setProcessing] = useState(() => {
         if (typeof window !== 'undefined') {
@@ -67,6 +70,46 @@ const DistributeProductPage: React.FC = () => {
     const tableScrollRef = useRef<HTMLDivElement>(null);
     const [selectedCompany, setSelectedCompany] = useState<any>(null);
     const [selectedSCP, setSelectedSCP] = useState<any>(null);
+
+    // Handle sessionStorage params from notification (no URL params)
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const navDate = sessionStorage.getItem('distribute_nav_date');
+        const navFilter = sessionStorage.getItem('distribute_nav_filter');
+        const navTrigger = sessionStorage.getItem('distribute_nav_trigger');
+
+        // Only apply if triggered from notification
+        if (navTrigger === 'notification') {
+            // Clear the trigger immediately
+            sessionStorage.removeItem('distribute_nav_trigger');
+
+            // Apply filter first
+            if (navFilter === 'distributed') {
+                setActiveFilter('distributed');
+            }
+
+            // Apply date
+            if (navDate) {
+                setSelectedDate(navDate);
+            }
+
+            // Reset page
+            setPage(1);
+
+            // Fetch data with new filter and date
+            if (navFilter === 'distributed' && navDate) {
+                fetchCompanies(navDate);
+            } else if (navDate) {
+                fetchUndistributedProducts(navDate, 1, pageSize);
+            }
+
+            // Clear navigation params after applying
+            sessionStorage.removeItem('distribute_nav_date');
+            sessionStorage.removeItem('distribute_nav_filter');
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleDistributeCompleted = useCallback((data: any) => {
         console.log('Distribution completed callback:', data);
@@ -110,6 +153,7 @@ const DistributeProductPage: React.FC = () => {
     const handleDateChange = (date: string) => {
         setSelectedDate(date);
         setPage(1);
+        setSelectedProductIds([]);
         setSelectedCompany(null);
         setSelectedSCP(null);
         
@@ -173,9 +217,31 @@ const DistributeProductPage: React.FC = () => {
     };
 
     const handleShowDistributeModal = () => {
-        setUndistributedCount(allUndistributedProducts.length);
+        setUndistributedCount(selectedProductIds.length);
         fetchCollectionCompanies();
         setShowDistributeModal(true);
+    };
+
+    const handleToggleSelectProduct = (productId: string) => {
+        setSelectedProductIds(prev => 
+            prev.includes(productId) 
+                ? prev.filter(id => id !== productId)
+                : [...prev, productId]
+        );
+    };
+
+    const handleToggleSelectAllProducts = () => {
+        // Check if all products (from all pages) are selected
+        const targetIds = allUndistributedProductIds.length > 0 
+            ? allUndistributedProductIds 
+            : undistributedProducts.map(p => p.productId);
+        const allSelected = targetIds.length > 0 && targetIds.every(id => selectedProductIds.includes(id));
+        
+        if (allSelected) {
+            setSelectedProductIds([]);
+        } else {
+            setSelectedProductIds(targetIds);
+        }
     };
 
     const handleToggleSelectCompany = (companyId: string) => {
@@ -221,10 +287,13 @@ const DistributeProductPage: React.FC = () => {
         setActiveFilter('distributed');
         
         try {
-            const productIds = allUndistributedProducts.map((p: any) => p.productId);
-            console.log('📦 Distributing', productIds.length, 'products');
+            console.log('📦 Distributing', selectedProductIds.length, 'products to', companyIds.length, 'companies');
             
-            await distributeProductsToDate({ workDate: dateToProcess, productIds });
+            await distributeProductsToDate({ 
+                workDate: dateToProcess, 
+                productIds: selectedProductIds,
+                targetCompanyIds: companyIds.length > 0 ? companyIds : undefined
+            });
             await fetchCompanies(dateToProcess);
         } catch (error) {
             console.error('❌ Distribution error:', error);
@@ -243,10 +312,8 @@ const DistributeProductPage: React.FC = () => {
     };
 
     const handlePageChange = (newPage: number) => {
-        setPage(newPage);
-        if (activeFilter === 'undistributed') {
-            fetchUndistributedProducts(selectedDate, newPage, pageSize);
-        }
+        // Use updatePagination to change page without fetching data again
+        updatePagination(newPage);
         if (tableScrollRef.current) {
             tableScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -309,7 +376,7 @@ const DistributeProductPage: React.FC = () => {
                     </div>
                     <button
                         onClick={handleShowDistributeModal}
-                        disabled={processing || (processingDate && processingDate === selectedDate) || activeFilter !== 'undistributed' || allUndistributedProducts.length === 0}
+                        disabled={processing || (processingDate && processingDate === selectedDate) || activeFilter !== 'undistributed' || selectedProductIds.length === 0}
                         className='px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 font-medium transition cursor-pointer shadow-md flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed'
                     >
                         <Package size={18} />
@@ -332,6 +399,11 @@ const DistributeProductPage: React.FC = () => {
                         page={page}
                         itemsPerPage={pageSize}
                         scpName=""
+                        showCheckbox={true}
+                        selectedProductIds={selectedProductIds}
+                        allProductIds={allUndistributedProductIds}
+                        onToggleSelect={handleToggleSelectProduct}
+                        onToggleSelectAll={handleToggleSelectAllProducts}
                     />
                     <Pagination
                         page={page}

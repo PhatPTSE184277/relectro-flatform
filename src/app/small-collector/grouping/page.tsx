@@ -39,6 +39,29 @@ const GroupingPage: React.FC = () => {
         console.log('smallCollectionPointId:', user?.smallCollectionPointId);
     }, [user]);
 
+    // Handle sessionStorage params from notification
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const navDate = sessionStorage.getItem('grouping_nav_date');
+        const navTrigger = sessionStorage.getItem('grouping_nav_trigger');
+
+        // Only apply if triggered from notification
+        if (navTrigger === 'notification' && navDate) {
+            // Clear the trigger immediately
+            sessionStorage.removeItem('grouping_nav_trigger');
+            sessionStorage.removeItem('grouping_nav_date');
+
+            // Apply date
+            setSelectedDate(navDate);
+            setPendingProductsPage(1);
+
+            // Fetch data with new date
+            fetchPendingProducts(navDate, 1);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     useEffect(() => {
         fetchPendingProducts(selectedDate, pendingProductsPage);
     }, [selectedDate, pendingProductsPage, fetchPendingProducts]);

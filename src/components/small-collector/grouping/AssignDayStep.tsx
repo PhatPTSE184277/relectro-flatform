@@ -34,6 +34,8 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         previewVehicles, 
         fetchPreviewProducts, 
         previewProductsPaging,
+        allPreviewProductIds,
+        fetchAllPreviewProductIds,
         unassignedProducts,
         unassignedProductsData,
         unassignedProductsLoading,
@@ -64,6 +66,16 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
             }
         }
     }, [currentVehicle, workDate, productPage, fetchPreviewProducts]);
+
+    // Fetch all preview product IDs when vehicle changes
+    useEffect(() => {
+        if (currentVehicle) {
+            const vehicleId = currentVehicle.vehicleId?.toString() || currentVehicle.id?.toString();
+            if (vehicleId) {
+                fetchAllPreviewProductIds(vehicleId, workDate);
+            }
+        }
+    }, [currentVehicle, workDate, fetchAllPreviewProductIds]);
 
     // Use data from API preview
     const displayProducts = previewProductsPaging?.products || [];

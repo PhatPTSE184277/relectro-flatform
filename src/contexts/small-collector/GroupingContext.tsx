@@ -108,6 +108,7 @@ export function GroupingProvider({ children }: Props) {
     const [driverCandidates, setDriverCandidates] = useState<any[]>([]);
     const [previewProductsPaging, setPreviewProductsPaging] = useState<PreviewProductsPagingResponse | null>(null);
     const [previewVehicles, setPreviewVehicles] = useState<any[]>([]);
+    const [allPreviewProductIds, setAllPreviewProductIds] = useState<string[]>([]);
     const [unassignedProducts, setUnassignedProducts] = useState<any[]>([]);
     const [unassignedProductsData, setUnassignedProductsData] = useState<any | null>(null);
     const [unassignedProductsLoading, setUnassignedProductsLoading] = useState<boolean>(false);
@@ -378,6 +379,20 @@ export function GroupingProvider({ children }: Props) {
         []
     );
 
+    const fetchAllPreviewProductIds = useCallback(
+        async (vehicleId: string, workDate: string) => {
+            try {
+                const data = await previewProducts(vehicleId, workDate, 1, 999999);
+                const ids = data?.products?.map((p: any) => p.productId) || [];
+                setAllPreviewProductIds(ids);
+            } catch (err) {
+                console.error('fetchAllPreviewProductIds error', err);
+                setAllPreviewProductIds([]);
+            }
+        },
+        []
+    );
+
     const fetchPreviewVehicles = useCallback(
         async (workDate: string) => {
             if (!user?.smallCollectionPointId) return;
@@ -419,6 +434,7 @@ export function GroupingProvider({ children }: Props) {
         driverCandidates,
         previewProductsPaging,
         previewVehicles,
+        allPreviewProductIds,
         unassignedProducts,
         unassignedProductsData,
         unassignedProductsLoading,
@@ -438,6 +454,7 @@ export function GroupingProvider({ children }: Props) {
         fetchDriverCandidates,
         reassignDriver,
         fetchPreviewProducts,
+        fetchAllPreviewProductIds,
         fetchPreviewVehicles
     };
 

@@ -40,7 +40,9 @@ export const getSCPProductsStatus = async (
   return response.data;
 };
 
-export const distributeProducts = async (data: { workDate: string; productIds: string[] }) => {
+export const distributeProducts = async (
+  data: { workDate: string; productIds: string[]; targetCompanyIds?: string[] }
+) => {
   const response = await axios.post('/assign/products', data);
   return response.data;
 };

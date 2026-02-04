@@ -32,10 +32,10 @@ const ProductList: React.FC<ProductListProps> = ({
                 <table className='w-full text-sm text-gray-800 table-fixed'>
                     <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                         <tr>
-                            <th className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>STT</th>
-                            <th className='py-3 px-4 text-left w-[20vw] min-w-[10vw]'>Danh mục</th>
-                            <th className='py-3 px-4 text-left w-[16vw] min-w-[8vw]'>Thương hiệu</th>
-                            <th className='py-3 px-4 text-left w-[30vw] min-w-[14vw]'>Ghi chú</th>
+                            <th className='py-3 px-4 text-center w-[4vw]'>STT</th>
+                            <th className='py-3 px-4 text-left w-[14vw]'>Danh mục</th>
+                            <th className='py-3 px-4 text-left w-[12vw]'>Thương hiệu</th>
+                            <th className='py-3 px-4 text-left w-[22vw]'>Ghi chú</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,24 +49,24 @@ const ProductList: React.FC<ProductListProps> = ({
                                     className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg} transition-colors`}
                                     style={{ tableLayout: 'fixed' }}
                                 >
-                                    <td className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>
+                                        <td className='py-3 px-4 text-center w-[4vw]'>
                                         <span className='w-6 h-6 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-semibold mx-auto'>
                                             {startIndex + index + 1}
                                         </span>
                                     </td>
-                                    <td className='py-3 px-4 font-medium w-[20vw] min-w-[10vw]'>
-                                        <div className='text-gray-900'>
-                                            {product.categoryName}
-                                        </div>
-                                    </td>
-                                    <td className='py-3 px-4 text-left text-gray-700 w-[16vw] min-w-[8vw]'>
-                                        {product.brandName}
-                                    </td>
-                                    <td className='py-3 px-4 text-gray-600 text-xs w-[30vw] min-w-[14vw]'>
-                                        <div className='line-clamp-2 break-all'>
-                                            {product.description || '-'}
-                                        </div>
-                                    </td>
+                                        <td className='py-3 px-4 font-medium w-[14vw] min-w-0 truncate'>
+                                            <div className='text-gray-900 truncate'>
+                                                {product.categoryName}
+                                            </div>
+                                        </td>
+                                        <td className='py-3 px-4 text-left text-gray-700 w-[12vw] min-w-0 truncate'>
+                                            {product.brandName}
+                                        </td>
+                                        <td className='py-3 px-4 text-gray-600 text-xs w-[22vw] min-w-0'>
+                                            <div className='line-clamp-2 wrap-break-word overflow-hidden'>
+                                                {product.description || '-'}
+                                            </div>
+                                        </td>
                                 </tr>
                             );
                         })}

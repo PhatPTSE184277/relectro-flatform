@@ -36,9 +36,7 @@ const IWProductList = forwardRef<HTMLDivElement, IWProductListProps>(
                                 <th className='py-3 px-4 text-left w-[14vw] min-w-20'>
                                     Loại sản phẩm
                                 </th>
-                                <th className='py-3 px-4 text-left w-[14vw] min-w-20'>
-                                    Mã QR
-                                </th>
+                                {/* QR column removed */}
                                 <th className='py-3 px-4 text-left w-[12vw] min-w-20'>
                                     Thương hiệu
                                 </th>
@@ -69,7 +67,7 @@ const IWProductList = forwardRef<HTMLDivElement, IWProductListProps>(
                             ) : (
                                 <tr>
                                     <td
-                                        colSpan={6}
+                                        colSpan={5}
                                         className='text-center py-8 text-gray-400'
                                     >
                                         Không có sản phẩm nào.

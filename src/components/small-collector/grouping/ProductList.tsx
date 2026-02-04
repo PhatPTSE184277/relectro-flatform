@@ -10,15 +10,19 @@ export interface ProductListProps {
     itemsPerPage?: number;
     showCheckbox?: boolean;
     selectedProductIds?: string[];
+    allProductIds?: string[]; // All product IDs (all pages)
     onToggleSelect?: (productId: string) => void;
     onToggleProduct?: (productId: string) => void;
     onToggleAll?: () => void;
     maxHeight?: number;
 }
 
-const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, itemsPerPage = 10, showCheckbox, selectedProductIds = [], onToggleSelect, onToggleProduct, onToggleAll, maxHeight }) => {
-    // Check if all products on current page are selected
-    const allSelected = showCheckbox && products.length > 0 && products.every(p => selectedProductIds.includes(p.productId));
+const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, itemsPerPage = 10, showCheckbox, selectedProductIds = [], allProductIds, onToggleSelect, onToggleProduct, onToggleAll, maxHeight }) => {
+    // Check if all products (from allProductIds or current page) are selected
+    const targetIds = allProductIds && allProductIds.length > 0 
+        ? allProductIds 
+        : products.map(p => p.productId);
+    const allSelected = showCheckbox && targetIds.length > 0 && targetIds.every(id => selectedProductIds.includes(id));
     // Determine maxHeight style
     let maxHeightStyle: React.CSSProperties | undefined = undefined;
     if (maxHeight !== undefined) {

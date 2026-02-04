@@ -7,14 +7,31 @@ interface ProductListProps {
     scpName: string;
     page: number;
     itemsPerPage: number;
+    showCheckbox?: boolean;
+    selectedProductIds?: string[];
+    allProductIds?: string[]; // All product IDs (all pages)
+    onToggleSelect?: (productId: string) => void;
+    onToggleSelectAll?: () => void;
 }
 
 const ProductList: React.FC<ProductListProps> = ({
     products,
     loading,
     page,
-    itemsPerPage
+    itemsPerPage,
+    showCheckbox = false,
+    selectedProductIds = [],
+    allProductIds,
+    onToggleSelect,
+    onToggleSelectAll
 }) => {
+    // Check if all products (from allProductIds or current page) are selected
+    const targetIds = allProductIds && allProductIds.length > 0 
+        ? allProductIds 
+        : products.map(p => p.productId);
+    // Header is checked only when all target IDs are selected; no indeterminate state
+    const allSelected = showCheckbox && targetIds.length > 0 && targetIds.every(id => selectedProductIds.includes(id));
+
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
             <div className='overflow-x-auto w-full'>
@@ -24,6 +41,16 @@ const ProductList: React.FC<ProductListProps> = ({
                             <table className='w-full text-sm text-gray-800 table-fixed'>
                                 <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                                     <tr>
+                                        {showCheckbox && (
+                                            <th className='py-3 px-4 text-center w-16'>
+                                                <input
+                                                    type='checkbox'
+                                                    checked={allSelected}
+                                                    onChange={onToggleSelectAll}
+                                                    className='w-4 h-4 text-primary-600 bg-white rounded focus:ring-2 focus:ring-primary-500 cursor-pointer'
+                                                />
+                                            </th>
+                                        )}
                                         <th className='py-3 px-4 text-center w-[6vw]'>STT</th>
                                         <th className='py-3 px-4 text-left w-[15vw]'>Danh mục - Thương hiệu</th>
                                         <th className='py-3 px-4 text-left w-[20vw]'>Địa chỉ</th>
@@ -33,6 +60,11 @@ const ProductList: React.FC<ProductListProps> = ({
                                     {loading ? (
                                         Array.from({ length: 6 }).map((_, idx) => (
                                             <tr key={idx} className='border-b border-primary-100'>
+                                                {showCheckbox && (
+                                                    <td className='py-3 px-4 text-center w-16'>
+                                                        <div className='h-4 w-4 bg-gray-200 rounded animate-pulse mx-auto' />
+                                                    </td>
+                                                )}
                                                 <td className='py-3 px-4 text-center w-[6vw]'>
                                                     <div className='h-7 w-7 bg-gray-200 rounded-full animate-pulse mx-auto' />
                                                 </td>
@@ -52,11 +84,14 @@ const ProductList: React.FC<ProductListProps> = ({
                                                 product={product}
                                                 stt={(page - 1) * itemsPerPage + idx + 1}
                                                 isLast={idx === products.length - 1}
+                                                showCheckbox={showCheckbox}
+                                                isSelected={selectedProductIds.includes(product.productId)}
+                                                onToggleSelect={onToggleSelect}
                                             />
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={3} className='text-center py-8 text-gray-400'>
+                                            <td colSpan={showCheckbox ? 4 : 3} className='text-center py-8 text-gray-400'>
                                                 Không có sản phẩm nào.
                                             </td>
                                         </tr>

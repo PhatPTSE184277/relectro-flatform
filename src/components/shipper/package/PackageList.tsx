@@ -35,7 +35,7 @@ const PackageList: React.FC<PackageListProps> = ({
                                 <tr>
                                     <th className='py-3 px-4 text-center w-[5vw] min-w-[5vw]'>STT</th>
                                     <th className='py-3 px-4 text-left w-[20vw] min-w-[10vw]'>Mã Package</th>
-                                    <th className='py-3 px-4 text-left w-[20vw] min-w-[10vw]'>Số sản phẩm</th>
+                                    <th className='py-3 px-4 text-right w-[20vw] min-w-[10vw]'>Số sản phẩm</th>
                                     <th className='py-3 px-4 text-center w-[12vw] min-w-[8vw]'>Hành động</th>
                                 </tr>
                             </thead>

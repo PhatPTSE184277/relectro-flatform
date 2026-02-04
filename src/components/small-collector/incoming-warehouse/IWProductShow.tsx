@@ -18,19 +18,11 @@ const IWProductShow: React.FC<IWProductShowProps & { isLast?: boolean; stt?: num
                 </span>
             </td>
             <td className='py-3 px-4 font-medium w-[14vw] min-w-20'>
-                <div className='text-gray-700 font-semibold'>
+                <div className='text-gray-700 font-normal'>
                     {product.categoryName || 'Không rõ'}
                 </div>
             </td>
-            <td className='py-3 px-4 text-xs w-[14vw] min-w-20'>
-                {product.qrCode ? (
-                    <span className='text-gray-700 font-mono'>
-                        {product.qrCode}
-                    </span>
-                ) : (
-                    <span className='text-gray-400 font-normal'>Chưa có</span>
-                )}
-            </td>
+            {/* QR column removed per request */}
             <td className='py-3 px-4 text-gray-700 w-[12vw] min-w-[70px]'>
                 {product.brandName || 'Không rõ'}
             </td>

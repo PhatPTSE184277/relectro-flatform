@@ -21,6 +21,7 @@ interface DistributeProductContextType {
     distributedProducts: AssignedProduct[];
     undistributedProducts: any[];
     allUndistributedProducts: any[];
+    allUndistributedProductIds: string[];
     companies: any[];
     collectionCompanies: any[];
     scpProducts: any[];
@@ -33,6 +34,7 @@ interface DistributeProductContextType {
     setActiveFilter: (filter: 'undistributed' | 'distributed') => void;
     fetchDistributedProducts: (workDate: string, page?: number, pageSize?: number) => Promise<void>;
     fetchUndistributedProducts: (workDate: string, page?: number, limit?: number) => Promise<void>;
+    updatePagination: (newPage: number) => void;
     fetchCompanies: (workDate: string) => Promise<void>;
     fetchCollectionCompanies: (page?: number, limit?: number) => Promise<void>;
     clearUndistributedProducts: () => void;
@@ -57,6 +59,7 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
     const [distributedProducts, setDistributedProducts] = useState<AssignedProduct[]>([]);
     const [undistributedProducts, setUndistributedProducts] = useState<any[]>([]);
     const [allUndistributedProducts, setAllUndistributedProducts] = useState<any[]>([]);
+    const [allUndistributedProductIds, setAllUndistributedProductIds] = useState<string[]>([]);
     const [companies, setCompanies] = useState<any[]>([]);
     const [collectionCompanies, setCollectionCompanies] = useState<any[]>([]);
     const [scpProducts, setScpProducts] = useState<any[]>([]);
@@ -117,6 +120,10 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
             // Store all products
             setAllUndistributedProducts(allProducts);
             
+            // Store all product IDs for selection
+            const allProductIds = allProducts.map(p => p.productId).filter(Boolean);
+            setAllUndistributedProductIds(allProductIds);
+            
             // Calculate total pages
             const totalPagesCalc = Math.max(1, Math.ceil(allProducts.length / currentLimit));
             setTotalPages(totalPagesCalc);
@@ -130,6 +137,7 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
         } catch (err) {
             console.log(err);
             setAllUndistributedProducts([]);
+            setAllUndistributedProductIds([]);
             setUndistributedProducts([]);
             setTotalPages(1);
         } finally {
@@ -139,9 +147,19 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
 
     const clearUndistributedProducts = useCallback(() => {
         setAllUndistributedProducts([]);
+        setAllUndistributedProductIds([]);
         setUndistributedProducts([]);
         setTotalPages(1);
     }, []);
+
+    const updatePagination = useCallback((newPage: number) => {
+        // Client-side pagination: slice array for new page
+        const startIndex = (newPage - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        const paginatedProducts = allUndistributedProducts.slice(startIndex, endIndex);
+        setUndistributedProducts(paginatedProducts);
+        setPage(newPage);
+    }, [allUndistributedProducts, pageSize]);
 
     const fetchCompanies = useCallback(async (workDate: string) => {
         setCompanyLoading(true);
@@ -228,6 +246,7 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
         distributedProducts,
         undistributedProducts,
         allUndistributedProducts,
+        allUndistributedProductIds,
         companies,
         collectionCompanies,
         scpProducts,
@@ -240,6 +259,7 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
         setActiveFilter,
         fetchDistributedProducts,
         fetchUndistributedProducts,
+        updatePagination,
         fetchCompanies,
         fetchCollectionCompanies,
         fetchSCPProducts,

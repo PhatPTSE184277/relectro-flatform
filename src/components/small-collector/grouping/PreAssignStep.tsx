@@ -145,6 +145,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 itemsPerPage={itemsPerPage}
                 showCheckbox={true}
                 selectedProductIds={selectedProductIds}
+                allProductIds={allProductIds}
                 onToggleSelect={handleToggleSelect}
                 onToggleAll={handleToggleAll}
                 maxHeight={54}

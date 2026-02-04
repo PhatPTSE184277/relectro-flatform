@@ -36,14 +36,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
         {
             icon: <CheckCircle2 size={14} className="text-primary-400" />,
             label: 'Trạng thái',
-            value: (
-                <span
-                    className="flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-primary-600 text-white"
-                    style={{ minWidth: 110 }}
-                >
-                    {pkg.status}
-                </span>
-            ),
+            value: pkg.status,
         },
     ];
 
@@ -85,7 +78,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                             <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
                                 <List className='w-5 h-5 text-primary-500' />
                             </span>
-                            Danh sách sản phẩm
+                            Danh sách sản phẩm ({pkg.products.totalItems})
                         </h3>
                         <div className='flex-1 overflow-hidden'>
                             <ProductList 
