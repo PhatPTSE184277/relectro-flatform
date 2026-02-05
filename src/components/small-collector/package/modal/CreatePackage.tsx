@@ -33,6 +33,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     const [scannedProducts, setScannedProducts] = useState<ScannedProduct[]>(
         []
     );
+    const [newlyAdded, setNewlyAdded] = useState<Set<string>>(new Set());
     const [loading, setLoading] = useState(false);
     const [toastOpen, setToastOpen] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
@@ -41,6 +42,20 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     // const packageNameRef = useRef<HTMLInputElement>(null);
     const lastProductRef = useRef<HTMLTableRowElement>(null);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+    // Helper to show toast and immediately focus input
+    const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+        setToastMessage(message);
+        setToastType(type);
+        setToastOpen(true);
+        try {
+            inputRef.current?.focus();
+            requestAnimationFrame(() => inputRef.current?.focus());
+            setTimeout(() => inputRef.current?.focus(), 50);
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
     useEffect(() => {
         if (open) {
@@ -75,10 +90,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
         // Check if already scanned
         if (scannedProducts.some((p) => p.qrCode === qrCode)) {
             setQrCodeInput('');
-            inputRef.current?.focus();
-            setToastMessage('Mã này đã có trong danh sách');
-            setToastType('error');
-            setToastOpen(true);
+            showToast('Mã này đã có trong danh sách', 'error');
             return;
         }
 
@@ -109,6 +121,8 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                     ...prev
                 ];
                 setSelectedIndex(0); // newly added product is at the top
+                // mark only this qr as the latest newly added
+                setNewlyAdded(new Set(product.qrCode ? [product.qrCode] : []));
                 return updated;
             });
 
@@ -117,7 +131,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
         } catch (err: any) {
             console.error('Scan QR error', err);
             setQrCodeInput('');
-            inputRef.current?.focus();
+            showToast(err?.message || 'Lỗi khi quét mã', 'error');
         } finally {
             setLoading(false);
         }
@@ -125,6 +139,11 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
 
     const handleRemoveProduct = (qrCode: string) => {
         setScannedProducts((prev) => prev.filter((p) => p.qrCode !== qrCode));
+        setNewlyAdded((s) => {
+            const copy = new Set(s);
+            copy.delete(qrCode);
+            return copy;
+        });
     };
 
     const handleSubmit = () => {
@@ -146,6 +165,12 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
             inputRef.current?.focus();
         }
     }, [scannedProducts]);
+
+    useEffect(() => {
+        if (open) {
+            setNewlyAdded(new Set());
+        }
+    }, [open]);
 
     const handleClose = () => {
         setPackageId('');
@@ -253,6 +278,8 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                             onRemoveProduct={handleRemoveProduct}
                             selectedIndex={selectedIndex}
                             lastProductRef={lastProductRef}
+                            newItems={newlyAdded}
+                            striped={false}
                         />
                     </div>
                 </div>

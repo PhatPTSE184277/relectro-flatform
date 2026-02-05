@@ -4,11 +4,15 @@ import React from 'react';
 interface DistributeProductFilterProps {
     activeFilter: 'undistributed' | 'distributed';
     onFilterChange: (filter: 'undistributed' | 'distributed') => void;
+    undistributedCount?: number;
+    distributedCount?: number;
 }
 
 const DistributeProductFilter: React.FC<DistributeProductFilterProps> = ({
     activeFilter,
-    onFilterChange
+    onFilterChange,
+    undistributedCount,
+    distributedCount
 }) => {
     return (
         <div className="bg-white rounded-2xl shadow border border-gray-100 px-3 py-2 mb-6">
@@ -24,7 +28,7 @@ const DistributeProductFilter: React.FC<DistributeProductFilterProps> = ({
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Chưa chia
+                    {`Chưa chia${typeof undistributedCount === 'number' ? ` (${undistributedCount})` : ''}`}
                 </button>
                 <button
                     onClick={() => onFilterChange('distributed')}
@@ -34,7 +38,7 @@ const DistributeProductFilter: React.FC<DistributeProductFilterProps> = ({
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Đã chia
+                    {`Đã chia${typeof distributedCount === 'number' ? ` (${distributedCount})` : ''}`}
                 </button>
             </div>
         </div>

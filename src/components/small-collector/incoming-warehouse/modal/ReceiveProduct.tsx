@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-'use client';
+ 'use client';
 import React, { useState, useRef, useEffect } from 'react';
+import Toast from '@/components/ui/Toast';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
 import { X, Package as PackageIcon, ArrowRight } from 'lucide-react';
 import { getProductByQRCode, updatePointsTransaction } from '@/services/small-collector/IWProductService';
@@ -14,6 +15,8 @@ interface ReceiveProductProps {
         description: string | null;
         point: number;
     }) => void;
+    // When true, do not call onConfirm (no PUT) and show a toast marking the scan only
+    skipPutOnScan?: boolean;
 }
 
 interface ScannedProduct {
@@ -30,10 +33,12 @@ interface ScannedProduct {
 const ReceiveProduct: React.FC<ReceiveProductProps> = ({
     open,
     onClose,
-    onConfirm
+    onConfirm,
+    skipPutOnScan,
 }) => {
     const [qrCode, setQrCode] = useState('');
     const [scannedProducts, setScannedProducts] = useState<ScannedProduct[]>([]);
+    const [latestQr, setLatestQr] = useState<string | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<ScannedProduct | null>(null);
     const [loading, setLoading] = useState(false);
     const [reasonForChange, setReasonForChange] = useState('');
@@ -43,11 +48,39 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
 
     const qrInputRef = useRef<HTMLInputElement>(null);
 
+    // Toast state for scan-only feedback
+    const [toastOpen, setToastOpen] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState<'success' | 'error'>('success');
+
+    // Helper to show toast and immediately refocus the QR input
+    const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+        setToastMessage(message);
+        setToastType(type);
+        setToastOpen(true);
+        // ensure input gets focus immediately and after layout updates
+        try {
+            qrInputRef.current?.focus();
+            requestAnimationFrame(() => qrInputRef.current?.focus());
+            setTimeout(() => qrInputRef.current?.focus(), 50);
+        } catch (e) {
+            console.log(e)
+        }
+    };
+
+    // Ensure the QR input is focused after each successful scan (unless edit modal is open)
+    useEffect(() => {
+        if (!showEditModal) {
+            setTimeout(() => qrInputRef.current?.focus(), 50);
+        }
+    }, [scannedProducts, showEditModal]);
+
     useEffect(() => {
         if (open) {
             // Reset form when modal opens
             setQrCode('');
             setScannedProducts([]);
+                setLatestQr(null);
             setSelectedProduct(null);
             setReasonForChange('');
             setPoint(0);
@@ -60,26 +93,22 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
     const handleScanQR = async (e: React.FormEvent) => {
         e.preventDefault();
         const code = qrCode.trim();
-
         if (!code) {
             return;
         }
-
         setLoading(true);
         try {
             const product = await getProductByQRCode(code);
-
             // Check if product status is valid for receiving
             const normalizedStatus = product.status?.toLowerCase() || '';
             if (
                 !normalizedStatus.includes('đã thu') &&
                 normalizedStatus !== 'collected'
             ) {
+                showToast('Sản phẩm đã được nhân rồi!', 'error');
                 setQrCode('');
-                qrInputRef.current?.focus();
                 return;
             }
-
             const newProduct: ScannedProduct = {
                 productId: product.productId,
                 categoryName: product.categoryName,
@@ -90,34 +119,34 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                 estimatePoint: product.estimatePoint,
                 productImages: product.productImages
             };
-
-            // Add to list (max 4, remove first if full)
             setScannedProducts((prev) => {
                 const newList = [...prev, newProduct];
                 if (newList.length > 4) {
-                    return newList.slice(1); // Remove first, keep last 4
+                    return newList.slice(1);
                 }
                 return newList;
             });
-
-            // Immediately call receive API (parent) with default point
-            try {
-                onConfirm({
-                    qrCode: newProduct.qrCode,
-                    productId: newProduct.productId,
-                    description: null,
-                    point: newProduct.estimatePoint || 0
-                });
-            } catch (err) {
-                console.error('onConfirm handler error', err);
+            setLatestQr(newProduct.qrCode);
+            if (skipPutOnScan) {
+            } else {
+                try {
+                    onConfirm({
+                        qrCode: newProduct.qrCode,
+                        productId: newProduct.productId,
+                        description: null,
+                        point: newProduct.estimatePoint || 0,
+                    });
+                } catch (err: any) {
+                    console.error('onConfirm handler error', err);
+                    showToast(err?.message || 'Lỗi khi nhận hàng', 'error');
+                }
             }
-
             setQrCode('');
-            qrInputRef.current?.focus();
+            setTimeout(() => { qrInputRef.current?.focus(); }, 0);
         } catch (err: any) {
             console.error('Scan QR error', err);
+            showToast(err?.message || 'Không tìm thấy sản phẩm với mã này!', 'error');
             setQrCode('');
-            qrInputRef.current?.focus();
         } finally {
             setLoading(false);
         }
@@ -183,8 +212,15 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
 
     if (!open) return null;
 
+    // Refocus input after toast closes (for error and success)
+    const handleToastClose = () => {
+        setTimeout(() => { qrInputRef.current?.focus(); }, 0);
+        setToastOpen(false);
+    };
+
     return (
         <>
+            <Toast open={toastOpen} type={toastType} message={toastMessage} onClose={handleToastClose} duration={2500} />
             {/* Main Modal - Scan QR */}
             <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
                 {/* Overlay */}
@@ -253,15 +289,18 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                     Sản phẩm đã quét ({scannedProducts.length}/4)
                                 </h3>
                                 <div className='flex flex-wrap gap-2'>
-                                    {scannedProducts.map((product) => (
-                                        <button
-                                            key={product.qrCode}
-                                            onClick={() => handleTabClick(product)}
-                                            className='px-4 py-2 bg-primary-100 hover:bg-primary-200 text-primary-700 rounded-lg font-medium transition cursor-pointer border border-primary-300 text-sm'
-                                        >
-                                            {product.qrCode}
-                                        </button>
-                                    ))}
+                                    {scannedProducts.map((product) => {
+                                        const isLatest = product.qrCode === latestQr;
+                                        return (
+                                            <button
+                                                key={product.qrCode}
+                                                onClick={() => handleTabClick(product)}
+                                                className={`px-4 py-2 rounded-lg font-medium transition cursor-pointer text-sm border ${isLatest ? 'bg-green-100 text-green-700 border-green-300 hover:bg-green-200' : 'bg-primary-100 hover:bg-primary-200 text-primary-700 border-primary-300'}`}
+                                            >
+                                                {product.qrCode}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
@@ -296,7 +335,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                     ></div>
 
                     {/* Modal container */}
-                    <div className='relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
+                    <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
                         {/* Header */}
                         <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
                             <div>
@@ -403,12 +442,6 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                         {/* Footer */}
                         <div className='flex justify-between items-center gap-3 p-5 border-t border-primary-100 bg-white'>
                             <div className='flex justify-end w-full gap-3'>
-                                <button
-                                    onClick={handleCloseEditModal}
-                                    className='px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium cursor-pointer'
-                                >
-                                    Hủy
-                                </button>
                                 <button
                                     onClick={handleSubmit}
                                     disabled={loading}

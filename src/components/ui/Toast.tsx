@@ -25,7 +25,7 @@ const Toast: React.FC<ToastProps> = ({
   if (!open) return null;
 
   return (
-    <div className="fixed top-4 right-4 z-50 animate-fade-in">
+    <div className="fixed top-4 right-4 z-9999 animate-fade-in">
       <div
         className={`rounded-xl shadow-2xl p-4 min-w-[320px] border-l-4 ${
           type === 'success'

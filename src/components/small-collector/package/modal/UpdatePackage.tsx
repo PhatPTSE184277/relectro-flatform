@@ -42,6 +42,20 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
     const lastProductRef = useRef<HTMLTableRowElement>(null);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
+    // Helper to show toast and immediately focus input
+    const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+        setToastMessage(message);
+        setToastType(type);
+        setToastOpen(true);
+        try {
+            inputRef.current?.focus();
+            requestAnimationFrame(() => inputRef.current?.focus());
+            setTimeout(() => inputRef.current?.focus(), 50);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
     useEffect(() => {
         if (open && initialData) {
             // Load existing products
@@ -91,11 +105,8 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
 
         // Check if already scanned
         if (scannedProducts.some((p) => p.qrCode === qrCode)) {
+            showToast('Mã này đã có trong danh sách', 'error');
             setQrCodeInput('');
-            inputRef.current?.focus();
-            setToastMessage('Mã này đã có trong danh sách');
-            setToastType('error');
-            setToastOpen(true);
             return;
         }
 
@@ -109,8 +120,8 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                 !normalizedStatus.includes('nhập') &&
                 normalizedStatus !== 'received'
             ) {
+                showToast('Sản phẩm không ở trạng thái hợp lệ để đóng gói', 'error');
                 setQrCodeInput('');
-                inputRef.current?.focus();
                 return;
             }
 
@@ -139,8 +150,8 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
             inputRef.current?.focus();
         } catch (err: any) {
             console.error('Scan QR error', err);
+            showToast(err?.message || 'Lỗi khi quét mã', 'error');
             setQrCodeInput('');
-            inputRef.current?.focus();
         } finally {
             setLoading(false);
         }
@@ -309,6 +320,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                 }
             `}</style>
 
+            {/* Toast Notification */}
             <Toast
                 open={toastOpen}
                 type={toastType}

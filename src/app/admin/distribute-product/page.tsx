@@ -48,6 +48,10 @@ const DistributeProductPage: React.FC = () => {
         clearUndistributedProducts
     } = useDistributeProductContext();
 
+    const distributedTotal = companies && Array.isArray(companies)
+        ? companies.reduce((sum: number, c: any) => sum + (c.totalOrders || 0), 0)
+        : 0;
+
     const { user } = useAuth();
     const [selectedDate, setSelectedDate] = useState(getTodayString);
     const [showDistributeModal, setShowDistributeModal] = useState(false);
@@ -162,18 +166,16 @@ const DistributeProductPage: React.FC = () => {
         
         // Check if this date is currently being processed
         const isProcessingThisDate = processingDate && processingDate === date;
-        
-        if (activeFilter === 'undistributed') {
-            // Don't fetch if this date is being processed
-            if (!isProcessingThisDate) {
-                fetchUndistributedProducts(date, 1, pageSize);
-            } else {
-                // Clear old data when switching to processing date
-                clearUndistributedProducts();
-            }
+        // Always fetch company(distributed) counts for the selected date
+        // Fetch undistributed products only when the date is not currently processing
+        if (!isProcessingThisDate) {
+            fetchUndistributedProducts(date, 1, pageSize);
         } else {
-            fetchCompanies(date);
+            clearUndistributedProducts();
         }
+
+        // Always fetch companies for distributed counts (so "Đã chia" updates immediately)
+        fetchCompanies(date);
     };
 
     const handleFilterChange = (filter: 'undistributed' | 'distributed') => {
@@ -423,18 +425,16 @@ const DistributeProductPage: React.FC = () => {
     React.useEffect(() => {
         // Check if selected date is currently being processed
         const isProcessingThisDate = processingDate && processingDate === selectedDate;
-        
-        if (activeFilter === 'undistributed') {
-            // Don't fetch if this date is being processed
-            if (!isProcessingThisDate) {
-                fetchUndistributedProducts(selectedDate, page, pageSize);
-            } else {
-                // Clear old data when date is processing
-                clearUndistributedProducts();
-            }
+
+        // Always attempt to fetch undistributed products when the date isn't processing
+        if (!isProcessingThisDate) {
+            fetchUndistributedProducts(selectedDate, page, pageSize);
         } else {
-            fetchCompanies(selectedDate);
+            clearUndistributedProducts();
         }
+
+        // Also always fetch companies so distributed counts are available immediately
+        fetchCompanies(selectedDate);
     }, [selectedDate, activeFilter, page, pageSize, processingDate, fetchUndistributedProducts, fetchCompanies, clearUndistributedProducts]);
 
     return (
@@ -482,6 +482,8 @@ const DistributeProductPage: React.FC = () => {
             <DistributeProductFilter 
                 activeFilter={activeFilter}
                 onFilterChange={handleFilterChange}
+                undistributedCount={allUndistributedProductIds?.length ?? undistributedProducts.length}
+                distributedCount={distributedTotal}
             />
 
             {/* Undistributed Products View */}

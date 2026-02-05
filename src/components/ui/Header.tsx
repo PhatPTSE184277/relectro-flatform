@@ -3,7 +3,8 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { IoLogOutOutline, IoSparklesOutline, IoChevronDownOutline, IoPersonOutline, IoNotificationsOutline, IoMenuOutline } from 'react-icons/io5';
+import { IoLogOutOutline, IoChevronDownOutline, IoPersonOutline, IoNotificationsOutline, IoMenuOutline } from 'react-icons/io5';
+import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { useAppDispatch } from '@/redux/hooks';
 import { logout } from '@/redux/reducers/authReducer';
@@ -211,7 +212,13 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
                             className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold bg-linear-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent flex items-center gap-1.5 sm:gap-2 cursor-pointer whitespace-nowrap"
                             onClick={handleReload}
                         >
-                            <IoSparklesOutline className="text-primary-400 text-lg sm:text-xl md:text-2xl shrink-0" />
+                            <Image
+                                src="/logo.png"
+                                alt="Ewise logo"
+                                width={32}
+                                height={32}
+                                className="shrink-0 rounded-full"
+                            />
                             <span className='truncate max-w-[150px] sm:max-w-[200px] md:max-w-none'>{finalTitle}</span>
                         </Link>
                     </div>
