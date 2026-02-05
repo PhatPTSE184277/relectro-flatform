@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, ScanLine } from 'lucide-react';
 import { getProductByQRCode } from '@/services/small-collector/IWProductService';
 import ProductList from './ProductList';
+import Toast from '@/components/ui/Toast';
 
 interface UpdatePackageProps {
     open: boolean;
@@ -34,6 +35,9 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
     const [scannedProducts, setScannedProducts] = useState<ScannedProduct[]>([]);
     const [newlyAdded, setNewlyAdded] = useState<Set<string>>(new Set());
     const [loading, setLoading] = useState(false);
+    const [toastOpen, setToastOpen] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState<'success' | 'error'>('error');
     const inputRef = useRef<HTMLInputElement>(null);
     const lastProductRef = useRef<HTMLTableRowElement>(null);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -89,6 +93,9 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
         if (scannedProducts.some((p) => p.qrCode === qrCode)) {
             setQrCodeInput('');
             inputRef.current?.focus();
+            setToastMessage('Mã này đã có trong danh sách');
+            setToastType('error');
+            setToastOpen(true);
             return;
         }
 
@@ -301,6 +308,13 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                     animation: fadeIn 0.3s ease-out;
                 }
             `}</style>
+
+            <Toast
+                open={toastOpen}
+                type={toastType}
+                message={toastMessage}
+                onClose={() => setToastOpen(false)}
+            />
         </div>
     );
 };

@@ -1,9 +1,8 @@
 import React from 'react';
 import { Eye } from 'lucide-react';
-import { Collector } from '@/types';
 
 interface CollectorShowProps {
-    collector: Collector;
+    collector: any;
     onView: () => void;
     isLast?: boolean;
     index?: number;
@@ -44,10 +43,8 @@ const CollectorShow: React.FC<CollectorShowProps> = ({
                 )}
             </td>
 
-            <td className='py-3 px-4 text-center w-40'>
-                <span className='px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700'>
-                    Điểm {collector.smallCollectionPointId}
-                </span>
+            <td className='py-3 px-4 text-left w-40 text-gray-700 text-sm'>
+                {collector.smallCollectionPointName || `Điểm ${collector.smallCollectionPointId}`}
             </td>
 
             <td className='py-3 px-4 w-24'>

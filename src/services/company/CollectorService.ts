@@ -1,11 +1,10 @@
 import axios from '@/lib/axios';
-import { Collector } from '@/types';
 
 export const getCollectorsByCompany = async (
     companyId: string,
     page: number = 1,
     limit: number = 10
-): Promise<Collector[]> => {
+): Promise<any[]> => {
     const response = await axios.get(`/collectors/company/${companyId}`, {
         params: { page, limit }
     });
@@ -14,7 +13,7 @@ export const getCollectorsByCompany = async (
 
 export const getCollectorById = async (
     collectorId: string
-): Promise<Collector> => {
+): Promise<any> => {
     const response = await axios.get(`/collectors/${collectorId}`);
     return response.data;
 };

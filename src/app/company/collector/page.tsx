@@ -6,7 +6,6 @@ import { useCollectorContext } from '@/contexts/company/CollectorContext';
 import CollectorList from '@/components/company/collector/CollectorList';
 import CollectorDetail from '@/components/company/collector/modal/CollectorDetail';
 import SearchBox from '@/components/ui/SearchBox';
-import { Collector } from '@/types';
 import { Users } from 'lucide-react';
 import ImportCollectorModal from '@/components/company/collector/modal/ImportCollectorModal';
 import { useAuth } from '@/hooks/useAuth';
@@ -15,7 +14,7 @@ import Pagination from '@/components/ui/Pagination';
 const CollectorPage: React.FC = () => {
     const { user } = useAuth();
     const { collectors, loading, fetchCollectors, importCollectors, page, limit, total, setPage } = useCollectorContext();
-    const [selectedCollector, setSelectedCollector] = useState<Collector | null>(null);
+    const [selectedCollector, setSelectedCollector] = useState<any | null>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [search, setSearch] = useState('');
     const [showImportModal, setShowImportModal] = useState(false);
@@ -28,7 +27,7 @@ const CollectorPage: React.FC = () => {
         }
     }, [fetchCollectors, companyId, page, limit]);
 
-    const handleViewDetail = (collector: Collector) => {
+    const handleViewDetail = (collector: any) => {
         setSelectedCollector(collector);
         setShowDetailModal(true);
     };

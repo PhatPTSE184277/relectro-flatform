@@ -61,3 +61,18 @@ export const getProductById = async (id: string): Promise<Product> => {
     const response = await axios.get(`/products/${id}`);
     return response.data;
 };
+
+// Update points transaction for a product
+export const updatePointsTransaction = async (
+    productId: string,
+    newPointValue: number,
+    reasonForUpdate?: string
+): Promise<any> => {
+    const body = {
+        newPointValue: newPointValue,
+        reasonForUpdate: reasonForUpdate || ''
+    };
+
+    const response = await axios.put(`/points-transaction/${productId}`, body);
+    return response.data;
+};

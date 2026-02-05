@@ -1,14 +1,11 @@
 'use client';
 
-
 import React from 'react';
 import { User, Mail, Phone, MapPin } from 'lucide-react';
-import { Collector } from '@/types';
 import SummaryCard from '@/components/ui/SummaryCard';
-import Image from 'next/image';
 
 interface CollectorDetailProps {
-    collector: Collector | null;
+    collector: any | null;
     onClose: () => void;
 }
 
@@ -57,32 +54,26 @@ const CollectorDetail: React.FC<CollectorDetailProps> = ({ collector, onClose })
 
                 {/* Main content */}
                 <div className="flex-1 overflow-y-auto p-6">
-                    {/* Avatar và thông tin cơ bản */}
-                    <div className="flex items-center gap-6 mb-6 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-                        <Image
-                            src={collector.avatar || 'https://via.placeholder.com/100'}
-                            alt={collector.name}
-                            width={100} // Added width property
-                            height={100} // Added height property
-                            className="w-24 h-24 rounded-full object-cover border-4 border-primary-200 shadow-md"
-                        />
-                        <div>
-                            <h3 className="text-2xl font-bold text-gray-900">{collector.name}</h3>
-                            <span className="inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                                Điểm thu gom: {collector.smallCollectionPointId}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="mt-10">
+                    {/* Thông tin tóm tắt nhân viên: dùng SummaryCard cho toàn bộ */}
+                    <div className="mb-6">
                         <SummaryCard
                             label={
                                 <span className="flex items-center gap-2">
                                     <User size={14} className="w-4 h-4 text-primary-500" />
-                                    Thông tin liên hệ
+                                    Thông tin nhân viên
                                 </span>
                             }
                             items={[
+                                {
+                                    icon: <User size={14} className="text-primary-400" />,
+                                    label: 'Nhân viên',
+                                    value: (
+                                        <div>
+                                            <div className='text-base font-semibold text-gray-900'>{collector.name}</div>
+                                        </div>
+                                    ),
+                                    colSpan: 2,
+                                },
                                 {
                                     icon: <Mail size={14} className="text-primary-400" />,
                                     label: 'Email',
@@ -96,7 +87,7 @@ const CollectorDetail: React.FC<CollectorDetailProps> = ({ collector, onClose })
                                 {
                                     icon: <MapPin size={14} className="text-primary-400" />,
                                     label: 'Điểm thu gom',
-                                    value: `Điểm thu gom số ${collector.smallCollectionPointId}`,
+                                    value: collector.smallCollectionPointName || 'Chưa có',
                                 },
                             ]}
                         />

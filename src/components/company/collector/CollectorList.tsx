@@ -1,12 +1,11 @@
 import React from 'react';
 import CollectorShow from './CollectorShow';
 import CollectorTableSkeleton from './CollectorTableSkeleton';
-import { Collector } from '@/types';
 
 interface CollectorListProps {
-    collectors: Collector[];
+    collectors: any[];
     loading: boolean;
-    onViewDetail: (collector: Collector) => void;
+    onViewDetail: (collector: any) => void;
 }
 
 const CollectorList: React.FC<CollectorListProps> = ({
@@ -27,7 +26,7 @@ const CollectorList: React.FC<CollectorListProps> = ({
                                         <th className='py-3 px-4 text-left w-60'>Nhân viên</th>
                                         <th className='py-3 px-4 text-left w-60'>Email</th>
                                         <th className='py-3 px-4 text-left w-40'>Số điện thoại</th>
-                                        <th className='py-3 px-4 text-center w-40'>Điểm thu gom</th>
+                                        <th className='py-3 px-4 text-left w-40'>Điểm thu gom</th>
                                         <th className='py-3 px-4 text-center w-24'>Hành động</th>
                                     </tr>
                                 </thead>

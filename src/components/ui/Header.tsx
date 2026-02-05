@@ -170,6 +170,27 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
         }
     };
 
+    // Translate role to Vietnamese for greeting
+    const translateRole = (role?: string) => {
+        if (!role) return '';
+        switch (role) {
+            case 'Admin':
+                return 'Quản trị viên';
+            case 'AdminWarehouse':
+                return 'Quản trị kho';
+            case 'AdminCompany':
+                return 'Quản trị công ty';
+            case 'Collector':
+                return 'Nhân viên thu gom';
+            case 'RecyclingCompany':
+                return 'Công ty tái chế';
+            case 'Shipper':
+                return 'Nhân viên vận chuyển';
+            default:
+                return role;
+        }
+    };
+
     return (
         <nav className='bg-white shadow-sm sticky top-0 z-50'>
             <div className='max-w-full px-3 sm:px-4 md:px-6 lg:px-8'>
@@ -198,9 +219,15 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
                     <div className='flex items-center space-x-1.5 sm:space-x-3 md:space-x-4'>
                         {isAuthenticated && user && (
                             <>
+                                {user.role && (
+                                    <span className='hidden sm:inline-flex items-center text-sm text-primary-600 bg-primary-50 rounded-full px-3 py-1 font-medium mr-2 shadow-sm'>
+                                        Chào mừng {translateRole(user.role)}
+                                    </span>
+                                )}
                                 {/* Notification Bell: For Admin, AdminWarehouse, AdminCompany, RecyclingCompany */}
                                 {['Admin', 'AdminWarehouse'].includes(user.role) && (
                                     <div className='relative' ref={notifDropdownRef}>
+
                                         <button
                                             onClick={() => setNotifDropdownOpen((v) => !v)}
                                             className='relative p-1.5 sm:p-2 rounded-full hover:bg-primary-50 transition cursor-pointer'

@@ -224,7 +224,6 @@ const IncomingWarehousePage: React.FC = () => {
                     onClose={() => setShowReceiveModal(false)}
                     onConfirm={async (data) => {
                         await handleReceive(data);
-                        setShowReceiveModal(false);
                     }}
                 />
             )}

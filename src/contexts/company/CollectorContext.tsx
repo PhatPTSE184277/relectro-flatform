@@ -2,12 +2,11 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
 import { getCollectorsByCompany, getCollectorById, importCollectorsExcel } from '@/services/company/CollectorService';
-import { Collector } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 
 // Add a type for paginated response
 interface CollectorPaginatedResponse {
-	data: Collector[];
+	data: any[];
 	totalItems: number;
 	totalPages: number;
 	page: number;
@@ -16,8 +15,8 @@ interface CollectorPaginatedResponse {
 
 interface CollectorContextType {
 	loading: boolean;
-	collectors: Collector[];
-	selectedCollector: Collector | null;
+	collectors: any[];
+	selectedCollector: any | null;
 	error: string | null;
 	page: number;
 	limit: number;
@@ -35,8 +34,8 @@ const CollectorContext = createContext<CollectorContextType | undefined>(undefin
 export const CollectorProvider = ({ children }: { children: ReactNode }) => {
 	const { user } = useAuth();
 	const [loading, setLoading] = useState(false);
-	const [collectors, setCollectors] = useState<Collector[]>([]);
-	const [selectedCollector, setSelectedCollector] = useState<Collector | null>(null);
+	const [collectors, setCollectors] = useState<any[]>([]);
+	const [selectedCollector, setSelectedCollector] = useState<any | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(10);
