@@ -10,25 +10,25 @@ import React, {
 } from 'react';
 import {
   filterCollectionCompanies,
-  filterProducts,
-  getProductTimeline
+  filterPackages,
+  getPackageDetail
 } from '@/services/admin/TrackingService';
 
 
 interface TrackingContextType {
   companies: any[];
-  products: any[];
-  timeline: any[];
+  packages: any[];
+  packageDetail: any | null;
   loadingCompanies: boolean;
-  loadingProducts: boolean;
-  loadingTimeline: boolean;
+  loadingPackages: boolean;
+  loadingPackageDetail: boolean;
   error: string | null;
   fetchCompanies: () => Promise<void>;
-  fetchProducts: (companyId: string, fromDate?: string, toDate?: string) => Promise<void>;
-  fetchTimeline: (productId: string) => Promise<void>;
+  fetchPackages: (companyId: string, fromDate?: string, toDate?: string, status?: string) => Promise<void>;
+  fetchPackageDetail: (packageId: string, page?: number, limit?: number) => Promise<void>;
   clearCompanies: () => void;
-  clearProducts: () => void;
-  clearTimeline: () => void;
+  clearPackages: () => void;
+  clearPackageDetail: () => void;
 }
 
 
@@ -39,11 +39,11 @@ type Props = { children: ReactNode };
 
 export const TrackingProvider: React.FC<Props> = ({ children }) => {
   const [companies, setCompanies] = useState<any[]>([]);
-  const [products, setProducts] = useState<any[]>([]);
-  const [timeline, setTimeline] = useState<any[]>([]);
+  const [packages, setPackages] = useState<any[]>([]);
+  const [packageDetail, setPackageDetail] = useState<any | null>(null);
   const [loadingCompanies, setLoadingCompanies] = useState(false);
-  const [loadingProducts, setLoadingProducts] = useState(false);
-  const [loadingTimeline, setLoadingTimeline] = useState(false);
+  const [loadingPackages, setLoadingPackages] = useState(false);
+  const [loadingPackageDetail, setLoadingPackageDetail] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchCompanies = useCallback(async () => {
@@ -61,34 +61,35 @@ export const TrackingProvider: React.FC<Props> = ({ children }) => {
     }
   }, []);
 
-  const fetchProducts = useCallback(async (companyId: string, fromDate?: string, toDate?: string) => {
-    setLoadingProducts(true);
+  const fetchPackages = useCallback(async (companyId: string, fromDate?: string, toDate?: string, status?: string) => {
+    setLoadingPackages(true);
     setError(null);
     try {
-      const params: any = { page: 1, limit: 5000, collectionCompanyId: companyId };
+      const params: any = { page: 1, limit: 10, companyId };
       if (fromDate) params.fromDate = fromDate;
       if (toDate) params.toDate = toDate;
-      const data = await filterProducts(params);
-      setProducts(Array.isArray(data) ? data : (data.data || []));
+      if (status && status !== 'all') params.status = status;
+      const data = await filterPackages(params);
+      setPackages(Array.isArray(data) ? data : (data.data || []));
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Lỗi khi tải danh sách sản phẩm');
-      setProducts([]);
+      setError(err?.response?.data?.message || 'Lỗi khi tải danh sách package');
+      setPackages([]);
     } finally {
-      setLoadingProducts(false);
+      setLoadingPackages(false);
     }
   }, []);
 
-  const fetchTimeline = useCallback(async (productId: string) => {
-    setLoadingTimeline(true);
+  const fetchPackageDetail = useCallback(async (packageId: string, page = 1, limit = 10) => {
+    setLoadingPackageDetail(true);
     setError(null);
     try {
-      const data = await getProductTimeline(productId);
-      setTimeline(data || []);
+      const data = await getPackageDetail(packageId, page, limit);
+      setPackageDetail(data || null);
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Lỗi khi tải timeline sản phẩm');
-      setTimeline([]);
+      setError(err?.response?.data?.message || 'Lỗi khi tải chi tiết package');
+      setPackageDetail(null);
     } finally {
-      setLoadingTimeline(false);
+      setLoadingPackageDetail(false);
     }
   }, []);
 
@@ -96,12 +97,12 @@ export const TrackingProvider: React.FC<Props> = ({ children }) => {
     setCompanies([]);
     setError(null);
   }, []);
-  const clearProducts = useCallback(() => {
-    setProducts([]);
+  const clearPackages = useCallback(() => {
+    setPackages([]);
     setError(null);
   }, []);
-  const clearTimeline = useCallback(() => {
-    setTimeline([]);
+  const clearPackageDetail = useCallback(() => {
+    setPackageDetail(null);
     setError(null);
   }, []);
 
@@ -111,18 +112,18 @@ export const TrackingProvider: React.FC<Props> = ({ children }) => {
 
   const value: TrackingContextType = {
     companies,
-    products,
-    timeline,
+    packages,
+    packageDetail,
     loadingCompanies,
-    loadingProducts,
-    loadingTimeline,
+    loadingPackages,
+    loadingPackageDetail,
     error,
     fetchCompanies,
-    fetchProducts,
-    fetchTimeline,
+    fetchPackages,
+    fetchPackageDetail,
     clearCompanies,
-    clearProducts,
-    clearTimeline
+    clearPackages,
+    clearPackageDetail
   };
 
   return (

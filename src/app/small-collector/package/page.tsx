@@ -4,13 +4,14 @@ import React, { useState, useRef } from 'react';
 import { usePackageContext } from '@/contexts/small-collector/PackageContext';
 import PackageList from '@/components/small-collector/package/PackageList';
 import PackageDetail from '@/components/small-collector/package/modal/PackageDetail';
+import ScanDeliveryQRModal from '@/components/small-collector/package/modal/ScanDeliveryQRModal';
 import CreatePackage from '@/components/small-collector/package/modal/CreatePackage';
 import UpdatePackage from '@/components/small-collector/package/modal/UpdatePackage';
 import ConfirmStatusChange from '@/components/small-collector/package/modal/ConfirmStatusChange';
 import PackageFilter from '@/components/small-collector/package/PackageFilter';
 import SearchBox from '@/components/ui/SearchBox';
 import Pagination from '@/components/ui/Pagination';
-import { Package, Plus } from 'lucide-react';
+import { Package, Plus, QrCode } from 'lucide-react';
 import type { PackageType } from '@/types/Package';
 import { PackageStatus } from '@/enums/PackageStatus';
 
@@ -38,6 +39,7 @@ const PackagePage: React.FC = () => {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [packageToUpdateStatus, setPackageToUpdateStatus] = useState<string | null>(null);
+    const [showScanDeliveryModal, setShowScanDeliveryModal] = useState(false);
 
     const filteredPackages = packages.filter((pkg) => {
         const matchSearch =
@@ -144,6 +146,13 @@ const PackagePage: React.FC = () => {
                 </div>
                 <div className='flex gap-4 items-center flex-1 justify-end'>
                     <button
+                        onClick={() => setShowScanDeliveryModal(true)}
+                        className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md cursor-pointer'
+                    >
+                        <QrCode size={20} />
+                        Quét QR
+                    </button>
+                    <button
                         onClick={() => setShowCreateModal(true)}
                         className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md cursor-pointer'
                     >
@@ -227,6 +236,11 @@ const PackagePage: React.FC = () => {
                     setPackageToUpdateStatus(null);
                 }}
                 onConfirm={handleConfirmUpdateStatus}
+            />
+
+            <ScanDeliveryQRModal
+                open={showScanDeliveryModal}
+                onClose={() => setShowScanDeliveryModal(false)}
             />
         </div>
     );

@@ -1,16 +1,16 @@
 import axios from '@/lib/axios';
 
-export interface ProductFilterParams {
+export interface PackageFilterParams {
 	page?: number;
 	limit?: number;
+	companyId?: string;
 	fromDate?: string;
 	toDate?: string;
-	categoryName?: string;
-	collectionCompanyId?: string;
+	status?: string;
 }
 
-export const filterProducts = async (params: ProductFilterParams) => {
-	const res = await axios.get('/products/admin/filter', {
+export const filterPackages = async (params: PackageFilterParams) => {
+	const res = await axios.get('/packages/company/filter', {
 		params,
 	});
 	return res.data;
@@ -29,7 +29,9 @@ export const filterCollectionCompanies = async (params: CollectionCompanyFilterP
 	return res.data;
 };
 
-export const getProductTimeline = async (productId: string) => {
-	const res = await axios.get(`/tracking/product/${productId}/timeline`);
+export const getPackageDetail = async (packageId: string, page = 1, limit = 10) => {
+	const res = await axios.get(`/packages/${packageId}`, {
+		params: { page, limit },
+	});
 	return res.data;
 };

@@ -12,8 +12,11 @@ const TrackingProductSkeleton: React.FC = () => (
         <td className='py-3 px-4' style={{ width: '180px' }}>
             <div className='h-4 bg-gray-200 rounded w-20' />
         </td>
-        <td className='py-3 px-4' style={{ width: '180px' }}>
+        <td className='py-3 px-4' style={{ width: '160px' }}>
             <div className='h-4 bg-gray-200 rounded w-24' />
+        </td>
+        <td className='py-3 px-4' style={{ width: '120px' }}>
+            <div className='h-4 bg-gray-200 rounded w-16 ml-auto' />
         </td>
         <td className='py-3 px-4 text-center' style={{ width: '120px' }}>
             <div className='h-4 bg-gray-200 rounded w-8 mx-auto' />

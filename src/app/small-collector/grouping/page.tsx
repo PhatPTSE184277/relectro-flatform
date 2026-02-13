@@ -6,6 +6,8 @@ import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import { GitBranch } from 'lucide-react';
 import PreAssignStep from '@/components/small-collector/grouping/PreAssignStep';
 import AssignDayStep from '@/components/small-collector/grouping/AssignDayStep';
+import RejectAssignmentModal from '@/components/small-collector/grouping/modal/RejectAssignmentModal';
+import Toast from '@/components/ui/Toast';
 import { useRouter } from 'next/navigation';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import Pagination from '@/components/ui/Pagination';
@@ -27,12 +29,20 @@ const GroupingPage: React.FC = () => {
         setPendingProductsPage,
         getPreAssignSuggestion,
         createGrouping,
-        calculateRoute
+        calculateRoute,
+        rejectAssignmentHandler
     } = useGroupingContext();
 
     const [activeStep, setActiveStep] = useState(1);
     const [loadThreshold, setLoadThreshold] = useState(80);
     const [selectedDate, setSelectedDate] = useState<string>(getTodayString);
+    const [showRejectModal, setShowRejectModal] = useState(false);
+    const [rejectLoading, setRejectLoading] = useState(false);
+    const [toast, setToast] = useState<{ open: boolean; type: 'success' | 'error'; message: string }>({ 
+        open: false, 
+        type: 'success', 
+        message: '' 
+    });
 
     useEffect(() => {
         console.log('User profile:', user);
@@ -45,6 +55,24 @@ const GroupingPage: React.FC = () => {
 
         const navDate = sessionStorage.getItem('grouping_nav_date');
         const navTrigger = sessionStorage.getItem('grouping_nav_trigger');
+        const rejectTrigger = sessionStorage.getItem('grouping_reject_trigger');
+
+        // Handle reject trigger (from distribution notification)
+        if (rejectTrigger === 'show_reject_modal' && navDate) {
+            // Clear the trigger immediately
+            sessionStorage.removeItem('grouping_reject_trigger');
+            sessionStorage.removeItem('grouping_nav_trigger');
+            sessionStorage.removeItem('grouping_nav_date');
+
+            // Apply date and show modal
+            setSelectedDate(navDate);
+            setPendingProductsPage(1);
+            setShowRejectModal(true);
+
+            // Fetch data with new date
+            fetchPendingProducts(navDate, 1);
+            return;
+        }
 
         // Only apply if triggered from notification
         if (navTrigger === 'notification' && navDate) {
@@ -89,6 +117,33 @@ const GroupingPage: React.FC = () => {
             vehicleId: String(assignment.vehicleId)
         }));
         await createGrouping(formattedAssignments);
+    };
+
+    const handleConfirmReject = async (reason: string) => {
+        setRejectLoading(true);
+        try {
+            const result = await rejectAssignmentHandler(reason, selectedDate);
+            
+            setShowRejectModal(false);
+            setToast({
+                open: true,
+                type: 'success',
+                message: result?.message || `Đã từ chối nhận ${result?.data?.totalSuccess || 0} sản phẩm thành công!`
+            });
+
+            // Refresh data after rejection
+            await fetchPendingProducts(selectedDate, 1);
+            await fetchAllProductIds(selectedDate);
+        } catch (error: any) {
+            console.error('Error rejecting assignment:', error);
+            setToast({
+                open: true,
+                type: 'error',
+                message: error?.response?.data?.message || error?.message || 'Không thể từ chối nhận hàng. Vui lòng thử lại!'
+            });
+        } finally {
+            setRejectLoading(false);
+        }
     };
 
     const handleDateChange = (date: string) => {
@@ -141,6 +196,8 @@ const GroupingPage: React.FC = () => {
                         loadThreshold={loadThreshold}
                         setLoadThreshold={setLoadThreshold}
                         onGetSuggestion={handleGetSuggestion}
+                        onReject={() => setShowRejectModal(true)}
+                        rejectLoading={rejectLoading}
                         page={pendingProductsPage}
                         itemsPerPage={10}
                         workDate={selectedDate}
@@ -164,6 +221,24 @@ const GroupingPage: React.FC = () => {
                     calculateRoute={calculateRoute}
                 />
             )}
+
+            {/* Reject Assignment Modal */}
+            <RejectAssignmentModal
+                open={showRejectModal}
+                onClose={() => setShowRejectModal(false)}
+                onConfirm={handleConfirmReject}
+                loading={rejectLoading}
+                productCount={pendingProductsData?.totalItems || 0}
+                workDate={selectedDate}
+            />
+
+            {/* Toast */}
+            <Toast
+                open={toast.open}
+                type={toast.type}
+                message={toast.message}
+                onClose={() => setToast({ ...toast, open: false })}
+            />
         </div>
     );
 };

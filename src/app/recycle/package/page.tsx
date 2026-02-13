@@ -2,16 +2,18 @@
 
 import React, { useState } from 'react';
 import { useRecyclerPackageContext } from '@/contexts/recycle/PackageContext';
+import { useQRContext } from '@/contexts/recycle/QRContext';
 import { PackageType } from '@/types/Package';
 import { PackageStatus } from '@/enums/PackageStatus';
 import PackageList from '@/components/recycle/package/PackageList';
 import PackageDetail from '@/components/recycle/package/modal/PackageDetail';
 import ScanPackageModal from '@/components/recycle/package/modal/ScanPackageModal';
 import ScanProductModal from '@/components/recycle/package/modal/ScanProductModal';
+import QRGenerateModal from '@/components/recycle/qrcode/QRGenerateModal';
 import PackageFilter from '@/components/recycle/package/PackageFilter';
 import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
-import { Package, ScanLine } from 'lucide-react';
+import { Package, ScanLine, QrCode } from 'lucide-react';
 
 const RecyclePackagePage: React.FC = () => {
     const {
@@ -28,10 +30,12 @@ const RecyclePackagePage: React.FC = () => {
         allStats
     } = useRecyclerPackageContext();
 
+    const { qrData, loading: qrLoading, generateQR } = useQRContext();
     const [search, setSearch] = useState('');
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showScanModal, setShowScanModal] = useState(false);
     const [showCheckProductsModal, setShowCheckProductsModal] = useState(false);
+    const [showQRModal, setShowQRModal] = useState(false);
 
     const filteredPackages = packages.filter((pkg) => {
         const matchSearch =
@@ -87,6 +91,16 @@ const RecyclePackagePage: React.FC = () => {
                     </h1>
                 </div>
                 <div className='flex gap-4 items-center flex-1 justify-end'>
+                    <button
+                        onClick={async () => {
+                            await generateQR();
+                            setShowQRModal(true);
+                        }}
+                        className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md cursor-pointer'
+                    >
+                        <QrCode size={20} />
+                        Tạo QR
+                    </button>
                     <button
                         onClick={() => setShowScanModal(true)}
                         className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md cursor-pointer'
@@ -162,6 +176,14 @@ const RecyclePackagePage: React.FC = () => {
                 onConfirm={handleScanPackage}
                 title='Nhận hàng tái chế'
                 confirmText='Xác nhận'
+            />
+
+            {/* QR Generate Modal */}
+            <QRGenerateModal
+                open={showQRModal}
+                onClose={() => setShowQRModal(false)}
+                qrData={qrData}
+                loading={qrLoading}
             />
         </div>
     );

@@ -9,6 +9,7 @@ import { CollectionRouteProvider } from '@/contexts/small-collector/CollectionRo
 import { GroupingProvider } from '@/contexts/small-collector/GroupingContext';
 import { IWProductProvider } from '@/contexts/small-collector/IWProductContext';
 import { PackageProvider } from '@/contexts/small-collector/PackageContext';
+import { SmallCollectorQRProvider } from '@/contexts/small-collector/QRContext';
 import { UserProvider } from '@/contexts/UserContext';
 import { DashboardProvider } from '@/contexts/small-collector/DashboardContext';
 import { NotificationProvider, useNotifications } from '@/contexts/NotificationContext';
@@ -58,13 +59,15 @@ export default function SmallCollectorLayout({
                 <CollectionRouteProvider>
                     <IWProductProvider>
                         <PackageProvider>
-                            <UserProvider>
-                                <CategoryProvider>
-                                    <DashboardProvider>
-                                        <LayoutContent>{children}</LayoutContent>
-                                    </DashboardProvider>
-                                </CategoryProvider>
-                            </UserProvider>
+                            <SmallCollectorQRProvider>
+                                <UserProvider>
+                                    <CategoryProvider>
+                                        <DashboardProvider>
+                                            <LayoutContent>{children}</LayoutContent>
+                                        </DashboardProvider>
+                                    </CategoryProvider>
+                                </UserProvider>
+                            </SmallCollectorQRProvider>
                         </PackageProvider>
                     </IWProductProvider>
                 </CollectionRouteProvider>

@@ -196,3 +196,15 @@ export const previewVehicles = async (pointId: string, workDate: string): Promis
     });
     return response.data;
 };
+
+// Reject assignment - Trả hàng về cho admin
+export interface RejectAssignmentPayload {
+    smallCollectionPointId: string;
+    reason: string;
+    productIds: string[];
+}
+
+export const rejectAssignment = async (payload: RejectAssignmentPayload): Promise<any> => {
+    const response = await axios.post('/assign/reject-assignment', payload);
+    return response.data;
+};

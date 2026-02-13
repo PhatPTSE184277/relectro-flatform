@@ -15,6 +15,7 @@ import {
     updatePackage,
     updatePackageStatus,
     deliverPackage,
+    deliverPackages,
     sendPackageToRecycler,
 } from '@/services/small-collector/PackageService';
 import {
@@ -54,6 +55,7 @@ interface PackageContextType {
         closed: number;
     };
     handleDeliverPackage: (packageId: string) => Promise<void>;
+    handleDeliverPackages: (packageIds: string[]) => Promise<void>;
     handleSendPackageToRecycler: (packageId: string) => Promise<void>;
 }
 
@@ -244,6 +246,22 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
         [fetchPackages, fetchAllStats]
     );
 
+    const handleDeliverPackages = useCallback(
+        async (packageIds: string[]) => {
+            setLoadingList(true);
+            try {
+                await deliverPackages(packageIds);
+                await fetchPackages();
+                await fetchAllStats();
+            } catch (err) {
+                console.error('handleDeliverPackages error', err);
+            } finally {
+                setLoadingList(false);
+            }
+        },
+        [fetchPackages, fetchAllStats]
+    );
+
     // Hàm cho Recycler: Xác nhận nhận hàng tại nơi tái chế
     const handleSendPackageToRecycler = useCallback(
         async (packageId: string) => {
@@ -286,6 +304,7 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
         totalItems,
         allStats,
         handleDeliverPackage,
+        handleDeliverPackages,
         handleSendPackageToRecycler
     };
 

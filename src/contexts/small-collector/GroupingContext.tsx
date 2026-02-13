@@ -26,7 +26,9 @@ import {
     GroupingPageResponse,
     previewProducts,
     PreviewProductsPagingResponse,
-    previewVehicles as previewVehiclesAPI
+    previewVehicles as previewVehiclesAPI,
+    rejectAssignment,
+    RejectAssignmentPayload
 } from '@/services/small-collector/GroupingService';
 import { useAuth } from '@/hooks/useAuth';
 import { getTodayString } from '@/utils/getDayString';
@@ -94,7 +96,7 @@ export function GroupingProvider({ children }: Props) {
     const [pendingProducts, setPendingProducts] = useState<PendingProduct[]>([]);
     const [pendingProductsData, setPendingProductsData] = useState<any | null>(null);
     const [pendingProductsPage, setPendingProductsPage] = useState<number>(1);
-    const [pendingProductsLimit, setPendingProductsLimit] = useState<number>(10);
+    const [pendingProductsLimit] = useState<number>(10);
     const [pendingProductsTotalPages, setPendingProductsTotalPages] = useState<number>(1);
     const [allProductIds, setAllProductIds] = useState<string[]>([]);
     const [preAssignResult, setPreAssignResult] = useState<PreAssignResponse | null>(null);
@@ -146,7 +148,7 @@ export function GroupingProvider({ children }: Props) {
     const fetchAllProductIds = useCallback(async (workDate?: string) => {
         if (!user?.smallCollectionPointId) {
             console.log('No smallCollectionPointId', user);
-            return;
+            return [];
         }
         
         try {
@@ -158,9 +160,11 @@ export function GroupingProvider({ children }: Props) {
             );
             const ids = data.products?.map((p: any) => p.productId) || [];
             setAllProductIds(ids);
+            return ids;
         } catch (err) {
             console.error('fetchAllProductIds error', err);
             setAllProductIds([]);
+            return [];
         }
     }, [user]);
     
@@ -228,6 +232,41 @@ export function GroupingProvider({ children }: Props) {
             setUnassignedProductsLoading(false);
         }
     }, [user]);
+
+    const rejectAssignmentHandler = useCallback(async (reason: string, workDate: string) => {
+        if (!user?.smallCollectionPointId) {
+            console.warn('No smallCollectionPointId found in user profile:', user);
+            throw new Error('Không tìm thấy thông tin điểm thu gom');
+        }
+        
+        setLoading(true);
+        try {
+            // Fetch all product IDs for the work date
+            const productIdsToReject = await fetchAllProductIds(workDate);
+            
+            if (!productIdsToReject || productIdsToReject.length === 0) {
+                throw new Error('Không tìm thấy sản phẩm để từ chối');
+            }
+
+            const payload: RejectAssignmentPayload = {
+                smallCollectionPointId: user.smallCollectionPointId,
+                reason,
+                productIds: productIdsToReject
+            };
+
+            const result = await rejectAssignment(payload);
+            
+            // Refresh pending products after rejection
+            await fetchPendingProducts(workDate, 1);
+            
+            return result;
+        } catch (err: any) {
+            console.error('rejectAssignmentHandler error', err);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }, [user, fetchAllProductIds, fetchPendingProducts]);
 
     const getPreAssignSuggestion = useCallback(
         async (workDate: string, vehicleIds: string[], loadThresholdPercent: number, selectedProductIds?: string[]) => {
@@ -443,6 +482,7 @@ export function GroupingProvider({ children }: Props) {
         fetchAllProductIds,
         fetchAvailableVehicles,
         fetchUnassignedProducts,
+        rejectAssignmentHandler,
         setPendingProductsPage,
         fetchGroups,
         setGroupsPage,

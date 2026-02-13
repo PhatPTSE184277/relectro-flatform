@@ -142,9 +142,21 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
             }
 
             if (groupingDate) {
+                // Check if this is an assignment notification that can be rejected
+                const isAssignmentNotif = notif.message?.includes('nhận được') || 
+                    notif.message?.includes('phân bổ') ||
+                    notif.message?.includes('Phân bổ') ||
+                    notif.title?.includes('phân bổ') ||
+                    notif.title?.includes('Phân bổ');
+                
                 // Set navigation parameters for grouping
                 sessionStorage.setItem('grouping_nav_date', groupingDate);
                 sessionStorage.setItem('grouping_nav_trigger', 'notification');
+                
+                // If it's an assignment notification, trigger reject modal
+                if (isAssignmentNotif) {
+                    sessionStorage.setItem('grouping_reject_trigger', 'show_reject_modal');
+                }
             }
         }
 

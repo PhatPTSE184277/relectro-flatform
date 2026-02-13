@@ -6,6 +6,7 @@ import ProductList from './ProductList';
 import VehicleSelectionModal from './modal/VehicleSelectionModal';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import { Vehicle } from '@/services/small-collector/GroupingService';
+import { AlertTriangle } from 'lucide-react';
 
 interface PreAssignStepProps {
     loading: boolean;
@@ -15,6 +16,8 @@ interface PreAssignStepProps {
     loadThreshold: number;
     setLoadThreshold: (value: number) => void;
     onGetSuggestion: (workDate: string, vehicleIds: string[], selectedProductIds?: string[]) => void;
+    onReject?: () => void;
+    rejectLoading?: boolean;
     onSkip?: () => void;
     page?: number;
     itemsPerPage?: number;
@@ -28,6 +31,8 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     loadThreshold,
     setLoadThreshold,
     onGetSuggestion,
+    onReject,
+    rejectLoading = false,
     page = 1,
     itemsPerPage = 10,
     workDate
@@ -110,6 +115,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
             setConfirming(false);
         }
     };
+
     return (
         <div className='space-y-4'>
             {/* Top controls: label, threshold, button all in one row */}
@@ -128,13 +134,25 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                     />
                     <span className='text-primary-600 font-semibold'>%</span>
                 </div>
-                <button
-                    onClick={handleShowModal}
-                    disabled={loading || selectedProductIds.length === 0}
-                    className='py-2 px-4 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer ml-0 md:ml-4 whitespace-nowrap'
-                >
-                    {loading ? 'Đang xử lý...' : `Gom nhóm${selectedProductIds.length > 0 ? ` (${selectedProductIds.length})` : ''}`}
-                </button>
+                <div className='flex items-center gap-2 ml-auto'>
+                    {products.length > 0 && onReject && (
+                        <button
+                            onClick={onReject}
+                            disabled={rejectLoading}
+                            className='py-2 px-4 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap flex items-center gap-2'
+                        >
+                            <AlertTriangle size={18} />
+                            {rejectLoading ? 'Đang xử lý...' : 'Từ chối nhận hàng'}
+                        </button>
+                    )}
+                    <button
+                        onClick={handleShowModal}
+                        disabled={loading || selectedProductIds.length === 0}
+                        className='py-2 px-4 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap'
+                    >
+                        {loading ? 'Đang xử lý...' : `Gom nhóm${selectedProductIds.length > 0 ? ` (${selectedProductIds.length})` : ''}`}
+                    </button>
+                </div>
             </div>
 
             {/* Pending Products List */}

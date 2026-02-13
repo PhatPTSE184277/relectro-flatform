@@ -64,6 +64,11 @@ export const deliverPackage = async (packageId: string): Promise<any> => {
     return response.data;
 };
 
+export const deliverPackages = async (packageIds: string[]): Promise<any> => {
+    const response = await axios.put('/packages/delivery', { packageIds });
+    return response.data;
+};
+
 export const sendPackageToRecycler = async (packageId: string): Promise<any> => {
     const response = await axios.put(`/packages/${packageId}/recycler`);
     return response.data;

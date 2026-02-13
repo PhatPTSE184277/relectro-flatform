@@ -34,7 +34,6 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         previewVehicles, 
         fetchPreviewProducts, 
         previewProductsPaging,
-        allPreviewProductIds,
         fetchAllPreviewProductIds,
         unassignedProducts,
         unassignedProductsData,

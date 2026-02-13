@@ -17,34 +17,24 @@ const TrackingProductFilter: React.FC<TrackingProductFilterProps> = ({
                     <IoFilterOutline className="text-primary-600" size={16} />
                 </span>
                 <button
-                    onClick={() => onFilterChange('Chờ Duyệt')}
+                    onClick={() => onFilterChange('Đang đóng gói')}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[110px] ${
-                        status === 'Chờ Duyệt'
+                        status === 'Đang đóng gói'
                             ? 'bg-primary-600 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Chờ Duyệt
+                    Đang đóng gói
                 </button>
                 <button
-                    onClick={() => onFilterChange('Chờ gom nhóm')}
+                    onClick={() => onFilterChange('Đã đóng thùng')}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[110px] ${
-                        status === 'Chờ gom nhóm'
+                        status === 'Đã đóng thùng'
                             ? 'bg-primary-600 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Chờ gom nhóm
-                </button>
-                <button
-                    onClick={() => onFilterChange('Đã thu gom')}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[110px] ${
-                        status === 'Đã thu gom'
-                            ? 'bg-primary-600 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                >
-                    Đã thu gom
+                    Đã đóng thùng
                 </button>
                 <button
                     onClick={() => onFilterChange('Đang vận chuyển')}
@@ -55,16 +45,6 @@ const TrackingProductFilter: React.FC<TrackingProductFilterProps> = ({
                     }`}
                 >
                     Đang vận chuyển
-                </button>
-                <button
-                    onClick={() => onFilterChange('Đã Từ Chối')}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[110px] ${
-                        status === 'Đã Từ Chối'
-                            ? 'bg-primary-600 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                >
-                    Đã Từ Chối
                 </button>
                 <button
                     onClick={() => onFilterChange('Tái chế')}

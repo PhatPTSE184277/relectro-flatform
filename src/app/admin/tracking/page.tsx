@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin } from 'lucide-react';
 import { useTrackingContext } from '@/contexts/admin/TrackingContext';
 import TrackingProductList from '@/components/admin/tracking/TrackingProductList';
@@ -9,20 +9,16 @@ import TrackingProductFilter from '@/components/admin/tracking/TrackingProductFi
 import SearchableSelect from '@/components/ui/SearchableSelect';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
 import { getFirstDayOfMonthString, getTodayString } from '@/utils/getDayString';
-import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
 
 const TrackingPage: React.FC = () => {
-    const { companies, products, loadingProducts, fetchProducts } = useTrackingContext();
+    const { companies, packages, loadingPackages, fetchPackages } = useTrackingContext();
     const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
-    const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+    const [selectedPackage, setSelectedPackage] = useState<any | null>(null);
     const [showModal, setShowModal] = useState(false);
     // const [showCompanyModal, setShowCompanyModal] = useState(false);
-    const [statusFilter, setStatusFilter] = useState('Chờ Duyệt');
-    const [page, setPage] = useState(1);
-    const itemsPerPage = 10;
+    const [statusFilter, setStatusFilter] = useState('Đang đóng gói');
     const [search, setSearch] = useState<string>("");
-    const tableScrollRef = useRef<HTMLDivElement>(null);
     const [fromDate, setFromDate] = useState(getFirstDayOfMonthString);
     const [toDate, setToDate] = useState(getTodayString);
 
@@ -34,57 +30,45 @@ const TrackingPage: React.FC = () => {
         }
     }, [companies, selectedCompanyId]);
 
-    // Fetch products when company or date changes
+    // Fetch packages when company or date changes
     useEffect(() => {
         if (selectedCompanyId) {
-            fetchProducts(selectedCompanyId, fromDate, toDate);
+            fetchPackages(selectedCompanyId, fromDate, toDate, statusFilter);
         }
-    }, [selectedCompanyId, fromDate, toDate, fetchProducts]);
+    }, [selectedCompanyId, fromDate, toDate, statusFilter, fetchPackages]);
 
     const handleCompanySelect = (companyId: string) => {
         setSelectedCompanyId(companyId);
-        setPage(1);
     };
 
 
 
-    const handleProductClick = (product: any) => {
-        setSelectedProduct(product);
+    const handlePackageClick = (pkg: any) => {
+        setSelectedPackage(pkg);
         setShowModal(true);
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
-        setSelectedProduct(null);
+        setSelectedPackage(null);
     };
 
     const handleFilterChange = (status: string) => {
         setStatusFilter(status);
-        setPage(1);
     };
 
-    const handlePageChange = (newPage: number) => {
-        setPage(newPage);
-        if (tableScrollRef.current) {
-            tableScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    };
+    // Search locally and add stt
+    const searchTerm = search.trim().toLowerCase();
+    const displayPackages = searchTerm
+        ? packages.filter((pkg: any) =>
+            (pkg.packageId || '').toLowerCase().includes(searchTerm)
+        )
+        : packages;
 
-    // Filter products by status
-    const filteredProducts = statusFilter === 'all' 
-        ? products 
-        : products.filter((product: any) => product.status === statusFilter);
-
-    // Paginate products and add stt for each row
-    const paginatedProducts = filteredProducts.slice(
-        (page - 1) * itemsPerPage,
-        page * itemsPerPage
-    ).map((product, idx) => ({
-        ...product,
-        stt: (page - 1) * itemsPerPage + idx + 1
+    const paginatedPackages = displayPackages.map((pkg, idx) => ({
+        ...pkg,
+        stt: idx + 1
     }));
-
-    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
 
 
@@ -97,7 +81,7 @@ const TrackingPage: React.FC = () => {
                         <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
                             <MapPin className='text-white' size={20} />
                         </div>
-                        <h1 className='text-3xl font-bold text-gray-900'>Theo dõi sản phẩm</h1>
+                        <h1 className='text-3xl font-bold text-gray-900'>Theo dõi package</h1>
                     </div>
                     <div className='flex gap-4 items-center flex-1 justify-end'>
                         <div className='w-72'>
@@ -114,7 +98,7 @@ const TrackingPage: React.FC = () => {
                             <SearchBox
                                 value={search}
                                 onChange={setSearch}
-                                placeholder="Tìm kiếm sản phẩm..."
+                                placeholder="Tìm kiếm package..."
                             />
                         </div>
                         <div className='min-w-fit'>
@@ -139,39 +123,29 @@ const TrackingPage: React.FC = () => {
                 </div>
             )}
 
-            {/* Product List */}
+            {/* Package List */}
             {!selectedCompanyId ? (
                 <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center text-gray-400'>
-                    Vui lòng chọn công ty để xem danh sách sản phẩm
+                    Vui lòng chọn công ty để xem danh sách package
                 </div>
             ) : (
-                <>
+                <>  
                     <div className='mb-6'>
                         <TrackingProductList
-                            products={paginatedProducts}
-                            loading={loadingProducts}
-                            onProductClick={handleProductClick}
-                            tableRef={tableScrollRef}
+                            packages={paginatedPackages}
+                            loading={loadingPackages}
+                            onPackageClick={handlePackageClick}
                         />
                     </div>
-
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <Pagination
-                            page={page}
-                            totalPages={totalPages}
-                            onPageChange={handlePageChange}
-                        />
-                    )}
                 </>
             )}
 
 
 
             {/* Tracking Modal */}
-            {showModal && selectedProduct && (
+            {showModal && selectedPackage && (
                 <TrackingModal
-                    product={selectedProduct}
+                    pkg={selectedPackage}
                     onClose={handleCloseModal}
                 />
             )}
