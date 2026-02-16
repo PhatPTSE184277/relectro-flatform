@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { IoLogOutOutline, IoChevronDownOutline, IoPersonOutline, IoNotificationsOutline, IoMenuOutline } from 'react-icons/io5';
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
+import ServerService from '@/services/ServerService';
 import { useAppDispatch } from '@/redux/hooks';
 import { logout } from '@/redux/reducers/authReducer';
 import { useAuth } from '@/hooks/useAuth';
@@ -27,6 +28,7 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
     const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
+    const [serverTime, setServerTime] = useState<string>('');
     const dropdownRef = useRef<HTMLDivElement>(null);
     const notifDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -51,6 +53,22 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
         document.addEventListener('mousedown', handleClick);
         return () => document.removeEventListener('mousedown', handleClick);
     }, [notifDropdownOpen]);
+
+    useEffect(() => {
+        let mounted = true;
+        ServerService.getServerTime()
+            .then((res) => {
+                if (!mounted) return;
+                if (res?.serverTime) setServerTime(res.serverTime);
+                else if (res?.serverDate) setServerTime(res.serverDate);
+            })
+            .catch(() => {
+                /* ignore errors silently */
+            });
+        return () => {
+            mounted = false;
+        };
+    }, []);
 
     const handleLogout = () => {
         dispatch(logout());
@@ -197,8 +215,6 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
                 return 'Nhân viên thu gom';
             case 'RecyclingCompany':
                 return 'Công ty tái chế';
-            case 'Shipper':
-                return 'Nhân viên vận chuyển';
             default:
                 return role;
         }
@@ -236,6 +252,11 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
                     </div>
 
                     <div className='flex items-center space-x-1.5 sm:space-x-3 md:space-x-4'>
+                        {serverTime && (
+                            <span className='text-sm text-gray-600 mr-2'>
+                                {formatTimeWithDate(serverTime, true)}
+                            </span>
+                        )}
                         {isAuthenticated && user && (
                             <>
                                 {user.role && (

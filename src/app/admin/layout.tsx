@@ -15,6 +15,7 @@ import { DistributeProductProvider } from '@/contexts/admin/DistributeProductCon
 import { AssignRecyclingProvider } from '@/contexts/admin/AssignRecyclingContext';
 import { DashboardProvider } from '@/contexts/admin/DashboardContext';
 import { SendNotiProvider } from '@/contexts/admin/SendNotiContext';
+import { SpeedProvider } from '@/contexts/admin/SpeedContext';
 import { NotificationProvider, useNotifications } from '@/contexts/NotificationContext';
 
 function AdminLayoutContent({ children, sidebarOpen, setSidebarOpen }: { children: React.ReactNode; sidebarOpen: boolean; setSidebarOpen: (open: boolean) => void }) {
@@ -76,27 +77,29 @@ export default function AdminLayout({
     return (
         <NotificationProvider>
             <SendNotiProvider>
-                <AssignRecyclingProvider>
-                    <DistributeProductProvider>
-                        <CompanyConfigProvider>
-                        <RequestProvider>
-                            <UserProvider>
-                                <CollectionCompanyProvider>
-                                    <SystemConfigProvider>
-                                        <TrackingProvider>
-                                            <DashboardProvider>
-                                                <AdminLayoutContent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}>
-                                                    {children}
-                                                </AdminLayoutContent>
-                                            </DashboardProvider>
-                                        </TrackingProvider>
-                                    </SystemConfigProvider>
-                                </CollectionCompanyProvider>
-                            </UserProvider>
-                        </RequestProvider>
-                    </CompanyConfigProvider>
-                </DistributeProductProvider>
-            </AssignRecyclingProvider>
+                <SpeedProvider>
+                    <AssignRecyclingProvider>
+                        <DistributeProductProvider>
+                            <CompanyConfigProvider>
+                            <RequestProvider>
+                                <UserProvider>
+                                    <CollectionCompanyProvider>
+                                        <SystemConfigProvider>
+                                            <TrackingProvider>
+                                                <DashboardProvider>
+                                                    <AdminLayoutContent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}>
+                                                        {children}
+                                                    </AdminLayoutContent>
+                                                </DashboardProvider>
+                                            </TrackingProvider>
+                                        </SystemConfigProvider>
+                                    </CollectionCompanyProvider>
+                                </UserProvider>
+                            </RequestProvider>
+                        </CompanyConfigProvider>
+                    </DistributeProductProvider>
+                </AssignRecyclingProvider>
+            </SpeedProvider>
         </SendNotiProvider>
         </NotificationProvider>
     );

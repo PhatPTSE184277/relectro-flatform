@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+    import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
     IoPersonOutline,
@@ -42,9 +42,6 @@ const LoginForm = () => {
                     break;
                 case 'AdminCompany':
                     router.push('/company/small-collection');
-                    break;
-                case 'Collector':
-                    router.push('/shipper/package');
                     break;
                 case 'RecyclingCompany':
                     router.push('/recycle/package');

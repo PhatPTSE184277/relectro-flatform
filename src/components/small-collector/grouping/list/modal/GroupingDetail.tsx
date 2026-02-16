@@ -7,7 +7,10 @@ import {
     MapPin,
     Calendar,
     User,
+    FileDown,
+    Loader2,
 } from 'lucide-react';
+import axios from '@/lib/axios';
 import SummaryCard, { SummaryCardItem } from '@/components/ui/SummaryCard';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import Pagination from '@/components/ui/Pagination';
@@ -62,6 +65,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
     const [page, setPage] = useState(1);
     const [limit] = useState(10);
     const totalPage = grouping?.totalPage || 1;
+    const [exportingPDF, setExportingPDF] = useState(false);
 
     // Đồng bộ page khi groupId thay đổi (mở modal mới hoặc chọn nhóm khác)
     useEffect(() => {
@@ -78,6 +82,34 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
             fetchGroupDetail(grouping.groupId, newPage, limit);
         }
     }
+
+    // Export PDF handler
+    const handleExportPDF = async () => {
+        if (!grouping?.groupId) return;
+        
+        setExportingPDF(true);
+        try {
+            const response = await axios.get(`/PrintRoutes/export-pdf/${grouping.groupId}`, {
+                responseType: 'blob',
+            });
+            
+            // Create download link
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Nhom-${grouping.groupCode}-${formatDate(grouping.groupDate)}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error exporting PDF:', error);
+            alert('Không thể xuất PDF. Vui lòng thử lại!');
+        } finally {
+            setExportingPDF(false);
+        }
+    };
 
     if (!grouping) return null;
     const routes = grouping.routes ?? [];
@@ -121,14 +153,24 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                         <h2 className='text-2xl font-bold text-gray-900'>
                             Chi tiết nhóm thu gom
                         </h2>
-
                     </div>
-                    <button
-                        onClick={onClose}
-                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer'
-                    >
-                        &times;
-                    </button>
+                    <div className='flex items-center gap-3'>
+                        <button
+                            onClick={handleExportPDF}
+                            disabled={exportingPDF}
+                            className='flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+                            title='Xuất PDF'
+                        >
+                            <FileDown size={18} />
+                            {exportingPDF ? <Loader2 size={16} className='animate-spin' /> : 'Xuất PDF'}
+                        </button>
+                        <button
+                            onClick={onClose}
+                            className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer'
+                        >
+                            &times;
+                        </button>
+                    </div>
                 </div>  
 
                 {/* Main content */}

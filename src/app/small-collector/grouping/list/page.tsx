@@ -23,7 +23,7 @@ const GroupingListPage: React.FC = () => {
         groupsTotalPage,
         setGroupsPage
     } = useGroupingContext();
-    const [search, setSearch] = useState('');
+    const [search] = useState('');
     const [selectedGrouping, setSelectedGrouping] = useState<any | null>(null);
     const [showReassignModal, setShowReassignModal] = useState(false);
     const [reassignGrouping, setReassignGrouping] = useState<any | null>(null);

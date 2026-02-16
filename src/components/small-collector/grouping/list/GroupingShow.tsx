@@ -1,5 +1,6 @@
 import React from 'react';
-import { Eye, UserCog } from 'lucide-react';
+import { Eye, UserCog, FileDown } from 'lucide-react';
+import axios from '@/lib/axios';
 import { formatWeightKg } from '@/utils/formatNumber';
 import { formatDate } from '@/utils/FormatDate';
 
@@ -50,6 +51,29 @@ const GroupingShow: React.FC<GroupingShowProps & { isLast?: boolean; stt?: numbe
                         title='Xem chi tiết'
                     >
                         <Eye size={16} />
+                    </button>
+                    <button
+                        onClick={async () => {
+                            try {
+                                const res = await axios.get(`/PrintRoutes/export-pdf/${grouping.groupId}`, { responseType: 'blob' });
+                                const blob = new Blob([res.data], { type: 'application/pdf' });
+                                const url = window.URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `Nhom-${grouping.groupCode}-${formatDate(grouping.groupDate)}.pdf`;
+                                document.body.appendChild(a);
+                                a.click();
+                                a.remove();
+                                window.URL.revokeObjectURL(url);
+                            } catch (err) {
+                                console.error('Export PDF error', err);
+                                alert('Không thể xuất PDF. Vui lòng thử lại.');
+                            }
+                        }}
+                        className='text-green-600 hover:text-green-800 flex items-center gap-1 font-medium transition cursor-pointer'
+                        title='Xuất PDF'
+                    >
+                        <FileDown size={16} />
                     </button>
                     <button
                         onClick={() => onReassignDriver(grouping)}

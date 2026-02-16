@@ -6,9 +6,9 @@ import AssignRecyclingList from '@/components/admin/assign-recycling/AssignRecyc
 import AssignRecyclingModal from '@/components/admin/assign-recycling/modal/AssignRecyclingModal';
 import UpdateRecyclingModal from '@/components/admin/assign-recycling/modal/UpdateRecyclingModal';
 import SearchBox from '@/components/ui/SearchBox';
-import { useAssignRecyclingContext } from '@/contexts/admin/AssignRecyclingContext';
+import { AssignRecyclingProvider, useAssignRecyclingContext } from '@/contexts/admin/AssignRecyclingContext';
 
-const AssignRecyclingPage: React.FC = () => {
+const AssignRecyclingPageContent: React.FC = () => {
     const {
         recyclingCompanies,
         getCollectionCompanies,
@@ -18,7 +18,6 @@ const AssignRecyclingPage: React.FC = () => {
         fetchSmallCollectionPoints,
         assignSmallPoints,
         updateSmallPointAssignment,
-        getScpAssignmentDetail,
     } = useAssignRecyclingContext();
 
     const [search, setSearch] = useState('');
@@ -127,6 +126,14 @@ const AssignRecyclingPage: React.FC = () => {
             )}
             {/* Tasks Modal removed as requested */}
         </div>
+    );
+};
+
+const AssignRecyclingPage: React.FC = () => {
+    return (
+        <AssignRecyclingProvider>
+            <AssignRecyclingPageContent />
+        </AssignRecyclingProvider>
     );
 };
 

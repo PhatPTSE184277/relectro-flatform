@@ -7,6 +7,7 @@ import {
     ClipboardList,
     Wrench,
     MapPin,
+    Zap,
     Recycle,
     Bell
 } from 'lucide-react';
@@ -59,6 +60,12 @@ export const adminMenuItems = [
         label: 'Theo dõi sản phẩm',
         path: '/admin/tracking',
         icon: <MapPin size={20} />
+    },
+    {
+        id: 'speed',
+        label: 'Tốc độ',
+        path: '/admin/speed',
+        icon: <Zap size={20} />
     },
     {
         id: 'user',
