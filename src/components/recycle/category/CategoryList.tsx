@@ -7,6 +7,7 @@ interface CategoryListProps {
     categories: CompanyCategoryDetail[];
     loading: boolean;
     onViewDetail?: (category: CompanyCategoryDetail) => void;
+    onEdit?: (category: CompanyCategoryDetail) => void;
 }
 
 const CategoryList: React.FC<CategoryListProps> = ({

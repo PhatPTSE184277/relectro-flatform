@@ -29,6 +29,7 @@ const CategoryShow: React.FC<CategoryShowProps> = ({
             </td>
             <td className='py-3 px-4 w-[12vw]'>
                 <div className='flex justify-center gap-2'>
+                    {/* Edit button removed */}
                     {onViewDetail && (
                         <button
                             onClick={onViewDetail}

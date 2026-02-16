@@ -68,12 +68,23 @@ export const registerCompanyCategories = async (payload: RegisterCompanyCategori
   return response.data;
 };
 
+export interface UpdateCompanyCategoriesPayload {
+  companyId: string;
+  categoryIds: string[];
+}
+
+export const updateCompanyCategories = async (payload: UpdateCompanyCategoriesPayload): Promise<any> => {
+  const response = await axios.put('CompanyCategories/update-categories', payload);
+  return response.data;
+};
+
 const CategoryService = {
   getParentCategories,
   getSubcategories,
   getRecyclingCompanies,
   getCompanyCategories,
   registerCompanyCategories,
+  updateCompanyCategories,
 };
 
 export default CategoryService;

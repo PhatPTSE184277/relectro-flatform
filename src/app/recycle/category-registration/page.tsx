@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { Plus, Tag } from 'lucide-react';
 import { useCategoryContext } from '@/contexts/recycle/CategoryContext';
 import { useAuth } from '@/hooks/useAuth';
-import RegisterCategoryModal from '@/components/recycle/category/RegisterCategoryModal';
-import SubcategoryDetailModal from '@/components/recycle/category/SubcategoryDetailModal';
+import RegisterCategory from '@/components/recycle/category/modal/RegisterCategory';
+import SubcategoryDetail from '@/components/recycle/category/modal/SubcategoryDetail';
 import CategoryList from '@/components/recycle/category/CategoryList';
 import Toast from '@/components/ui/Toast';
 import { CompanyCategoryDetail } from '@/services/recycle/CategoryService';
@@ -27,8 +27,14 @@ const CategoryRegistrationPage: React.FC = () => {
   }, [companyId, fetchCompanyCategories]);
 
   const handleSuccess = () => {
-    setToast({ message: 'Đăng ký danh mục thành công!', type: 'success' });
+    const hasCategories = (companyCategories?.categoryDetails?.length || 0) > 0;
+    const message = hasCategories ? 'Cập nhật danh mục thành công!' : 'Đăng ký danh mục thành công!';
+    setToast({ message, type: 'success' });
     setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleOpenModal = () => {
+    setShowModal(true);
   };
 
   const handleViewDetail = (category: CompanyCategoryDetail) => {
@@ -47,11 +53,11 @@ const CategoryRegistrationPage: React.FC = () => {
           <h1 className='text-3xl font-bold text-gray-900'>Quản lý danh mục</h1>
         </div>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={handleOpenModal}
           className='flex items-center gap-2 px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md border border-primary-200 cursor-pointer'
         >
           <Plus size={20} />
-          Đăng ký danh mục
+          {(companyCategories?.categoryDetails?.length || 0) > 0 ? 'Cập nhật danh mục' : 'Đăng ký danh mục'}
         </button>
       </div>
 
@@ -62,19 +68,21 @@ const CategoryRegistrationPage: React.FC = () => {
         categories={companyCategories?.categoryDetails || []}
         loading={loadingCompanyCategories}
         onViewDetail={handleViewDetail}
+        onEdit={handleOpenModal}
       />
 
-      {/* Register Modal */}
-      <RegisterCategoryModal
+      {/* Register/Update Modal */}
+      <RegisterCategory
         open={showModal}
         onClose={() => setShowModal(false)}
         onSuccess={handleSuccess}
         companyId={companyId}
+        currentCategoryIds={companyCategories?.categoryDetails.map(c => c.categoryId) || []}
       />
 
       {/* Subcategory Detail Modal */}
       {selectedCategoryForView && (
-        <SubcategoryDetailModal
+        <SubcategoryDetail
           open={showDetailModal}
           onClose={() => {
             setShowDetailModal(false);

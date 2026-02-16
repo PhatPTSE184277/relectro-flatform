@@ -7,11 +7,13 @@ import {
   getRecyclingCompanies,
   getCompanyCategories,
   registerCompanyCategories,
+  updateCompanyCategories,
   Category,
   RecyclingCompany,
   PaginatedResponse,
   CompanyCategoryResponse,
   RegisterCompanyCategoriesPayload,
+  UpdateCompanyCategoriesPayload,
 } from '@/services/recycle/CategoryService';
 
 interface CategoryContextType {
@@ -30,6 +32,7 @@ interface CategoryContextType {
   fetchRecyclingCompanies: (pageNumber?: number, pageSize?: number) => Promise<void>;
   fetchCompanyCategories: (companyId: string) => Promise<void>;
   registerCategories: (payload: RegisterCompanyCategoriesPayload) => Promise<void>;
+  updateCategories: (payload: UpdateCompanyCategoriesPayload) => Promise<void>;
   clearError: () => void;
 }
 
@@ -119,6 +122,20 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     }
   }, [fetchCompanyCategories]);
 
+  const updateCategories = useCallback(async (payload: UpdateCompanyCategoriesPayload) => {
+    setLoadingRegister(true);
+    setError(null);
+    try {
+      await updateCompanyCategories(payload);
+      await fetchCompanyCategories(payload.companyId);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Lỗi khi cập nhật danh mục');
+      throw err;
+    } finally {
+      setLoadingRegister(false);
+    }
+  }, [fetchCompanyCategories]);
+
   const clearError = useCallback(() => {
     setError(null);
   }, []);
@@ -139,6 +156,7 @@ export const CategoryProvider: React.FC<Props> = ({ children }) => {
     fetchRecyclingCompanies,
     fetchCompanyCategories,
     registerCategories,
+    updateCategories,
     clearError,
   };
 

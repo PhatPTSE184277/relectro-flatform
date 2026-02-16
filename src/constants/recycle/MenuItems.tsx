@@ -1,5 +1,6 @@
 import {
-    Package
+    Package,
+    Tag
 } from 'lucide-react';
 
 export const recyclerMenuItems = [
@@ -13,6 +14,6 @@ export const recyclerMenuItems = [
         id: 'category-registration',
         label: 'Đăng ký danh mục',
         path: '/recycle/category-registration',
-        icon: <Package size={20} />
+        icon: <Tag size={20} />
     }
 ];

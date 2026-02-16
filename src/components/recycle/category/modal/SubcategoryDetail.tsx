@@ -4,14 +4,14 @@ import React, { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useCategoryContext } from '@/contexts/recycle/CategoryContext';
 
-interface SubcategoryDetailModalProps {
+interface SubcategoryDetailProps {
   open: boolean;
   onClose: () => void;
   parentCategoryId: string;
   parentCategoryName: string;
 }
 
-const SubcategoryDetailModal: React.FC<SubcategoryDetailModalProps> = ({
+const SubcategoryDetail: React.FC<SubcategoryDetailProps> = ({
   open,
   onClose,
   parentCategoryId,
@@ -90,4 +90,4 @@ const SubcategoryDetailModal: React.FC<SubcategoryDetailModalProps> = ({
   );
 };
 
-export default SubcategoryDetailModal;
+export default SubcategoryDetail;
