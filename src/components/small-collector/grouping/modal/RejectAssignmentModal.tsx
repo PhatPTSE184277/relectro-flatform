@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, AlertTriangle, Loader2 } from 'lucide-react';
+import CustomTextarea from '@/components/ui/CustomTextarea';
 
 interface RejectAssignmentModalProps {
     open: boolean;
@@ -134,12 +135,11 @@ const RejectAssignmentModal: React.FC<RejectAssignmentModalProps> = ({
                                 </div>
 
                                 {selectedTags.includes('Khác') && (
-                                    <textarea
-                                        className='w-full border border-gray-200 rounded-xl p-3 text-gray-800 placeholder-gray-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-100 outline-none resize-none transition-all duration-200 bg-white'
-                                        rows={4}
+                                    <CustomTextarea
                                         value={customReason}
-                                        onChange={(e) => setCustomReason(e.target.value)}
+                                        onChange={setCustomReason}
                                         placeholder='Nhập lý do từ chối...'
+                                        rows={4}
                                         disabled={loading}
                                     />
                                 )}

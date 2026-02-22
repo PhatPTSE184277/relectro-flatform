@@ -44,5 +44,11 @@ export const collectorMenuItems = [
         label: 'QR Code',
         path: '/small-collector/qrcode',
         icon: <QrCode size={20} />
+    },
+    {
+        id: 'seed-qrcode',
+        label: 'Gán QR Code',
+        path: '/small-collector/seed-qrcode',
+        icon: <QrCode size={20} />
     }
 ];

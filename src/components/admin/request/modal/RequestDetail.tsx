@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import RequestApprove from './RequestApprove';
 import { formatDate } from '@/utils/FormatDate';
+import CustomTextarea from '@/components/ui/CustomTextarea';
 import { groupScheduleByTimeRange } from '@/utils/groupScheduleByTimeRange';
 import {
     Package,
@@ -356,12 +357,11 @@ const RequestDetail: React.FC<RequestDetailProps> = ({
                                                 })()}
                                             </div>
                                             {selectedTags.includes('Khác') && (
-                                                <textarea
-                                                    className='w-full border border-gray-200 rounded-lg p-2 text-sm text-gray-800 placeholder-gray-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-100 outline-none resize-none transition-all duration-200 bg-white'
-                                                    rows={3}
+                                                <CustomTextarea
                                                     value={customReason}
-                                                    onChange={(e) => setCustomReason(e.target.value)}
+                                                    onChange={setCustomReason}
                                                     placeholder='Nhập lý do từ chối bài đăng...'
+                                                    rows={3}
                                                 />
                                             )}
                                         </div>

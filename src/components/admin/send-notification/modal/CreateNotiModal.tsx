@@ -7,6 +7,7 @@ import UserList from './UserList';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
 import { getFirstDayOfMonthString, getTodayString } from '@/utils/getDayString';
 import { getAllUsers } from '@/services/admin/SendNotiService';
+import CustomTextarea from '@/components/ui/CustomTextarea';
 
 interface CreateNotiModalProps {
     open: boolean;
@@ -174,18 +175,15 @@ const CreateNotiModal: React.FC<CreateNotiModalProps> = ({
                             </div>
 
                             <div className='space-y-2'>
-                                <label className='block text-sm font-medium text-gray-700'>
-                                    Nội dung <span className='text-red-500'>*</span>
-                                </label>
-                                <textarea
-                                    className='w-full border border-gray-200 rounded-xl p-3 text-gray-800 placeholder-gray-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-100 outline-none resize-none transition-all duration-200 bg-white'
-                                    rows={8}
+                                <CustomTextarea
                                     value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
+                                    onChange={setMessage}
+                                    label={<>Nội dung <span className='text-red-500'>*</span></>}
                                     placeholder='Nhập nội dung thông báo...'
+                                    rows={8}
                                     maxLength={500}
+                                    showCounter
                                 />
-                                <p className='text-xs text-gray-500'>{message.length}/500 ký tự</p>
                             </div>
                         </div>
                     ) : (
