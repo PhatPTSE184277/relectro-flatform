@@ -169,11 +169,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                                         label: 'Danh mục',
                                         value: product.categoryName || 'Không rõ'
                                     },
-                                    product.qrCode && {
-                                        icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Package className="w-4 h-4 text-primary-500" /></span>,
-                                        label: 'Mã QR',
-                                        value: product.qrCode
-                                    },
+                                    // product.qrCode && {
+                                    //     icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Package className="w-4 h-4 text-primary-500" /></span>,
+                                    //     label: 'Mã QR',
+                                    //     value: product.qrCode
+                                    // },
                                     product.sizeTierName && {
                                         icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Package className="w-4 h-4 text-primary-500" /></span>,
                                         label: 'Kích thước',
