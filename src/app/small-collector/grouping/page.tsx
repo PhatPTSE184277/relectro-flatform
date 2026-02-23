@@ -165,7 +165,7 @@ const GroupingPage: React.FC = () => {
                         <GitBranch className='text-white' size={20} />
                     </div>
                     <h1 className='text-3xl font-bold text-gray-900'>
-                        Gom nhóm thu gom
+                        Phân chia xe
                     </h1>
                 </div>
                 <div className='flex gap-4 items-center flex-1 justify-end'>
@@ -180,7 +180,7 @@ const GroupingPage: React.FC = () => {
                         onClick={() => router.push('/small-collector/grouping/list')}
                         className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors cursor-pointer'
                     >
-                        Xem danh sách nhóm
+                        Xem danh sách phân chia
                     </button>
                 </div>
             </div>

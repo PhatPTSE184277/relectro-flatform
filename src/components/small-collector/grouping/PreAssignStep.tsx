@@ -121,7 +121,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
             {/* Top controls: label, threshold, button all in one row */}
             <div className='flex flex-col md:flex-row md:items-center md:gap-4 gap-2 bg-gray-50 rounded-lg px-4 py-3 mb-2'>
                 <h2 className='text-lg font-bold text-gray-900 mb-0 md:mb-0 md:mr-4 whitespace-nowrap'>
-                    Bước 1: Hệ thống sẽ tự động gom nhóm
+                    Bước 1: Hệ thống sẽ tự động phân chia sản phẩm cho xe
                 </h2>
                 <div className='flex items-center gap-2'>
                     <label className='text-sm font-medium text-gray-700 whitespace-nowrap'>Ngưỡng tải:</label>
@@ -150,7 +150,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                         disabled={loading || selectedProductIds.length === 0}
                         className='py-2 px-4 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap'
                     >
-                        {loading ? 'Đang xử lý...' : `Gom nhóm${selectedProductIds.length > 0 ? ` (${selectedProductIds.length})` : ''}`}
+                        {loading ? 'Đang xử lý...' : `Phân chia${selectedProductIds.length > 0 ? ` (${selectedProductIds.length})` : ''}`}
                     </button>
                 </div>
             </div>

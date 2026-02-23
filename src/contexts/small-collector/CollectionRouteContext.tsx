@@ -23,6 +23,7 @@ interface CollectionRouteContextType {
     setSelectedDate: (date: string) => void;
     routeDetail: CollectionRoute | null;
     fetchRouteDetail: (id: string) => Promise<void>;
+    clearRouteDetail: () => void;
     totalPages: number;
     totalItems: number;
     currentPage: number;
@@ -135,17 +136,25 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
 
     const fetchRouteDetail = useCallback(async (id: string) => {
         setLoading(true);
+        console.log('🔄 Fetching route detail for ID:', id);
         try {
             const data = await getCollectionRouteDetail(id);
+            console.log('✅ Route detail fetched:', data);
             if (data) {
                 data.status = normalizeStatus(data.status);
             }
             setRouteDetail(data || null);
-        } catch {
+        } catch (error) {
+            console.error('❌ Error fetching route detail:', error);
             setRouteDetail(null);
         } finally {
             setLoading(false);
         }
+    }, []);
+
+    const clearRouteDetail = useCallback(() => {
+        console.log('🧹 Clearing route detail');
+        setRouteDetail(null);
     }, []);
 
     useEffect(() => {
@@ -160,6 +169,7 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
         setSelectedDate,
         routeDetail,
         fetchRouteDetail,
+        clearRouteDetail,
         totalPages,
         totalItems,
         currentPage,

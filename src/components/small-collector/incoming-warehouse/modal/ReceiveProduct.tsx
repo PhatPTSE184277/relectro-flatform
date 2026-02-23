@@ -134,13 +134,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                 productImages: product.productImages,
                 changedPointMessage: product.changedPointMessage
             };
-            setScannedProducts((prev) => {
-                const newList = [...prev, newProduct];
-                if (newList.length > 4) {
-                    return newList.slice(1);
-                }
-                return newList;
-            });
+            setScannedProducts((prev) => [...prev, newProduct]);
             setLatestQr(newProduct.qrCode);
             if (skipPutOnScan) {
             } else {
@@ -332,7 +326,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                         {scannedProducts.length > 0 && (
                             <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-200'>
                                 <h3 className='text-sm font-semibold text-gray-700 mb-3'>
-                                    Sản phẩm đã quét ({scannedProducts.length}/4)
+                                    Sản phẩm đã quét: {scannedProducts.length}
                                 </h3>
                                 <div className='flex flex-wrap gap-2'>
                                     {scannedProducts.map((product) => {

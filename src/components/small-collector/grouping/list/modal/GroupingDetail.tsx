@@ -1,6 +1,7 @@
 "use client";
 import { formatDimensionText, formatWeightKg } from "@/utils/formatNumber";
 import { formatDate } from "@/utils/FormatDate";
+import { formatAddress } from '@/utils/FormatAddress';
 import React, { useState, useEffect } from 'react';
 import {
     Truck,
@@ -133,7 +134,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
         },
         {
             label: 'Điểm thu gom',
-            value: grouping.collectionPoint,
+            value: grouping.collectionPoint ? formatAddress(grouping.collectionPoint) : '',
             icon: <MapPin size={14} className='text-primary-400' />,
         },
     ];
@@ -151,7 +152,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-900'>
-                            Chi tiết nhóm thu gom
+                            Chi tiết phân chia
                         </h2>
                     </div>
                     <div className='flex items-center gap-3'>
@@ -239,7 +240,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
                                                 </td>
                                                 <td className='py-3 px-4 text-gray-700'>
                                                     <div className='wrap-break-word'>
-                                                        {route.address}
+                                                        {route.address ? formatAddress(route.address) : ''}
                                                     </div>
                                                 </td>
                                                 <td className='py-3 px-4 text-gray-700 text-right w-64'>

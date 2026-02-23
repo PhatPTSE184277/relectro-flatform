@@ -1,6 +1,7 @@
 import React from 'react';
 import { Eye } from 'lucide-react';
 import { formatTime } from '@/utils/FormatTime';
+import { formatAddress } from '@/utils/FormatAddress';
 import type { CollectionRoute } from '@/types/CollectionRoute';
 
 interface CollectionRouteShowProps {
@@ -29,7 +30,7 @@ const CollectionRouteShow: React.FC<CollectionRouteShowProps & { isLast?: boolea
                 {route.collector?.name || 'Không rõ'}
             </td>
             <td className='py-3 px-2 text-gray-700 w-[18vw]'>
-                <div className='line-clamp-2'>{route.address}</div>
+                <div className='line-clamp-2'>{formatAddress(route.address) || route.address}</div>
             </td>
             <td className='py-3 px-2 text-sm text-gray-600 text-center w-[8vw]'>
                 {formatTime(route.estimatedTime)}

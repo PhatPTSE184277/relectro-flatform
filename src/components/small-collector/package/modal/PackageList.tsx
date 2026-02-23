@@ -22,9 +22,8 @@ const PackageList: React.FC<PackageListProps> = ({
                     <span className='w-8 h-8 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
                         <PackageIcon className='w-5 h-5 text-primary-500' />
                     </span>
-                    Danh sách gói đã đóng thùng
+                    Danh sách gói đã đóng thùng ({packages.length})
                 </h3>
-                <span className='text-sm text-gray-500'>{packages.length} gói</span>
             </div>
 
             <div className={`${maxHeight} overflow-y-auto`}>

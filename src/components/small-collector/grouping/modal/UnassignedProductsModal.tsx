@@ -54,7 +54,7 @@ const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
                     <div className='flex items-center gap-2'>
                         <AlertTriangle size={16} className='text-primary-600' />
                         <span className='text-sm font-medium text-gray-700'>
-                            Tổng cộng: <span className='font-bold text-primary-600'>{totalCount}</span> sản phẩm chưa được gom nhóm
+                            Tổng cộng: <span className='font-bold text-primary-600'>{totalCount}</span> sản phẩm chưa được phân chia
                         </span>
                     </div>
                 </div>

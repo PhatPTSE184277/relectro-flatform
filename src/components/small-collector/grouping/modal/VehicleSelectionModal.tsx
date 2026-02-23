@@ -53,7 +53,7 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                         <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
                             <Truck className='text-white' size={20} />
                         </div>
-                        <h2 className='text-xl font-bold text-gray-900'>Chọn xe để gom nhóm</h2>
+                        <h2 className='text-xl font-bold text-gray-900'>Chọn xe để phân chia</h2>
                     </div>
                     <button
                         onClick={onClose}

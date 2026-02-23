@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { formatTime } from '@/utils/FormatTime';
 import { formatDate } from '@/utils/FormatDate';
+import { formatAddress } from '@/utils/FormatAddress';
 import SummaryCard from '@/components/ui/SummaryCard';
 import UserInfo from '@/components/ui/UserInfo';
 import {
@@ -164,11 +165,29 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
                                     label: 'Địa chỉ',
                                     value: (
                                         <span className='block w-full wrap-break-word'>
-                                            {route.address}
+                                            {formatAddress(route.address) || route.address}
                                         </span>
                                     ),
                                     colSpan: 2
-                                }
+                                },
+                                ...(route.rejectMessage
+                                    ? [
+                                          {
+                                              icon: (
+                                                  <span className='w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
+                                                      <Package className='w-4 h-4 text-primary-500' />
+                                                  </span>
+                                              ),
+                                              label: 'Lý do từ chối',
+                                              value: (
+                                                  <span className='block w-full wrap-break-word'>
+                                                      {route.rejectMessage}
+                                                  </span>
+                                              ),
+                                              colSpan: 2
+                                          }
+                                      ]
+                                    : [])
                             ]}
                         />
 

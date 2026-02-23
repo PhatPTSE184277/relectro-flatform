@@ -62,11 +62,11 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 rounded-t-2xl'>
                     <div>
                         <h2 className='text-2xl font-bold text-gray-800'>
-                            Phân lại tài xế
-                        </h2>
-                        <p className='text-sm text-gray-600 mt-1'>
-                            Nhóm: {grouping.groupCode}
-                        </p>
+                                Phân lại tài xế
+                            </h2>
+                            <p className='text-sm text-gray-600 mt-1'>
+                                Phân chia: {grouping.groupCode}
+                            </p>
                     </div>
                     <button
                         onClick={handleClose}
@@ -88,7 +88,7 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                                 icon: undefined,
                             },
                             {
-                                label: 'Ngày thu gom',
+                                label: 'Ngày phân chia',
                                 value: grouping.groupDate ? formatDate(grouping.groupDate) : '',
                                 icon: undefined,
                             },

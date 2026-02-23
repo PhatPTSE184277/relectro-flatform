@@ -1,5 +1,6 @@
 import React from 'react';
 import { formatDimensionText } from '@/utils/formatNumber';
+import { formatAddress } from '@/utils/FormatAddress';
 
 interface ProductShowProps {
     product: any;
@@ -52,7 +53,7 @@ const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({ produc
                 <div>   {product.categoryName ? product.categoryName : 'Không rõ'}{' - '}{product.brandName ? product.brandName : 'Không rõ'}</div>
             </td>
             <td className='py-3 px-4 text-left w-[22vw]'>
-                <div className='line-clamp-2'>{product.address || 'N/A'}</div>
+                <div className='line-clamp-2'>{formatAddress(product.address) || product.address || 'N/A'}</div>
             </td>
             <td className='py-3 px-4 text-right w-[18vw]'>
                 <div className='flex flex-col gap-1 items-end'>

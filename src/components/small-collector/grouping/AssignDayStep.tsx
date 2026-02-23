@@ -200,9 +200,9 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                                 </div>
                                 <div className='flex-1'>
                                     <div className='flex items-center gap-4 flex-wrap'>
-                                        <h3 className='text-lg font-bold text-gray-900'>
-                                            Biển số: {currentVehicle.plateNumber || currentVehicle.plate_Number || currentVehicle.vehicleName || 'N/A'}
-                                        </h3>
+                                        <h2 className='text-lg font-bold text-gray-900'>
+                                            Bước 2: Phân chia xe - {formatDate(workDate)}
+                                        </h2>
                                         <span className='text-sm text-gray-600 flex items-center gap-1'>
                                             <strong>Loại xe:</strong> {currentVehicle.vehicleType || currentVehicle.vehicle_Type || 'N/A'}
                                         </span>
@@ -220,7 +220,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                                     className={`px-4 py-2 bg-primary-600 text-white rounded-lg transition cursor-pointer shadow-md font-medium ${loading || createDisabled ? 'opacity-60 cursor-not-allowed' : 'hover:bg-primary-700'}`}
                                     disabled={loading || createDisabled}
                                 >
-                                    {loading || createDisabled ? 'Đang tạo...' : `Tạo nhóm (${previewVehicles.length} xe)`}
+                                    {loading || createDisabled ? 'Đang phân chia...' : `Phân chia (${previewVehicles.length} xe)`}
                                 </button>
                             </div>
                         </div>

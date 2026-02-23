@@ -22,12 +22,15 @@ const CollectionRoutePage: React.FC = () => {
         totalPages,
         currentPage,
         setCurrentPage,
-        allStats
+        allStats,
+        routeDetail,
+        fetchRouteDetail,
+        clearRouteDetail
     } = useCollectionRouteContext();
 
     const [search, setSearch] = useState('');
     const [showDetail, setShowDetail] = useState(false);
-    const [detailRouteId, setDetailRouteId] = useState<string | null>(null);
+    const [loadingDetail, setLoadingDetail] = useState(false);
 
     const tableScrollRef = useRef<HTMLDivElement>(null);
 
@@ -58,14 +61,25 @@ const CollectionRoutePage: React.FC = () => {
         }
     };
 
-    const handleViewDetail = (id: string) => {
-        setDetailRouteId(id);
-        setShowDetail(true);
+    const handleViewDetail = async (id: string) => {
+        setLoadingDetail(true);
+        // Clear old data first
+        clearRouteDetail();
+        try {
+            await fetchRouteDetail(id);
+            setShowDetail(true);
+        } catch (error) {
+            console.error('Error fetching route detail:', error);
+        } finally {
+            setLoadingDetail(false);
+        }
     };
 
-    const detailRoute = filteredRoutes.find(
-        (r) => r.collectionRouteId === detailRouteId
-    );
+    const handleCloseDetail = () => {
+        setShowDetail(false);
+        // Clear state when closing
+        clearRouteDetail();
+    };
 
     return (
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
@@ -126,11 +140,23 @@ const CollectionRoutePage: React.FC = () => {
             />
 
             {/* Detail Modal */}
-            {showDetail && detailRoute && (
+            {showDetail && routeDetail && (
                 <CollectorRouteDetail
-                    route={detailRoute}
-                    onClose={() => setShowDetail(false)}
+                    route={routeDetail}
+                    onClose={handleCloseDetail}
                 />
+            )}
+
+            {/* Loading Overlay */}
+            {loadingDetail && (
+                <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50'>
+                    <div className='bg-white rounded-lg p-6 shadow-xl'>
+                        <div className='flex items-center gap-3'>
+                            <div className='w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full animate-spin'></div>
+                            <span className='text-gray-700 font-medium'>Đang tải chi tiết...</span>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
