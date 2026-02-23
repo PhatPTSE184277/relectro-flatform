@@ -1,6 +1,5 @@
 import React from 'react';
 import type { CollectionRoute } from '@/types/CollectionRoute';
-import { formatTime } from '@/utils/FormatTime';
 import { formatAddress } from '@/utils/FormatAddress';
 
 interface SeedQRRouteShowProps {
@@ -48,12 +47,7 @@ const SeedQRProductShow: React.FC<SeedQRRouteShowProps> = ({
             <td className='py-3 px-4 text-gray-500 truncate max-w-[22vw]'>
                 {formatAddress(route.address) || <span className='text-gray-400 italic'>Không có địa chỉ</span>}
             </td>
-            <td className='py-3 px-4 text-center w-[10vw]'>
-                {route.estimatedTime
-                    ? <span className='text-xs text-gray-600'>{formatTime(route.estimatedTime)}</span>
-                    : <span className='text-gray-300'>-</span>}
-            </td>
-            {/* status column removed */}
+            {/* estimated time column removed */}
         </tr>
     );
 };

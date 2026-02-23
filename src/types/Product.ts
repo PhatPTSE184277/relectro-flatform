@@ -51,6 +51,7 @@ export interface Product {
     estimatedTime?: string;
     estimatePoint?: number;
     realPoints?: number;
+    changedPointMessage?: string | null;
     sizeTierName?: string | null;
     rejectMessage?: string | null;
     sender?: ProductSender;

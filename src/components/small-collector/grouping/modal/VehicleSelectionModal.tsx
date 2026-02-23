@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Truck, CheckCircle } from 'lucide-react';
+import { X, Truck, CheckCircle, Loader2 } from 'lucide-react';
 
 interface Vehicle {
     vehicleId: string;
@@ -198,7 +198,7 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                     >
                         {confirming ? (
                             <>
-                                <div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin' />
+                                <Loader2 className='animate-spin' size={16} />
                                 Đang xử lý...
                             </>
                         ) : (

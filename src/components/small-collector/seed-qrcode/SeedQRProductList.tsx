@@ -40,7 +40,6 @@ const SeedQRProductList: React.FC<SeedQRProductListProps> = ({
                             <th className='py-3 px-4 text-left w-[18vw] min-w-24'>Người gửi</th>
                             <th className='py-3 px-4 text-left w-[14vw] min-w-20'>Thương hiệu</th>
                             <th className='py-3 px-4 text-left w-[22vw] min-w-32'>Địa chỉ</th>
-                            <th className='py-3 px-4 text-center w-[10vw] min-w-16'>Giờ ước tính</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -61,7 +60,7 @@ const SeedQRProductList: React.FC<SeedQRProductListProps> = ({
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={6} className='text-center py-10 text-gray-400'>
+                                <td colSpan={5} className='text-center py-10 text-gray-400'>
                                     Không có tuyến thu gom nào cho ngày này.
                                 </td>
                             </tr>

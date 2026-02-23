@@ -1,26 +1,69 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Product } from '@/types/Product';
 import {
     Package,
     UserCheck,
     User,
     List,
-    FileText
+    FileText,
+    Loader2
 } from 'lucide-react';
 import UserInfo from '@/components/ui/UserInfo';
-import SummaryCard from '@/components/ui/SummaryCard';
+import SummaryCard, { SummaryCardItem } from '@/components/ui/SummaryCard';
+import CustomNumberInput from '@/components/ui/CustomNumberInput';
+import CustomTextarea from '@/components/ui/CustomTextarea';
+import { updatePointsTransaction } from '@/services/small-collector/IWProductService';
 
 interface ProductDetailProps {
     product: Product;
     onClose: () => void;
 }
 
+const REASON_TAGS = [
+    "Sản phẩm bị hỏng",
+    "Thiếu linh kiện",
+    "Chất lượng không như mô tả",
+    "Khác"
+];
+
 const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
     const [selectedImg, setSelectedImg] = useState(0);
     const [zoomImg, setZoomImg] = useState<string | null>(null);
+    const originalPoint = product?.realPoints ?? product?.estimatePoint ?? 0;
+    const [point, setPoint] = useState<number>(originalPoint);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [customReason, setCustomReason] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+
+    useEffect(() => {
+        setPoint(product?.realPoints ?? product?.estimatePoint ?? 0);
+        setSelectedTags([]);
+        setCustomReason('');
+    }, [product]);
+
+    const isPointChanged = point !== originalPoint;
+
+    const handleConfirm = async () => {
+        if (!isPointChanged) return;
+        const reasons = selectedTags.filter(t => t !== "Khác");
+        if (selectedTags.includes("Khác")) {
+            if (customReason.trim()) reasons.push(customReason.trim());
+        }
+        if (reasons.length === 0) return;
+        
+        setSubmitting(true);
+        try {
+            await updatePointsTransaction(product.productId, point, reasons.join("; "));
+            onClose();
+        } catch (err) {
+            console.error('Update points error', err);
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     if (!product) {
         return (
@@ -100,41 +143,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                                 ))}
                             </div>
                         </div>
-                        {/* Pickup schedule moved here */}
-                        {/* {Array.isArray(product.schedule) && product.schedule.length > 0 && (() => {
-                            const scheduleGroups = groupScheduleByTimeRange(product.schedule);
-                            const displayText = scheduleGroups.length > 0 
-                                ? `${scheduleGroups[0].range} | ${scheduleGroups[0].dateStr}`
-                                : 'Không có thông tin';
-                            return (
-                                <div className='w-full mt-6'>
-                                    <div className='flex items-center gap-2 mb-3'>
-                                        <span className="w-7 h-7 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200">
-                                            <Clock className='text-primary-500' size={18} />
-                                        </span>
-                                        <h3 className='text-base font-semibold text-gray-800'>
-                                            Lịch thu gom
-                                        </h3>
-                                    </div>
-                                    <SummaryCard
-                                        singleRow={false}
-                                        items={[
-                                            {
-                                                label: <span className="whitespace-nowrap">Ngày</span>,
-                                                icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Calendar className="w-4 h-4 text-primary-500" /></span>,
-                                                value: <span className="whitespace-nowrap">{displayText}</span>
-                                            },
-                                            product.address && {
-                                                icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><MapPin className="w-4 h-4 text-primary-500" /></span>,
-                                                label: 'Địa chỉ',
-                                                value: <span className="block w-full wrap-break-word">{product.address}</span>,
-                                                colSpan: 2
-                                            }
-                                        ].filter(Boolean) as import("@/components/ui/SummaryCard").SummaryCardItem[]}
-                                    />
-                                </div>
-                            );
-                        })()} */}
                     </div>
 
                     {/* RIGHT - INFO */}
@@ -176,7 +184,28 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                                         label: 'Mô tả',
                                         value: product.description
                                     }
-                                ].filter(Boolean) as import("@/components/ui/SummaryCard").SummaryCardItem[]}
+                                    ,
+                                    // Points: editable field - only show when product is received into warehouse (status includes 'nhập')
+                                    ((product.status || '').toLowerCase().includes('nhập')) ? {
+                                        icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><Package className="w-4 h-4 text-primary-500" /></span>,
+                                        label: 'Điểm',
+                                        value: (
+                                            <CustomNumberInput
+                                                value={point}
+                                                onChange={setPoint}
+                                                min={0}
+                                                className='w-24 px-2 py-1 border border-primary-300 rounded-lg text-primary-700 font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent'
+                                            />
+                                        )
+                                    } : undefined,
+                                    // Optional changed point message (admin notes)
+                                    product.changedPointMessage ? {
+                                        icon: <span className="w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200"><FileText className="w-4 h-4 text-primary-500" /></span>,
+                                        label: 'Ghi chú điểm',
+                                        value: product.changedPointMessage,
+                                        colSpan: 2
+                                    } : undefined
+                                ].filter(Boolean) as SummaryCardItem[]}
                         />
 
                         {/* Collector Info */}
@@ -193,8 +222,85 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
                             />
                         )}
 
+                        {/* Reason for point change */}
+                        {isPointChanged && (
+                            <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-200'>
+                                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                    Lý do đổi điểm <span className='text-red-500'>*</span>
+                                </label>
+                                <div className='flex flex-wrap gap-2 mb-2 items-center'>
+                                    {REASON_TAGS.slice(0, 3).map((tag) => {
+                                        const isSelected = selectedTags.includes(tag);
+                                        return (
+                                            <button
+                                                type='button'
+                                                key={tag}
+                                                className={`px-3 py-1 rounded-full border text-xs font-medium transition-colors cursor-pointer
+                                                    ${isSelected ? 'bg-primary-100 border-primary-500 text-primary-700' : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-primary-50'}`}
+                                                onClick={() => {
+                                                    if (isSelected) {
+                                                        setSelectedTags(selectedTags.filter(t => t !== tag));
+                                                    } else {
+                                                        setSelectedTags([...selectedTags, tag]);
+                                                    }
+                                                }}
+                                            >
+                                                {tag}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                <div className='flex gap-2 mb-2'>
+                                    {(() => {
+                                        const tag = REASON_TAGS[3];
+                                        const isSelected = selectedTags.includes(tag);
+                                        return (
+                                            <button
+                                                type='button'
+                                                key={tag}
+                                                className={`px-3 py-1 rounded-full border text-xs font-medium transition-colors cursor-pointer
+                                                    ${isSelected ? 'bg-primary-100 border-primary-500 text-primary-700' : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-primary-50'}`}
+                                                onClick={() => {
+                                                    if (isSelected) {
+                                                        setSelectedTags(selectedTags.filter(t => t !== tag));
+                                                        setCustomReason('');
+                                                    } else {
+                                                        setSelectedTags([...selectedTags, tag]);
+                                                    }
+                                                }}
+                                            >
+                                                {tag}
+                                            </button>
+                                        );
+                                    })()}
+                                </div>
+                                {selectedTags.includes('Khác') && (
+                                    <CustomTextarea
+                                        value={customReason}
+                                        onChange={setCustomReason}
+                                        placeholder='Nhập lý do tại sao thay đổi điểm...'
+                                        rows={3}
+                                    />
+                                )}
+                            </div>
+                        )}
+
                     </div>
                 </div>
+
+                {/* Footer */}
+                {isPointChanged && (
+                    <div className='flex justify-end items-center gap-3 p-5 border-t border-primary-100 bg-white'>
+                        <button
+                            onClick={handleConfirm}
+                            disabled={(selectedTags.length === 0 || (selectedTags.includes('Khác') && selectedTags.length === 1 && !customReason.trim())) || submitting}
+                            className='px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2'
+                        >
+                            {submitting ? <Loader2 className='animate-spin' size={16} /> : null}
+                            Xác nhận
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* ZOOM IMAGE */}

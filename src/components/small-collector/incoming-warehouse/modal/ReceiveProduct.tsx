@@ -3,8 +3,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Toast from '@/components/ui/Toast';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
-import { X, Package as PackageIcon, ArrowRight } from 'lucide-react';
-import { getProductByQRCode, updatePointsTransaction } from '@/services/small-collector/IWProductService';
+import CustomTextarea from '@/components/ui/CustomTextarea';
+import { X, Package as PackageIcon, ArrowRight, Check } from 'lucide-react';
+import { getProductByQRCode, getProductById, updatePointsTransaction } from '@/services/small-collector/IWProductService';
 
 interface ReceiveProductProps {
     open: boolean;
@@ -26,9 +27,17 @@ interface ScannedProduct {
     description: string;
     qrCode: string;
     status: string;
-    estimatePoint?: number;
+    realPoints?: number;
     productImages?: string[];
+    changedPointMessage?: string;
 }
+
+const REASON_TAGS = [
+    "Sản phẩm bị hỏng",
+    "Thiếu linh kiện",
+    "Chất lượng không như mô tả",
+    "Khác"
+];
 
 const ReceiveProduct: React.FC<ReceiveProductProps> = ({
     open,
@@ -41,10 +50,13 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
     const [latestQr, setLatestQr] = useState<string | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<ScannedProduct | null>(null);
     const [loading, setLoading] = useState(false);
-    const [reasonForChange, setReasonForChange] = useState('');
+    const [loadingTabId, setLoadingTabId] = useState<string | null>(null);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [customReason, setCustomReason] = useState('');
     const [point, setPoint] = useState(0);
     const [zoomImg, setZoomImg] = useState<string | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [updatedProductIds, setUpdatedProductIds] = useState<string[]>([]);
 
     const qrInputRef = useRef<HTMLInputElement>(null);
 
@@ -82,9 +94,11 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
             setScannedProducts([]);
                 setLatestQr(null);
             setSelectedProduct(null);
-            setReasonForChange('');
+            setSelectedTags([]);
+            setCustomReason('');
             setPoint(0);
             setShowEditModal(false);
+            setUpdatedProductIds([]);
             // Auto focus on QR input
             setTimeout(() => qrInputRef.current?.focus(), 100);
         }
@@ -116,8 +130,9 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                 description: product.description,
                 qrCode: product.qrCode,
                 status: product.status,
-                estimatePoint: product.estimatePoint,
-                productImages: product.productImages
+                realPoints: product.realPoints,
+                productImages: product.productImages,
+                changedPointMessage: product.changedPointMessage
             };
             setScannedProducts((prev) => {
                 const newList = [...prev, newProduct];
@@ -134,7 +149,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                         qrCode: newProduct.qrCode,
                         productId: newProduct.productId,
                         description: null,
-                        point: newProduct.estimatePoint || 0,
+                        point: newProduct.realPoints || 0,
                     });
                 } catch (err: any) {
                     console.error('onConfirm handler error', err);
@@ -152,34 +167,62 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
         }
     };
 
-    const handleTabClick = (product: ScannedProduct) => {
-        setSelectedProduct(product);
-        setPoint(product.estimatePoint || 0);
-        setReasonForChange('');
+    const handleTabClick = async (product: ScannedProduct) => {
+        setLoadingTabId(product.productId);
+        try {
+            const fresh = await getProductById(product.productId);
+            const merged: ScannedProduct = {
+                ...product,
+                realPoints: fresh.realPoints ?? product.realPoints,
+                changedPointMessage: fresh.changedPointMessage ?? product.changedPointMessage,
+                description: fresh.description ?? product.description,
+                productImages: fresh.productImages ?? product.productImages,
+            };
+            // update cached list so next open is also fresh
+            setScannedProducts((prev) =>
+                prev.map((p) => (p.productId === product.productId ? merged : p))
+            );
+            setSelectedProduct(merged);
+            setPoint(merged.realPoints || 0);
+        } catch {
+            // fallback to cached data on error
+            setSelectedProduct(product);
+            setPoint(product.realPoints || 0);
+        } finally {
+            setLoadingTabId(null);
+        }
+        setSelectedTags([]);
+        setCustomReason('');
         setShowEditModal(true);
     };
 
     const handleSubmit = async () => {
         if (!selectedProduct) return;
 
-        const isPointChanged = point !== (selectedProduct.estimatePoint || 0);
-        if (isPointChanged && !reasonForChange.trim()) return;
-
+        const isPointChanged = point !== (selectedProduct.realPoints || 0);
         if (isPointChanged) {
+            const reasons = selectedTags.filter(t => t !== "Khác");
+            if (selectedTags.includes("Khác")) {
+                if (customReason.trim()) reasons.push(customReason.trim());
+            }
+            if (reasons.length === 0) return;
+
             try {
                 await updatePointsTransaction(
                     selectedProduct.productId,
                     point,
-                    reasonForChange.trim()
+                    reasons.join("; ")
                 );
                 // update local list so UI reflects new point
                 setScannedProducts((prev) =>
                     prev.map((p) =>
                         p.qrCode === selectedProduct.qrCode
-                            ? { ...p, estimatePoint: point }
+                            ? { ...p, realPoints: point }
                             : p
                     )
                 );
+                // mark this product as updated so tab can indicate change
+                setUpdatedProductIds((prev) => (prev.includes(selectedProduct.productId) ? prev : [...prev, selectedProduct.productId]));
             } catch (error) {
                 console.error('Error updating points:', error);
                 return;
@@ -189,7 +232,8 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
         // Close edit modal after possible update
         setShowEditModal(false);
         setSelectedProduct(null);
-        setReasonForChange('');
+        setSelectedTags([]);
+        setCustomReason('');
         setPoint(0);
     };
 
@@ -197,16 +241,19 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
         setQrCode('');
         setScannedProducts([]);
         setSelectedProduct(null);
-        setReasonForChange('');
+        setSelectedTags([]);
+        setCustomReason('');
         setPoint(0);
         setShowEditModal(false);
+        setUpdatedProductIds([]);
         onClose();
     };
 
     const handleCloseEditModal = () => {
         setShowEditModal(false);
         setSelectedProduct(null);
-        setReasonForChange('');
+        setSelectedTags([]);
+        setCustomReason('');
         setPoint(0);
     };
 
@@ -226,7 +273,6 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                 {/* Overlay */}
                 <div
                     className='absolute inset-0 bg-black/30 backdrop-blur-sm'
-                    onClick={handleClose}
                 ></div>
 
                 {/* Modal container */}
@@ -291,13 +337,23 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                 <div className='flex flex-wrap gap-2'>
                                     {scannedProducts.map((product) => {
                                         const isLatest = product.qrCode === latestQr;
+                                        const isUpdated = updatedProductIds.includes(product.productId);
+                                        const baseClass = isLatest
+                                            ? 'bg-green-100 text-green-700 border-green-300 hover:bg-green-200'
+                                            : isUpdated
+                                                ? 'bg-blue-100 text-blue-700 border-blue-300 hover:bg-blue-200'
+                                                : 'bg-primary-100 hover:bg-primary-200 text-primary-700 border-primary-300';
+                                        const isLoadingTab = loadingTabId === product.productId;
                                         return (
                                             <button
                                                 key={product.qrCode}
-                                                onClick={() => handleTabClick(product)}
-                                                className={`px-4 py-2 rounded-lg font-medium transition cursor-pointer text-sm border ${isLatest ? 'bg-green-100 text-green-700 border-green-300 hover:bg-green-200' : 'bg-primary-100 hover:bg-primary-200 text-primary-700 border-primary-300'}`}
+                                                onClick={() => !isLoadingTab && handleTabClick(product)}
+                                                disabled={isLoadingTab}
+                                                className={`px-4 py-2 rounded-lg font-medium transition cursor-pointer text-sm border ${baseClass} flex items-center gap-2 disabled:opacity-70 disabled:cursor-wait`}
                                             >
-                                                {product.qrCode}
+                                                {isLoadingTab
+                                                    ? <><span className='w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin' /><span>{product.qrCode}</span></>
+                                                    : <><span>{product.qrCode}</span>{isUpdated ? <Check size={14} /> : null}</>}
                                             </button>
                                         );
                                     })}
@@ -331,7 +387,6 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                     {/* Overlay */}
                     <div
                         className='absolute inset-0 bg-black/30 backdrop-blur-sm'
-                        onClick={handleCloseEditModal}
                     ></div>
 
                     {/* Modal container */}
@@ -420,21 +475,75 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                         <span className='ml-2 text-gray-700 text-sm'>{selectedProduct.description}</span>
                                     </div>
                                 )}
+                                {/* Ghi chú điểm (if present) */}
+                                {selectedProduct.changedPointMessage && (
+                                    <div className='mt-3 pt-3 border-t border-gray-100'>
+                                        <span className='text-sm text-gray-500'>Ghi chú điểm:</span>
+                                        <span className='ml-2 text-gray-700 text-sm'>{selectedProduct.changedPointMessage}</span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Textarea lý do đổi điểm - chỉ hiện khi admin sửa điểm */}
-                            {point !== (selectedProduct.estimatePoint || 0) && (
+                            {point !== (selectedProduct.realPoints || 0) && (
                                 <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-200'>
                                     <label className='block text-sm font-medium text-gray-700 mb-2'>
                                         Lý do đổi điểm <span className='text-red-500'>*</span>
                                     </label>
-                                    <textarea
-                                        value={reasonForChange}
-                                        onChange={(e) => setReasonForChange(e.target.value)}
-                                        placeholder='Nhập lý do tại sao thay đổi điểm...'
-                                        rows={3}
-                                        className='w-full px-3 py-2 border border-primary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 resize-none'
-                                    />
+                                    <div className='flex flex-wrap gap-2 mb-2 items-center'>
+                                        {REASON_TAGS.slice(0, 3).map((tag) => {
+                                            const isSelected = selectedTags.includes(tag);
+                                            return (
+                                                <button
+                                                    type='button'
+                                                    key={tag}
+                                                    className={`px-3 py-1 rounded-full border text-xs font-medium transition-colors cursor-pointer
+                                                        ${isSelected ? 'bg-primary-100 border-primary-500 text-primary-700' : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-primary-50'}`}
+                                                    onClick={() => {
+                                                        if (isSelected) {
+                                                            setSelectedTags(selectedTags.filter(t => t !== tag));
+                                                        } else {
+                                                            setSelectedTags([...selectedTags, tag]);
+                                                        }
+                                                    }}
+                                                >
+                                                    {tag}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    <div className='flex gap-2 mb-2'>
+                                        {(() => {
+                                            const tag = REASON_TAGS[3];
+                                            const isSelected = selectedTags.includes(tag);
+                                            return (
+                                                <button
+                                                    type='button'
+                                                    key={tag}
+                                                    className={`px-3 py-1 rounded-full border text-xs font-medium transition-colors cursor-pointer
+                                                        ${isSelected ? 'bg-primary-100 border-primary-500 text-primary-700' : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-primary-50'}`}
+                                                    onClick={() => {
+                                                        if (isSelected) {
+                                                            setSelectedTags(selectedTags.filter(t => t !== tag));
+                                                            setCustomReason('');
+                                                        } else {
+                                                            setSelectedTags([...selectedTags, tag]);
+                                                        }
+                                                    }}
+                                                >
+                                                    {tag}
+                                                </button>
+                                            );
+                                        })()}
+                                    </div>
+                                    {selectedTags.includes('Khác') && (
+                                        <CustomTextarea
+                                            value={customReason}
+                                            onChange={setCustomReason}
+                                            placeholder='Nhập lý do tại sao thay đổi điểm...'
+                                            rows={3}
+                                        />
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -444,7 +553,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                             <div className='flex justify-end w-full gap-3'>
                                 <button
                                     onClick={handleSubmit}
-                                    disabled={loading}
+                                    disabled={loading || (point !== (selectedProduct?.realPoints || 0) && (selectedTags.length === 0 || (selectedTags.includes('Khác') && selectedTags.length === 1 && !customReason.trim())))}
                                     className='px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
                                 >
                                     Xác nhận

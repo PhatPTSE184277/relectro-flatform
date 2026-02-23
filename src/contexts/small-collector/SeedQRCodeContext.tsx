@@ -66,7 +66,8 @@ export const SeedQRCodeProvider: React.FC<Props> = ({ children }) => {
             const res = await getCollectionRoutesByDate({
                 collectionPointId,
                 pickUpDate,
-                limit: 100
+                limit: 100,
+                status: 'Chưa bắt đầu'
             });
             setRoutes(res.data ?? []);
             setSelectedIds(new Set());

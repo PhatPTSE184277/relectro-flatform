@@ -8,7 +8,7 @@ import {
     getBrandsBySubCategory,
     Brand
 } from '@/services/small-collector/BrandService';
-import { X, ScanLine, Upload, Trash2, User, Camera } from 'lucide-react';
+import { X, ScanLine, Upload, Trash2, User, Camera, Loader2 } from 'lucide-react';
 import { useCategoryContext } from '@/contexts/small-collector/CategoryContext';
 import { useUserContext } from '@/contexts/UserContext';
 import { useAuth } from '@/hooks/useAuth';
@@ -379,7 +379,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                         )}
                         {loadingUser && userInfoInput.trim() && searchClicked && (
                             <div className="mt-4 w-full flex justify-center">
-                                <div className="w-6 h-6 border-2 border-primary-400 border-t-transparent rounded-full animate-spin"></div>
+                                <Loader2 className="animate-spin text-primary-400" size={24} />
                             </div>
                         )}
                     </div>
@@ -606,8 +606,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                         >
                             {uploading ? (
                                 <>
-                                    <div className='w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
-                                    Đang upload...
+                                    <Loader2 className='animate-spin text-white' size={16} />
                                 </>
                             ) : (
                                 'Nhận hàng'

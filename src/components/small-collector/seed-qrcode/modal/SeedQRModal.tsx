@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { X, QrCode, AlertCircle, CheckCircle } from 'lucide-react';
+import { X, QrCode, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import CustomTextarea from '@/components/ui/CustomTextarea';
 import { isValidSystemQRCode } from '@/utils/qr';
 
@@ -101,7 +101,6 @@ const SeedQRModal: React.FC<SeedQRModalProps> = ({
             {/* Overlay */}
             <div
                 className='absolute inset-0 bg-black/30 backdrop-blur-sm'
-                onClick={handleClose}
             ></div>
 
             {/* Modal container */}
@@ -185,14 +184,10 @@ const SeedQRModal: React.FC<SeedQRModalProps> = ({
                     >
                         {loading ? (
                             <>
-                                <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin' />
-                                Đang xử lý...
+                                <Loader2 className='animate-spin' size={18} />
                             </>
                         ) : (
-                            <>
-                                <QrCode size={18} />
-                                Xác nhận gán
-                            </>
+                            <>Xác nhận</>
                         )}
                     </button>
                 </div>
