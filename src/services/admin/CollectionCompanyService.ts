@@ -1,5 +1,6 @@
 
 import axios from '@/lib/axios';
+import { SmallCollectionPoint } from '@/types';
 
 export type CollectionCompany = {
 	id: string;
@@ -8,6 +9,21 @@ export type CollectionCompany = {
 	phone: string;
 	city: string;
 	status: string;
+};
+
+export type Warehouse = {
+	id: string;
+	name: string;
+	address: string;
+	latitude: number;
+	longitude: number;
+	openTime: string;
+	status: string;
+	companyId: string | null;
+};
+
+export type CollectionCompanyDetail = CollectionCompany & {
+	warehouses: Warehouse[];
 };
 
 export type PaginatedCollectionCompany = {
@@ -52,5 +68,40 @@ export const importCollectionCompaniesFromExcel = async (file: File): Promise<an
 			'Content-Type': 'multipart/form-data',
 		},
 	});
+	return response.data;
+};
+
+export interface SmallCollectionFilterParams {
+	page?: number;
+	limit?: number;
+	companyId?: string;
+	status?: string;
+}
+
+export type PaginatedSmallCollection = {
+	page: number;
+	limit: number;
+	totalItems: number;
+	totalPages: number;
+	data: SmallCollectionPoint[];
+};
+
+// API lấy small collection có phân trang và filter (dùng bởi admin)
+export const getSmallCollectionsFilter = async (
+	params: SmallCollectionFilterParams
+): Promise<PaginatedSmallCollection> => {
+	const response = await axios.get('/small-collection/filter', { params });
+	return response.data;
+};
+
+// API approve một điểm thu gom (dành cho role quản trị)
+export const approveCollectionPoint = async (id: string | number): Promise<any> => {
+	const response = await axios.patch(`/management/collection-points/${id}/approve`);
+	return response.data;
+};
+
+// API block một điểm thu gom (dành cho role quản trị)
+export const blockCollectionPoint = async (id: string | number): Promise<any> => {
+	const response = await axios.patch(`/management/collection-points/${id}/block`);
 	return response.data;
 };

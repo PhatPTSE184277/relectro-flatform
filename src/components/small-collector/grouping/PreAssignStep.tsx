@@ -6,7 +6,7 @@ import ProductList from './ProductList';
 import VehicleSelectionModal from './modal/VehicleSelectionModal';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import { Vehicle } from '@/services/small-collector/GroupingService';
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 interface PreAssignStepProps {
     loading: boolean;
@@ -31,8 +31,8 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     loadThreshold,
     setLoadThreshold,
     onGetSuggestion,
-    onReject,
-    rejectLoading = false,
+    // onReject,
+    // rejectLoading = false,
     page = 1,
     itemsPerPage = 10,
     workDate

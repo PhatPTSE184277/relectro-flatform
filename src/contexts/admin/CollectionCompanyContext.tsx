@@ -5,7 +5,7 @@ import React, {
     useContext,
     useState,
     useCallback,
-    useEffect,
+    useRef,
     ReactNode
 } from 'react';
 import {
@@ -54,20 +54,33 @@ export const CollectionCompanyProvider: React.FC<Props> = ({ children }) => {
     const [totalPages, setTotalPages] = useState<number>(1);
     const [status, setStatus] = useState<string>('');
 
+    // Dùng ref để tránh fetchCompanies phụ thuộc vào state, ngăn re-render không cần thiết
+    const pageRef = useRef(page);
+    const limitRef = useRef(limit);
+    const statusRef = useRef(status);
+    const userRef = useRef(user);
+
+    // Đồng bộ ref với state
+    pageRef.current = page;
+    limitRef.current = limit;
+    statusRef.current = status;
+    userRef.current = user;
+
     // Hàm lấy danh sách công ty thu gom có phân trang và filter
     const fetchCompanies = useCallback(async (customPage?: number, customLimit?: number, customStatus?: string) => {
         setLoading(true);
         setError(null);
         try {
-            const currentPage = customPage ?? page;
-            const currentLimit = customLimit ?? limit;
-            const currentStatus = customStatus ?? status;
+            const currentPage = customPage ?? pageRef.current;
+            const currentLimit = customLimit ?? limitRef.current;
+            const currentStatus = customStatus ?? statusRef.current;
+            const currentUser = userRef.current;
             const data: PaginatedCollectionCompany = await getCollectionCompaniesFilter(currentPage, currentLimit, currentStatus || undefined);
 
             // Nếu là Collector, chỉ lấy công ty của mình
-            if (user?.role === 'Collector' && user?.collectionCompanyId) {
+            if (currentUser?.role === 'Collector' && currentUser?.collectionCompanyId) {
                 const filteredData = data.data.filter(
-                    (company) => String(company.id) === String(user.collectionCompanyId)
+                    (company) => String(company.id) === String(currentUser.collectionCompanyId)
                 );
                 setCompanies(filteredData);
                 setTotalItems(filteredData.length);
@@ -91,10 +104,11 @@ export const CollectionCompanyProvider: React.FC<Props> = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    }, [user, page, limit, status]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const fetchCompanyById = useCallback(async (id: string | number) => {
-        setLoading(true);
+        // Dùng loading riêng để không ảnh hưởng đến loading của danh sách
         setError(null);
         try {
             const data = await getCollectionCompanyById(String(id));
@@ -104,8 +118,6 @@ export const CollectionCompanyProvider: React.FC<Props> = ({ children }) => {
                 err?.response?.data?.message || 'Lỗi khi tải chi tiết công ty'
             );
             return null;
-        } finally {
-            setLoading(false);
         }
     }, []);
 
@@ -131,10 +143,6 @@ export const CollectionCompanyProvider: React.FC<Props> = ({ children }) => {
         setCompanies([]);
         setError(null);
     }, []);
-
-    useEffect(() => {
-        void fetchCompanies();
-    }, [fetchCompanies]);
 
     // Giá trị context trả về
     const value: CollectionCompanyContextType = {

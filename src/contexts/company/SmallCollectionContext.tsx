@@ -30,7 +30,7 @@ interface SmallCollectionContextType {
     selectedSmallCollection: SmallCollectionPoint | null;
     pageInfo: PageInfo | null;
     fetchSmallCollections: (params?: any) => Promise<void>;
-    fetchSmallCollectionById: (id: string) => Promise<void>;
+    fetchSmallCollectionById: (id: number | string) => Promise<SmallCollectionPoint | null>;
     importSmallCollection: (file: File) => Promise<any>;
     clearSmallCollections: () => void;
 }
@@ -89,18 +89,20 @@ export const SmallCollectionProvider = ({
         }
     }, [user?.collectionCompanyId, fetchSmallCollections]);
 
-    const fetchSmallCollectionById = useCallback(async (id: string) => {
+    const fetchSmallCollectionById = useCallback(async (id: number | string) => {
         setLoading(true);
         setError(null);
         try {
             const res = await getSmallCollectionPointById(id);
             setSelectedSmallCollection(res);
+            return res;
         } catch (err: any) {
             setError(
                 err?.response?.data?.message ||
                     'Lỗi khi tải chi tiết điểm thu gom nhỏ'
             );
             setSelectedSmallCollection(null);
+            return null;
         } finally {
             setLoading(false);
         }

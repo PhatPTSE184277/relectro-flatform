@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import { MapPin } from 'lucide-react';
 import { useSmallCollectionContext } from '@/contexts/company/SmallCollectionContext';
@@ -17,7 +17,9 @@ const SmallCollectionPage: React.FC = () => {
     const {
         smallCollections,
         loading,
-        importSmallCollection
+        importSmallCollection,
+        fetchSmallCollections,
+        fetchSmallCollectionById
     } = useSmallCollectionContext();
 
     const [selectedSmallCollection, setSelectedSmallCollection] =
@@ -29,8 +31,19 @@ const SmallCollectionPage: React.FC = () => {
 
     const companyId = user?.collectionCompanyId;
 
-    const handleViewDetail = (point: SmallCollectionPoint) => {
-        setSelectedSmallCollection(point);
+    useEffect(() => {
+        if (!companyId) return;
+        // Gọi rõ ràng từ page để tải danh sách (cùng tham số với context)
+        fetchSmallCollections({ companyId, page: 1, limit: 10 }).catch(() => {});
+    }, [companyId, fetchSmallCollections]);
+    const handleViewDetail = async (point: SmallCollectionPoint) => {
+        try {
+            const res = await fetchSmallCollectionById(point.id);
+            setSelectedSmallCollection(res || point);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (err) {
+            setSelectedSmallCollection(point);
+        }
         setShowDetailModal(true);
     };
 

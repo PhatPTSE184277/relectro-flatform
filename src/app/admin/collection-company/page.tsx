@@ -21,6 +21,7 @@ const CollectionCompanyPage: React.FC = () => {
         totalPages,
         setPage,
         fetchCompanies,
+        fetchCompanyById,
         status,
         setStatus
     } = useCollectionCompanyContext();
@@ -51,8 +52,14 @@ const CollectionCompanyPage: React.FC = () => {
         fetchCompanies(1, undefined, newStatus);
     };
 
-    const handleViewDetail = (company: any) => {
-        setSelectedCompany(company);
+    const handleViewDetail = async (company: any) => {
+        try {
+            const res = await fetchCompanyById(company.id);
+            setSelectedCompany(res || company);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (err) {
+            setSelectedCompany(company);
+        }
         setShowDetailModal(true);
     };
 

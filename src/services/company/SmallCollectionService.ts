@@ -33,7 +33,7 @@ export const getSmallCollectionsFilter = async (
 };
 
 export const getSmallCollectionPointById = async (
-    smallCollectionPointId: string
+    smallCollectionPointId: number | string
 ): Promise<SmallCollectionPoint> => {
     const response = await axios.get(
         `/small-collection/${smallCollectionPointId}`
