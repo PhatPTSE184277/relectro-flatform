@@ -43,8 +43,8 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ pkg, onClose }) => {
                 label: 'Trạng thái',
                 value: (
                     <span
-                        className="flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-primary-600 text-white"
-                        style={{ minWidth: 110 }}
+                        className="flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-transparent text-primary-700"
+                        style={{ minWidth: 140 }}
                     >
                         {detail?.status || 'N/A'}
                     </span>
