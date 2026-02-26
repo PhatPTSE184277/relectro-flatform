@@ -11,50 +11,40 @@ interface ShiftShowProps {
     showSplitTime?: boolean;
 }
 
-const ShiftShow: React.FC<ShiftShowProps> = ({
-    shift,
-    onView,
-    index,
-    showSplitTime = false
-}) => {
-
+const ShiftShow: React.FC<ShiftShowProps> = ({ shift, onView, isLast = false, index, showSplitTime = false }) => {
+    const stt = (index ?? 0) + 1;
+    const rowBg = (stt - 1) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
 
     return (
-        <tr
-            className={`$
-                !isLast ? 'border-b border-primary-100' : ''
-            } hover:bg-primary-50/40 transition-colors`}
-        >
-            <td className='py-3 px-4 text-center w-16'>
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}>
+            <td className='py-3 px-4 text-center w-[5vw] min-w-10'>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {index !== undefined ? index + 1 : ''}
                 </span>
             </td>
-            <td className='py-3 px-4 w-60'>
+            <td className='py-3 px-4 w-[14vw] min-w-60'>
                 <div className='text-gray-900 font-medium'>
                     {shift.collectorName || 'Không rõ'}
                 </div>
             </td>
-            <td className='py-3 px-4 text-gray-700 w-36'>
-                {shift.plate_Number || (
-                    <span className='text-gray-400'>Chưa có</span>
-                )}
+            <td className='py-3 px-4 text-gray-700 w-[10vw] min-w-36'>
+                {shift.plate_Number || <span className='text-gray-400'>Chưa có</span>}
             </td>
             {showSplitTime ? (
                 <>
-                    <td className='py-3 px-4 text-gray-700 w-32'>
+                    <td className='py-3 px-4 text-gray-700 w-[9vw] min-w-32'>
                         <div className='flex flex-col items-start'>
                             {RenderTimeCell(shift.shift_Start_Time)}
                         </div>
                     </td>
-                    <td className='py-3 px-4 text-gray-700 w-32'>
+                    <td className='py-3 px-4 text-gray-700 w-[9vw] min-w-32'>
                         <div className='flex flex-col items-start'>
                             {RenderTimeCell(shift.shift_End_Time)}
                         </div>
                     </td>
                 </>
             ) : (
-                <td className='py-3 px-4 text-gray-700 w-[272px]' colSpan={2}>
+                <td className='py-3 px-4 text-gray-700 w-[18vw] min-w-[272px]' colSpan={2}>
                     {shift.shift_Start_Time && shift.shift_End_Time ? (
                         `${formatTimeWithDate(shift.shift_Start_Time)} - ${formatTimeWithDate(shift.shift_End_Time)}`
                     ) : (
@@ -62,7 +52,7 @@ const ShiftShow: React.FC<ShiftShowProps> = ({
                     )}
                 </td>
             )}
-            <td className='py-3 px-4 w-24'>
+            <td className='py-3 px-4 w-[7vw] min-w-24'>
                 <div className='flex justify-center gap-2'>
                     <button
                         onClick={onView}

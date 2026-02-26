@@ -23,16 +23,16 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
             <div className='overflow-x-auto'>
                 <div className='inline-block min-w-full align-middle'>
                     <div className='overflow-hidden'>
-                        <div className='max-h-110 overflow-y-auto' ref={bodyRef}>
-                            <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
-                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+                        <div className='overflow-x-auto max-h-[44vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[55vh] xl:max-h-[60vh] overflow-y-auto' ref={bodyRef}>
+                            <table className='min-w-full text-sm text-gray-800 table-fixed'>
+                                <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                                     <tr>
-                                        <th className='py-3 px-4 text-center w-16'>STT</th>
-                                        <th className='py-3 px-4 text-left w-60'>Sản phẩm</th>
-                                        <th className='py-3 px-4 text-left w-60'>Người gửi</th>
-                                        <th className='py-3 px-4 text-left w-88'>Địa chỉ</th>
-                                        <th className='py-3 px-4 text-right w-40'>Khoảng cách(KM)</th>
-                                        <th className='py-3 px-4 text-right w-32'>Khối lượng</th>
+                                        <th className='py-3 px-4 text-center w-[5vw] min-w-10'>STT</th>
+                                        <th className='py-3 px-4 text-left w-[14vw] min-w-48'>Sản phẩm</th>
+                                        <th className='py-3 px-4 text-left w-[14vw] min-w-48'>Người gửi</th>
+                                        <th className='py-3 px-4 text-left w-[18vw] min-w-60'>Địa chỉ</th>
+                                        <th className='py-3 px-4 text-right w-[7vw] min-w-36'>Khoảng cách(KM)</th>
+                                        <th className='py-3 px-4 text-right w-[7vw] min-w-28'>Khối lượng</th>
                                     </tr>
                                 </thead>
                                 <tbody>

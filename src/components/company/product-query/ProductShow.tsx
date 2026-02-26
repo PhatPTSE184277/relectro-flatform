@@ -7,14 +7,17 @@ interface ProductShowProps {
 }
 
 const ProductShow: React.FC<ProductShowProps> = ({ product, isLast = false, stt }) => {
+    const rowIndex = (stt ?? 0) - 1;
+    const rowBg = rowIndex % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+
     return (
-        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} hover:bg-primary-50/40 transition-colors`}>
-            <td className='py-3 px-4 text-center w-16'>
+        <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}>
+            <td className='py-3 px-4 text-center w-[5vw] min-w-10'>
                 <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
                     {stt}
                 </span>
             </td>
-            <td className='py-3 px-4 text-gray-700 w-60'>
+            <td className='py-3 px-4 text-gray-700 w-[14vw] min-w-48'>
                 <div className='flex items-center gap-2'>
                     <div>
                         <div className='font-medium'>{product.categoryName || 'N/A'}</div>
@@ -24,15 +27,15 @@ const ProductShow: React.FC<ProductShowProps> = ({ product, isLast = false, stt 
                     </div>
                 </div>
             </td>
-            <td className='py-3 px-4 text-gray-700 w-60'>
+            <td className='py-3 px-4 text-gray-700 w-[14vw] min-w-48'>
                 <div className='flex items-center gap-2'>
                     <span>{product.userName || 'N/A'}</span>
                 </div>
             </td>
-            <td className='py-3 px-4 text-gray-700 max-w-xs w-88'>
+            <td className='py-3 px-4 text-gray-700 w-[18vw] min-w-60 max-w-xs'>
                 <div className='line-clamp-2'>{product.address || 'N/A'}</div>
             </td>
-            <td className='py-3 px-4 text-gray-700 w-40 text-right'>
+            <td className='py-3 px-4 text-gray-700 w-[7vw] min-w-36 text-right'>
                 <div className='flex flex-col gap-1 items-end'>
                     <span className='text-xs'>
                         <span className='font-medium'>Bán kính:</span> {product.radiusKm || 'N/A'}
@@ -42,7 +45,7 @@ const ProductShow: React.FC<ProductShowProps> = ({ product, isLast = false, stt 
                     </span>
                 </div>
             </td>
-            <td className='py-3 px-4 text-gray-700 w-32 text-right'>
+            <td className='py-3 px-4 text-gray-700 w-[7vw] min-w-28 text-right'>
                 <div className='flex flex-col gap-1 items-end'>
                     <span className='text-xs'>
                         <span className='font-medium'>{product.weightKg || 0}</span> kg

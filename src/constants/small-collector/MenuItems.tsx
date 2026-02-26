@@ -4,7 +4,8 @@ import {
     Warehouse,
     Package,
     GitBranch,
-    QrCode
+    QrCode,
+    Truck
 } from 'lucide-react';
 
 export const collectorMenuItems = [
@@ -39,6 +40,12 @@ export const collectorMenuItems = [
         icon: <Package size={20} />
     }
     ,
+    {
+        id: 'vehicle',
+        label: 'Phương tiện',
+        path: '/small-collector/vehicle',
+        icon: <Truck size={20} />
+    },
     {
         id: 'qrcode',
         label: 'QR Code',

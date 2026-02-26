@@ -26,20 +26,20 @@ const SettingGroupList: React.FC<SettingGroupListProps> = ({
             <div className='overflow-x-auto'>
                 <div className='inline-block min-w-full align-middle'>
                     <div className='overflow-hidden'>
-                        <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
-                            <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold'>
+                        <table className='min-w-full text-sm text-gray-800 table-fixed' style={{ tableLayout: 'fixed' }}>
+                            <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold z-10 border-b border-primary-100'>
                                 <tr>
-                                    <th className='py-3 px-4 text-center' style={{ width: '60px' }}>STT</th>
-                                    <th className='py-3 px-4 text-left' style={{ width: '240px' }}>Tên điểm thu gom</th>
-                                    <th className='py-3 px-4 text-center' style={{ width: '180px' }}>Thời gian phục vụ (phút)</th>
-                                    <th className='py-3 px-4 text-center' style={{ width: '200px' }}>Thời gian di chuyển (phút)</th>
-                                    <th className='py-3 px-4 text-center' style={{ width: '120px' }}>Hành động</th>
+                                    <th className='py-3 px-4 text-center w-[5vw] min-w-[60px]'>STT</th>
+                                    <th className='py-3 px-4 text-left w-[24vw] min-w-60'>Tên điểm thu gom</th>
+                                    <th className='py-3 px-4 text-center w-[12vw] min-w-[180px]'>Thời gian phục vụ (phút)</th>
+                                    <th className='py-3 px-4 text-center w-[14vw] min-w-[200px]'>Thời gian di chuyển (phút)</th>
+                                    <th className='py-3 px-4 text-center w-[7vw] min-w-[120px]'>Hành động</th>
                                 </tr>
                             </thead>
                         </table>
                     </div>
-                    <div className='max-h-96 overflow-y-auto' ref={bodyRef}>
-                        <table className='min-w-full text-sm text-gray-800' style={{ tableLayout: 'fixed' }}>
+                    <div className='overflow-x-auto max-h-[44vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[45vh] xl:max-h-[44vh] overflow-y-auto w-full' ref={bodyRef}>
+                        <table className='min-w-full text-sm text-gray-800 table-fixed' style={{ tableLayout: 'fixed' }}>
                             <tbody>
                                 {loading ? (
                                     Array.from({ length: 6 }).map((_, idx) => (

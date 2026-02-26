@@ -63,7 +63,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                                 <tbody>
                                     {loading ? (
                                         Array.from({ length: 5 }).map((_, idx) => (
-                                            <ProductSkeleton key={idx} />
+                                            <ProductSkeleton key={idx} showCheckbox={showCheckbox} />
                                         ))
                                     ) : products?.length === 0 ? (
                                         <tr>

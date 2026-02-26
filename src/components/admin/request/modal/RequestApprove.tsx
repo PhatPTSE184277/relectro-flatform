@@ -27,7 +27,7 @@ const RequestApprove: React.FC<RequestApproveProps> = ({
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-primary-500 text-3xl font-light cursor-pointer"
+            className="text-gray-400 hover:text-primary-600 text-3xl font-light cursor-pointer"
           >
             &times;
           </button>
@@ -44,7 +44,7 @@ const RequestApprove: React.FC<RequestApproveProps> = ({
         <div className="flex justify-end gap-3 p-5 border-t border-gray-100 bg-gray-50">
           <button
             onClick={onConfirm}
-            className="px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-primary-500 hover:bg-primary-600"
+            className="px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-primary-600 hover:bg-primary-700"
           >
             Xác nhận
           </button>

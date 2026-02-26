@@ -153,7 +153,7 @@ const RequestReject: React.FC<RequestRejectProps> = ({
                   ? (selectedTags.length === 0 || (selectedTags.includes("Khác") && !customReason.trim()))
                   : !customReason.trim())
                 ? "bg-primary-300 cursor-not-allowed"
-                : "bg-primary-500 hover:bg-primary-600"}
+                : "bg-primary-600 hover:bg-primary-700"}
             `}
           >
             Xác nhận từ chối

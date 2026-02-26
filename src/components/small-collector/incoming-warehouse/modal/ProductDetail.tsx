@@ -46,6 +46,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
 
     const isPointChanged = point !== originalPoint;
 
+    function normalizeStatus(status: string = '') {
+        const s = (status || '').trim().toLowerCase();
+        if (s === 'hoàn thành' || s === 'đã hoàn thành' || s === 'completed') return 'Hoàn thành';
+        if (s === 'đang tiến hành' || s === 'đang thu gom' || s === 'collecting' || s === 'in progress') return 'Đang tiến hành';
+        if (s === 'chưa bắt đầu' || s === 'not started') return 'Chưa bắt đầu';
+        if (s === 'hủy bỏ' || s === 'cancelled' || s === 'canceled') return 'Hủy bỏ';
+        return status;
+    }
+
     const handleConfirm = async () => {
         if (!isPointChanged) return;
         const reasons = selectedTags.filter(t => t !== "Khác");
@@ -93,19 +102,23 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
             {/* Modal */}
             <div className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 relative'>
                     <div className='flex flex-col gap-1'>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Chi tiết sản phẩm
                         </h2>
                     </div>
+
+                    {/* Centered status badge (transparent, no border, primary text) */}
+                    <span
+                        className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-transparent text-primary-700"
+                        style={{ minWidth: 140 }}
+                    >
+                        Trạng thái: {normalizeStatus(product.status)}
+                    </span>
+
+                    {/* Right: close button only */}
                     <div className='flex items-center gap-4'>
-                        <span
-                            className="flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-primary-600 text-white"
-                            style={{ minWidth: 110 }}
-                        >
-                            {product.status}
-                        </span>
                         <button
                             onClick={onClose}
                             className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'

@@ -135,7 +135,7 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
     }, [selectedDate, currentPage, filterStatus, user?.smallCollectionPointId]);
 
     const fetchRouteDetail = useCallback(async (id: string) => {
-        setLoading(true);
+        // Fetch detail without toggling the shared list `loading` state
         console.log('🔄 Fetching route detail for ID:', id);
         try {
             const data = await getCollectionRouteDetail(id);
@@ -147,8 +147,6 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
         } catch (error) {
             console.error('❌ Error fetching route detail:', error);
             setRouteDetail(null);
-        } finally {
-            setLoading(false);
         }
     }, []);
 

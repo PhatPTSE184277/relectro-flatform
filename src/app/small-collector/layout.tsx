@@ -14,6 +14,7 @@ import { UserProvider } from '@/contexts/UserContext';
 import { DashboardProvider } from '@/contexts/small-collector/DashboardContext';
 import { SeedQRCodeProvider } from '@/contexts/small-collector/SeedQRCodeContext';
 import { NotificationProvider, useNotifications } from '@/contexts/NotificationContext';
+import { VehicleProvider } from '@/contexts/small-collector/VehicleContext';
 import { useAuth } from '@/hooks/useAuth';
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
@@ -65,7 +66,9 @@ export default function SmallCollectorLayout({
                                     <CategoryProvider>
                                         <DashboardProvider>
                                             <SeedQRCodeProvider>
-                                                <LayoutContent>{children}</LayoutContent>
+                                                <VehicleProvider>
+                                                    <LayoutContent>{children}</LayoutContent>
+                                                </VehicleProvider>
                                             </SeedQRCodeProvider>
                                         </DashboardProvider>
                                     </CategoryProvider>

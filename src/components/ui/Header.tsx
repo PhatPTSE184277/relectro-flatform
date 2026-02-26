@@ -220,6 +220,13 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
         }
     };
 
+    // Build greeting text, include company name for warehouse admins
+    const greetingText = user?.role
+        ? (user.role === 'AdminWarehouse' && user.companyName
+            ? `${translateRole(user.role)} - Công ty ${user.companyName}`
+            : translateRole(user.role))
+        : '';
+
     return (
         <nav className='bg-white shadow-sm sticky top-0 z-50'>
             <div className='max-w-full px-3 sm:px-4 md:px-6 lg:px-8'>
@@ -261,7 +268,7 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
                             <>
                                 {user.role && (
                                     <span className='hidden sm:inline-flex items-center text-sm text-primary-600 bg-primary-50 rounded-full px-3 py-1 font-medium mr-2 shadow-sm'>
-                                        Chào mừng {translateRole(user.role)}
+                                        Chào mừng {greetingText}
                                     </span>
                                 )}
                                 {/* Notification Bell: For Admin, AdminWarehouse, AdminCompany, RecyclingCompany */}

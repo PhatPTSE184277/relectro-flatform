@@ -1,7 +1,16 @@
 import React from 'react';
 
-const ProductSkeleton: React.FC = () => (
+interface ProductSkeletonProps {
+    showCheckbox?: boolean;
+}
+
+const ProductSkeleton: React.FC<ProductSkeletonProps> = ({ showCheckbox = false }) => (
     <tr className='border-b border-primary-100'>
+        {showCheckbox && (
+            <td className='py-3 px-4 text-center w-[5vw]'>
+                <div className='h-4 w-4 bg-gray-200 rounded mx-auto animate-pulse' />
+            </td>
+        )}
         {/* STT */}
         <td className='py-3 px-4 text-center w-[5vw]'>
             <div className='h-4 w-7 bg-gray-200 rounded mx-auto animate-pulse' />

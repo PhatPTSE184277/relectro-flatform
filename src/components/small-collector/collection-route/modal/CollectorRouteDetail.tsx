@@ -54,19 +54,23 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
             {/* Modal */}
             <div className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 relative'>
                     <div className='flex flex-col gap-1'>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Chi tiết tuyến thu gom
                         </h2>
                     </div>
+
+                    {/* Centered status badge */}
+                    <span
+                        className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-transparent text-primary-700"
+                        style={{ minWidth: 140 }}
+                    >
+                        Trạng thái: {normalizeStatus(route.status)}
+                    </span>
+
+                    {/* Right: close button only */}
                     <div className='flex items-center gap-4'>
-                        <span
-                            className="flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-primary-600 text-white"
-                            style={{ minWidth: 110 }}
-                        >
-                            {normalizeStatus(route.status)}
-                        </span>
                         <button
                             onClick={onClose}
                             className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
