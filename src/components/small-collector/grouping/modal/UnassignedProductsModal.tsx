@@ -38,14 +38,15 @@ const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
                             <AlertTriangle className='text-white' size={20} />
                         </div>
                         <div>
-                            <h2 className='text-xl font-bold text-gray-900'>Sản phẩm chưa được phân chia</h2>
+                            <h2 className='text-2xl font-bold text-gray-900'>Sản phẩm chưa được phân chia</h2>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className='p-2 hover:bg-white/50 rounded-full transition-colors'
+                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer'
+                        aria-label='Đóng'
                     >
-                        <X size={24} className='text-gray-600' />
+                        <X size={28} />
                     </button>
                 </div>
 

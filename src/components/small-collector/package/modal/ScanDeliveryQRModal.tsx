@@ -187,7 +187,7 @@ const ScanDeliveryQRModal: React.FC<ScanDeliveryQRModalProps> = ({ open, onClose
                     ) : null}
                 </div>
                 {scanned ? (
-                    <div className='p-6 border-t bg-white flex justify-end gap-3'>
+                    <div className='p-5 border-t border-primary-100 bg-white flex justify-end gap-3'>
                         <button
                             onClick={handleConfirm}
                             className='px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium cursor-pointer flex items-center gap-2'

@@ -289,7 +289,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                             maxHeight={effectiveMaxHeight}
                         />
                         {totalPages > 1 && (
-                            <div className='p-4 border-t'>
+                            <div className='p-4 border-t border-gray-100'>
                                 <Pagination
                                     page={productPage}
                                     totalPages={totalPages}

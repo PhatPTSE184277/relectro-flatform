@@ -53,13 +53,14 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                         <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
                             <Truck className='text-white' size={20} />
                         </div>
-                        <h2 className='text-xl font-bold text-gray-900'>Chọn xe để phân chia</h2>
+                        <h2 className='text-2xl font-bold text-gray-900'>Chọn xe để phân chia</h2>
                     </div>
                     <button
                         onClick={onClose}
-                        className='p-2 hover:bg-white/50 rounded-full transition-colors'
+                        className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer'
+                        aria-label='Đóng'
                     >
-                        <X size={24} className='text-gray-600' />
+                        <X size={28} />
                     </button>
                 </div>
 
@@ -186,13 +187,13 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className='flex items-center justify-end gap-3 p-6 border-t bg-gray-50'>
+                <div className='p-5 border-t border-primary-100 bg-white flex justify-end gap-3'>
                     <button
                         onClick={() => onConfirm(selectedVehicleIds)}
                         disabled={!hasSelection || confirming}
-                        className={`px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                        className={`px-6 py-2.5 rounded-lg font-medium transition flex items-center gap-2 ${
                             hasSelection && !confirming
-                                ? 'bg-primary-600 text-white hover:bg-primary-700'
+                                ? 'bg-primary-600 text-white hover:bg-primary-700 cursor-pointer'
                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         }`}
                     >

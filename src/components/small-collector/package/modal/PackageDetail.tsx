@@ -125,7 +125,7 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                                     />
                                 </div>
                                 {pkg.products.totalPages > 1 && (
-                                    <div className='p-4 border-t'>
+                                    <div className='p-4 border-t border-gray-100'>
                                         <Pagination
                                             page={productPage}
                                             totalPages={pkg.products.totalPages}
