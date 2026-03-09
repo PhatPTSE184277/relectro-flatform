@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatNumber } from '@/utils/formatNumber';
 import { Eye } from 'lucide-react';
 
 interface AssignedRecyclingShowProps {
@@ -20,8 +21,8 @@ const AssignRecyclingShow: React.FC<AssignedRecyclingShowProps> = ({
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}>
             <td className='py-3 px-4 text-center w-16'>
-                <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
-                    {index !== undefined ? index + 1 : ''}
+                <span className='inline-flex min-w-7 h-7 rounded-full bg-primary-600 text-white text-sm items-center justify-center font-semibold mx-auto px-2'>
+                    {index !== undefined ? formatNumber(index + 1) : ''}
                 </span>
             </td>
             <td className='py-3 px-4 font-medium text-gray-900 align-middle w-48'>

@@ -1,20 +1,43 @@
-// Định dạng số về 2 chữ số thập phân
-export function formatWeightKg(weight?: number): string {
-    if (weight == null) return '-';
-    // Nếu là số nguyên, trả về nguyên, nếu có thập phân thì giữ lại
-    if (Number.isInteger(weight)) return weight.toString();
-    return weight % 1 === 0 ? weight.toString() : weight.toString().replace(/\.0+$/, '').replace(/(\.[1-9]*)0+$/, '$1');
+// Locale-aware number formatting utilities
+// By default uses international formatting ('en-US') where decimal separator is '.' and thousands separator is ','
+export function formatNumber(value?: number, options?: {
+    locale?: string;
+    maximumFractionDigits?: number;
+    minimumFractionDigits?: number;
+    useGrouping?: boolean;
+}): string {
+    if (value == null || Number.isNaN(value)) return '-';
+    const locale = options?.locale ?? 'en-US';
+    const maximumFractionDigits = typeof options?.maximumFractionDigits === 'number'
+        ? options!.maximumFractionDigits
+        : // default: preserve integers (0), otherwise up to 3 decimals
+            (Number.isInteger(value) ? 0 : 3);
+    const minimumFractionDigits = typeof options?.minimumFractionDigits === 'number' ? options!.minimumFractionDigits : 0;
+    const nf = new Intl.NumberFormat(locale, {
+        maximumFractionDigits,
+        minimumFractionDigits,
+        useGrouping: options?.useGrouping ?? true,
+    });
+    return nf.format(value);
 }
 
-// Làm tròn từng số trong dimensionText về 2 chữ số thập phân
-export function formatDimensionText(text?: string): string {
+// Format weight in kg with sensible defaults. Returns '-' for null/undefined.
+export function formatWeightKg(weight?: number, locale = 'en-US'): string {
+    if (weight == null || Number.isNaN(weight)) return '-';
+    // Round to nearest integer and show no decimal places for capacity/weight
+    const rounded = Math.round(weight);
+    return formatNumber(rounded, { locale, maximumFractionDigits: 0 });
+}
+
+// Format dimension text like "12 x 34.5 x 6" -> formats each number with up to 2 decimals
+export function formatDimensionText(text?: string, locale = 'en-US'): string {
     if (!text) return '-';
     return text.split('x')
         .map(s => {
-            const n = parseFloat(s.trim());
-            if (isNaN(n)) return s.trim();
-            // Làm tròn 2 số, bỏ số 0 dư
-            return n.toFixed(2).replace(/\.00$/, '').replace(/(\.[1-9]*)0$/, '$1');
+            const raw = s.trim();
+            const n = parseFloat(raw);
+            if (isNaN(n)) return raw;
+            return formatNumber(n, { locale, maximumFractionDigits: 2 });
         })
         .join(' x ');
 }

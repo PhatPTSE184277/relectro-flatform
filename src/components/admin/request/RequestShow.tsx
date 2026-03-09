@@ -1,6 +1,7 @@
 import { Eye, CheckCircle, XCircle } from 'lucide-react';
 import { formatDate } from '@/utils/FormatDate';
 import { formatAddress } from '@/utils/FormatAddress';
+import { formatNumber } from '@/utils/formatNumber';
 import type { Post } from '@/types/post';
 import { PostStatus } from '@/enums/PostStatus';
 
@@ -55,8 +56,8 @@ const RequestShow: React.FC<RequestShowProps & { isLast?: boolean; rowIndex?: nu
                 )}
             </td>
             <td className="py-3 px-4 text-center w-[5vw]">
-                <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
-                    {stt}
+                <span className="inline-flex min-w-7 h-7 rounded-full bg-primary-600 text-white text-sm items-center justify-center font-semibold mx-auto px-2">
+                    {formatNumber(stt)}
                 </span>
             </td>
             {/* Ảnh đã bị ẩn */}

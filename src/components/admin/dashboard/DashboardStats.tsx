@@ -1,5 +1,6 @@
 import React from 'react';
 import { TrendingUp } from 'lucide-react';
+import { formatNumber } from '@/utils/formatNumber';
 
 interface StatDetail {
   currentValue: number;
@@ -90,14 +91,14 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
             <div className="flex items-center justify-between w-full">
               <h3 className={isPrimary ? 'text-lg font-semibold text-white' : 'text-lg font-semibold text-primary-700'}>{stat.title}</h3>
               <TrendingUp size={18} className={isPrimary ? 'text-white opacity-80' : 'text-primary-400 opacity-80'} />
-              <span className={isPrimary ? 'text-3xl font-bold ml-4 text-white' : 'text-3xl font-bold ml-4 text-primary-600'}>{safeCurrentValue}</span>
+              <span className={isPrimary ? 'text-3xl font-bold ml-4 text-white' : 'text-3xl font-bold ml-4 text-primary-600'}>{formatNumber(safeCurrentValue)}</span>
             </div>
             <div className={isPrimary ? 'flex justify-between items-center mt-2 text-white text-xs' : 'flex justify-between items-center mt-2 text-primary-700 text-xs'}>
               <span>
-                Trước: <b>{safePreviousValue}</b>
+                Trước: <b>{formatNumber(safePreviousValue)}</b>
               </span>
               <span>
-                {trend === 'Increase' ? '▲' : trend === 'Decrease' ? '▼' : ''} {safeAbsoluteChange > 0 ? '+' : ''}{safeAbsoluteChange} ({safePercentChange}%)
+                {trend === 'Increase' ? '▲' : trend === 'Decrease' ? '▼' : ''} {safeAbsoluteChange > 0 ? '+' : ''}{formatNumber(safeAbsoluteChange)} ({formatNumber(safePercentChange)}%)
               </span>
             </div>
           </div>

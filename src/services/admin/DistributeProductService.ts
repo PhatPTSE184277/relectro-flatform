@@ -46,3 +46,8 @@ export const distributeProducts = async (
   const response = await axios.post('/assign/products', data);
   return response.data;
 };
+
+export const getCapacityPoints = async (): Promise<any[]> => {
+  const response = await axios.get('/Capacity/points');
+  return response.data;
+};

@@ -16,6 +16,7 @@ import { AssignRecyclingProvider } from '@/contexts/admin/AssignRecyclingContext
 import { DashboardProvider } from '@/contexts/admin/DashboardContext';
 import { SendNotiProvider } from '@/contexts/admin/SendNotiContext';
 import { SpeedProvider } from '@/contexts/admin/SpeedContext';
+import { CapacityProvider } from '@/contexts/admin/CapacityContext';
 import { NotificationProvider, useNotifications } from '@/contexts/NotificationContext';
 
 function AdminLayoutContent({ children, sidebarOpen, setSidebarOpen }: { children: React.ReactNode; sidebarOpen: boolean; setSidebarOpen: (open: boolean) => void }) {
@@ -87,9 +88,11 @@ export default function AdminLayout({
                                         <SystemConfigProvider>
                                             <TrackingProvider>
                                                 <DashboardProvider>
-                                                    <AdminLayoutContent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}>
-                                                        {children}
-                                                    </AdminLayoutContent>
+                                                    <CapacityProvider>
+                                                        <AdminLayoutContent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}>
+                                                            {children}
+                                                        </AdminLayoutContent>
+                                                    </CapacityProvider>
                                                 </DashboardProvider>
                                             </TrackingProvider>
                                         </SystemConfigProvider>

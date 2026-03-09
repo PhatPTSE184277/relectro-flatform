@@ -1,5 +1,6 @@
 import { Ban } from "lucide-react";
 import { formatDate } from '@/utils/FormatDate';
+import { formatNumber } from '@/utils/formatNumber';
 
 interface UserShowProps {
   user: any;
@@ -18,8 +19,8 @@ const UserShow: React.FC<UserShowProps> = ({ user, stt, onBan, isLast = false, s
   return (
     <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}>
       <td className="py-3 px-4 text-center w-[5vw]">
-        <span className="w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto">
-          {stt}
+        <span className="inline-flex min-w-7 h-7 rounded-full bg-primary-600 text-white text-sm items-center justify-center font-semibold mx-auto px-2">
+          {formatNumber(stt)}
         </span>
       </td>
       <td className="py-3 px-4 font-medium text-gray-900 w-[18vw]">{user.name}</td>

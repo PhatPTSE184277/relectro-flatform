@@ -1,5 +1,6 @@
 import { IoFilterOutline } from 'react-icons/io5';
 import React from 'react';
+import { formatNumber } from '@/utils/formatNumber';
 import { PostStatus } from '@/enums/PostStatus';
 
 interface RequestFilterProps {
@@ -32,7 +33,7 @@ const RequestFilter: React.FC<RequestFilterProps> = ({
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Chờ duyệt ({stats.pending})
+                    Chờ duyệt ({formatNumber(stats.pending)})
                 </button>
                 <button
                     onClick={() => onFilterChange(PostStatus.Approved)}
@@ -42,7 +43,7 @@ const RequestFilter: React.FC<RequestFilterProps> = ({
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Đã duyệt ({stats.approved})
+                    Đã duyệt ({formatNumber(stats.approved)})
                 </button>
                 <button
                     onClick={() => onFilterChange(PostStatus.Rejected)}
@@ -52,7 +53,7 @@ const RequestFilter: React.FC<RequestFilterProps> = ({
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Đã từ chối ({stats.rejected})
+                    Đã từ chối ({formatNumber(stats.rejected)})
                 </button>
             </div>
         </div>

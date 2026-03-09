@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatWeightKg } from '@/utils/formatNumber';
 
 interface CompanySelectListProps {
     company: any;
@@ -34,15 +35,21 @@ const CompanySelectList: React.FC<CompanySelectListProps> = ({
                     {stt}
                 </span>
             </td>
-            <td className='py-3 px-4 w-[20vw]'>
+            <td className='py-3 px-4 w-[18vw]'>
                 <div className='text-gray-900 font-medium'>{company.name || 'N/A'}</div>
                 <div className='text-xs text-gray-500 mt-1'>{company.companyEmail || ''}</div>
             </td>
-            <td className='py-3 px-4 w-[15vw]'>
-                <div className='text-gray-700'>{company.phone || 'N/A'}</div>
-            </td>
-            <td className='py-3 px-4 w-[20vw]'>
+            <td className='py-3 px-4 w-[14vw]'>
                 <div className='text-gray-700 line-clamp-2'>{company.city || 'N/A'}</div>
+            </td>
+            <td className='py-3 px-4 text-right w-[12vw]'>
+                <span className='text-gray-700 font-medium'>{formatWeightKg(company.maxCapacity ?? 0)}</span>
+            </td>
+            <td className='py-3 px-4 text-right w-[12vw]'>
+                <span className='text-gray-700 font-medium'>{formatWeightKg(company.currentCapacity ?? 0)}</span>
+            </td>
+            <td className='py-3 px-4 text-right w-[12vw]'>
+                <span className='text-gray-700 font-medium'>{formatWeightKg(company.availableCapacity ?? 0)}</span>
             </td>
         </tr>
     );

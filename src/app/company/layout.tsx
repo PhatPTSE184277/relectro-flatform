@@ -10,6 +10,7 @@ import { ProductQueryProvider } from '@/contexts/company/ProductQueryContext';
 import { ShiftProvider } from '@/contexts/company/ShiftContext';
 import { VehicleProvider } from '@/contexts/company/VehicleContext';
 import { SettingGroupProvider } from '@/contexts/company/SettingGroupContext';
+import { CapacityProvider } from '@/contexts/company/CapacityContext';
 import { NotificationProvider, useNotifications } from '@/contexts/NotificationContext';
 import { UserProvider } from '@/contexts/UserContext';
 import { useAuth } from '@/hooks/useAuth';
@@ -57,7 +58,9 @@ export default function LargeCollectorLayout({
                             <ShiftProvider>
                                 <VehicleProvider>
                                     <SettingGroupProvider>
-                                        <LayoutContent>{children}</LayoutContent>
+                                        <CapacityProvider>
+                                            <LayoutContent>{children}</LayoutContent>
+                                        </CapacityProvider>
                                     </SettingGroupProvider>
                                 </VehicleProvider>
                             </ShiftProvider>

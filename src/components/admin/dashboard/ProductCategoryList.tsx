@@ -1,5 +1,6 @@
 import React from 'react';
 import ProductCategoryListSkeleton from './ProductCategoryListSkeleton';
+import { formatNumber } from '@/utils/formatNumber';
 
 interface ProductCategory {
   categoryName: string;
@@ -59,13 +60,13 @@ const ProductCategoryList: React.FC<ProductCategoryListProps & { total?: number 
                             {category.categoryName}
                           </td>
                           <td className="py-3 px-4 text-right text-gray-700 font-semibold w-[10vw] min-w-[8vw]">
-                            {category.currentValue}
+                            {formatNumber(category.currentValue)}
                           </td>
                           <td className="py-3 px-4 text-right text-gray-700 font-semibold w-[10vw] min-w-[8vw]">
-                            {category.trend === 'Increase' ? '▲' : category.trend === 'Decrease' ? '▼' : ''} {category.absoluteChange > 0 ? '+' : ''}{category.absoluteChange} ({category.percentChange}%)
+                            {category.trend === 'Increase' ? '▲' : category.trend === 'Decrease' ? '▼' : ''} {category.absoluteChange > 0 ? '+' : ''}{formatNumber(category.absoluteChange)} ({formatNumber(category.percentChange)}%)
                           </td>
                           <td className="py-3 px-4 text-right text-gray-700 font-semibold w-[8vw] min-w-[7vw]">
-                            {percentOfTotal}
+                            {formatNumber(percentOfTotal)}%
                           </td>
                         </tr>
                       );

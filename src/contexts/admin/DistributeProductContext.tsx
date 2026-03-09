@@ -13,7 +13,8 @@ import {
     getUndistributedProducts,
     getCompanyMetricsByDate,
     getSCPProductsStatus,
-    getCollectionCompanies
+    getCollectionCompanies,
+    getCapacityPoints
 } from '@/services/admin/DistributeProductService';
 import { AssignedProduct, AssignProductsRequest } from '@/types/AssignProduct';
 
@@ -183,12 +184,33 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
         try {
             const currentPage = pageArg ?? 1;
             const currentLimit = limitArg ?? 9999;
-            const response = await getCollectionCompanies(currentPage, currentLimit);
-            
+            const [response, capacityPoints] = await Promise.all([
+                getCollectionCompanies(currentPage, currentLimit),
+                getCapacityPoints().catch(() => [] as any[])
+            ]);
+
+            const capacityMap = new Map<string, any>();
+            if (Array.isArray(capacityPoints)) {
+                for (const cp of capacityPoints) {
+                    capacityMap.set(String(cp.id), cp);
+                }
+            }
+
+            const mergeCapacity = (company: any) => {
+                const cap = capacityMap.get(String(company.id));
+                if (!cap) return company;
+                return {
+                    ...company,
+                    maxCapacity: cap.maxCapacity,
+                    currentCapacity: cap.currentCapacity,
+                    availableCapacity: cap.availableCapacity
+                };
+            };
+
             if (response && response.data) {
-                setCollectionCompanies(response.data);
+                setCollectionCompanies(response.data.map(mergeCapacity));
             } else if (Array.isArray(response)) {
-                setCollectionCompanies(response);
+                setCollectionCompanies(response.map(mergeCapacity));
             } else {
                 setCollectionCompanies([]);
             }

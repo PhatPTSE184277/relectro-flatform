@@ -9,7 +9,8 @@ import {
     MapPin,
     Zap,
     Recycle,
-    Bell
+    Bell,
+    Warehouse
 } from 'lucide-react';
 
 export const adminMenuItems = [
@@ -78,5 +79,11 @@ export const adminMenuItems = [
         label: 'Gửi thông báo',
         path: '/admin/send-notification',
         icon: <Bell size={20} />
+    },
+    {
+        id: 'capacity',
+        label: 'Năng lực kho',
+        path: '/admin/capacity',
+        icon: <Warehouse size={20} />
     }
 ];

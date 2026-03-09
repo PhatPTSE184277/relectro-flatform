@@ -94,9 +94,11 @@ const SelectCompanyModal: React.FC<SelectCompanyModalProps> = ({
                                                         />
                                                     </th>
                                                     <th className='py-3 px-4 text-center w-[5vw]'>STT</th>
-                                                    <th className='py-3 px-4 text-left w-[20vw]'>Công ty</th>
-                                                    <th className='py-3 px-4 text-left w-[15vw]'>Số điện thoại</th>
-                                                    <th className='py-3 px-4 text-left w-[20vw]'>Địa chỉ</th>
+                                                    <th className='py-3 px-4 text-left w-[18vw]'>Công ty</th>
+                                                    <th className='py-3 px-4 text-left w-[14vw]'>Địa chỉ</th>
+                                                    <th className='py-3 px-4 text-right w-[12vw]'>Sức chứa tối đa (kg)</th>
+                                                    <th className='py-3 px-4 text-right w-[12vw]'>Đang chứa (kg)</th>
+                                                    <th className='py-3 px-4 text-right w-[12vw]'>Còn trống (kg)</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -117,7 +119,13 @@ const SelectCompanyModal: React.FC<SelectCompanyModalProps> = ({
                                                                 <div className='h-4 bg-gray-200 rounded w-32 animate-pulse' />
                                                             </td>
                                                             <td className='py-3 px-4'>
-                                                                <div className='h-4 bg-gray-200 rounded w-40 animate-pulse' />
+                                                                <div className='h-4 bg-gray-200 rounded w-20 animate-pulse ml-auto' />
+                                                            </td>
+                                                            <td className='py-3 px-4'>
+                                                                <div className='h-4 bg-gray-200 rounded w-20 animate-pulse ml-auto' />
+                                                            </td>
+                                                            <td className='py-3 px-4'>
+                                                                <div className='h-4 bg-gray-200 rounded w-20 animate-pulse ml-auto' />
                                                             </td>
                                                         </tr>
                                                     ))
@@ -134,7 +142,7 @@ const SelectCompanyModal: React.FC<SelectCompanyModalProps> = ({
                                                     ))
                                                 ) : (
                                                     <tr>
-                                                        <td colSpan={5} className='text-center py-8 text-gray-400'>
+                                                        <td colSpan={7} className='text-center py-8 text-gray-400'>
                                                             Không có công ty nào.
                                                         </td>
                                                     </tr>
