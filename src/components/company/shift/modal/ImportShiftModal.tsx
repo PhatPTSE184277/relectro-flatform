@@ -2,16 +2,34 @@
 
 import React, { useState } from 'react';
 import { X, FileText, Download } from 'lucide-react';
+import { getActiveSystemConfigs } from '@/services/admin/SystemConfigService';
+import { pickExcelTemplateUrl } from '@/utils/excelTemplateConfig';
 
 interface ImportShiftModalProps {
     open: boolean;
     onClose: () => void;
-    onImport: (file: File) => void;
+    onImport: (file: File) => Promise<boolean>;
 }
 
 const ImportShiftModal: React.FC<ImportShiftModalProps> = ({ open, onClose, onImport }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
+    const [templateUrl, setTemplateUrl] = useState<string | null>(null);
+
+    React.useEffect(() => {
+        const loadTemplate = async () => {
+            try {
+                const configs = await getActiveSystemConfigs('Excel');
+                setTemplateUrl(pickExcelTemplateUrl(configs, ['ca lam', 'shift']));
+            } catch {
+                setTemplateUrl(null);
+            }
+        };
+
+        if (open) {
+            void loadTemplate();
+        }
+    }, [open]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -36,9 +54,11 @@ const ImportShiftModal: React.FC<ImportShiftModalProps> = ({ open, onClose, onIm
         }
         setUploading(true);
         try {
-            await onImport(selectedFile);
-            setSelectedFile(null);
-            onClose();
+            const success = await onImport(selectedFile);
+            if (success) {
+                setSelectedFile(null);
+                onClose();
+            }
         } finally {
             setUploading(false);
         }
@@ -101,9 +121,16 @@ const ImportShiftModal: React.FC<ImportShiftModalProps> = ({ open, onClose, onIm
                 {/* Footer */}
                 <div className="flex justify-between items-center gap-3 p-5 border-t border-primary-100 bg-white">
                     <a
-                        href="/templates/company.xlsx"
+                        href={templateUrl || '#'}
                         download
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg border border-primary-300 text-primary-600 hover:bg-primary-50 transition text-sm font-medium"
+                        onClick={(e) => {
+                            if (!templateUrl) e.preventDefault();
+                        }}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition text-sm font-medium ${
+                            templateUrl
+                                ? 'border-primary-300 text-primary-600 hover:bg-primary-50'
+                                : 'border-gray-200 text-gray-400 cursor-not-allowed'
+                        }`}
                     >
                         <Download size={16} />
                         Tải file mẫu

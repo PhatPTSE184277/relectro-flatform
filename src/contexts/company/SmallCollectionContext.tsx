@@ -53,6 +53,7 @@ export const SmallCollectionProvider = ({
     const [selectedSmallCollection, setSelectedSmallCollection] =
         useState<SmallCollectionPoint | null>(null);
     const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
+    const [detailLoading, setDetailLoading] = useState(false);
 
     const fetchSmallCollections = useCallback(async (params?: any) => {
         setLoading(true);
@@ -90,7 +91,7 @@ export const SmallCollectionProvider = ({
     }, [user?.collectionCompanyId, fetchSmallCollections]);
 
     const fetchSmallCollectionById = useCallback(async (id: number | string) => {
-        setLoading(true);
+        setDetailLoading(true);
         setError(null);
         try {
             const res = await getSmallCollectionPointById(id);
@@ -104,7 +105,7 @@ export const SmallCollectionProvider = ({
             setSelectedSmallCollection(null);
             return null;
         } finally {
-            setLoading(false);
+            setDetailLoading(false);
         }
     }, []);
 

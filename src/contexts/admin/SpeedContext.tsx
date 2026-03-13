@@ -6,6 +6,7 @@ import React, {
     useState,
     useCallback,
     useEffect,
+    useRef,
     ReactNode,
 } from 'react';
 import {
@@ -52,6 +53,7 @@ export const SpeedProvider: React.FC<Props> = ({ children }) => {
     const [totalItems, setTotalItems] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [search, setSearch] = useState<string>('');
+    const initializedRef = useRef(false);
 
     const fetchSpeeds = useCallback(
         async (customPage?: number, customLimit?: number, customSearch?: string) => {
@@ -139,8 +141,12 @@ export const SpeedProvider: React.FC<Props> = ({ children }) => {
     }, []);
 
     useEffect(() => {
+        if (initializedRef.current) return;
+        initializedRef.current = true;
         void fetchSpeeds();
-    }, [fetchSpeeds]);
+        // Intentionally run only once for initial load.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const value: SpeedContextType = {
         speeds,

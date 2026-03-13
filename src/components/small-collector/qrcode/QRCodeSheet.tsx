@@ -25,11 +25,17 @@ const QRCodeSheet: React.FC<QRCodeSheetProps> = ({ timestamps: propTimestamps, q
     if (propTimestamps && propTimestamps.length > 0) {
       setTimestamps(propTimestamps);
     } else {
-      const now = Date.now();
-      const generatedTimestamps = Array.from(
-        { length: QR_LABELS_PER_ROW * QR_LABELS_PER_COL },
-        (_, i) => (now + i).toString()
-      );
+      const baseMs = Math.floor(Date.now() / 1000) * 1000; // same second, ms
+      const count = QR_LABELS_PER_ROW * QR_LABELS_PER_COL;
+      const used = new Set<number>();
+      const generatedTimestamps: string[] = [];
+      while (generatedTimestamps.length < count) {
+        const randMs = Math.floor(Math.random() * 1000);
+        const ts = baseMs + randMs;
+        if (used.has(ts)) continue;
+        used.add(ts);
+        generatedTimestamps.push(ts.toString());
+      }
       setTimestamps(generatedTimestamps);
     }
   }, [propTimestamps]);

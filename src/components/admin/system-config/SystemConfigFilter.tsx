@@ -14,7 +14,6 @@ const SystemConfigFilter: React.FC<SystemConfigFilterProps> = ({ groupNames, gro
         <span className='flex items-center justify-center w-7 h-7 rounded-full bg-primary-100 border border-primary-200'>
           <IoFilterOutline className='text-primary-600' size={16} />
         </span>
-        {/* Bỏ nút Tất cả */}
         {groupNames.map((g) => (
           <button
             key={g.value}

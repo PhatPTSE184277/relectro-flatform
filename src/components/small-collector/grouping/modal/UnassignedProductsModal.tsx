@@ -2,6 +2,7 @@ import React from 'react';
 import { X, AlertTriangle } from 'lucide-react';
 import ProductList from '../ProductList';
 import Pagination from '@/components/ui/Pagination';
+import UnassignedProductsFilter, { UnassignedProductsReasonOption } from './UnassignedProductsFilter';
 
 interface UnassignedProductsModalProps {
     open: boolean;
@@ -12,6 +13,9 @@ interface UnassignedProductsModalProps {
     currentPage: number;
     onPageChange: (page: number) => void;
     totalCount: number;
+    reasonOptions: UnassignedProductsReasonOption[];
+    selectedReason: string;
+    onReasonChange: (reason: string) => void;
 }
 
 const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
@@ -22,7 +26,10 @@ const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
     totalPages,
     currentPage,
     onPageChange,
-    totalCount
+    totalCount,
+    reasonOptions,
+    selectedReason,
+    onReasonChange
 }) => {
     if (!open) return null;
 
@@ -57,6 +64,13 @@ const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
                         <span className='text-sm font-medium text-gray-700'>
                             Tổng cộng: <span className='font-bold text-primary-600'>{totalCount}</span> sản phẩm chưa được phân chia
                         </span>
+                    </div>
+                    <div className='mt-3'>
+                        <UnassignedProductsFilter
+                            options={reasonOptions}
+                            selectedReason={selectedReason}
+                            onChangeReason={onReasonChange}
+                        />
                     </div>
                 </div>
 

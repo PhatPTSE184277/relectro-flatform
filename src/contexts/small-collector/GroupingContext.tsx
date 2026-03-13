@@ -33,6 +33,8 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { getTodayString } from '@/utils/getDayString';
 
+const DEFAULT_UNASSIGNED_REASON = 'HẠN CHÓT - Cần thu gom gấp nhưng chưa có xe phù hợp.';
+
 interface SuggestedVehicle {
     id: number;
     plate_Number: string;
@@ -212,7 +214,12 @@ export function GroupingProvider({ children }: Props) {
         }
     }, [user]);
 
-    const fetchUnassignedProducts = useCallback(async (workDate: string, page: number = 1, pageSize: number = 10) => {
+    const fetchUnassignedProducts = useCallback(async (
+        workDate: string,
+        page: number = 1,
+        pageSize: number = 10,
+        reason: string = DEFAULT_UNASSIGNED_REASON
+    ) => {
         if (!user?.smallCollectionPointId) {
             console.warn('No smallCollectionPointId found in user profile:', user);
             return;
@@ -220,7 +227,13 @@ export function GroupingProvider({ children }: Props) {
         
         setUnassignedProductsLoading(true);
         try {
-            const data = await getUnassignedProducts(user.smallCollectionPointId, workDate, page, pageSize);
+            const data = await getUnassignedProducts(
+                user.smallCollectionPointId,
+                workDate,
+                page,
+                pageSize,
+                reason
+            );
             console.log('Unassigned products received:', data);
             setUnassignedProductsData(data);
             setUnassignedProducts(data.items || []);

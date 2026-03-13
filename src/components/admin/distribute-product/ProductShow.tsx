@@ -33,7 +33,7 @@ const ProductShow: React.FC<ProductShowProps> = ({
                         checked={isSelected}
                         onChange={() => onToggleSelect && onToggleSelect(product.productId)}
                         onClick={(e) => e.stopPropagation()}
-                        className='w-4 h-4 text-primary-600 bg-white rounded focus:ring-2 focus:ring-primary-500 cursor-pointer'
+                        className='w-4 h-4 cursor-pointer accent-primary-600'
                     />
                 </td>
             )}

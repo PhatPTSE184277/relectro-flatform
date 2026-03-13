@@ -15,8 +15,18 @@ const QRCodePage: React.FC = () => {
 
   // Function to generate new timestamps
   const generateTimestamps = () => {
-    const now = Date.now();
-    return Array.from({ length: 35 }, (_, i) => (now + i).toString());
+    const baseMs = Math.floor(Date.now() / 1000) * 1000; // start of current second (ms)
+    const count = 35;
+    const used = new Set<number>();
+    const arr: string[] = [];
+    while (arr.length < count) {
+      const randMs = Math.floor(Math.random() * 1000); // 0..999 ms
+      const ts = baseMs + randMs;
+      if (used.has(ts)) continue;
+      used.add(ts);
+      arr.push(ts.toString());
+    }
+    return arr;
   };
 
   // Generate timestamps once when component mounts

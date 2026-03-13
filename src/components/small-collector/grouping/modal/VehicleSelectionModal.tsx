@@ -92,7 +92,7 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                                 type='checkbox'
                                                 checked={allSelected}
                                                 onChange={onToggleSelectAll}
-                                                className='w-4 h-4 text-primary-600 bg-white rounded focus:ring-2 focus:ring-primary-500 cursor-pointer'
+                                                className='w-4 h-4 cursor-pointer accent-primary-600'
                                             />
                                         </th>
                                         <th className='py-3 px-4 text-center w-16'>STT</th>
@@ -148,7 +148,7 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                                             checked={isSelected}
                                                             onChange={() => onToggleSelect(vehicle.vehicleId)}
                                                             onClick={(e) => e.stopPropagation()}
-                                                            className='w-4 h-4 text-primary-600 bg-white rounded focus:ring-2 focus:ring-primary-500 cursor-pointer'
+                                                                className='w-4 h-4 cursor-pointer accent-primary-600'
                                                         />
                                                     </td>
                                                     <td className='py-3 px-4 text-center w-16'>

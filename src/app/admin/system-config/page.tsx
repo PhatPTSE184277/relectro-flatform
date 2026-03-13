@@ -10,7 +10,7 @@ import SystemConfigFilter from '@/components/admin/system-config/SystemConfigFil
 import { SystemConfig } from '@/services/admin/SystemConfigService';
 
 const SystemConfigPage: React.FC = () => {
-    const { configs, loading, updateConfig } = useSystemConfigContext();
+    const { configs, loading, updateConfig, fetchConfigs } = useSystemConfigContext();
 
     const [search, setSearch] = useState('');
     const [selectedConfig, setSelectedConfig] = useState<SystemConfig | null>(null);
@@ -31,6 +31,11 @@ const SystemConfigPage: React.FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [groupNames.map(g => g.value).join(',')]);
+
+    // Always re-fetch when entering page to ensure data is from latest API response.
+    useEffect(() => {
+        void fetchConfigs();
+    }, [fetchConfigs]);
 
     // Filter hiển thị: lọc theo groupName và search
     const filteredConfigs = useMemo(() => {

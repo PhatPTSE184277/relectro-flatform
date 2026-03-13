@@ -11,6 +11,7 @@ import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
 import { CalendarClock } from 'lucide-react';
 import ImportShiftModal from '@/components/company/shift/modal/ImportShiftModal';
 import { useAuth } from '@/hooks/useAuth';
+import Toast from '@/components/ui/Toast';
 
 const ShiftPage: React.FC = () => {
     const { user } = useAuth();
@@ -20,6 +21,11 @@ const ShiftPage: React.FC = () => {
     const [search, setSearch] = useState('');
     const [showImportModal, setShowImportModal] = useState(false);
     const [filterStatus, setFilterStatus] = useState<ShiftStatus>('active');
+    const [toast, setToast] = useState<{ open: boolean; type: 'error'; message: string }>({
+        open: false,
+        type: 'error',
+        message: ''
+    });
 
     const [fromDate, setFromDate] = useState<string>(() => {
         const today = new Date();
@@ -63,20 +69,44 @@ const ShiftPage: React.FC = () => {
         setSelectedShift(null);
     };
 
-    const handleImportExcel = async (file: File) => {
+    const handleImportExcel = async (file: File): Promise<boolean> => {
         if (!companyId) {
-            return;
+            setToast({ open: true, type: 'error', message: 'Không xác định được công ty để import.' });
+            return false;
         }
         try {
-            await importShifts(file);
+            const res = await importShifts(file);
+            const isSuccess = Boolean(res?.success);
+            const messages = Array.isArray(res?.messages)
+                ? res.messages.filter((m: unknown): m is string => typeof m === 'string' && m.trim().length > 0)
+                : [];
+
+            if (!isSuccess || messages.length > 0) {
+                setToast({
+                    open: true,
+                    type: 'error',
+                    message:
+                        messages.length > 0
+                            ? messages.join('\n')
+                            : (res?.message || 'Import thất bại. Vui lòng kiểm tra lại file Excel.')
+                });
+                return false;
+            }
+
             await fetchShifts({ 
                 collectionCompanyId: companyId,
                 fromDate,
                 toDate,
                 status: filterStatus === 'active' ? 'Active' : 'InActive'
             });
+            return true;
         } catch (error) {
-            console.log(error);
+            const errMessage =
+                typeof error === 'object' && error !== null && 'response' in error
+                    ? ((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Import thất bại. Vui lòng thử lại.')
+                    : 'Import thất bại. Vui lòng thử lại.';
+            setToast({ open: true, type: 'error', message: errMessage });
+            return false;
         }
     };
 
@@ -162,6 +192,13 @@ const ShiftPage: React.FC = () => {
                     onImport={handleImportExcel}
                 />
             )}
+
+            <Toast
+                open={toast.open}
+                type={toast.type}
+                message={toast.message}
+                onClose={() => setToast({ ...toast, open: false })}
+            />
         </div>
     );
 };

@@ -38,7 +38,7 @@ const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({ produc
                         type='checkbox'
                         checked={isSelected}
                         onChange={onToggleSelect}
-                        className='w-4 h-4 text-primary-600 rounded cursor-pointer'
+                        className='w-4 h-4 cursor-pointer accent-primary-600'
                     />
                 </td>
             )}

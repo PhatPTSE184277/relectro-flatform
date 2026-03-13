@@ -105,7 +105,7 @@ export const approveCollectionPoint = async (id: string | number): Promise<any> 
 // API block một điểm thu gom (dành cho role quản trị)
 export const blockCollectionPoint = async (id: string | number): Promise<any> => {
 	const response = await axios.patch(`/management/collection-points/${id}/block`);
-	return response.data;
+	return response.data;	
 };
 
 // Backwards-compatible aliases (do not remove immediately)

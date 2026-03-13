@@ -169,13 +169,15 @@ const GroupingPage: React.FC = () => {
                     </h1>
                 </div>
                 <div className='flex gap-4 items-center flex-1 justify-end'>
-                    <div className='min-w-fit'>
-                        <CustomDatePicker
-                            value={selectedDate}
-                            onChange={handleDateChange}
-                            placeholder='Chọn ngày làm việc'
-                        />
-                    </div>
+                    {activeStep === 1 && (
+                        <div className='min-w-fit'>
+                            <CustomDatePicker
+                                value={selectedDate}
+                                onChange={handleDateChange}
+                                placeholder='Chọn ngày làm việc'
+                            />
+                        </div>
+                    )}
                     <button
                         onClick={() => router.push('/small-collector/grouping/list')}
                         className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors cursor-pointer'

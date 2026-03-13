@@ -7,10 +7,11 @@ import { useSmallCollectionContext } from '@/contexts/company/SmallCollectionCon
 import SmallCollectionList from '@/components/company/small-collection/SmallCollectionList';
 import SmallCollectionDetail from '@/components/company/small-collection/modal/SmallCollectionDetail';
 import SearchBox from '@/components/ui/SearchBox';
-import ImportExcelModal from '@/components/admin/company/modal/ImportComapnyModal';
+import ImportSmallCollectionModal from '@/components/company/small-collection/modal/ImportSmallCollectionModal';
 import SmallCollectionFilter from '@/components/company/small-collection/SmallCollectionFilter';
 import { SmallCollectionPoint } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
+import Toast from '@/components/ui/Toast';
 
 const SmallCollectionPage: React.FC = () => {
     const { user } = useAuth();
@@ -28,6 +29,11 @@ const SmallCollectionPage: React.FC = () => {
     const [search, setSearch] = useState('');
     const [showImportModal, setShowImportModal] = useState(false);
     const [filterStatus, setFilterStatus] = useState('active');
+    const [toast, setToast] = useState<{ open: boolean; type: 'success' | 'error'; message: string }>({
+        open: false,
+        type: 'success',
+        message: ''
+    });
 
     const companyId = user?.collectionCompanyId;
 
@@ -52,14 +58,65 @@ const SmallCollectionPage: React.FC = () => {
         setSelectedSmallCollection(null);
     };
 
-    const handleImportExcel = async (file: File) => {
+    const handleImportExcel = async (file: File): Promise<boolean> => {
         if (!companyId) {
-            return;
+            setToast({
+                open: true,
+                type: 'error',
+                message: 'Không xác định được công ty để import.'
+            });
+            return false;
         }
         try {
-            await importSmallCollection(file);
+            const res = await importSmallCollection(file);
+            const isSuccess = Boolean(res?.success);
+            const messages = Array.isArray(res?.messages)
+                ? res.messages.filter((m: unknown): m is string => typeof m === 'string' && m.trim().length > 0)
+                : [];
+
+            // If API marked overall success but returned messages (warnings/errors per row),
+            // treat as partial failure so user can review/fix the file.
+            if (!isSuccess) {
+                setToast({
+                    open: true,
+                    type: 'error',
+                    message:
+                        messages.length > 0
+                            ? messages.join('\n')
+                            : (res?.message || 'Import thất bại. Vui lòng kiểm tra lại file Excel.')
+                });
+                return false;
+            }
+
+            if (messages.length > 0) {
+                // Partial success: some rows imported, some rows had issues.
+                setToast({
+                    open: true,
+                    type: 'error',
+                    message: messages.join('\n')
+                });
+                // do not close modal — let user fix file and re-import
+                return false;
+            }
+
+            // Fully successful import: close modal silently (no success toast)
+            await fetchSmallCollections({ companyId, page: 1, limit: 10 });
+            return true;
         } catch (error) {
-            console.log(error);
+            const errMessage =
+                typeof error === 'object' &&
+                error !== null &&
+                'response' in error &&
+                typeof (error as { response?: { data?: { message?: string } } }).response?.data?.message === 'string'
+                    ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+                    : 'Import thất bại. Vui lòng thử lại.';
+
+            setToast({
+                open: true,
+                type: 'error',
+                message: errMessage || 'Import thất bại. Vui lòng thử lại.'
+            });
+            return false;
         }
     };
 
@@ -130,12 +187,19 @@ const SmallCollectionPage: React.FC = () => {
 
             {/* Import Excel Modal */}
             {showImportModal && (
-                <ImportExcelModal
+                <ImportSmallCollectionModal
                     open={showImportModal}
                     onClose={() => setShowImportModal(false)}
                     onImport={handleImportExcel}
                 />
             )}
+
+            <Toast
+                open={toast.open}
+                type={toast.type}
+                message={toast.message}
+                onClose={() => setToast({ ...toast, open: false })}
+            />
         </div>
     );
 };

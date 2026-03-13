@@ -47,7 +47,7 @@ const ProductList: React.FC<ProductListProps> = ({
                                                     type='checkbox'
                                                     checked={allSelected}
                                                     onChange={onToggleSelectAll}
-                                                    className='w-4 h-4 text-primary-600 bg-white rounded focus:ring-2 focus:ring-primary-500 cursor-pointer'
+                                                    className='w-4 h-4 cursor-pointer accent-primary-600'
                                                 />
                                             </th>
                                         )}

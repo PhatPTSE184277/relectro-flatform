@@ -10,6 +10,7 @@ import SearchBox from '@/components/ui/SearchBox';
 import { Truck } from 'lucide-react';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import { useAuth } from '@/hooks/useAuth';
+import Toast from '@/components/ui/Toast';
 
 const VehiclePage: React.FC = () => {
     const { user } = useAuth();
@@ -19,6 +20,11 @@ const VehiclePage: React.FC = () => {
     const [showImportModal, setShowImportModal] = useState(false);
     const [search, setSearch] = useState('');
     const [filterStatus, setFilterStatus] = useState<VehicleStatus>('active');
+    const [toast, setToast] = useState<{ open: boolean; type: 'error'; message: string }>({
+        open: false,
+        type: 'error',
+        message: ''
+    });
 
     const companyId = user?.collectionCompanyId;
 
@@ -41,18 +47,42 @@ const VehiclePage: React.FC = () => {
         setSelectedVehicle(null);
     };
 
-    const handleImportExcel = async (file: File) => {
+    const handleImportExcel = async (file: File): Promise<boolean> => {
         if (!companyId) {
-            return;
+            setToast({ open: true, type: 'error', message: 'Không xác định được công ty để import.' });
+            return false;
         }
         try {
-            await importVehicles(file);
+            const res = await importVehicles(file);
+            const isSuccess = Boolean(res?.success);
+            const messages = Array.isArray(res?.messages)
+                ? res.messages.filter((m: unknown): m is string => typeof m === 'string' && m.trim().length > 0)
+                : [];
+
+            if (!isSuccess || messages.length > 0) {
+                setToast({
+                    open: true,
+                    type: 'error',
+                    message:
+                        messages.length > 0
+                            ? messages.join('\n')
+                            : (res?.message || 'Import thất bại. Vui lòng kiểm tra lại file Excel.')
+                });
+                return false;
+            }
+
             await fetchVehicles({
                 collectionCompanyId: companyId,
                 status: filterStatus,
             });
+            return true;
         } catch (error) {
-            console.log(error);
+            const errMessage =
+                typeof error === 'object' && error !== null && 'response' in error
+                    ? ((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Import thất bại. Vui lòng thử lại.')
+                    : 'Import thất bại. Vui lòng thử lại.';
+            setToast({ open: true, type: 'error', message: errMessage });
+            return false;
         }
     };
 
@@ -128,6 +158,13 @@ const VehiclePage: React.FC = () => {
                     onClose={handleCloseModal}
                 />
             )}
+
+            <Toast
+                open={toast.open}
+                type={toast.type}
+                message={toast.message}
+                onClose={() => setToast({ ...toast, open: false })}
+            />
         </div>
     );
 };

@@ -10,6 +10,7 @@ import ImportExcelModal from '@/components/admin/company/modal/ImportComapnyModa
 import Pagination from '@/components/ui/Pagination';
 import CompanyFilter from '@/components/admin/company/CompanyFilter';
 import { useAuth } from '@/hooks/useAuth';
+import Toast from '@/components/ui/Toast';
 
 const CompanyPage: React.FC = () => {
     const { user } = useAuth();
@@ -31,6 +32,11 @@ const CompanyPage: React.FC = () => {
     const [selectedCompany, setSelectedCompany] = useState<any>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false);
+    const [toast, setToast] = useState<{ open: boolean; type: 'error'; message: string }>({
+        open: false,
+        type: 'error',
+        message: ''
+    });
 
 
     // Khi vào trang, mặc định filter là 'Đang hoạt động'
@@ -78,8 +84,35 @@ const CompanyPage: React.FC = () => {
         setSelectedCompany(null);
     };
 
-    const handleImportExcel = async (file: File) => {
-        await importFromExcel(file);
+    const handleImportExcel = async (file: File): Promise<boolean> => {
+        try {
+            const res = await importFromExcel(file);
+            const isSuccess = Boolean(res?.success);
+            const messages = Array.isArray(res?.messages)
+                ? res.messages.filter((m: unknown): m is string => typeof m === 'string' && m.trim().length > 0)
+                : [];
+
+            if (!isSuccess || messages.length > 0) {
+                setToast({
+                    open: true,
+                    type: 'error',
+                    message:
+                        messages.length > 0
+                            ? messages.join('\n')
+                            : (res?.message || 'Import thất bại. Vui lòng kiểm tra lại file Excel.')
+                });
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            const errMessage =
+                typeof error === 'object' && error !== null && 'response' in error
+                    ? ((error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Import thất bại. Vui lòng thử lại.')
+                    : 'Import thất bại. Vui lòng thử lại.';
+            setToast({ open: true, type: 'error', message: errMessage });
+            return false;
+        }
     };
 
 
@@ -172,6 +205,13 @@ const CompanyPage: React.FC = () => {
                     onImport={handleImportExcel}
                 />
             )}
+
+            <Toast
+                open={toast.open}
+                type={toast.type}
+                message={toast.message}
+                onClose={() => setToast({ ...toast, open: false })}
+            />
         </div>
     );
 };

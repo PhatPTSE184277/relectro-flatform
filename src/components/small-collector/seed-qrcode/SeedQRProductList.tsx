@@ -19,7 +19,6 @@ const SeedQRProductList: React.FC<SeedQRProductListProps> = ({
     onToggleAll
 }) => {
     const allSelected = routes.length > 0 && routes.every(r => selectedIds.has(r.collectionRouteId));
-    const someSelected = routes.some(r => selectedIds.has(r.collectionRouteId));
 
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
@@ -31,7 +30,6 @@ const SeedQRProductList: React.FC<SeedQRProductListProps> = ({
                                 <input
                                     type='checkbox'
                                     checked={allSelected}
-                                    ref={(el) => { if (el) el.indeterminate = someSelected && !allSelected; }}
                                     onChange={onToggleAll}
                                     className='w-4 h-4 cursor-pointer accent-primary-600'
                                 />

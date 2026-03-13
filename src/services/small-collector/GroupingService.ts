@@ -158,12 +158,14 @@ export const getUnassignedProducts = async (
     collectionPointId: string,
     workDate?: string,
     page?: number,
-    pageSize?: number
+    pageSize?: number,
+    reason?: string
 ): Promise<any> => {
     const params: any = {};
     if (workDate !== undefined) params.workDate = workDate;
     if (page !== undefined) params.page = page;
     if (pageSize !== undefined) params.pageSize = pageSize;
+    if (reason !== undefined) params.reason = reason;
     const response = await axios.get(
         `/grouping/unassigned-products/${collectionPointId}`,
         { params }

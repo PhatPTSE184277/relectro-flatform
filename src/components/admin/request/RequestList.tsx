@@ -4,7 +4,6 @@ import RequestShow from "./RequestShow";
 import RequestRowSkeleton from "./RequestTableSkeleton";
 import RequestReject from "./modal/RequestReject";
 import RequestApprove from "./modal/RequestApprove";
-import { CheckSquare, Square } from 'lucide-react';
 import { PostStatus } from '@/enums/PostStatus';
 
 interface RequestListProps {
@@ -82,12 +81,12 @@ const RequestList = React.forwardRef<HTMLDivElement, RequestListProps>(({
                   <tr>
                     {isPending && (
                       <th className="py-3 px-4 text-center w-[5vw] min-w-[5vw] tracking-wide">
-                        <button
-                          onClick={onToggleSelectAll}
-                          className="text-primary-600 hover:text-primary-800"
-                        >
-                          {allCurrentPageSelected ? <CheckSquare size={18} /> : <Square size={18} />}
-                        </button>
+                        <input
+                          type="checkbox"
+                          checked={allCurrentPageSelected}
+                          onChange={onToggleSelectAll}
+                          className="w-4 h-4 cursor-pointer accent-primary-600"
+                        />
                       </th>
                     )}
                     <th className="py-3 px-4 text-center w-[5vw] tracking-wide">STT</th>

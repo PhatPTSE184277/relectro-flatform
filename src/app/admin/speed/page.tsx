@@ -26,6 +26,10 @@ const SpeedPageContent: React.FC = () => {
 
 	// Debounce search
 	useEffect(() => {
+		if (searchTerm.trim() === '') {
+			return;
+		}
+
 		const timer = setTimeout(() => {
 			void fetchSpeeds(1, limit, searchTerm);
 		}, 500);

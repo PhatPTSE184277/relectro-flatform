@@ -90,7 +90,7 @@ const SelectCompanyModal: React.FC<SelectCompanyModalProps> = ({
                                                             type='checkbox'
                                                             checked={allSelected}
                                                             onChange={onToggleSelectAll}
-                                                            className='w-4 h-4 text-primary-600 rounded cursor-pointer'
+                                                            className='w-4 h-4 cursor-pointer accent-primary-600'
                                                         />
                                                     </th>
                                                     <th className='py-3 px-4 text-center w-[5vw]'>STT</th>

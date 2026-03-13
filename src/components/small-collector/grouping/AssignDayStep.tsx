@@ -6,6 +6,11 @@ import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import ProductList from './ProductList';
 import Pagination from '@/components/ui/Pagination';
 import UnassignedProductsModal from './modal/UnassignedProductsModal';
+import {
+    UNASSIGNED_PRODUCTS_DEFAULT_REASON,
+    UNASSIGNED_PRODUCTS_REASON_OPTIONS
+} from './modal/UnassignedProductsFilter';
+import VehicleQuickSelectModal from './modal/VehicleQuickSelectModal';
 import { formatDate } from '@/utils/FormatDate';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 
@@ -46,12 +51,23 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     const [createDisabled, setCreateDisabled] = useState(false);
     const [showUnassignedModal, setShowUnassignedModal] = useState(false);
     const [unassignedPage, setUnassignedPage] = useState(1);
+    const [showAllVehiclesModal, setShowAllVehiclesModal] = useState(false);
+    const [selectedUnassignedReason, setSelectedUnassignedReason] = useState<string>(
+        UNASSIGNED_PRODUCTS_DEFAULT_REASON
+    );
     const itemsPerPage = 10;
+    const visibleVehicles = previewVehicles.slice(0, 8);
 
     // Fetch vehicles on mount
     useEffect(() => {
         fetchPreviewVehicles(workDate);
     }, [workDate, fetchPreviewVehicles]);
+
+    // Fetch unassigned count for button badge
+    useEffect(() => {
+        setUnassignedPage(1);
+        fetchUnassignedProducts(workDate, 1, 10, selectedUnassignedReason);
+    }, [workDate, fetchUnassignedProducts, selectedUnassignedReason]);
 
     // Get current selected vehicle
     const currentVehicle = previewVehicles[selectedVehicleIndex];
@@ -126,12 +142,18 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
 
     const handleShowUnassignedProducts = () => {
         setShowUnassignedModal(true);
-        fetchUnassignedProducts(workDate, unassignedPage, 10);
+        fetchUnassignedProducts(workDate, unassignedPage, 10, selectedUnassignedReason);
     };
 
     const handleUnassignedPageChange = (page: number) => {
         setUnassignedPage(page);
-        fetchUnassignedProducts(workDate, page, 10);
+        fetchUnassignedProducts(workDate, page, 10, selectedUnassignedReason);
+    };
+
+    const handleUnassignedReasonChange = (reason: string) => {
+        setSelectedUnassignedReason(reason);
+        setUnassignedPage(1);
+        fetchUnassignedProducts(workDate, 1, 10, reason);
     };
 
     return (
@@ -147,7 +169,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                         className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2'
                     >
                         <AlertTriangle size={18} />
-                        Xem sản phẩm chưa được chia
+                        Xem sản phẩm chưa được chia ({unassignedProductsData?.total ?? 0})
                     </button>
                 </div>
                 <button
@@ -162,7 +184,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
             {previewVehicles.length > 0 && (
                 <div className='flex items-center gap-2 bg-white rounded-lg px-4 py-3 shadow-sm border border-gray-100 overflow-x-auto'>
                     <span className='text-sm font-semibold text-gray-700 whitespace-nowrap mr-2'>Chọn xe:</span>
-                    {previewVehicles.map((vehicleData: any, index: number) => {
+                    {visibleVehicles.map((vehicleData: any, index: number) => {
                         const vehicleId = vehicleData.vehicleId || vehicleData.id;
                         const plateNumber = vehicleData.plateNumber || vehicleData.plate_Number || vehicleData.vehicleName || 'N/A';
                         
@@ -183,6 +205,14 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                             </button>
                         );
                     })}
+                    {previewVehicles.length > 8 && (
+                        <button
+                            onClick={() => setShowAllVehiclesModal(true)}
+                            className='px-4 py-2 rounded-lg text-sm font-medium bg-primary-50 text-primary-700 hover:bg-primary-100 transition-colors cursor-pointer whitespace-nowrap border border-primary-200'
+                        >
+                            Xem tất cả ({previewVehicles.length})
+                        </button>
+                    )}
                 </div>
             )}
 
@@ -220,7 +250,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                                     className={`px-4 py-2 bg-primary-600 text-white rounded-lg transition cursor-pointer shadow-md font-medium ${loading || createDisabled ? 'opacity-60 cursor-not-allowed' : 'hover:bg-primary-700'}`}
                                     disabled={loading || createDisabled}
                                 >
-                                    {loading || createDisabled ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Đồng ý'}
+                                    {loading || createDisabled ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Xác nhận'}
                                 </button>
                             </div>
                         </div>
@@ -263,6 +293,21 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                 currentPage={unassignedPage}
                 onPageChange={handleUnassignedPageChange}
                 totalCount={unassignedProductsData?.total || 0}
+                reasonOptions={UNASSIGNED_PRODUCTS_REASON_OPTIONS}
+                selectedReason={selectedUnassignedReason}
+                onReasonChange={handleUnassignedReasonChange}
+            />
+
+            <VehicleQuickSelectModal
+                open={showAllVehiclesModal}
+                onClose={() => setShowAllVehiclesModal(false)}
+                vehicles={previewVehicles}
+                selectedVehicleIndex={selectedVehicleIndex}
+                onSelectVehicle={(index) => {
+                    setSelectedVehicleIndex(index);
+                    setProductPage(1);
+                    setShowAllVehiclesModal(false);
+                }}
             />
         </div>
     );

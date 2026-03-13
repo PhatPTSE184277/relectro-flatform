@@ -50,7 +50,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                                                     type='checkbox'
                                                     checked={allSelected}
                                                     onChange={onToggleAll}
-                                                    className='w-4 h-4 text-primary-600 rounded cursor-pointer'
+                                                    className='w-4 h-4 cursor-pointer accent-primary-600'
                                                 />
                                             </th>
                                         )}

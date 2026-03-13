@@ -49,8 +49,7 @@ const RequestShow: React.FC<RequestShowProps & { isLast?: boolean; rowIndex?: nu
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => onToggleSelect(post.id)}
-                            className="w-4 h-4 text-primary-600 bg-white rounded focus:ring-2 focus:ring-primary-500 cursor-pointer border-0 shadow-none outline-none"
-                            style={{ boxShadow: 'none', outline: 'none', border: 'none' }}
+                            className="w-4 h-4 cursor-pointer accent-primary-600"
                         />
                     ) : (
                         <div className="w-4 h-4"></div>
