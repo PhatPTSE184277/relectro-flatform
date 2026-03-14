@@ -15,7 +15,7 @@ export const getFilteredVehicles = async (params: VehicleFilterParams): Promise<
   if (mappedParams.status === 'active') {
     mappedParams.status = 'Đang hoạt động';
   } else if (mappedParams.status === 'inactive') {
-    mappedParams.status = 'Ngừng hoạt động';
+    mappedParams.status = 'Không hoạt động';
   }
   const response = await axios.get('/vehicle/filter', { params: mappedParams });
   return response.data;

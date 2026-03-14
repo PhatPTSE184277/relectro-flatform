@@ -8,6 +8,11 @@ interface VehicleContextType {
   vehicles: any[];
   selectedVehicle: any | null;
   error: string | null;
+  page: number;
+  limit: number;
+  total: number;
+  setPage: (page: number) => void;
+  setLimit: (limit: number) => void;
   fetchVehicles: (params?: VehicleFilterParams) => Promise<void>;
   fetchVehicleDetail: (id: string) => Promise<void>;
   importVehicles: (file: File) => Promise<any>;
@@ -21,17 +26,27 @@ export const VehicleProvider = ({ children }: { children: ReactNode }) => {
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [total, setTotal] = useState(0);
 
   const fetchVehicles = useCallback(async (params?: VehicleFilterParams) => {
     setLoading(true);
     setError(null);
     try {
       const data = await getFilteredVehicles(params || {});
-      setVehicles(data?.data || []);
+      if (Array.isArray(data)) {
+        setVehicles(data);
+        setTotal(data.length);
+      } else {
+        setVehicles(data?.data || []);
+        setTotal(data?.totalItems ?? data?.total ?? 0);
+      }
     } catch (err: any) {
       console.log(err);
       setError(err?.response?.data?.message || 'Lỗi khi tải phương tiện');
       setVehicles([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
@@ -69,6 +84,7 @@ export const VehicleProvider = ({ children }: { children: ReactNode }) => {
     setVehicles([]);
     setSelectedVehicle(null);
     setError(null);
+    setTotal(0);
   }, []);
 
   const value: VehicleContextType = {
@@ -76,6 +92,11 @@ export const VehicleProvider = ({ children }: { children: ReactNode }) => {
     vehicles,
     selectedVehicle,
     error,
+    page,
+    limit,
+    total,
+    setPage,
+    setLimit,
     fetchVehicles,
     fetchVehicleDetail,
     importVehicles,

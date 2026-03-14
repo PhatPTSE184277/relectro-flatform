@@ -6,9 +6,11 @@ interface VehicleListProps {
     vehicles: any[];
     loading: boolean;
     onViewDetail: (vehicle: any) => void;
+    page?: number;
+    limit?: number;
 }
 
-const VehicleList: React.FC<VehicleListProps> = ({ vehicles, loading, onViewDetail }) => {
+const VehicleList: React.FC<VehicleListProps> = ({ vehicles, loading, onViewDetail, page = 1, limit = 10 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
             <div className='overflow-x-auto w-full'>
@@ -32,15 +34,18 @@ const VehicleList: React.FC<VehicleListProps> = ({ vehicles, loading, onViewDeta
                                             <VehicleTableSkeleton key={idx} />
                                         ))
                                     ) : vehicles.length > 0 ? (
-                                        vehicles.map((vehicle, idx) => (
-                                            <VehicleShow
-                                                key={vehicle.vehicleId}
-                                                vehicle={vehicle}
-                                                onView={() => onViewDetail(vehicle)}
-                                                isLast={idx === vehicles.length - 1}
-                                                index={idx}
-                                            />
-                                        ))
+                                        vehicles.map((vehicle, idx) => {
+                                            const globalIndex = (page - 1) * limit + idx;
+                                            return (
+                                                <VehicleShow
+                                                    key={vehicle.vehicleId}
+                                                    vehicle={vehicle}
+                                                    onView={() => onViewDetail(vehicle)}
+                                                    isLast={idx === vehicles.length - 1}
+                                                    index={globalIndex}
+                                                />
+                                            );
+                                        })
                                     ) : (
                                         <tr>
                                             <td colSpan={7} className='text-center py-8 text-gray-400'>

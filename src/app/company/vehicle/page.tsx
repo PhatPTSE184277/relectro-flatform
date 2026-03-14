@@ -10,13 +10,14 @@ import SearchBox from '@/components/ui/SearchBox';
 import { Truck, Download } from 'lucide-react';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import { useAuth } from '@/hooks/useAuth';
+import Pagination from '@/components/ui/Pagination';
 import Toast from '@/components/ui/Toast';
 import { getActiveSystemConfigs } from '@/services/admin/SystemConfigService';
 import { pickExcelTemplateUrl } from '@/utils/excelTemplateConfig';
 
 const VehiclePage: React.FC = () => {
     const { user } = useAuth();
-    const { vehicles, loading, fetchVehicles, importVehicles } = useVehicleContext();
+    const { vehicles, loading, fetchVehicles, importVehicles, page, limit, total, setPage } = useVehicleContext();
     const [selectedVehicle, setSelectedVehicle] = useState<any | null>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false);
@@ -36,9 +37,11 @@ const VehiclePage: React.FC = () => {
             fetchVehicles({
                 collectionCompanyId: companyId,
                 status: filterStatus,
+                page,
+                limit,
             });
         }
-    }, [fetchVehicles, companyId, filterStatus]);
+    }, [fetchVehicles, companyId, filterStatus, page, limit]);
 
     useEffect(() => {
         const loadTemplate = async () => {
@@ -90,6 +93,8 @@ const VehiclePage: React.FC = () => {
             await fetchVehicles({
                 collectionCompanyId: companyId,
                 status: filterStatus,
+                page,
+                limit,
             });
             return true;
         } catch (error) {
@@ -171,6 +176,15 @@ const VehiclePage: React.FC = () => {
                 vehicles={filteredVehicles}
                 loading={loading}
                 onViewDetail={handleViewDetail}
+                page={page}
+                limit={limit}
+            />
+
+            {/* Pagination */}
+            <Pagination
+                page={page}
+                totalPages={Math.ceil(total / limit)}
+                onPageChange={setPage}
             />
 
             {/* Import Excel Modal */}
