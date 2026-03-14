@@ -6,12 +6,16 @@ interface CollectorListProps {
     collectors: any[];
     loading: boolean;
     onViewDetail: (collector: any) => void;
+    page?: number;
+    limit?: number;
 }
 
 const CollectorList: React.FC<CollectorListProps> = ({
     collectors,
     loading,
-    onViewDetail
+    onViewDetail,
+    page = 1,
+    limit = 10,
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -36,15 +40,18 @@ const CollectorList: React.FC<CollectorListProps> = ({
                                             <CollectorTableSkeleton key={idx} />
                                         ))
                                     ) : collectors.length > 0 ? (
-                                        collectors.map((collector, idx) => (
-                                            <CollectorShow
-                                                key={collector.collectorId}
-                                                collector={collector}
-                                                onView={() => onViewDetail(collector)}
-                                                isLast={idx === collectors.length - 1}
-                                                index={idx}
-                                            />
-                                        ))
+                                        collectors.map((collector, idx) => {
+                                            const globalIndex = (page - 1) * limit + idx;
+                                            return (
+                                                <CollectorShow
+                                                    key={collector.collectorId}
+                                                    collector={collector}
+                                                    onView={() => onViewDetail(collector)}
+                                                    isLast={idx === collectors.length - 1}
+                                                    index={globalIndex}
+                                                />
+                                            );
+                                        })
                                     ) : (
                                         <tr>
                                             <td colSpan={6} className='text-center py-8 text-gray-400'>

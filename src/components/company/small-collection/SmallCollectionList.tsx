@@ -7,12 +7,16 @@ interface SmallCollectionListProps {
     collections: SmallCollectionPoint[];
     loading: boolean;
     onViewDetail: (point: SmallCollectionPoint) => void;
+    page?: number;
+    limit?: number;
 }
 
 const SmallCollectionList: React.FC<SmallCollectionListProps> = ({
     collections,
     loading,
-    onViewDetail
+    onViewDetail,
+    page = 1,
+    limit = 10,
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -36,15 +40,18 @@ const SmallCollectionList: React.FC<SmallCollectionListProps> = ({
                                             <SmallCollectionTableSkeleton key={idx} />
                                         ))
                                     ) : collections.length > 0 ? (
-                                        collections.map((point, idx) => (
-                                            <SmallCollectionShow
-                                                key={point.id}
-                                                point={point}
-                                                onView={() => onViewDetail(point)}
-                                                isLast={idx === collections.length - 1}
-                                                index={idx}
-                                            />
-                                        ))
+                                        collections.map((point, idx) => {
+                                            const globalIndex = (page - 1) * limit + idx;
+                                            return (
+                                                <SmallCollectionShow
+                                                    key={point.id}
+                                                    point={point}
+                                                    onView={() => onViewDetail(point)}
+                                                    isLast={idx === collections.length - 1}
+                                                    index={globalIndex}
+                                                />
+                                            );
+                                        })
                                     ) : (
                                         <tr>
                                             <td

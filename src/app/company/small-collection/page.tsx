@@ -7,6 +7,7 @@ import { useSmallCollectionContext } from '@/contexts/company/SmallCollectionCon
 import SmallCollectionList from '@/components/company/small-collection/SmallCollectionList';
 import SmallCollectionDetail from '@/components/company/small-collection/modal/SmallCollectionDetail';
 import SearchBox from '@/components/ui/SearchBox';
+import Pagination from '@/components/ui/Pagination';
 import ImportSmallCollectionModal from '@/components/company/small-collection/modal/ImportSmallCollectionModal';
 import SmallCollectionFilter from '@/components/company/small-collection/SmallCollectionFilter';
 import { SmallCollectionPoint } from '@/types';
@@ -22,7 +23,8 @@ const SmallCollectionPage: React.FC = () => {
         loading,
         importSmallCollection,
         fetchSmallCollections,
-        fetchSmallCollectionById
+        fetchSmallCollectionById,
+        pageInfo
     } = useSmallCollectionContext();
 
     const [selectedSmallCollection, setSelectedSmallCollection] =
@@ -208,7 +210,21 @@ const SmallCollectionPage: React.FC = () => {
                 collections={filteredCollections}
                 loading={loading}
                 onViewDetail={handleViewDetail}
+                page={pageInfo?.page ?? 1}
+                limit={pageInfo?.limit ?? 10}
             />
+
+            {/* Pagination */}
+            {pageInfo && pageInfo.totalPages > 1 && (
+                <Pagination
+                    page={pageInfo.page}
+                    totalPages={pageInfo.totalPages}
+                    onPageChange={(p) => {
+                        if (!companyId) return;
+                        void fetchSmallCollections({ companyId, page: p, limit: pageInfo.limit });
+                    }}
+                />
+            )}
 
             {/* Detail Modal */}
             {showDetailModal && (

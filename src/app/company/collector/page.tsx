@@ -162,6 +162,8 @@ const CollectorPage: React.FC = () => {
                 collectors={filteredCollectors}
                 loading={loading}
                 onViewDetail={handleViewDetail}
+                page={page}
+                limit={limit}
             />
 
             {/* Pagination */}
