@@ -87,20 +87,19 @@ const RequestDetail: React.FC<RequestDetailProps> = ({
             {/* Modal */}
             <div className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl overflow-y-auto z-10 animate-scaleIn max-h-[90vh] flex flex-col'>
                 {/* Header */}
-                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-primary-50 to-primary-100'>
+                <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-primary-50 to-primary-100 relative'>
                     <div className='flex flex-col gap-1'>
                         <h2 className='text-2xl font-bold text-gray-800'>
                             Chi tiết bài đăng
                         </h2>
                     </div>
+                    <span
+                        className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-transparent text-primary-700"
+                        style={{ minWidth: 140 }}
+                    >
+                        Trạng thái: {normalizeStatus(request.status)}
+                    </span>
                     <div className='flex items-center gap-4'>
-                        {/* Status Badge - moved to header */}
-                        <span
-                            className="flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-primary-600 text-white"
-                            style={{ minWidth: 110 }}
-                        >
-                            {normalizeStatus(request.status)}
-                        </span>
                         <button
                             onClick={onClose}
                             className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
