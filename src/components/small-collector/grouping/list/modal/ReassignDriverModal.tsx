@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import SummaryCard from '@/components/ui/SummaryCard';
+import SearchBox from '@/components/ui/SearchBox';
 import { formatDate } from '@/utils/FormatDate';
 
 interface ReassignDriverModalProps {
@@ -22,6 +23,22 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
     const user = useSelector((state: RootState) => state.auth.user);
     const { driverCandidates, reassignLoading, fetchDriverCandidates, reassignDriver } = useGroupingContext();
     const [selectedDriverId, setSelectedDriverId] = useState<string>('');
+    const [search, setSearch] = useState('');
+
+    const filteredDrivers = useMemo(() => {
+        const normalizedDrivers = Array.isArray(driverCandidates) ? driverCandidates : [];
+        const keyword = search.trim().toLowerCase();
+        if (!keyword) {
+            return normalizedDrivers;
+        }
+
+        return normalizedDrivers.filter((driver: any) => {
+            const name = String(driver?.name || '').toLowerCase();
+            const phone = String(driver?.phone || '').toLowerCase();
+            const shift = String(driver?.shiftTime || '').toLowerCase();
+            return name.includes(keyword) || phone.includes(keyword) || shift.includes(keyword);
+        });
+    }, [driverCandidates, search]);
 
     // Removed setSelectedDriverId from useEffect to avoid cascading renders
 
@@ -44,6 +61,7 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
 
     const handleClose = () => {
         setSelectedDriverId('');
+        setSearch('');
         onClose();
     };
 
@@ -97,18 +115,23 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                     />
 
                     {/* Driver List */}
-                    <div className='bg-white rounded-xl p-4 shadow-sm border border-primary-100'>
-                        <h3 className='text-sm font-medium text-gray-700 mb-3'>
-                            Danh sách tài xế
-                        </h3>
+                    <div className='bg-white rounded-xl shadow-sm border border-primary-100 overflow-hidden'>
+                        <div className='p-4 bg-gray-50 border-b border-primary-100'>
+                            <SearchBox
+                                value={search}
+                                onChange={setSearch}
+                                placeholder='Tìm kiếm tài xế...'
+                            />
+                        </div>
+
                         <div className='overflow-x-auto max-h-80 overflow-y-auto'>
                             <table className='w-full text-sm text-gray-800 table-fixed'>
-                                <thead className='bg-gray-50 text-gray-700 uppercase text-xs font-semibold sticky top-0 z-10'>
+                                <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-200'>
                                     <tr>
-                                        <th className='py-3 px-4 text-center w-16 bg-gray-50'>Chọn</th>
-                                        <th className='py-3 px-4 text-left w-48 bg-gray-50'>Tên tài xế</th>
-                                        <th className='py-3 px-4 text-left w-40 bg-gray-50'>Số điện thoại</th>
-                                        <th className='py-3 px-4 text-left w-36 bg-gray-50'>Ca làm</th>
+                                        <th className='py-3 px-4 text-left w-16'></th>
+                                        <th className='py-3 px-4 text-left w-48'>Tên tài xế</th>
+                                        <th className='py-3 px-4 text-left w-40'>Số điện thoại</th>
+                                        <th className='py-3 px-4 text-left w-36'>Ca làm</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -128,29 +151,32 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                                                 <td className='py-3 px-4 w-36'></td>
                                             </tr>
                                         ))
-                                    ) : (Array.isArray(driverCandidates) ? driverCandidates.length === 0 : true) ? (
+                                    ) : filteredDrivers.length === 0 ? (
                                         <tr>
                                             <td colSpan={4} className='text-center py-8 text-gray-400'>
                                                 Không có tài xế nào
                                             </td>
                                         </tr>
                                     ) : (
-                                        driverCandidates.map((driver: any) => {
+                                        filteredDrivers.map((driver: any) => {
                                             const isSelected = selectedDriverId === driver.userId;
+                                            const selectable = Boolean(driver.isAvailable);
                                             return (
                                                 <tr
                                                     key={driver.userId}
-                                                    className={`cursor-pointer transition-colors ${
-                                                        isSelected ? 'bg-primary-50 border-primary-500' : 'hover:bg-primary-50'
+                                                    className={`odd:bg-white even:bg-primary-50 ${
+                                                        selectable ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'
                                                     }`}
-                                                    onClick={() => driver.isAvailable && setSelectedDriverId(driver.userId)}
+                                                    onClick={() => selectable && setSelectedDriverId(driver.userId)}
                                                 >
                                                     <td className='py-3 px-4 text-center w-16'>
                                                         <input
                                                             type='radio'
+                                                            name='reassign-driver'
                                                             checked={isSelected}
                                                             onChange={() => setSelectedDriverId(driver.userId)}
-                                                            className='w-4 h-4 text-primary-600 rounded-full cursor-pointer'
+                                                            disabled={!selectable}
+                                                            className='accent-primary-600 w-4 h-4 rounded-full cursor-pointer disabled:cursor-not-allowed'
                                                             onClick={(e) => e.stopPropagation()}
                                                         />
                                                     </td>

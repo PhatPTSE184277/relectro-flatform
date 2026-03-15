@@ -15,6 +15,11 @@ interface SmallCollectionPoint {
     recyclingCompany: string | null;
 }
 
+const getPointId = (point: any): string => {
+    const rawId = point?.smallPointId ?? point?.id ?? point?.smallCollectionPointId;
+    return rawId != null ? String(rawId) : '';
+};
+
 interface AssignRecyclingModalProps {
     open: boolean;
     onClose: () => void;
@@ -68,7 +73,11 @@ const AssignRecyclingModal: React.FC<AssignRecyclingModalProps> = ({
             setLoadingPoints(true);
             getScpAssignmentDetail(selectedCompanyId)
                 .then((data) => {
-                    setCompanySmallPoints(data?.smallPoints || []);
+                    const normalizedPoints = (data?.smallPoints || []).map((point: any) => ({
+                        ...point,
+                        smallPointId: getPointId(point)
+                    }));
+                    setCompanySmallPoints(normalizedPoints);
                 })
                 .catch(() => {
                     setCompanySmallPoints([]);
@@ -94,6 +103,9 @@ const AssignRecyclingModal: React.FC<AssignRecyclingModalProps> = ({
             // Gom các points theo recyclingCompanyId
             const groupedByCompany: Record<string, string[]> = {};
             for (const [pointId, recyclingCompanyId] of Object.entries(pointRecyclingAssignments)) {
+                if (!pointId || !recyclingCompanyId) {
+                    continue;
+                }
                 if (!groupedByCompany[recyclingCompanyId]) {
                     groupedByCompany[recyclingCompanyId] = [];
                 }
@@ -108,6 +120,10 @@ const AssignRecyclingModal: React.FC<AssignRecyclingModalProps> = ({
                     smallCollectionPointIds: pointIds
                 });
             }
+
+            if (assignments.length === 0) {
+                return;
+            }
             
             // Gọi API với array format
             await onConfirm(assignments);
@@ -117,6 +133,10 @@ const AssignRecyclingModal: React.FC<AssignRecyclingModalProps> = ({
     };
 
     const handleOpenCompanyModal = (pointId: string) => {
+        const selectedPoint = companySmallPoints.find((point) => getPointId(point) === pointId);
+        if (selectedPoint?.recyclingCompany) {
+            return;
+        }
         setSelectedPointForAssignment(pointId);
         setShowRecyclingModal(true);
     };
@@ -126,7 +146,7 @@ const AssignRecyclingModal: React.FC<AssignRecyclingModalProps> = ({
             // Lưu lại mapping giữa điểm và công ty tái chế
             setPointRecyclingAssignments(prev => ({
                 ...prev,
-                [selectedPointForAssignment]: recyclingCompanyId
+                [selectedPointForAssignment]: String(recyclingCompanyId)
             }));
             setSelectedPointForAssignment(null);
         }
@@ -143,9 +163,9 @@ const AssignRecyclingModal: React.FC<AssignRecyclingModalProps> = ({
     if (!open) return null;
 
     return (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4' onClick={() => { if (!loading) handleClose(); }}>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
             <div className='absolute inset-0 bg-black/30 backdrop-blur-sm'></div>
-            <div onClick={(e) => e.stopPropagation()} className='relative w-full max-w-5xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-visible z-10 max-h-[90vh]'>
+            <div onClick={(e) => e.stopPropagation()} className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-visible z-10 max-h-[90vh]'>
                 {/* Header */}
                 <div className='flex justify-between items-center p-6 bg-linear-to-r from-primary-50 to-primary-100 rounded-t-2xl'>
                     <div>
@@ -159,7 +179,7 @@ const AssignRecyclingModal: React.FC<AssignRecyclingModalProps> = ({
                     </button>
                 </div>
                 {/* Body */}
-                <div className='flex-1 overflow-visible p-6 space-y-6'>
+                <div className='overflow-visible p-6 space-y-6'>
                     {/* Company Selection */}
                     <div className='space-y-2'>
                         <label className='block text-sm font-medium text-gray-700'>

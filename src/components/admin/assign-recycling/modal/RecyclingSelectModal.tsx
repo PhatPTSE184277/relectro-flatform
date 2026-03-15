@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { X, Factory, Phone } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { X, Phone } from 'lucide-react';
 import SearchBox from '@/components/ui/SearchBox';
 
 interface RecyclingSelectModalProps {
@@ -20,21 +20,41 @@ const RecyclingSelectModal: React.FC<RecyclingSelectModalProps> = ({
     selectedCompanyId
 }) => {
     const [search, setSearch] = useState('');
+    const [tempSelectedCompanyId, setTempSelectedCompanyId] = useState<string>('');
 
-    const filteredCompanies = companies.filter((company) => {
-        const companyName = company.name || company.companyName || '';
-        return companyName.toLowerCase().includes(search.toLowerCase());
-    });
+    const effectiveSelectedCompanyId =
+        tempSelectedCompanyId || (selectedCompanyId ? String(selectedCompanyId) : '');
 
-    const handleSelect = (companyId: string) => {
-        onSelect(companyId);
+    const filteredCompanies = useMemo(() => {
+        return companies.filter((company) => {
+            const companyName = company.name || company.companyName || '';
+            return companyName.toLowerCase().includes(search.toLowerCase());
+        });
+    }, [companies, search]);
+
+    const handleConfirm = () => {
+        if (!effectiveSelectedCompanyId) {
+            return;
+        }
+        onSelect(effectiveSelectedCompanyId);
+        setTempSelectedCompanyId('');
+        setSearch('');
+        onClose();
+    };
+
+    const handleClose = () => {
+        setTempSelectedCompanyId('');
+        setSearch('');
         onClose();
     };
 
     if (!open) return null;
 
     return (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
+        <div
+            className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'
+            onClick={(e) => e.stopPropagation()}
+        >
             {/* Overlay */}
             <div className='absolute inset-0 bg-black/30 backdrop-blur-sm'></div>
 
@@ -48,7 +68,7 @@ const RecyclingSelectModal: React.FC<RecyclingSelectModalProps> = ({
                         </h2>
                     </div>
                     <button
-                        onClick={onClose}
+                        onClick={handleClose}
                         className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition'
                         aria-label='Đóng'
                     >
@@ -72,42 +92,67 @@ const RecyclingSelectModal: React.FC<RecyclingSelectModalProps> = ({
                             Không tìm thấy công ty tái chế nào
                         </div>
                     ) : (
-                        <div className='grid gap-3'>
+                        <div className='overflow-hidden rounded-xl border border-primary-100'>
+                            <table className='w-full text-sm text-gray-800 table-fixed'>
+                                <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-200'>
+                                    <tr>
+                                        <th className='py-3 px-4 text-left w-14'></th>
+                                        <th className='py-3 px-4 text-left'>Công ty tái chế</th>
+                                        <th className='py-3 px-4 text-left w-52'>Số điện thoại</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                             {filteredCompanies.map((company) => {
-                                const companyId = company.companyId || company.id;
-                                const isSelected = companyId === selectedCompanyId;
+                                const companyId = String(company.companyId || company.id || '');
+                                const isSelected = companyId === effectiveSelectedCompanyId;
 
                                 return (
-                                    <div
+                                    <tr
                                         key={companyId}
-                                        onClick={() => handleSelect(companyId)}
-                                        className={`p-4 rounded-xl border transition-all cursor-pointer ${
-                                            isSelected 
-                                                ? 'border-primary-500 bg-primary-50 ring-2 ring-primary-200' 
-                                                : 'border-gray-200 bg-white hover:border-primary-300 hover:bg-primary-50/50'
-                                        }`}
+                                        onClick={() => setTempSelectedCompanyId(companyId)}
+                                        className='cursor-pointer odd:bg-white even:bg-primary-50'
                                     >
-                                        <div className='flex items-center gap-3'>
-                                            <div className='w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center'>
-                                                <Factory size={20} className='text-primary-600' />
-                                            </div>
-                                            <div className='flex-1'>
-                                                <h3 className='font-semibold text-gray-900'>
+                                        <td className='py-3 px-4 align-middle'>
+                                            <input
+                                                type='radio'
+                                                name='recycling-company'
+                                                checked={isSelected}
+                                                onChange={() => setTempSelectedCompanyId(companyId)}
+                                                className='accent-primary-600 w-4 h-4 rounded-full cursor-pointer'
+                                                onClick={(e) => e.stopPropagation()}
+                                            />
+                                        </td>
+                                        <td className='py-3 px-4'>
+                                            <div className='flex items-center gap-3'>
+                                                <span className='font-medium text-gray-900'>
                                                     {company.name || company.companyName || 'N/A'}
-                                                </h3>
-                                                {company.phone && (
-                                                    <p className='text-sm text-gray-500 flex items-center gap-1 mt-1'>
-                                                        <Phone size={14} />
-                                                        {company.phone}
-                                                    </p>
-                                                )}
+                                                </span>
                                             </div>
-                                        </div>
-                                    </div>
+                                        </td>
+                                        <td className='py-3 px-4 text-gray-600'>
+                                            <span className='inline-flex items-center gap-1'>
+                                                <Phone size={14} />
+                                                {company.phone || '-'}
+                                            </span>
+                                        </td>
+                                    </tr>
                                 );
                             })}
+                                </tbody>
+                            </table>
                         </div>
                     )}
+                </div>
+
+                {/* Footer */}
+                <div className='flex justify-end items-center gap-3 p-5 border-t border-primary-100 bg-white rounded-b-2xl'>
+                    <button
+                        onClick={handleConfirm}
+                        disabled={!effectiveSelectedCompanyId}
+                        className='px-5 py-2.5 bg-primary-600 text-white rounded-xl hover:bg-primary-700 font-medium transition disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer'
+                    >
+                        Xác nhận
+                    </button>
                 </div>
             </div>
         </div>
