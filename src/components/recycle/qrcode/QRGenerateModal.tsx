@@ -5,6 +5,7 @@ import {
     ChevronDown,
     Download,
     Link2,
+    Copy,
     QrCode as QrCodeIcon,
     Send,
     Share2,
@@ -173,6 +174,31 @@ const QRGenerateModal: React.FC<QRGenerateModalProps> = ({
         }
     };
 
+    const handleCopyImage = async () => {
+        setMenuOpen(false);
+        setActionLoading(true);
+        const blob = await getQRPngBlob();
+        setActionLoading(false);
+        if (!blob) {
+            showToast('Không thể tạo ảnh QR để sao chép.', 'error');
+            return;
+        }
+
+        try {
+            if ((navigator as any).clipboard && (navigator as any).clipboard.write) {
+                const item = new (window as any).ClipboardItem({ 'image/png': blob });
+                await (navigator as any).clipboard.write([item]);
+                showToast('Đã sao chép ảnh QR thành công.', 'success');
+                return;
+            }
+
+            showToast('Trình duyệt không hỗ trợ sao chép ảnh. Vui lòng Tải về.', 'error');
+        } catch (e) {
+            console.log(e)
+            showToast('Không thể sao chép ảnh. Vui lòng thử lại hoặc Tải về.', 'error');
+        }
+    };
+
     const qrValue = qrData?.qrCode || '';
 
     return (
@@ -260,6 +286,13 @@ const QRGenerateModal: React.FC<QRGenerateModalProps> = ({
                                     >
                                         <Send size={16} />
                                         Chia sẻ nhanh
+                                    </button>
+                                    <button
+                                        onClick={handleCopyImage}
+                                        className='w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center gap-2 cursor-pointer'
+                                    >
+                                        <Copy size={16} />
+                                        Sao chép ảnh
                                     </button>
                                     <button
                                         onClick={handleCopyValue}
