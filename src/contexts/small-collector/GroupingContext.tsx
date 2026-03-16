@@ -116,6 +116,7 @@ export function GroupingProvider({ children }: Props) {
     const [unassignedProducts, setUnassignedProducts] = useState<any[]>([]);
     const [unassignedProductsData, setUnassignedProductsData] = useState<any | null>(null);
     const [unassignedProductsLoading, setUnassignedProductsLoading] = useState<boolean>(false);
+    const [unassignedProductsTotalAllReasons, setUnassignedProductsTotalAllReasons] = useState<number>(0);
 
     const fetchGroups = useCallback(async (page: number = groupsPage, limit: number = groupsLimit) => {
         if (!user?.smallCollectionPointId) return;
@@ -243,6 +244,28 @@ export function GroupingProvider({ children }: Props) {
             setUnassignedProductsData(null);
         } finally {
             setUnassignedProductsLoading(false);
+        }
+    }, [user]);
+
+    const fetchUnassignedProductsTotal = useCallback(async (workDate: string) => {
+        if (!user?.smallCollectionPointId) {
+            console.warn('No smallCollectionPointId found in user profile:', user);
+            return;
+        }
+
+        try {
+            // Fetch without reason to get total across all reasons
+            const data = await getUnassignedProducts(
+                user.smallCollectionPointId,
+                workDate,
+                1,
+                1,
+                undefined
+            );
+            setUnassignedProductsTotalAllReasons(data?.total || 0);
+        } catch (err) {
+            console.error('fetchUnassignedProductsTotal error', err);
+            setUnassignedProductsTotalAllReasons(0);
         }
     }, [user]);
 
@@ -490,11 +513,13 @@ export function GroupingProvider({ children }: Props) {
         unassignedProducts,
         unassignedProductsData,
         unassignedProductsLoading,
+        unassignedProductsTotalAllReasons,
         fetchVehicles,
         fetchPendingProducts,
         fetchAllProductIds,
         fetchAvailableVehicles,
         fetchUnassignedProducts,
+        fetchUnassignedProductsTotal,
         rejectAssignmentHandler,
         setPendingProductsPage,
         fetchGroups,

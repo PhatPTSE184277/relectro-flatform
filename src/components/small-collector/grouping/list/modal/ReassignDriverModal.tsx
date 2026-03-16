@@ -124,7 +124,7 @@ const ReassignDriverModal: React.FC<ReassignDriverModalProps> = ({
                             />
                         </div>
 
-                        <div className='overflow-x-auto max-h-80 overflow-y-auto'>
+                        <div className='overflow-x-auto max-h-65 overflow-y-auto'>
                             <table className='w-full text-sm text-gray-800 table-fixed'>
                                 <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-200'>
                                     <tr>

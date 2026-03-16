@@ -337,7 +337,6 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                     <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                         <div>
                             <h2 className='text-2xl font-bold text-gray-900'>Nhận hàng từ shipper</h2>
-                            <p className='text-sm text-gray-600 mt-1'>Quét mã sản phẩm để nhận hàng</p>
                         </div>
                         <button
                             onClick={handleClose}
@@ -386,7 +385,7 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                             updatedProductIds={updatedProductIds}
                             onEdit={(product) => handleEditProduct(product as ScannedProduct)}
                             onRemove={handleRemoveProduct}
-                            maxHeight={34}
+                            maxHeight={32}
                         />
                     </div>
 

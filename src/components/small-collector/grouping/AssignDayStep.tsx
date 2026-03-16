@@ -43,7 +43,9 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         unassignedProducts,
         unassignedProductsData,
         unassignedProductsLoading,
-        fetchUnassignedProducts
+        fetchUnassignedProducts,
+        fetchUnassignedProductsTotal,
+        unassignedProductsTotalAllReasons
     } = useGroupingContext();
     
     const [selectedVehicleIndex, setSelectedVehicleIndex] = useState<number>(0);
@@ -68,6 +70,11 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         setUnassignedPage(1);
         fetchUnassignedProducts(workDate, 1, 10, selectedUnassignedReason);
     }, [workDate, fetchUnassignedProducts, selectedUnassignedReason]);
+
+    // Fetch total unassigned count (all reasons) for outer badge
+    useEffect(() => {
+        fetchUnassignedProductsTotal(workDate);
+    }, [workDate, fetchUnassignedProductsTotal]);
 
     // Get current selected vehicle
     const currentVehicle = previewVehicles[selectedVehicleIndex];
@@ -169,7 +176,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                         className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2'
                     >
                         <AlertTriangle size={18} />
-                        Xem sản phẩm chưa được chia ({unassignedProductsData?.total ?? 0})
+                        Xem sản phẩm chưa được chia ({unassignedProductsTotalAllReasons ?? (unassignedProductsData?.total ?? 0)})
                     </button>
                 </div>
                 <button
