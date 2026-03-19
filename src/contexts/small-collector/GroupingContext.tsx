@@ -27,6 +27,7 @@ import {
     previewProducts,
     PreviewProductsPagingResponse,
     previewVehicles as previewVehiclesAPI,
+    getAvailableVehiclesForDraft,
     rejectAssignment,
     RejectAssignmentPayload
 } from '@/services/small-collector/GroupingService';
@@ -485,6 +486,24 @@ export function GroupingProvider({ children }: Props) {
         [user?.smallCollectionPointId]
     );
 
+    const fetchAvailableVehiclesForDraft = useCallback(
+        async (workDate: string) => {
+            if (!user?.smallCollectionPointId) return [];
+
+            try {
+                const data = await getAvailableVehiclesForDraft(
+                    String(user.smallCollectionPointId),
+                    workDate
+                );
+                return data || [];
+            } catch (err) {
+                console.error('fetchAvailableVehiclesForDraft error', err);
+                return [];
+            }
+        },
+        [user?.smallCollectionPointId]
+    );
+
     const value: any = {
         loading,
         groupDetailLoading,
@@ -533,7 +552,8 @@ export function GroupingProvider({ children }: Props) {
         reassignDriver,
         fetchPreviewProducts,
         fetchAllPreviewProductIds,
-        fetchPreviewVehicles
+        fetchPreviewVehicles,
+        fetchAvailableVehiclesForDraft
     };
 
     return (

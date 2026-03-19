@@ -119,6 +119,11 @@ const GroupingPage: React.FC = () => {
         await createGrouping(formattedAssignments);
     };
 
+    const handleReSuggestWithVehicles = async (vehicleIds: string[]) => {
+        await getPreAssignSuggestion(selectedDate, vehicleIds, loadThreshold);
+        setActiveStep(2);
+    };
+
     const handleConfirmReject = async (reason: string) => {
         setRejectLoading(true);
         try {
@@ -218,9 +223,11 @@ const GroupingPage: React.FC = () => {
                 <AssignDayStep
                     loading={loading}
                     workDate={selectedDate}
+                    loadThreshold={loadThreshold}
                     onCreateGrouping={handleCreateGrouping}
                     onBack={() => setActiveStep(1)}
                     calculateRoute={calculateRoute}
+                    onReSuggestWithVehicles={handleReSuggestWithVehicles}
                 />
             )}
 

@@ -52,6 +52,7 @@ const ReceiveProductList: React.FC<ReceiveProductListProps> = ({
                     <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                         <tr>
                             <th className='py-3 px-4 text-center w-[5vw] min-w-12'>STT</th>
+                            <th className='py-3 px-4 text-left w-[16vw] min-w-28'>QR Code</th>
                             <th className='py-3 px-4 text-left w-[14vw] min-w-24'>Danh mục</th>
                             <th className='py-3 px-4 text-left w-[12vw] min-w-24'>Thương hiệu</th>
                             <th className='py-3 px-4 text-left w-[20vw] min-w-28'>Ghi chú</th>
@@ -78,6 +79,7 @@ const ReceiveProductList: React.FC<ReceiveProductListProps> = ({
                                             {index + 1}
                                         </span>
                                     </td>
+                                    <td className='py-3 px-4 text-gray-900 break-all'>{product.qrCode}</td>
                                     <td className='py-3 px-4 text-gray-900'>{product.categoryName || 'Không rõ'}</td>
                                     <td className='py-3 px-4 text-gray-700'>{product.brandName || 'Không rõ'}</td>
                                     <td className='py-3 px-4 text-gray-700'>

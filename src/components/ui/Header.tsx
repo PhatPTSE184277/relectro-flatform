@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { IoLogOutOutline, IoChevronDownOutline, IoPersonOutline, IoNotificationsOutline, IoMenuOutline } from 'react-icons/io5';
 import Image from 'next/image';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import ServerService from '@/services/ServerService';
 import { useAppDispatch } from '@/redux/hooks';
 import { logout } from '@/redux/reducers/authReducer';
@@ -218,6 +218,21 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
         }
     };
 
+    const headerBgClass = useMemo(() => {
+        const role = user?.role;
+        if (!role) return 'bg-white';
+        switch (role) {
+            case 'AdminWarehouse':
+                return 'bg-primary-50';
+            case 'AdminCompany':
+                return 'bg-green-50';
+            case 'RecyclingCompany':
+                return 'bg-blue-50';
+            default:
+                return 'bg-white';
+        }
+    }, [user?.role]);
+
     // Build greeting text, include company name for warehouse admins
     const greetingText = user?.role
         ? (user.role === 'AdminWarehouse' && user.companyName
@@ -226,7 +241,7 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
         : '';
 
     return (
-        <nav className='bg-white shadow-sm sticky top-0 z-50'>
+        <nav className={`${headerBgClass} shadow-sm sticky top-0 z-50`}>
             <div className='max-w-full px-3 sm:px-4 md:px-6 lg:px-8'>
                 <div className='flex justify-between items-center h-14 sm:h-16'>
                     <div className='flex items-center space-x-2 sm:space-x-4 md:space-x-8'>

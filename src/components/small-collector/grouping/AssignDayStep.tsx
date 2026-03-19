@@ -6,6 +6,7 @@ import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import ProductList from './ProductList';
 import Pagination from '@/components/ui/Pagination';
 import UnassignedProductsModal from './modal/UnassignedProductsModal';
+import VehicleSelectionModal from './modal/VehicleSelectionModal';
 import {
     UNASSIGNED_PRODUCTS_DEFAULT_REASON,
     UNASSIGNED_PRODUCTS_REASON_OPTIONS
@@ -17,6 +18,7 @@ import { AlertTriangle, Loader2 } from 'lucide-react';
 interface AssignDayStepProps {
     loading: boolean;
     workDate: string;
+    loadThreshold: number;
     onCreateGrouping: (assignments: {
         workDate: string;
         vehicleId: string;
@@ -24,14 +26,17 @@ interface AssignDayStepProps {
     }[]) => void;
     onBack: () => void;
     calculateRoute: (saveResult: boolean) => Promise<void>;
+    onReSuggestWithVehicles: (vehicleIds: string[]) => Promise<void>;
 }
 
 const AssignDayStep: React.FC<AssignDayStepProps> = ({
     loading,
     workDate,
+    loadThreshold,
     onCreateGrouping,
     onBack,
-    calculateRoute
+    calculateRoute,
+    onReSuggestWithVehicles
 }) => {
     const router = useRouter();
     const { 
@@ -45,7 +50,8 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         unassignedProductsLoading,
         fetchUnassignedProducts,
         fetchUnassignedProductsTotal,
-        unassignedProductsTotalAllReasons
+        unassignedProductsTotalAllReasons,
+        fetchAvailableVehiclesForDraft
     } = useGroupingContext();
     
     const [selectedVehicleIndex, setSelectedVehicleIndex] = useState<number>(0);
@@ -54,6 +60,11 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     const [showUnassignedModal, setShowUnassignedModal] = useState(false);
     const [unassignedPage, setUnassignedPage] = useState(1);
     const [showAllVehiclesModal, setShowAllVehiclesModal] = useState(false);
+    const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
+    const [remainingVehicles, setRemainingVehicles] = useState<any[]>([]);
+    const [selectedAdditionalVehicleIds, setSelectedAdditionalVehicleIds] = useState<string[]>([]);
+    const [loadingRemainingVehicles, setLoadingRemainingVehicles] = useState(false);
+    const [confirmingAdditionalVehicles, setConfirmingAdditionalVehicles] = useState(false);
     const [selectedUnassignedReason, setSelectedUnassignedReason] = useState<string>(
         UNASSIGNED_PRODUCTS_DEFAULT_REASON
     );
@@ -115,6 +126,23 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     const displayProducts = previewProductsPaging?.products || [];
     const totalPages = previewProductsPaging?.totalPages || 1;
 
+    const normalizeVehicleId = (vehicleData: any): string => {
+        return String(vehicleData?.vehicleId ?? vehicleData?.id ?? '');
+    };
+
+    const normalizeVehicleForSelection = (vehicleData: any) => {
+        return {
+            vehicleId: normalizeVehicleId(vehicleData),
+            plate_Number: vehicleData?.plate_Number || vehicleData?.plateNumber || vehicleData?.vehicleName || 'N/A',
+            vehicle_Type: vehicleData?.vehicle_Type || vehicleData?.vehicleType || 'N/A',
+            capacity_Kg: Number(vehicleData?.capacity_Kg ?? vehicleData?.capacityKg ?? 0),
+            length_M: vehicleData?.length_M,
+            width_M: vehicleData?.width_M,
+            height_M: vehicleData?.height_M,
+            status: vehicleData?.status || ''
+        };
+    };
+
     const handleCreateGrouping = async () => {
         setCreateDisabled(true);
         try {
@@ -173,6 +201,72 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         setSelectedUnassignedReason(reason);
         setUnassignedPage(1);
         fetchUnassignedProducts(workDate, 1, 10, reason);
+    };
+
+    const handleOpenAddVehicleModal = async () => {
+        setLoadingRemainingVehicles(true);
+        try {
+            const vehicles = await fetchAvailableVehiclesForDraft(workDate);
+            const normalizedVehicles = (vehicles || []).map(normalizeVehicleForSelection);
+            setRemainingVehicles(normalizedVehicles);
+            setSelectedAdditionalVehicleIds([]);
+            setShowAddVehicleModal(true);
+        } catch (error) {
+            console.error('Error loading remaining vehicles:', error);
+            setRemainingVehicles([]);
+            setShowAddVehicleModal(true);
+        } finally {
+            setLoadingRemainingVehicles(false);
+        }
+    };
+
+    const handleToggleAdditionalVehicle = (vehicleId: string) => {
+        setSelectedAdditionalVehicleIds((prev) =>
+            prev.includes(vehicleId)
+                ? prev.filter((id) => id !== vehicleId)
+                : [...prev, vehicleId]
+        );
+    };
+
+    const handleToggleAllAdditionalVehicles = () => {
+        const allSelected =
+            remainingVehicles.length > 0 &&
+            remainingVehicles.every((vehicle) =>
+                selectedAdditionalVehicleIds.includes(vehicle.vehicleId)
+            );
+
+        if (allSelected) {
+            setSelectedAdditionalVehicleIds([]);
+            return;
+        }
+
+        setSelectedAdditionalVehicleIds(
+            remainingVehicles.map((vehicle) => vehicle.vehicleId)
+        );
+    };
+
+    const handleConfirmAddVehicles = async (vehicleIds: string[]) => {
+        if (vehicleIds.length === 0) return;
+
+        setConfirmingAdditionalVehicles(true);
+        try {
+            const currentVehicleIds = previewVehicles
+                .map((vehicleData: any) => normalizeVehicleId(vehicleData))
+                .filter((vehicleId: string) => vehicleId.length > 0);
+
+            const mergedVehicleIds = Array.from(
+                new Set([...currentVehicleIds, ...vehicleIds])
+            );
+
+            await onReSuggestWithVehicles(mergedVehicleIds);
+            setSelectedVehicleIndex(0);
+            setProductPage(1);
+            setShowAddVehicleModal(false);
+        } catch (error) {
+            console.error('Error adding vehicles for pre-assign:', error);
+        } finally {
+            setConfirmingAdditionalVehicles(false);
+        }
     };
 
     return (
@@ -265,6 +359,13 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                             </div>
                             <div className='flex items-center gap-2'>
                                 <button
+                                    onClick={handleOpenAddVehicleModal}
+                                    className={`px-4 py-2 bg-white text-primary-700 rounded-lg border border-primary-200 transition cursor-pointer font-medium ${loading || loadingRemainingVehicles ? 'opacity-60 cursor-not-allowed' : 'hover:bg-primary-50'}`}
+                                    disabled={loading || loadingRemainingVehicles}
+                                >
+                                    {loadingRemainingVehicles ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Thêm xe còn lại'}
+                                </button>
+                                <button
                                     onClick={handleCreateGrouping}
                                     className={`px-4 py-2 bg-primary-600 text-white rounded-lg transition cursor-pointer shadow-md font-medium ${loading || createDisabled ? 'opacity-60 cursor-not-allowed' : 'hover:bg-primary-700'}`}
                                     disabled={loading || createDisabled}
@@ -328,6 +429,19 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                     setProductPage(1);
                     setShowAllVehiclesModal(false);
                 }}
+            />
+
+            <VehicleSelectionModal
+                open={showAddVehicleModal}
+                onClose={() => setShowAddVehicleModal(false)}
+                onConfirm={handleConfirmAddVehicles}
+                vehicles={remainingVehicles}
+                loading={loadingRemainingVehicles}
+                selectedVehicleIds={selectedAdditionalVehicleIds}
+                onToggleSelect={handleToggleAdditionalVehicle}
+                onToggleSelectAll={handleToggleAllAdditionalVehicles}
+                loadThreshold={loadThreshold}
+                confirming={confirmingAdditionalVehicles}
             />
         </div>
     );

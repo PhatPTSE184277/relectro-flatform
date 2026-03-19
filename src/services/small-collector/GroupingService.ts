@@ -199,6 +199,20 @@ export const previewVehicles = async (pointId: string, workDate: string): Promis
     return response.data;
 };
 
+// Lấy danh sách xe còn lại có thể thêm vào bản nháp phân chia theo ngày.
+export const getAvailableVehiclesForDraft = async (
+    pointId: string,
+    workDate: string
+): Promise<any[]> => {
+    const response = await axios.get('/grouping/available-for-draft', {
+        params: {
+            PointId: pointId,
+            WorkDate: workDate
+        }
+    });
+    return response.data;
+};
+
 // Reject assignment - Trả hàng về cho admin
 export interface RejectAssignmentPayload {
     smallCollectionPointId: string;

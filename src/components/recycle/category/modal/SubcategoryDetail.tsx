@@ -28,11 +28,11 @@ const SubcategoryDetail: React.FC<SubcategoryDetailProps> = ({
   if (!open) return null;
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
+    <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
       <div className='absolute inset-0 bg-black/50 backdrop-blur-sm' />
 
       <div className='relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 max-h-[80vh] flex flex-col'>
-        <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
+        <div className='flex justify-between items-center p-6 border-b border-primary-100 bg-linear-to-r from-primary-50 to-primary-100'>
           <div>
             <h2 className='text-2xl font-bold text-gray-900'>Danh mục con</h2>
             <p className='text-sm text-gray-600 mt-1'>Danh mục cha: {parentCategoryName}</p>

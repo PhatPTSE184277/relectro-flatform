@@ -84,11 +84,11 @@ const RegisterCategory: React.FC<RegisterCategoryProps> = ({
 
   return (
     <>
-      <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
+      <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
         <div className='absolute inset-0 bg-black/40 backdrop-blur-sm' onClick={() => !loadingRegister && handleClose()} />
 
         <div onClick={(e) => e.stopPropagation()} className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col'>
-          <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100'>
+          <div className='flex justify-between items-center p-6 border-b border-primary-100 bg-linear-to-r from-primary-50 to-primary-100'>
           <h2 className='text-2xl font-bold text-gray-900'>{currentCategoryIds.length > 0 ? 'Cập nhật danh mục' : 'Đăng ký danh mục'}</h2>
             <button onClick={handleClose} className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer' aria-label='Đóng' disabled={loadingRegister}>
               &times;
@@ -108,7 +108,7 @@ const RegisterCategory: React.FC<RegisterCategoryProps> = ({
                   <table className='min-w-full text-sm text-gray-800'>
                     <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                       <tr>
-                        <th className='py-3 px-4 text-center w-[60px]'>
+                          <th className='py-3 px-4 text-center w-[60px]'>
                           <input
                             type='checkbox'
                             checked={selectedCategoryIds.length === parentCategories.length}
@@ -119,7 +119,7 @@ const RegisterCategory: React.FC<RegisterCategoryProps> = ({
                                 setSelectedCategoryIds([]);
                               }
                             }}
-                            className='w-4 h-4 cursor-pointer'
+                            className='w-4 h-4 cursor-pointer accent-primary-600'
                           />
                         </th>
                         <th className='py-3 px-4 text-center w-[60px]'>STT</th>
@@ -141,7 +141,7 @@ const RegisterCategory: React.FC<RegisterCategoryProps> = ({
                                 type='checkbox'
                                 checked={isSelected}
                                 onChange={() => handleToggleCategory(parent.id)}
-                                className='w-4 h-4 cursor-pointer'
+                                className='w-4 h-4 cursor-pointer accent-primary-600'
                               />
                             </td>
                             <td className='py-3 px-4 text-center'>
@@ -171,7 +171,7 @@ const RegisterCategory: React.FC<RegisterCategoryProps> = ({
             )}
           </div>
 
-          <div className='flex items-center justify-between p-6 border-t bg-gray-50'>
+          <div className='p-5 border-t border-primary-100 bg-white flex justify-between items-center'>
             <p className='text-sm text-gray-600'>
               Đã chọn: <span className='font-bold text-primary-600'>{selectedCategoryIds.length}</span> danh mục
             </p>
@@ -179,10 +179,8 @@ const RegisterCategory: React.FC<RegisterCategoryProps> = ({
               <button
                 onClick={handleConfirm}
                 disabled={loadingRegister || selectedCategoryIds.length === 0}
-                className={`px-6 py-2.5 rounded-lg font-medium text-white shadow-md transition-all duration-200 flex items-center gap-2 ${
-                  loadingRegister || selectedCategoryIds.length === 0
-                    ? 'bg-primary-300 cursor-not-allowed'
-                    : 'bg-primary-600 hover:bg-primary-700 cursor-pointer'
+                className={`px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-70 transition font-medium flex items-center gap-2 ${
+                  loadingRegister || selectedCategoryIds.length === 0 ? 'cursor-not-allowed' : 'cursor-pointer'
                 }`}
               >
                 {loadingRegister && <Loader2 size={18} className='animate-spin' />}
