@@ -130,7 +130,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                 !normalizedStatus.includes('nhập') &&
                 normalizedStatus !== 'received'
             ) {
-                showToast('Sản phẩm không ở trạng thái hợp lệ để đóng gói', 'error');
+                showToast('Sản phẩm chưa được nhập kho', 'error');
                 setQrCodeInput('');
                 return;
             }

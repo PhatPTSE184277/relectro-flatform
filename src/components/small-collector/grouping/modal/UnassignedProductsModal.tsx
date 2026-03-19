@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { X, AlertTriangle } from 'lucide-react';
+import { X, AlertTriangle, Plus, Loader2 } from 'lucide-react';
 import ProductList from '../ProductList';
 import Pagination from '@/components/ui/Pagination';
 import UnassignedProductsFilter, { UnassignedProductsReasonOption } from './UnassignedProductsFilter';
+import ConfirmCloseModal from './ConfirmCloseModal';
 
 interface UnassignedProductsModalProps {
     open: boolean;
@@ -17,6 +18,9 @@ interface UnassignedProductsModalProps {
     selectedReason: string;
     onReasonChange: (reason: string) => void;
     deadlineUnassignedCount?: number;
+    summaryMessage?: string;
+    onAddRemainingVehicles: () => void;
+    addVehiclesLoading?: boolean;
 }
 
 const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
@@ -31,7 +35,10 @@ const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
     reasonOptions,
     selectedReason,
     onReasonChange,
-    deadlineUnassignedCount = 0
+    deadlineUnassignedCount = 0,
+    summaryMessage,
+    onAddRemainingVehicles,
+    addVehiclesLoading = false
 }) => {
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
@@ -44,13 +51,13 @@ const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
         onClose();
     };
 
-    const handleCancelClose = () => {
-        setShowCloseConfirm(false);
-    };
-
     const handleConfirmClose = () => {
         setShowCloseConfirm(false);
         onClose();
+    };
+
+    const handleCancelClose = () => {
+        setShowCloseConfirm(false);
     };
 
     if (!open) return null;
@@ -80,14 +87,32 @@ const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
                 </div>
 
                 {/* Summary */}
-                <div className='px-6 py-4 bg-primary-50 border-b border-primary-100'>
-                    <div className='flex items-center gap-2'>
-                        <AlertTriangle size={16} className='text-primary-600' />
-                        <span className='text-sm font-medium text-gray-700'>
-                            Tổng cộng: <span className='font-bold text-primary-600'>{totalCount}</span> sản phẩm chưa được phân chia
-                        </span>
+                <div className='px-6 py-4 bg-primary-50 border-b border-primary-100 space-y-3'>
+                    <div className='flex items-center justify-between gap-2 flex-wrap'>
+                        <div className='flex items-center gap-2'>
+                            <AlertTriangle size={16} className='text-primary-600' />
+                            <span className='text-sm font-medium text-gray-700'>
+                                {summaryMessage || (
+                                    <>
+                                        Tổng cộng: <span className='font-bold text-primary-600'>{totalCount}</span> sản phẩm chưa được phân chia
+                                    </>
+                                )}
+                            </span>
+                        </div>
+                        <button
+                            onClick={onAddRemainingVehicles}
+                            disabled={addVehiclesLoading}
+                            className={`px-4 py-2 rounded-lg border border-primary-200 bg-white text-primary-700 text-sm font-medium transition flex items-center gap-2 cursor-pointer ${addVehiclesLoading ? 'opacity-60 cursor-not-allowed' : 'hover:bg-primary-50'}`}
+                        >
+                            {addVehiclesLoading ? (
+                                <Loader2 size={16} className='animate-spin' />
+                            ) : (
+                                <Plus size={16} />
+                            )}
+                            Thêm xe còn lại
+                        </button>
                     </div>
-                    <div className='mt-3'>
+                    <div>
                         <UnassignedProductsFilter
                             options={reasonOptions}
                             selectedReason={selectedReason}
@@ -120,45 +145,12 @@ const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
                 )}
 
             </div>
-
-            {showCloseConfirm && (
-                <div className='fixed inset-0 z-60 flex items-center justify-center p-4'>
-                    <div
-                        className='absolute inset-0 bg-black/60 backdrop-blur-sm'
-                        onClick={handleCancelClose}
-                    ></div>
-
-                    <div className='relative w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden'>
-                        <div className='px-6 py-4 border-b border-red-100 bg-red-50'>
-                            <h3 className='text-lg font-bold text-gray-900'>Xác nhận đóng</h3>
-                        </div>
-                        <div className='px-6 py-5 text-sm text-gray-700 space-y-2'>
-                            <p>
-                                Hiện tại có{' '}
-                                <span className='font-bold text-red-600'>
-                                    {deadlineUnassignedCount}
-                                </span>{' '}
-                                sản phẩm hạn chót chưa được phân chia.
-                            </p>
-                            <p>Bạn có chắc chắn muốn đóng màn hình này không?</p>
-                        </div>
-                        <div className='px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3'>
-                            <button
-                                onClick={handleCancelClose}
-                                className='px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer'
-                            >
-                                Không
-                            </button>
-                            <button
-                                onClick={handleConfirmClose}
-                                className='px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors cursor-pointer'
-                            >
-                                Xác nhận đóng
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmCloseModal
+                open={showCloseConfirm}
+                deadlineUnassignedCount={deadlineUnassignedCount}
+                onConfirm={handleConfirmClose}
+                onClose={handleCancelClose}
+            />
         </div>
     );
 };

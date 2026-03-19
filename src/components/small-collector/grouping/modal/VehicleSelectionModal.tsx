@@ -39,7 +39,10 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
 }) => {
     if (!open) return null;
 
-    const allSelected = vehicles.length > 0 && vehicles.every(v => selectedVehicleIds.includes(v.vehicleId));
+    const normalizedSelectedIds = selectedVehicleIds.map((id) => String(id));
+    const allSelected =
+        vehicles.length > 0 &&
+        vehicles.every((v) => normalizedSelectedIds.includes(String(v.vehicleId)));
     const hasSelection = selectedVehicleIds.length > 0;
 
     return (
@@ -98,8 +101,6 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                         <th className='py-3 px-4 text-center w-16'>STT</th>
                                         <th className='py-3 px-4 text-left'>Biển số</th>
                                         <th className='py-3 px-4 text-left'>Loại xe</th>
-                                        <th className='py-3 px-4 text-right'>Tải trọng (kg)</th>
-                                        <th className='py-3 px-4 text-right'>Kích thước (m)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -118,26 +119,18 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                                 <td className='py-3 px-4'>
                                                     <div className='h-4 bg-gray-200 rounded w-32 animate-pulse' />
                                                 </td>
-                                                <td className='py-3 px-4 text-right'>
-                                                    <div className='h-4 bg-gray-200 rounded w-16 animate-pulse ml-auto' />
-                                                </td>
-                                                <td className='py-3 px-4 text-right'>
-                                                    <div className='h-4 bg-gray-200 rounded w-20 animate-pulse ml-auto' />
-                                                </td>
                                             </tr>
                                         ))
                                     ) : vehicles.length > 0 ? (
                                         vehicles.map((vehicle, idx) => {
-                                            const isSelected = selectedVehicleIds.includes(vehicle.vehicleId);
-                            const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-primary-50';
-                            const dimensions = vehicle.length_M && vehicle.width_M && vehicle.height_M
-                                ? `${vehicle.length_M} x ${vehicle.width_M} x ${vehicle.height_M}`
-                                : 'N/A';
+                                            const normalizedVehicleId = String(vehicle.vehicleId);
+                                            const isSelected = normalizedSelectedIds.includes(normalizedVehicleId);
+                                            const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-primary-50';
                                             
                                             return (
                                                 <tr
-                                                    key={vehicle.vehicleId}
-                                                    onClick={() => onToggleSelect(vehicle.vehicleId)}
+                                                    key={normalizedVehicleId}
+                                                    onClick={() => onToggleSelect(normalizedVehicleId)}
                                                     className={`${
                                                         idx !== vehicles.length - 1 ? 'border-b border-gray-100' : ''
                                                     } ${rowBg} hover:bg-primary-50/40 transition-colors cursor-pointer`}
@@ -146,7 +139,7 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                                         <input
                                                             type='checkbox'
                                                             checked={isSelected}
-                                                            onChange={() => onToggleSelect(vehicle.vehicleId)}
+                                                            onChange={() => onToggleSelect(normalizedVehicleId)}
                                                             onClick={(e) => e.stopPropagation()}
                                                                 className='w-4 h-4 cursor-pointer accent-primary-600'
                                                         />
@@ -162,20 +155,12 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                                     <td className='py-3 px-4'>
                                                         <div className='text-gray-700'>{vehicle.vehicle_Type}</div>
                                                     </td>
-                                                    <td className='py-3 px-4 text-right'>
-                                                        <div className='text-gray-900 font-medium'>
-                                                            {vehicle.capacity_Kg.toLocaleString()}
-                                                        </div>
-                                                    </td>
-                                                    <td className='py-3 px-4 text-right'>
-                                                        <div className='text-gray-700'>{dimensions}</div>
-                                                    </td>
                                                 </tr>
                                             );
                                         })
                                     ) : (
                                         <tr>
-                                            <td colSpan={6} className='text-center py-8 text-gray-400'>
+                                            <td colSpan={4} className='text-center py-8 text-gray-400'>
                                                 Không có xe nào.
                                             </td>
                                         </tr>
@@ -189,7 +174,7 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                 {/* Footer */}
                 <div className='p-5 border-t border-primary-100 bg-white flex justify-end gap-3'>
                     <button
-                        onClick={() => onConfirm(selectedVehicleIds)}
+                        onClick={() => onConfirm(normalizedSelectedIds)}
                         disabled={!hasSelection || confirming}
                         className={`px-6 py-2.5 rounded-lg font-medium transition flex items-center gap-2 ${
                             hasSelection && !confirming

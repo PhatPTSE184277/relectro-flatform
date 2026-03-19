@@ -42,6 +42,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     const { 
         fetchPreviewVehicles, 
         previewVehicles, 
+        preAssignResult,
         fetchPreviewProducts, 
         previewProductsPaging,
         fetchAllPreviewProductIds,
@@ -71,6 +72,12 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     const [deadlineUnassignedCount, setDeadlineUnassignedCount] = useState(0);
     const itemsPerPage = 10;
     const visibleVehicles = previewVehicles.slice(0, 8);
+    const preAssignDeadlineMessage =
+        preAssignResult?.criticalGapSuggestion?.message || preAssignResult?.message;
+    const deadlineSummaryMessage =
+        selectedUnassignedReason === UNASSIGNED_PRODUCTS_DEFAULT_REASON
+            ? preAssignDeadlineMessage
+            : undefined;
 
     // Fetch vehicles on mount
     useEffect(() => {
@@ -207,13 +214,36 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         setLoadingRemainingVehicles(true);
         try {
             const vehicles = await fetchAvailableVehiclesForDraft(workDate);
-            const normalizedVehicles = (vehicles || []).map(normalizeVehicleForSelection);
-            setRemainingVehicles(normalizedVehicles);
-            setSelectedAdditionalVehicleIds([]);
+            const normalizedRemainingVehicles = (vehicles || []).map(normalizeVehicleForSelection);
+            const normalizedCurrentVehicles = (previewVehicles || []).map(normalizeVehicleForSelection);
+            const currentVehicleIds =
+                previewVehicles
+                    .map((vehicleData: any) => normalizeVehicleId(vehicleData))
+                    .filter((vehicleId: string) => vehicleId.length > 0);
+
+            const mergedVehiclesMap = new Map<string, any>();
+            normalizedCurrentVehicles.forEach((vehicle: any) => {
+                if (vehicle?.vehicleId) {
+                    mergedVehiclesMap.set(String(vehicle.vehicleId), vehicle);
+                }
+            });
+            normalizedRemainingVehicles.forEach((vehicle: any) => {
+                if (vehicle?.vehicleId) {
+                    mergedVehiclesMap.set(String(vehicle.vehicleId), vehicle);
+                }
+            });
+
+            const modalVehicles = Array.from(mergedVehiclesMap.values());
+
+            setRemainingVehicles(modalVehicles);
+            setSelectedAdditionalVehicleIds(
+                currentVehicleIds
+            );
             setShowAddVehicleModal(true);
         } catch (error) {
             console.error('Error loading remaining vehicles:', error);
             setRemainingVehicles([]);
+            setSelectedAdditionalVehicleIds([]);
             setShowAddVehicleModal(true);
         } finally {
             setLoadingRemainingVehicles(false);
@@ -221,10 +251,11 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     };
 
     const handleToggleAdditionalVehicle = (vehicleId: string) => {
+        const normalizedId = String(vehicleId);
         setSelectedAdditionalVehicleIds((prev) =>
-            prev.includes(vehicleId)
-                ? prev.filter((id) => id !== vehicleId)
-                : [...prev, vehicleId]
+            prev.includes(normalizedId)
+                ? prev.filter((id) => id !== normalizedId)
+                : [...prev, normalizedId]
         );
     };
 
@@ -241,7 +272,9 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         }
 
         setSelectedAdditionalVehicleIds(
-            remainingVehicles.map((vehicle) => vehicle.vehicleId)
+            remainingVehicles
+                .map((vehicle) => String(vehicle.vehicleId || ''))
+                .filter((vehicleId) => vehicleId.length > 0)
         );
     };
 
@@ -259,9 +292,11 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
             );
 
             await onReSuggestWithVehicles(mergedVehicleIds);
+            await fetchPreviewVehicles(workDate);
             setSelectedVehicleIndex(0);
             setProductPage(1);
             setShowAddVehicleModal(false);
+            setShowUnassignedModal(false);
         } catch (error) {
             console.error('Error adding vehicles for pre-assign:', error);
         } finally {
@@ -359,13 +394,6 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                             </div>
                             <div className='flex items-center gap-2'>
                                 <button
-                                    onClick={handleOpenAddVehicleModal}
-                                    className={`px-4 py-2 bg-white text-primary-700 rounded-lg border border-primary-200 transition cursor-pointer font-medium ${loading || loadingRemainingVehicles ? 'opacity-60 cursor-not-allowed' : 'hover:bg-primary-50'}`}
-                                    disabled={loading || loadingRemainingVehicles}
-                                >
-                                    {loadingRemainingVehicles ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Thêm xe còn lại'}
-                                </button>
-                                <button
                                     onClick={handleCreateGrouping}
                                     className={`px-4 py-2 bg-primary-600 text-white rounded-lg transition cursor-pointer shadow-md font-medium ${loading || createDisabled ? 'opacity-60 cursor-not-allowed' : 'hover:bg-primary-700'}`}
                                     disabled={loading || createDisabled}
@@ -417,6 +445,9 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                 selectedReason={selectedUnassignedReason}
                 onReasonChange={handleUnassignedReasonChange}
                 deadlineUnassignedCount={deadlineUnassignedCount}
+                summaryMessage={deadlineSummaryMessage}
+                onAddRemainingVehicles={handleOpenAddVehicleModal}
+                addVehiclesLoading={loadingRemainingVehicles}
             />
 
             <VehicleQuickSelectModal
