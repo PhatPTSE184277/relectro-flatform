@@ -5,8 +5,7 @@ import {
     Package,
     GitBranch,
     QrCode,
-    Truck,
-    ScanSearch
+    Truck
 } from 'lucide-react';
 
 export const collectorMenuItems = [
@@ -39,12 +38,6 @@ export const collectorMenuItems = [
         label: 'Quản lý kiện hàng',
         path: '/small-collector/package',
         icon: <Package size={20} />
-    },
-    {
-        id: 'tracking',
-        label: 'Theo dõi kiện hàng',
-        path: '/small-collector/tracking',
-        icon: <ScanSearch size={20} />
     },
     {
         id: 'vehicle',

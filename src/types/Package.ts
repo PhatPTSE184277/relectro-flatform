@@ -31,7 +31,16 @@ export interface PackageType {
     smallCollectionPointsId: string;
     smallCollectionPointsName?: string;
     smallCollectionPointsAddress?: string;
+    recyclerName?: string;
+    recyclerAddress?: string;
+    deliveryAt?: string;
     status?: string;
+    statusHistories?: Array<{
+        description: string;
+        status: string;
+        createAt?: string;
+        createdAt?: string;
+    }>;
     products: PackageProductsResponse;
 }
 

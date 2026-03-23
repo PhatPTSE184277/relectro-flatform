@@ -15,8 +15,7 @@ interface TrackingProductFilterProps {
 const STATUS_OPTIONS = [
     { value: 'Đang đóng gói', label: 'Đang đóng gói' },
     { value: 'Đã đóng thùng', label: 'Đã đóng thùng' },
-    { value: 'Đang vận chuyển', label: 'Đang vận chuyển' },
-    { value: 'Tái chế', label: 'Tái chế' }
+    { value: 'Đã giao', label: 'Đã giao' }
 ];
 
 const TrackingProductFilter: React.FC<TrackingProductFilterProps> = ({
@@ -36,8 +35,7 @@ const TrackingProductFilter: React.FC<TrackingProductFilterProps> = ({
                         let count = 0;
                         if (option.value === 'Đang đóng gói') count = stats?.packing ?? 0;
                         if (option.value === 'Đã đóng thùng') count = stats?.closed ?? 0;
-                        if (option.value === 'Đang vận chuyển') count = stats?.shipping ?? 0;
-                        if (option.value === 'Tái chế') count = stats?.recycled ?? 0;
+                        if (option.value === 'Đã giao') count = (stats?.shipping ?? 0) + (stats?.recycled ?? 0);
 
                         return (
                             <button

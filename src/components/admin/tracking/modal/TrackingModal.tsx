@@ -20,6 +20,57 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ pkg, onClose }) => {
     const limit = 10;
 
     const detail = packageDetail || pkg;
+
+    const normalizeDisplayStatus = (status?: string): string => {
+        if (status === 'Đang vận chuyển' || status === 'Tái chế') {
+            return 'Đã giao';
+        }
+        return status || 'N/A';
+    };
+
+    const normalizeDescription = (status?: string, description?: string): string => {
+        if (status === 'Đã giao' || status === 'Đang vận chuyển' || status === 'Tái chế') {
+            return 'Kiện hàng đã được giao cho công ty tái chế';
+        }
+        if (description === 'Kiện hàng đang được vận chuyển về công ty tái chế') {
+            return 'Kiện hàng đã được giao cho công ty tái chế';
+        }
+        return description || 'N/A';
+    };
+
+    const mergedStatusHistories = useMemo(() => {
+        const rawHistories = (detail?.statusHistories || pkg?.statusHistories || []) as any[];
+        if (!Array.isArray(rawHistories) || rawHistories.length === 0) return [];
+
+        const shippingHistory = rawHistories.find((item: any) => item?.status === 'Đang vận chuyển');
+        const recycledHistory = rawHistories.find((item: any) => item?.status === 'Tái chế');
+
+        const deliveredSource = shippingHistory || recycledHistory;
+
+        const normalizedRows = rawHistories
+            .filter((item: any) => item?.status !== 'Đang vận chuyển' && item?.status !== 'Tái chế')
+            .map((item: any) => ({
+                ...item,
+                status: item?.status || 'N/A'
+            }));
+
+        if (deliveredSource) {
+            normalizedRows.push({
+                ...deliveredSource,
+                status: 'Đã giao',
+                description: 'Kiện hàng đã được giao cho công ty tái chế',
+                // Always prioritize shipping timestamp when both statuses exist
+                createAt: shippingHistory?.createAt || shippingHistory?.createdAt || deliveredSource?.createAt || deliveredSource?.createdAt,
+                createdAt: shippingHistory?.createdAt || shippingHistory?.createAt || deliveredSource?.createdAt || deliveredSource?.createAt
+            });
+        }
+
+        return normalizedRows.sort((a: any, b: any) => {
+            const timeA = new Date(a?.createAt || a?.createdAt || 0).getTime();
+            const timeB = new Date(b?.createAt || b?.createdAt || 0).getTime();
+            return timeB - timeA;
+        });
+    }, [detail?.statusHistories, pkg?.statusHistories]);
     
     useEffect(() => {
         const packageId = pkg?.packageId;
@@ -52,17 +103,17 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ pkg, onClose }) => {
                         className='flex items-center justify-center h-8 px-4 rounded-full text-sm font-medium bg-transparent text-primary-700'
                         style={{ minWidth: 140 }}
                     >
-                        {pkg.status || 'N/A'}
+                        {normalizeDisplayStatus(detail?.status || pkg?.status)}
                     </span>
                 )
             }
         ],
-        [detail, pkg.status]
+        [detail, pkg?.status]
     );
 
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
-            <div className='absolute inset-0 bg-black/30 backdrop-blur-sm'></div>
+            <div className='absolute inset-0 bg-black/30'></div>
 
             <div className='relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[98vh]'>
                 <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-primary-50 to-primary-100'>
@@ -105,7 +156,7 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ pkg, onClose }) => {
                             <div className='flex items-center gap-2'>
                                 <Clock3 size={18} />
                                 <span>Lịch sử trạng thái</span>
-                                <span className='text-sm text-gray-500'>({pkg.statusHistories?.length ?? 0})</span>
+                                <span className='text-sm text-gray-500'>({mergedStatusHistories.length})</span>
                             </div>
                             {activeTab === 'history' && (
                                 <div className='absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600'></div>
@@ -136,7 +187,7 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ pkg, onClose }) => {
                             )
                         ) : (
                             <div className='max-h-[62vh] overflow-auto'>
-                                {pkg.statusHistories?.length ? (
+                                {mergedStatusHistories.length ? (
                                     <div className='relative w-full overflow-y-auto' style={{ maxHeight: '40vh' }}>
                                         <table className='w-full text-sm text-gray-800 table-fixed'>
                                             <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
@@ -147,14 +198,14 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ pkg, onClose }) => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {pkg.statusHistories.map((item: any, idx: number) => {
-                                                    const isLast = idx === (pkg.statusHistories?.length || 0) - 1;
+                                                {mergedStatusHistories.map((item: any, idx: number) => {
+                                                    const isLast = idx === mergedStatusHistories.length - 1;
                                                     const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-primary-50';
                                                     return (
                                                         <tr key={`${item.status}-${item.createAt}-${idx}`} className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}>
-                                                            <td className='py-3 px-4 text-gray-700'>{item.status}</td>
-                                                            <td className='py-3 px-4 text-gray-700'>{item.description}</td>
-                                                            <td className='py-3 px-4 text-gray-700 whitespace-nowrap'>{formatTimeWithDate(item.createAt, true)}</td>
+                                                            <td className='py-3 px-4 text-gray-700'>{normalizeDisplayStatus(item.status)}</td>
+                                                            <td className='py-3 px-4 text-gray-700'>{normalizeDescription(item.status, item.description)}</td>
+                                                            <td className='py-3 px-4 text-gray-700 whitespace-nowrap'>{formatTimeWithDate(item.createAt || item.createdAt, true)}</td>
                                                         </tr>
                                                     );
                                                 })}

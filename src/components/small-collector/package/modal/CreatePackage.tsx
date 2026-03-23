@@ -305,6 +305,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                             lastProductRef={lastProductRef}
                             newItems={newlyAdded}
                             striped={false}
+                            maxHeight={33}
                         />
                     </div>
                 </div>

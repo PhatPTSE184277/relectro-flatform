@@ -28,7 +28,49 @@ export const filterPackages = async ({
     return response.data;
 };
 
+export const filterTrackingPackages = async ({
+    page = 1,
+    limit = 10,
+    smallCollectionPointId,
+    status,
+    packageId,
+    fromDate,
+    toDate
+}: {
+    page?: number;
+    limit?: number;
+    smallCollectionPointId?: string;
+    status?: string;
+    packageId?: string;
+    fromDate?: string;
+    toDate?: string;
+}): Promise<FilterPackagesResponse> => {
+    const params: Record<string, any> = { page, limit };
+    if (smallCollectionPointId) params.smallCollectionPointId = smallCollectionPointId;
+    if (status && status.trim()) params.status = status.trim();
+    if (packageId && packageId.trim()) params.packageId = packageId.trim();
+    if (fromDate) params.fromDate = fromDate;
+    if (toDate) params.toDate = toDate;
+
+    const response = await axios.get<FilterPackagesResponse>('/packages/tracking', {
+        params
+    });
+
+    return response.data;
+};
+
 export const getPackageById = async (
+    packageId: string,
+    page: number = 1,
+    limit: number = 10
+): Promise<PackageType> => {
+    const response = await axios.get<PackageType>(`/packages/${packageId}`, {
+        params: { page, limit }
+    });
+    return response.data;
+};
+
+export const getTrackingPackageDetail = async (
     packageId: string,
     page: number = 1,
     limit: number = 10

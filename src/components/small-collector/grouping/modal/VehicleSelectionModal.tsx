@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Truck, CheckCircle, Loader2 } from 'lucide-react';
+import { X, Truck, Loader2 } from 'lucide-react';
 
 interface Vehicle {
     vehicleId: string;
@@ -53,9 +53,14 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
     const hasRequiredSelectionCount =
         typeof requiredSelectionCount === 'number' && requiredSelectionCount > 0;
     const meetsRequiredSelection = hasRequiredSelectionCount
-        ? selectedVehicleIds.length === requiredSelectionCount
+        ? selectedVehicleIds.length >= requiredSelectionCount
         : hasSelection;
     const confirmDisabled = confirming || !meetsRequiredSelection;
+
+    const handleToggleVehicle = (vehicleId: string) => {
+        const normalizedVehicleId = String(vehicleId);
+        onToggleSelect(normalizedVehicleId);
+    };
 
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
@@ -118,7 +123,9 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                                 onChange={onToggleSelectAll}
                                                 disabled={lockSelection}
                                                 className={`w-4 h-4 accent-primary-600 ${
-                                                    lockSelection ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                                                    lockSelection
+                                                        ? 'cursor-not-allowed opacity-60'
+                                                        : 'cursor-pointer'
                                                 }`}
                                             />
                                         </th>
@@ -156,7 +163,7 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                                     key={normalizedVehicleId}
                                                     onClick={() => {
                                                         if (!lockSelection) {
-                                                            onToggleSelect(normalizedVehicleId);
+                                                            handleToggleVehicle(normalizedVehicleId);
                                                         }
                                                     }}
                                                     className={`${
@@ -171,7 +178,7 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                                         <input
                                                             type='checkbox'
                                                             checked={isSelected}
-                                                            onChange={() => onToggleSelect(normalizedVehicleId)}
+                                                            onChange={() => handleToggleVehicle(normalizedVehicleId)}
                                                             disabled={lockSelection}
                                                             onClick={(e) => e.stopPropagation()}
                                                             className={`w-4 h-4 accent-primary-600 ${
@@ -226,8 +233,7 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                             </>
                         ) : (
                             <>
-                                <CheckCircle size={18} />
-                                Xác nhận ({selectedVehicleIds.length} xe)
+                                Xác nhận
                             </>
                         )}
                     </button>

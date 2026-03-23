@@ -9,8 +9,8 @@ import React, {
     ReactNode
 } from 'react';
 import {
-    filterPackages,
-    getPackageById,
+    filterTrackingPackages,
+    getTrackingPackageDetail,
     createPackage,
     updatePackage,
     updatePackageStatus,
@@ -25,12 +25,16 @@ import {
     UpdatePackagePayload
 } from '@/types/Package';
 import { useAuth } from '@/redux';
+import { getFirstDayOfMonthString, getTodayString } from '@/utils/getDayString';
 
 interface PackageFilter {
     page?: number;
     limit?: number;
     smallCollectionPointId?: string;
     status?: string;
+    packageId?: string;
+    fromDate?: string;
+    toDate?: string;
 }
 
 interface PackageContextType {
@@ -53,6 +57,7 @@ interface PackageContextType {
         packing: number;
         shipping: number;
         closed: number;
+        recycled: number;
     };
     handleDeliverPackage: (packageId: string) => Promise<void>;
     handleDeliverPackages: (packageIds: string[], deliveryQrCode: string) => Promise<void>;
@@ -65,6 +70,10 @@ type Props = { children: ReactNode };
 
 export const PackageProvider: React.FC<Props> = ({ children }) => {
     const { user } = useAuth();
+    const DELIVERED_UI_STATUS = 'Đã giao';
+    const SHIPPING_STATUS = 'Đang vận chuyển';
+    const RECYCLED_STATUS = 'Tái chế';
+
     const [packages, setPackages] = useState<PackageType[]>([]);
     const [loadingList, setLoadingList] = useState<boolean>(false);
     const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
@@ -75,7 +84,8 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
         total: 0,
         packing: 0,
         shipping: 0,
-        closed: 0
+        closed: 0,
+        recycled: 0
     });
 
 
@@ -83,16 +93,33 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
         page: 1,
         limit: 10,
         smallCollectionPointId: user?.smallCollectionPointId,
-        status: 'Đang đóng gói'
+        status: DELIVERED_UI_STATUS,
+        fromDate: getFirstDayOfMonthString(),
+        toDate: getTodayString(),
+        packageId: ''
     });
 
     // Cập nhật smallCollectionPointId khi user thay đổi
     useEffect(() => {
-        setFilterState((prev) => ({ ...prev, smallCollectionPointId: user?.smallCollectionPointId }));
+        setFilterState((prev) => {
+            if (prev.smallCollectionPointId === user?.smallCollectionPointId) {
+                return prev;
+            }
+
+            return { ...prev, smallCollectionPointId: user?.smallCollectionPointId };
+        });
     }, [user?.smallCollectionPointId]);
-    const setFilter = (newFilter: Partial<PackageFilter>) => {
-        setFilterState((prev) => ({ ...prev, ...newFilter }));
-    };
+    const setFilter = useCallback((newFilter: Partial<PackageFilter>) => {
+        setFilterState((prev) => {
+            const merged = { ...prev, ...newFilter };
+            const hasChange = Object.keys(newFilter).some((key) => {
+                const typedKey = key as keyof PackageFilter;
+                return prev[typedKey] !== merged[typedKey];
+            });
+
+            return hasChange ? merged : prev;
+        });
+    }, []);
 
     const fetchPackages = useCallback(
         async (customFilter?: Partial<PackageFilter>) => {
@@ -106,14 +133,84 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
                     ...filter,
                     ...customFilter
                 };
-                // Remove undefined values first
-                Object.keys(params).forEach(
-                    (key) => params[key] === undefined && delete params[key]
-                );
                 // Ensure smallCollectionPointId is always set from user
                 params.smallCollectionPointId = user.smallCollectionPointId;
+
+                const currentStatus = String(params.status || '');
+                const currentPage = Number(params.page || 1);
+                const currentLimit = Number(params.limit || 10);
+
+                if (currentStatus !== DELIVERED_UI_STATUS) {
+                    delete params.fromDate;
+                    delete params.toDate;
+                }
+
+                if (currentStatus === DELIVERED_UI_STATUS) {
+                    const baseParams: Record<string, any> = {
+                        ...params,
+                        status: undefined,
+                        page: 1,
+                        limit: 1
+                    };
+
+                    Object.keys(baseParams).forEach((key) => {
+                        if (baseParams[key] === undefined || baseParams[key] === null || baseParams[key] === '') {
+                            delete baseParams[key];
+                        }
+                    });
+
+                    const [shippingTotalRes, recycledTotalRes] = await Promise.all([
+                        filterTrackingPackages({ ...baseParams, status: SHIPPING_STATUS, page: 1, limit: 1 }),
+                        filterTrackingPackages({ ...baseParams, status: RECYCLED_STATUS, page: 1, limit: 1 })
+                    ]);
+
+                    const shippingTotal = shippingTotalRes?.totalItems || 0;
+                    const recycledTotal = recycledTotalRes?.totalItems || 0;
+
+                    const [shippingDataRes, recycledDataRes] = await Promise.all([
+                        shippingTotal > 0
+                            ? filterTrackingPackages({ ...baseParams, status: SHIPPING_STATUS, page: 1, limit: shippingTotal })
+                            : Promise.resolve({ data: [], totalPages: 1, totalItems: 0, page: 1, limit: 1 }),
+                        recycledTotal > 0
+                            ? filterTrackingPackages({ ...baseParams, status: RECYCLED_STATUS, page: 1, limit: recycledTotal })
+                            : Promise.resolve({ data: [], totalPages: 1, totalItems: 0, page: 1, limit: 1 })
+                    ]);
+
+                    const mergedMap = new Map<string, PackageType>();
+                    [...(shippingDataRes.data || []), ...(recycledDataRes.data || [])].forEach((item: PackageType) => {
+                        const key = String(item?.packageId || '');
+                        if (!key) return;
+                        mergedMap.set(key, {
+                            ...item,
+                            status: DELIVERED_UI_STATUS
+                        });
+                    });
+
+                    const mergedPackages = Array.from(mergedMap.values()).sort((a: PackageType, b: PackageType) => {
+                        const timeA = new Date(a?.deliveryAt || 0).getTime();
+                        const timeB = new Date(b?.deliveryAt || 0).getTime();
+                        return timeB - timeA;
+                    });
+
+                    const totalMergedItems = mergedPackages.length;
+                    const startIndex = (currentPage - 1) * currentLimit;
+                    const endIndex = startIndex + currentLimit;
+                    const paginatedMergedPackages = mergedPackages.slice(startIndex, endIndex);
+
+                    setPackages(paginatedMergedPackages);
+                    setTotalPages(Math.max(1, Math.ceil(totalMergedItems / currentLimit)));
+                    setTotalItems(totalMergedItems);
+                    return;
+                }
+
+                // Remove undefined values first
+                Object.keys(params).forEach((key) => {
+                    if (params[key] === undefined || params[key] === null || params[key] === '') {
+                        delete params[key];
+                    }
+                });
                 
-                const response: FilterPackagesResponse = await filterPackages(params);
+                const response: FilterPackagesResponse = await filterTrackingPackages(params);
                 setPackages(response.data || []);
                 setTotalPages(response.totalPages);
                 setTotalItems(response.totalItems);
@@ -133,32 +230,40 @@ export const PackageProvider: React.FC<Props> = ({ children }) => {
             const baseParams = {
                 page: 1,
                 limit: 1,
-                smallCollectionPointId: filter.smallCollectionPointId
+                smallCollectionPointId: filter.smallCollectionPointId,
+                packageId: filter.packageId
             };
 
-            const [totalRes, packingRes, shippingRes, closedRes] = await Promise.all([
-                filterPackages(baseParams),
-                filterPackages({ ...baseParams, status: 'Đang đóng gói' }),
-                filterPackages({ ...baseParams, status: 'Đang vận chuyển' }),
-                filterPackages({ ...baseParams, status: 'Đã đóng thùng' })
+            const deliveredDateParams = {
+                fromDate: filter.fromDate,
+                toDate: filter.toDate
+            };
+
+            const [totalRes, packingRes, closedRes, shippingRes, recycledRes] = await Promise.all([
+                filterTrackingPackages(baseParams),
+                filterTrackingPackages({ ...baseParams, status: 'Đang đóng gói' }),
+                filterTrackingPackages({ ...baseParams, status: 'Đã đóng thùng' }),
+                filterTrackingPackages({ ...baseParams, ...deliveredDateParams, status: 'Đang vận chuyển' }),
+                filterTrackingPackages({ ...baseParams, ...deliveredDateParams, status: 'Tái chế' })
             ]);
 
             setAllStats({
                 total: totalRes.totalItems,
                 packing: packingRes.totalItems,
                 shipping: shippingRes.totalItems,
-                closed: closedRes.totalItems
+                closed: closedRes.totalItems,
+                recycled: recycledRes.totalItems
             });
         } catch (err) {
             console.error('fetchAllStats error', err);
         }
-    }, [filter.smallCollectionPointId]);
+    }, [filter.smallCollectionPointId, filter.fromDate, filter.toDate, filter.packageId]);
 
     const fetchPackageDetail = useCallback(
         async (packageId: string, page: number = 1, limit: number = 10) => {
             setLoadingDetail(true);
             try {
-                const pkg = await getPackageById(packageId, page, limit);
+                const pkg = await getTrackingPackageDetail(packageId, page, limit);
                 setSelectedPackage(pkg);
             } catch (err) {
                 console.error('fetchPackageDetail error', err);

@@ -10,13 +10,21 @@ interface TrackingProductListProps {
     packages: any[];
     loading: boolean;
     onPackageClick: (pkg: any) => void;
+    showDeliveryTime?: boolean;
 }
 
-const TrackingProductList: React.FC<TrackingProductListProps> = ({ packages, loading, onPackageClick }) => {
+const TrackingProductList: React.FC<TrackingProductListProps> = ({
+    packages,
+    loading,
+    onPackageClick,
+    showDeliveryTime = true
+}) => {
+    const totalColumns = showDeliveryTime ? 6 : 5;
+
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>
-                <div className='max-h-[59vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[53vh] xl:max-h-[48vh] overflow-y-auto'>
+                <div className='max-h-[59vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[53vh] xl:max-h-[52vh] overflow-y-auto'>
                     <table className='min-w-full text-sm text-gray-800 table-fixed'>
                         <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-200'>
                             <tr>
@@ -24,18 +32,18 @@ const TrackingProductList: React.FC<TrackingProductListProps> = ({ packages, loa
                                 <th className='py-3 px-4 text-left w-[15vw]'>Mã kiện hàng</th>
                                 <th className='py-3 px-4 text-left w-[22vw]'>Công ty tái chế</th>
                                 <th className='py-3 px-4 text-right w-[10vw]'>Số sản phẩm</th>
-                                <th className='py-3 px-4 text-center w-[15vw]'>Giao lúc</th>
+                                {showDeliveryTime && <th className='py-3 px-4 text-center w-[15vw]'>Giao lúc</th>}
                                 <th className='py-3 px-4 text-center w-[8vw]'>Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
                                 Array.from({ length: 6 }).map((_, idx) => (
-                                    <TrackingProductSkeleton key={idx} />
+                                    <TrackingProductSkeleton key={idx} showDeliveryTime={showDeliveryTime} />
                                 ))
                             ) : packages.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className='py-8 text-center text-gray-400'>
+                                    <td colSpan={totalColumns} className='py-8 text-center text-gray-400'>
                                         Không có kiện hàng nào
                                     </td>
                                 </tr>
@@ -63,9 +71,11 @@ const TrackingProductList: React.FC<TrackingProductListProps> = ({ packages, loa
                                             <td className='py-3 px-4 text-right text-gray-700 w-[10vw]'>
                                                 <span>{pkg.products?.totalItems ?? 0}</span>
                                             </td>
-                                            <td className='py-3 px-4 text-center text-gray-700 w-[15vw]'>
-                                                {pkg.deliveryAt ? formatTimeWithDate(pkg.deliveryAt, true) : 'N/A'}
-                                            </td>
+                                            {showDeliveryTime && (
+                                                <td className='py-3 px-4 text-center text-gray-700 w-[15vw]'>
+                                                    {pkg.deliveryAt ? formatTimeWithDate(pkg.deliveryAt, true) : 'N/A'}
+                                                </td>
+                                            )}
                                             <td className='py-3 px-4 text-center align-middle w-[8vw]'>
                                                 <div className='flex items-center justify-center h-full'>
                                                     <button

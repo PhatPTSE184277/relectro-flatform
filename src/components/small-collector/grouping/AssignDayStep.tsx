@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGroupingContext } from '@/contexts/small-collector/GroupingContext';
 import ProductList from './ProductList';
@@ -51,8 +51,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         unassignedProductsData,
         unassignedProductsLoading,
         fetchUnassignedProducts,
-        fetchUnassignedProductsTotal,
-        unassignedProductsTotalAllReasons,
+        getUnassignedProductsTotalByReason,
         fetchAvailableVehiclesForDraft
     } = useGroupingContext();
     
@@ -72,6 +71,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         UNASSIGNED_PRODUCTS_DEFAULT_REASON
     );
     const [deadlineUnassignedCount, setDeadlineUnassignedCount] = useState(0);
+    const [reasonCountMap, setReasonCountMap] = useState<Record<string, number>>({});
     const itemsPerPage = 10;
     const visibleVehicles = previewVehicles.slice(0, 8);
     const preAssignDeadlineMessage =
@@ -134,10 +134,27 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         setDeadlineUnassignedCount(0);
     }, [workDate]);
 
-    // Fetch total unassigned count (all reasons) for outer badge
+    const refreshReasonCounts = useCallback(async () => {
+        const entries = await Promise.all(
+            UNASSIGNED_PRODUCTS_REASON_OPTIONS.map(async (option) => {
+                const total = await getUnassignedProductsTotalByReason(workDate, option.reason);
+                return [option.reason, total] as const;
+            })
+        );
+
+        setReasonCountMap(Object.fromEntries(entries));
+    }, [workDate, getUnassignedProductsTotalByReason]);
+
     useEffect(() => {
-        fetchUnassignedProductsTotal(workDate);
-    }, [workDate, fetchUnassignedProductsTotal]);
+        refreshReasonCounts();
+    }, [refreshReasonCounts]);
+
+    useEffect(() => {
+        setReasonCountMap((prev) => ({
+            ...prev,
+            [selectedUnassignedReason]: Number(unassignedProductsData?.total || 0)
+        }));
+    }, [selectedUnassignedReason, unassignedProductsData]);
 
     // Get current selected vehicle
     const currentVehicle = previewVehicles[selectedVehicleIndex];
@@ -313,6 +330,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
 
             await onReSuggestWithVehicles(mergedVehicleIds);
             await fetchPreviewVehicles(workDate);
+            await refreshReasonCounts();
             setSelectedVehicleIndex(0);
             setProductPage(1);
             setShowAddVehicleModal(false);
@@ -333,11 +351,18 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         suggestedAdditionalVehicleCount > 0 &&
         remainingVehicles.length >= suggestedAdditionalVehicleCount;
 
-    const deadlineReasonCount = deadlineUnassignedCount;
-    const vehicleFullReasonCount = Math.max(
-        (unassignedProductsTotalAllReasons || 0) - deadlineReasonCount,
+    const unassignedProductsTotalCount = Object.values(reasonCountMap).reduce(
+        (sum, count) => sum + Number(count || 0),
         0
     );
+
+    const deadlineReasonCount = reasonCountMap[UNASSIGNED_PRODUCTS_DEFAULT_REASON] ?? deadlineUnassignedCount;
+    const vehicleFullReasonOption = UNASSIGNED_PRODUCTS_REASON_OPTIONS.find(
+        (option) => option.id === 'vehicle-full'
+    );
+    const vehicleFullReasonCount = vehicleFullReasonOption
+        ? (reasonCountMap[vehicleFullReasonOption.reason] ?? 0)
+        : 0;
 
     const reasonOptionsWithCount = UNASSIGNED_PRODUCTS_REASON_OPTIONS.map((option) => {
         if (option.id === 'deadline-no-vehicle') {
@@ -378,7 +403,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                         className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2'
                     >
                         <AlertTriangle size={18} />
-                        Xem sản phẩm chưa được chia ({unassignedProductsTotalAllReasons ?? (unassignedProductsData?.total ?? 0)})
+                        Xem sản phẩm chưa được chia ({unassignedProductsTotalCount})
                     </button>
                 </div>
                 <button

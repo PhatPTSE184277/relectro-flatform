@@ -28,6 +28,7 @@ const TrackingPage: React.FC = () => {
 
     const [selectedPackage, setSelectedPackage] = useState<any | null>(null);
     const [showModal, setShowModal] = useState(false);
+    const [searchKeyword, setSearchKeyword] = useState('');
 
     const getWarehouseId = useCallback((warehouse: any): string => {
         return String(
@@ -94,6 +95,15 @@ const TrackingPage: React.FC = () => {
         [packages, filter.page, filter.limit]
     );
 
+    const filteredPackages = useMemo(() => {
+        const keyword = searchKeyword.trim().toLowerCase();
+        if (!keyword) return paginatedPackages;
+
+        return paginatedPackages.filter((pkg) =>
+            String(pkg?.packageId || '').toLowerCase().includes(keyword)
+        );
+    }, [paginatedPackages, searchKeyword]);
+
     // Sanitize companies to avoid exposing phone numbers in the dropdown
     // Keep address/city so they still appear under company name
     const sanitizedCompanies = useMemo(() =>
@@ -134,8 +144,8 @@ const TrackingPage: React.FC = () => {
     }, [setFilter]);
 
     const handleSearchChange = useCallback((value: string) => {
-        setFilter({ packageId: value.trim(), page: 1 });
-    }, [setFilter]);
+        setSearchKeyword(value);
+    }, []);
 
     const handlePackageClick = useCallback((pkg: any) => {
         setSelectedPackage(pkg);
@@ -148,6 +158,8 @@ const TrackingPage: React.FC = () => {
         clearPackageDetail();
     }, [clearPackageDetail]);
 
+    const isDeliveredFilter = (filter.status || 'Đã giao') === 'Đã giao';
+
     useEffect(() => {
         if (!filter.fromDate || !filter.toDate) {
             setFilter({
@@ -157,35 +169,55 @@ const TrackingPage: React.FC = () => {
         }
     }, [filter.fromDate, filter.toDate, setFilter]);
 
+    useEffect(() => {
+        if (filter.packageId) {
+            setFilter({ packageId: '' });
+        }
+    }, [filter.packageId, setFilter]);
+
     return (
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
             {/* Header + Search */}
-            <div className='flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:gap-6'>
+            <div className='flex flex-col gap-2 mb-4 lg:flex-row lg:items-center lg:gap-6'>
                 <div className='flex items-center gap-3 shrink-0'>
                     <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
                         <ScanSearch className='text-white' size={20} />
                     </div>
                     <h1 className='text-3xl font-bold text-gray-900'>Theo dõi kiện hàng</h1>
                 </div>
-                <div className='flex-1 max-w-md w-full sm:ml-auto'>
-                    <SearchBox
-                        value={filter.packageId || ''}
-                        onChange={handleSearchChange}
-                        placeholder='Tìm theo mã kiện hàng...'
-                    />
+                <div className='flex-1 flex flex-wrap lg:flex-nowrap items-center gap-3 lg:justify-end'>
+                    {isDeliveredFilter && (
+                        <div className='min-w-fit'>
+                            <CustomDateRangePicker
+                                fromDate={filter.fromDate || ''}
+                                toDate={filter.toDate || ''}
+                                onFromDateChange={handleFromDateChange}
+                                onToDateChange={handleToDateChange}
+                            />
+                        </div>
+                    )}
+                    <div className='w-full lg:w-lg lg:min-w-sm lg:max-w-lg lg:ml-auto'>
+                        <SearchBox
+                            value={searchKeyword}
+                            onChange={handleSearchChange}
+                            placeholder='Tìm theo mã kiện hàng...'
+                        />
+                    </div>
                 </div>
             </div>
 
-            {/* Date Range Picker + Selectors */}
-            <div className='mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-                <div className='min-w-fit'>
-                    <CustomDateRangePicker
-                        fromDate={filter.fromDate || ''}
-                        toDate={filter.toDate || ''}
-                        onFromDateChange={handleFromDateChange}
-                        onToDateChange={handleToDateChange}
-                    />
+            {/* Selectors + Status Filter (single row) */}
+            <div className='mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4'>
+                <div className='flex items-center gap-3'>
+                    {filter.companyId && (
+                        <TrackingProductFilter
+                            status={filter.status || 'Đã giao'}
+                            stats={stats}
+                            onFilterChange={(s) => handleFilterChange(s)}
+                        />
+                    )}
                 </div>
+
                 <div className='flex gap-3 w-full sm:w-auto justify-end'>
                     <div className='w-80'>
                         <SearchableSelect
@@ -211,16 +243,7 @@ const TrackingPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Filter Section */}
-            {filter.companyId && (
-                <div className='mb-6'>
-                    <TrackingProductFilter
-                        status={filter.status || 'Đang vận chuyển'}
-                        stats={stats}
-                        onFilterChange={handleFilterChange}
-                    />
-                </div>
-            )}
+            {/* Filter Section removed (now displayed with selectors) */}
 
             {/* Main Content */}
             {!filter.companyId ? (
@@ -234,15 +257,16 @@ const TrackingPage: React.FC = () => {
             ) : (
                 <div className='mb-6'>
                     <TrackingProductList
-                        packages={paginatedPackages}
+                        packages={filteredPackages}
                         loading={loadingPackages}
                         onPackageClick={handlePackageClick}
+                        showDeliveryTime={isDeliveredFilter}
                     />
                 </div>
             )}
 
             {/* Pagination */}
-            <div className='flex justify-end'>
+            <div className='flex justify-center'>
                 <Pagination
                     page={filter.page || 1}
                     totalPages={totalPages}

@@ -270,6 +270,30 @@ export function GroupingProvider({ children }: Props) {
         }
     }, [user]);
 
+    const getUnassignedProductsTotalByReason = useCallback(async (
+        workDate: string,
+        reason?: string
+    ): Promise<number> => {
+        if (!user?.smallCollectionPointId) {
+            console.warn('No smallCollectionPointId found in user profile:', user);
+            return 0;
+        }
+
+        try {
+            const data = await getUnassignedProducts(
+                user.smallCollectionPointId,
+                workDate,
+                1,
+                1,
+                reason
+            );
+            return Number(data?.total || 0);
+        } catch (err) {
+            console.error('getUnassignedProductsTotalByReason error', err);
+            return 0;
+        }
+    }, [user]);
+
     const rejectAssignmentHandler = useCallback(async (reason: string, workDate: string) => {
         if (!user?.smallCollectionPointId) {
             console.warn('No smallCollectionPointId found in user profile:', user);
@@ -539,6 +563,7 @@ export function GroupingProvider({ children }: Props) {
         fetchAvailableVehicles,
         fetchUnassignedProducts,
         fetchUnassignedProductsTotal,
+        getUnassignedProductsTotalByReason,
         rejectAssignmentHandler,
         setPendingProductsPage,
         fetchGroups,

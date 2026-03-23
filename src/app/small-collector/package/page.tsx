@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePackageContext } from '@/contexts/small-collector/PackageContext';
 import PackageList from '@/components/small-collector/package/PackageList';
 import PackageDetail from '@/components/small-collector/package/modal/PackageDetail';
@@ -9,17 +9,17 @@ import CreatePackage from '@/components/small-collector/package/modal/CreatePack
 import UpdatePackage from '@/components/small-collector/package/modal/UpdatePackage';
 import ConfirmStatusChange from '@/components/small-collector/package/modal/ConfirmStatusChange';
 import PackageFilter from '@/components/small-collector/package/PackageFilter';
+import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
 import SearchBox from '@/components/ui/SearchBox';
 import Pagination from '@/components/ui/Pagination';
 import { Package, Plus, QrCode } from 'lucide-react';
 import type { PackageType } from '@/types/Package';
-import { PackageStatus } from '@/enums/PackageStatus';
+import { getFirstDayOfMonthString, getTodayString } from '@/utils/getDayString';
 
 const PackagePage: React.FC = () => {
     const {
         packages,
         loadingList,
-        loadingDetail,
         selectedPackage,
         setSelectedPackage,
         filter,
@@ -29,44 +29,84 @@ const PackagePage: React.FC = () => {
         createNewPackage,
         updateExistingPackage,
         updateStatus,
-        fetchPackageDetail
+        fetchPackageDetail: fetchPackageDetailForPackage,
+        fetchPackages
     } = usePackageContext();
 
-    const [search, setSearch] = useState('');
-    const tableScrollRef = useRef<HTMLDivElement>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
+    const [selectedTrackingPackage, setSelectedTrackingPackage] = useState<PackageType | null>(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [packageToUpdateStatus, setPackageToUpdateStatus] = useState<string | null>(null);
     const [showScanDeliveryModal, setShowScanDeliveryModal] = useState(false);
+    const [searchKeyword, setSearchKeyword] = useState('');
 
-    const filteredPackages = packages.filter((pkg) => {
-        const matchSearch =
-            pkg.packageId.toLowerCase().includes(search.toLowerCase());
-        return matchSearch;
-    });
+    const paginatedPackages = useMemo(
+        () =>
+            packages.map((pkg, idx) => ({
+                ...pkg,
+                stt: ((filter.page || 1) - 1) * (filter.limit || 10) + idx + 1
+            })),
+        [packages, filter.page, filter.limit]
+    );
 
-    const handleViewDetail = async (pkg: PackageType) => {
-        try {
-            await fetchPackageDetail(pkg.packageId, 1, 10);
-            setShowDetailModal(true);
-        } catch (error) {
-            console.error('Error fetching package detail:', error);
-        }
+    const filteredPackages = useMemo(() => {
+        const keyword = searchKeyword.trim().toLowerCase();
+        if (!keyword) return paginatedPackages;
+
+        return paginatedPackages.filter((pkg) =>
+            String(pkg?.packageId || '').toLowerCase().includes(keyword)
+        );
+    }, [paginatedPackages, searchKeyword]);
+
+    const handleViewDetail = (pkg: PackageType) => {
+        setSelectedTrackingPackage(pkg);
+        setShowDetailModal(true);
     };
 
     const handleCloseModal = () => {
         setShowDetailModal(false);
-        setSelectedPackage(null);
+        setSelectedTrackingPackage(null);
     };
 
-    const handlePageChange = (page: number) => {
+    const isDeliveredFilter = (filter.status || 'Đã giao') === 'Đã giao';
+    const showActionButtons = !isDeliveredFilter;
+
+    const handlePageChange = useCallback((page: number) => {
         setFilter({ page });
-        if (tableScrollRef.current) {
-            tableScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [setFilter]);
+
+    const handleSearchChange = useCallback((value: string) => {
+        setSearchKeyword(value);
+    }, []);
+
+    const handleFromDateChange = useCallback((fromDate: string) => {
+        setFilter({ fromDate, page: 1 });
+    }, [setFilter]);
+
+    const handleToDateChange = useCallback((toDate: string) => {
+        setFilter({ toDate, page: 1 });
+    }, [setFilter]);
+
+    const handleStatusFilterChange = useCallback((status: string) => {
+        setFilter({ status, page: 1 });
+    }, [setFilter]);
+
+    useEffect(() => {
+        if (!filter.fromDate || !filter.toDate) {
+            setFilter({
+                fromDate: filter.fromDate || getFirstDayOfMonthString(),
+                toDate: filter.toDate || getTodayString()
+            });
         }
-    };
+    }, [filter.fromDate, filter.toDate, setFilter]);
+
+    useEffect(() => {
+        if (filter.packageId) {
+            setFilter({ packageId: '' });
+        }
+    }, [filter.packageId, setFilter]);
 
     const handleCreatePackage = async (packageData: {
         packageId: string;
@@ -80,6 +120,7 @@ const PackagePage: React.FC = () => {
                 productsQrCode: packageData.productsQrCode
             };
             await createNewPackage(payload);
+            await fetchPackages({ page: filter.page || 1 });
             setShowCreateModal(false);
         } catch (error) {
             console.error('Error creating package:', error);
@@ -97,6 +138,7 @@ const PackagePage: React.FC = () => {
                 productsQrCode: packageData.productsQrCode
             };
             await updateExistingPackage(selectedPackage.packageId, payload);
+            await fetchPackages({ page: filter.page || 1 });
             setShowUpdateModal(false);
             setShowDetailModal(false);
             setSelectedPackage(null);
@@ -114,6 +156,7 @@ const PackagePage: React.FC = () => {
         if (!packageToUpdateStatus) return;
         try {
             await updateStatus(packageToUpdateStatus);
+            await fetchPackages({ page: filter.page || 1 });
             setShowDetailModal(false);
             setSelectedPackage(null);
             setPackageToUpdateStatus(null);
@@ -124,7 +167,7 @@ const PackagePage: React.FC = () => {
 
     const handleOpenUpdate = async (pkg: PackageType) => {
         try {
-            await fetchPackageDetail(pkg.packageId, 1, 1000);
+            await fetchPackageDetailForPackage(pkg.packageId, 1, 1000);
             setShowDetailModal(false);
             setShowUpdateModal(true);
         } catch (error) {
@@ -134,9 +177,9 @@ const PackagePage: React.FC = () => {
 
     return (
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-            {/* Header */}
-            <div className='flex justify-between items-center mb-6'>
-                <div className='flex items-center gap-3'>
+            {/* Header + Search */}
+            <div className='flex flex-col gap-4 mb-4 lg:flex-row lg:items-center lg:gap-6'>
+                <div className='flex items-center gap-3 shrink-0'>
                     <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center border border-primary-200'>
                         <Package className='text-white' size={20} />
                     </div>
@@ -144,26 +187,42 @@ const PackagePage: React.FC = () => {
                         Quản lý kiện hàng
                     </h1>
                 </div>
-                <div className='flex gap-4 items-center flex-1 justify-end'>
-                    <button
-                        onClick={() => setShowScanDeliveryModal(true)}
-                        className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md cursor-pointer'
-                    >
-                        <QrCode size={20} />
-                        Quét QR
-                    </button>
-                    <button
-                        onClick={() => setShowCreateModal(true)}
-                        className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md cursor-pointer'
-                    >
-                        <Plus size={20} />
-                        Tạo kiện hàng
-                    </button>
-                    <div className='flex-1 max-w-md'>
+                <div className='flex-1 flex flex-wrap lg:flex-nowrap items-center gap-3 lg:justify-end'>
+                    <div className='flex items-center gap-3 min-h-[42px] shrink-0'>
+                        {showActionButtons && (
+                            <>
+                                <button
+                                    onClick={() => setShowScanDeliveryModal(true)}
+                                    className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md cursor-pointer whitespace-nowrap'
+                                >
+                                    <QrCode size={20} />
+                                    Quét QR
+                                </button>
+                                <button
+                                    onClick={() => setShowCreateModal(true)}
+                                    className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md cursor-pointer whitespace-nowrap'
+                                >
+                                    <Plus size={20} />
+                                    Tạo kiện hàng
+                                </button>
+                            </>
+                        )}
+                        {isDeliveredFilter && (
+                            <div className='min-w-fit'>
+                                <CustomDateRangePicker
+                                    fromDate={filter.fromDate || ''}
+                                    toDate={filter.toDate || ''}
+                                    onFromDateChange={handleFromDateChange}
+                                    onToDateChange={handleToDateChange}
+                                />
+                            </div>
+                        )}
+                    </div>
+                    <div className='w-full lg:w-lg lg:min-w-sm lg:max-w-lg lg:ml-auto'>
                         <SearchBox
-                            value={search}
-                            onChange={setSearch}
-                            placeholder='Tìm kiếm kiện hàng...'
+                            value={searchKeyword}
+                            onChange={handleSearchChange}
+                            placeholder='Tìm theo mã kiện hàng...'
                         />
                     </div>
                 </div>
@@ -172,9 +231,9 @@ const PackagePage: React.FC = () => {
             {/* Filter Section */}
             <div className='mb-6'>
                 <PackageFilter
-                    status={filter.status as PackageStatus || PackageStatus.Packing}
+                    status={filter.status || 'Đã giao'}
                     stats={allStats}
-                    onFilterChange={(status: PackageStatus) => setFilter({ status, page: 1 })}
+                    onFilterChange={handleStatusFilterChange}
                 />
             </div>
 
@@ -183,10 +242,10 @@ const PackagePage: React.FC = () => {
                 <PackageList
                     packages={filteredPackages}
                     loading={loadingList}
-                    onViewDetail={handleViewDetail}
-                    onUpdate={handleOpenUpdate}
+                    onPackageClick={handleViewDetail}
+                    onUpdatePackage={(pkg) => handleOpenUpdate(pkg as unknown as PackageType)}
                     onUpdateStatus={handleUpdateStatus}
-                    ref={tableScrollRef}
+                    showDeliveryTime={isDeliveredFilter}
                 />
             </div>
 
@@ -198,12 +257,10 @@ const PackagePage: React.FC = () => {
             />
 
             {/* Detail Modal */}
-            {showDetailModal && selectedPackage && (
+            {showDetailModal && selectedTrackingPackage && (
                 <PackageDetail
-                    package={selectedPackage}
+                    pkg={selectedTrackingPackage}
                     onClose={handleCloseModal}
-                    loading={loadingDetail}
-                    maxHeight={56}
                 />
             )}
 
@@ -233,7 +290,7 @@ const PackagePage: React.FC = () => {
             {/* Confirm Status Change Modal */}
             {(() => {
                 const pkgForConfirm = packageToUpdateStatus
-                    ? packages.find((p) => p.packageId === packageToUpdateStatus)
+                    ? filteredPackages.find((p) => p.packageId === packageToUpdateStatus) as unknown as PackageType
                     : selectedPackage;
 
                 return (

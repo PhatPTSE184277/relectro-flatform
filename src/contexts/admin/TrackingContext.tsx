@@ -62,6 +62,10 @@ const TrackingContext = createContext<TrackingContextType | undefined>(undefined
 type Props = { children: ReactNode };
 
 export const TrackingProvider: React.FC<Props> = ({ children }) => {
+  const DELIVERED_UI_STATUS = 'Đã giao';
+  const SHIPPING_STATUS = 'Đang vận chuyển';
+  const RECYCLED_STATUS = 'Tái chế';
+
   const [companies, setCompanies] = useState<any[]>([]);
   const [warehouses, setWarehouses] = useState<any[]>([]);
   const [packages, setPackages] = useState<any[]>([]);
@@ -83,7 +87,7 @@ export const TrackingProvider: React.FC<Props> = ({ children }) => {
   const [filter, setFilterState] = useState<TrackingFilterParams>({
     page: 1,
     limit: 10,
-    status: 'Đang vận chuyển',
+    status: DELIVERED_UI_STATUS,
     fromDate: getFirstDayOfMonthString(),
     toDate: getTodayString(),
     companyId: undefined,
@@ -144,27 +148,43 @@ export const TrackingProvider: React.FC<Props> = ({ children }) => {
     }
 
     try {
-      const baseParams: TrackingFilterParams = {
+      const mergedFilter = {
         ...filter,
-        ...customFilter,
+        ...customFilter
+      };
+
+      const baseParams: Record<string, any> = {
+        ...mergedFilter,
         smallCollectionPointId,
         page: 1,
         limit: 1
       };
 
-      const statuses = ['Đang đóng gói', 'Đã đóng thùng', 'Đang vận chuyển', 'Tái chế'];
+      delete baseParams.fromDate;
+      delete baseParams.toDate;
 
-      const promises = statuses.map((status) => {
-        const params: Record<string, any> = { ...baseParams, status };
-        Object.keys(params).forEach((key) => {
-          if (params[key] === undefined || params[key] === null || params[key] === '') {
-            delete params[key];
+      const deliveredDateParams: Record<string, any> = {
+        fromDate: mergedFilter.fromDate,
+        toDate: mergedFilter.toDate
+      };
+
+      const sanitizeParams = (params: Record<string, any>) => {
+        const next = { ...params };
+        Object.keys(next).forEach((key) => {
+          if (next[key] === undefined || next[key] === null || next[key] === '') {
+            delete next[key];
           }
         });
-        return filterPackages(params).then((res) => res.totalItems || 0).catch(() => 0);
-      });
+        return next;
+      };
 
-      const [packing, closed, shipping, recycled] = await Promise.all(promises);
+      const [packing, closed, shipping, recycled] = await Promise.all([
+        filterPackages(sanitizeParams({ ...baseParams, status: 'Đang đóng gói' })).then((res) => res.totalItems || 0).catch(() => 0),
+        filterPackages(sanitizeParams({ ...baseParams, status: 'Đã đóng thùng' })).then((res) => res.totalItems || 0).catch(() => 0),
+        filterPackages(sanitizeParams({ ...baseParams, ...deliveredDateParams, status: 'Đang vận chuyển' })).then((res) => res.totalItems || 0).catch(() => 0),
+        filterPackages(sanitizeParams({ ...baseParams, ...deliveredDateParams, status: 'Tái chế' })).then((res) => res.totalItems || 0).catch(() => 0)
+      ]);
+
       setStats({ packing, closed, shipping, recycled });
     } catch {
       setStats({ packing: 0, closed: 0, shipping: 0, recycled: 0 });
@@ -191,6 +211,74 @@ export const TrackingProvider: React.FC<Props> = ({ children }) => {
         ...customFilter,
         smallCollectionPointId
       };
+
+      const currentStatus = String(params.status || '');
+      const currentPage = Number(params.page || 1);
+      const currentLimit = Number(params.limit || 10);
+
+      if (currentStatus !== DELIVERED_UI_STATUS) {
+        delete params.fromDate;
+        delete params.toDate;
+      }
+
+      if (currentStatus === DELIVERED_UI_STATUS) {
+        const baseParams: Record<string, any> = {
+          ...params,
+          status: undefined,
+          page: 1,
+          limit: 1
+        };
+
+        Object.keys(baseParams).forEach((key) => {
+          if (baseParams[key] === undefined || baseParams[key] === null || baseParams[key] === '') {
+            delete baseParams[key];
+          }
+        });
+
+        const [shippingTotalRes, recycledTotalRes] = await Promise.all([
+          filterPackages({ ...baseParams, status: SHIPPING_STATUS, page: 1, limit: 1 }),
+          filterPackages({ ...baseParams, status: RECYCLED_STATUS, page: 1, limit: 1 })
+        ]);
+
+        const shippingTotal = shippingTotalRes?.totalItems || 0;
+        const recycledTotal = recycledTotalRes?.totalItems || 0;
+
+        const [shippingDataRes, recycledDataRes] = await Promise.all([
+          shippingTotal > 0
+            ? filterPackages({ ...baseParams, status: SHIPPING_STATUS, page: 1, limit: shippingTotal })
+            : Promise.resolve({ data: [], totalPages: 1, totalItems: 0 }),
+          recycledTotal > 0
+            ? filterPackages({ ...baseParams, status: RECYCLED_STATUS, page: 1, limit: recycledTotal })
+            : Promise.resolve({ data: [], totalPages: 1, totalItems: 0 })
+        ]);
+
+        const mergedMap = new Map<string, any>();
+        [...(shippingDataRes.data || []), ...(recycledDataRes.data || [])].forEach((item: any) => {
+          const key = String(item?.packageId || item?.id || '');
+          if (!key) return;
+          mergedMap.set(key, {
+            ...item,
+            status: DELIVERED_UI_STATUS
+          });
+        });
+
+        const mergedPackages = Array.from(mergedMap.values()).sort((a: any, b: any) => {
+          const timeA = new Date(a?.deliveryAt || a?.createAt || a?.createdAt || 0).getTime();
+          const timeB = new Date(b?.deliveryAt || b?.createAt || b?.createdAt || 0).getTime();
+          return timeB - timeA;
+        });
+
+        const totalMergedItems = mergedPackages.length;
+        const startIndex = (currentPage - 1) * currentLimit;
+        const endIndex = startIndex + currentLimit;
+        const paginatedMergedPackages = mergedPackages.slice(startIndex, endIndex);
+
+        setPackages(paginatedMergedPackages);
+        setTotalItems(totalMergedItems);
+        setTotalPages(Math.max(1, Math.ceil(totalMergedItems / currentLimit)));
+        void fetchStats(customFilter);
+        return;
+      }
 
       Object.keys(params).forEach((key) => {
         if (params[key] === undefined || params[key] === null || params[key] === '') {
