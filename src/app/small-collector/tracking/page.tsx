@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useMemo, useState } from 'react';
-import { Truck } from 'lucide-react';
+import { ScanSearch } from 'lucide-react';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
 import SearchBox from '@/components/ui/SearchBox';
 import Pagination from '@/components/ui/Pagination';
@@ -75,7 +75,7 @@ const TrackingPage: React.FC = () => {
                 <div className='flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4'>
                     <div className='flex items-center gap-3'>
                         <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
-                            <Truck className='text-white' size={20} />
+                            <ScanSearch className='text-white' size={20} />
                         </div>
                         <h1 className='text-3xl font-bold text-gray-900'>Theo dõi kiện hàng</h1>
                     </div>

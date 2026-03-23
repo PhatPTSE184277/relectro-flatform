@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
-import TrackingProductSkeleton from './TrackingProductSkeleton';
 import { Eye } from 'lucide-react';
 import { formatNumber } from '@/utils/formatNumber';
+import { formatTimeWithDate } from '@/utils/FormatTime';
+import TrackingProductSkeleton from './TrackingProductSkeleton';
 
 interface TrackingProductListProps {
     packages: any[];
@@ -12,19 +13,19 @@ interface TrackingProductListProps {
 }
 
 const TrackingProductList: React.FC<TrackingProductListProps> = ({ packages, loading, onPackageClick }) => {
-    // Remove local page state, expect parent to handle pagination and pass correct packages
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>
-                <div className='max-h-[59vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[53vh] xl:max-h-[59vh] overflow-y-auto'>
+                <div className='max-h-[59vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[53vh] xl:max-h-[48vh] overflow-y-auto'>
                     <table className='min-w-full text-sm text-gray-800 table-fixed'>
                         <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-200'>
                             <tr>
                                 <th className='py-3 px-4 text-center w-[5vw]'>STT</th>
-                                <th className='py-3 px-4 text-left w-[18vw]'>Mã kiện hàng</th>
-                                <th className='py-3 px-4 text-left w-[16vw]'>Điểm thu gom</th>
+                                <th className='py-3 px-4 text-left w-[15vw]'>Mã kiện hàng</th>
+                                <th className='py-3 px-4 text-left w-[22vw]'>Công ty tái chế</th>
                                 <th className='py-3 px-4 text-right w-[10vw]'>Số sản phẩm</th>
-                                <th className='py-3 px-4 text-center w-[10vw]'>Hành động</th>
+                                <th className='py-3 px-4 text-center w-[15vw]'>Giao lúc</th>
+                                <th className='py-3 px-4 text-center w-[8vw]'>Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -52,16 +53,20 @@ const TrackingProductList: React.FC<TrackingProductListProps> = ({ packages, loa
                                                     {formatNumber(pkg.stt)}
                                                 </span>
                                             </td>
-                                            <td className='py-3 px-4 text-gray-700 w-[18vw]'>
+                                            <td className='py-3 px-4 text-gray-700 w-[15vw]'>
                                                 <div className='font-medium'>{pkg.packageId || 'N/A'}</div>
                                             </td>
-                                            <td className='py-3 px-4 text-gray-700 w-[16vw]'>
-                                                <span>{pkg.smallCollectionPointsName || pkg.smallCollectionPointsAddress || 'N/A'}</span>
+                                            <td className='py-3 px-4 text-gray-700 w-[22vw]'>
+                                                <div className='font-medium'>{pkg.recyclerName || 'N/A'}</div>
+                                                <div className='text-xs text-gray-500 mt-1'>{pkg.recyclerAddress || 'N/A'}</div>
                                             </td>
                                             <td className='py-3 px-4 text-right text-gray-700 w-[10vw]'>
-                                                <span>{pkg.products?.totalItems ?? pkg.totalItems ?? 0}</span>
+                                                <span>{pkg.products?.totalItems ?? 0}</span>
                                             </td>
-                                            <td className='py-3 px-4 text-center align-middle w-[10vw]'>
+                                            <td className='py-3 px-4 text-center text-gray-700 w-[15vw]'>
+                                                {pkg.deliveryAt ? formatTimeWithDate(pkg.deliveryAt, true) : 'N/A'}
+                                            </td>
+                                            <td className='py-3 px-4 text-center align-middle w-[8vw]'>
                                                 <div className='flex items-center justify-center h-full'>
                                                     <button
                                                         onClick={() => onPackageClick(pkg)}

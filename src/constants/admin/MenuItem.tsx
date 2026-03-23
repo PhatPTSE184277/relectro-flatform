@@ -6,11 +6,11 @@ import {
     Package,
     ClipboardList,
     Wrench,
-    MapPin,
     Zap,
     Recycle,
     Bell,
-    TicketPercent
+    TicketPercent,
+    ScanSearch
 } from 'lucide-react';
 
 export const adminMenuItems = [
@@ -58,9 +58,9 @@ export const adminMenuItems = [
     },
     {
         id: 'tracking',
-        label: 'Theo dõi sản phẩm',
+        label: 'Theo dõi kiện hàng',
         path: '/admin/tracking',
-        icon: <MapPin size={20} />
+        icon: <ScanSearch size={20} />
     },
     {
         id: 'speed',

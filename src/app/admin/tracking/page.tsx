@@ -1,132 +1,256 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { MapPin } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ScanSearch } from 'lucide-react';
 import { useTrackingContext } from '@/contexts/admin/TrackingContext';
 import TrackingProductList from '@/components/admin/tracking/TrackingProductList';
 import TrackingModal from '@/components/admin/tracking/modal/TrackingModal';
 import TrackingProductFilter from '@/components/admin/tracking/TrackingProductFilter';
 import SearchableSelect from '@/components/ui/SearchableSelect';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
+import SearchBox from '@/components/ui/SearchBox';
+import Pagination from '@/components/ui/Pagination';
 import { getFirstDayOfMonthString, getTodayString } from '@/utils/getDayString';
 
 const TrackingPage: React.FC = () => {
-    const { companies, packages, loadingPackages, fetchPackages } = useTrackingContext();
-    const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
+    const {
+        companies,
+        warehouses,
+        packages,
+        loadingPackages,
+        totalPages,
+        stats,
+        filter,
+        setFilter,
+        loadingWarehouses,
+        clearPackageDetail
+    } = useTrackingContext();
+
     const [selectedPackage, setSelectedPackage] = useState<any | null>(null);
     const [showModal, setShowModal] = useState(false);
-    // const [showCompanyModal, setShowCompanyModal] = useState(false);
-    const [statusFilter, setStatusFilter] = useState('Đang đóng gói');
-    const [fromDate, setFromDate] = useState(getFirstDayOfMonthString);
-    const [toDate, setToDate] = useState(getTodayString);
+
+    const getWarehouseId = useCallback((warehouse: any): string => {
+        return String(
+            warehouse?.smallCollectionPointId ||
+            warehouse?.smallCollectionPointsId ||
+            warehouse?.pointId ||
+            warehouse?.smallPointId ||
+            warehouse?.id ||
+            ''
+        );
+    }, []);
+
+    const belongsToSelectedCompany = useCallback((warehouse: any, companyId?: string): boolean => {
+        if (!companyId) return false;
+
+        const warehouseCompanyId = warehouse?.companyId ?? warehouse?.collectionCompanyId;
+        if (warehouseCompanyId === undefined || warehouseCompanyId === null || warehouseCompanyId === '') {
+            return true;
+        }
+
+        return String(warehouseCompanyId) === String(companyId);
+    }, []);
 
     // Auto-select first company when companies load
     useEffect(() => {
-        if (companies.length > 0 && !selectedCompanyId) {
+        if (companies.length > 0 && !filter.companyId) {
             const firstCompanyId = companies[0].id || companies[0].companyId || String(companies[0].collectionCompanyId);
-            setTimeout(() => setSelectedCompanyId(firstCompanyId), 0); // Avoid cascading renders
+            setFilter({ companyId: firstCompanyId, page: 1 });
         }
-    }, [companies, selectedCompanyId]);
+    }, [companies, filter.companyId, setFilter]);
 
-    // Fetch packages when company or date changes
+    // Auto-select first warehouse when warehouses for selected company are ready
     useEffect(() => {
-        if (selectedCompanyId) {
-            fetchPackages(selectedCompanyId, fromDate, toDate, statusFilter);
+        if (!filter.companyId || loadingWarehouses || warehouses.length === 0) return;
+
+        const companyWarehouses = warehouses.filter((w) => belongsToSelectedCompany(w, filter.companyId));
+        const normalizedWarehouses = companyWarehouses.length > 0 ? companyWarehouses : warehouses;
+
+        const currentWarehouseId = String(filter.smallCollectionPointId || '');
+        const hasValidSelection = normalizedWarehouses.some((w) => getWarehouseId(w) === currentWarehouseId);
+
+        if (!hasValidSelection) {
+            const firstWarehouseId = getWarehouseId(normalizedWarehouses[0]);
+            if (firstWarehouseId) {
+                setFilter({ smallCollectionPointId: firstWarehouseId, page: 1 });
+            }
         }
-    }, [selectedCompanyId, fromDate, toDate, statusFilter, fetchPackages]);
+    }, [
+        filter.companyId,
+        filter.smallCollectionPointId,
+        loadingWarehouses,
+        warehouses,
+        belongsToSelectedCompany,
+        getWarehouseId,
+        setFilter
+    ]);
 
-    const handleCompanySelect = (companyId: string) => {
-        setSelectedCompanyId(companyId);
-    };
+    const paginatedPackages = useMemo(
+        () =>
+            packages.map((pkg, idx) => ({
+                ...pkg,
+                stt: ((filter.page || 1) - 1) * (filter.limit || 10) + idx + 1
+            })),
+        [packages, filter.page, filter.limit]
+    );
 
+    // Sanitize companies to avoid exposing phone numbers in the dropdown
+    // Keep address/city so they still appear under company name
+    const sanitizedCompanies = useMemo(() =>
+        companies.map((c: any) => ({
+            id: c.id || c.companyId || String(c.collectionCompanyId),
+            name: c.name || c.companyName || 'N/A',
+            address: c.address || c.addressLine || c.street || '',
+            city: c.city || c.province || c.district || ''
+        })),
+    [companies]);
 
+    const handleCompanySelect = useCallback((companyId: string) => {
+        setFilter({
+            companyId,
+            smallCollectionPointId: undefined,
+            page: 1
+        });
+    }, [setFilter]);
 
-    const handlePackageClick = (pkg: any) => {
+    const handleWarehouseSelect = useCallback((smallCollectionPointId: string) => {
+        setFilter({ smallCollectionPointId, page: 1 });
+    }, [setFilter]);
+
+    const handleFilterChange = useCallback((status: string) => {
+        setFilter({ status, page: 1 });
+    }, [setFilter]);
+
+    const handlePageChange = useCallback((page: number) => {
+        setFilter({ page });
+    }, [setFilter]);
+
+    const handleFromDateChange = useCallback((fromDate: string) => {
+        setFilter({ fromDate, page: 1 });
+    }, [setFilter]);
+
+    const handleToDateChange = useCallback((toDate: string) => {
+        setFilter({ toDate, page: 1 });
+    }, [setFilter]);
+
+    const handleSearchChange = useCallback((value: string) => {
+        setFilter({ packageId: value.trim(), page: 1 });
+    }, [setFilter]);
+
+    const handlePackageClick = useCallback((pkg: any) => {
         setSelectedPackage(pkg);
         setShowModal(true);
-    };
+    }, []);
 
-    const handleCloseModal = () => {
+    const handleCloseModal = useCallback(() => {
         setShowModal(false);
         setSelectedPackage(null);
-    };
+        clearPackageDetail();
+    }, [clearPackageDetail]);
 
-    const handleFilterChange = (status: string) => {
-        setStatusFilter(status);
-    };
-
-    const paginatedPackages = packages.map((pkg, idx) => ({
-        ...pkg,
-        stt: idx + 1
-    }));
-
-
+    useEffect(() => {
+        if (!filter.fromDate || !filter.toDate) {
+            setFilter({
+                fromDate: filter.fromDate || getFirstDayOfMonthString(),
+                toDate: filter.toDate || getTodayString()
+            });
+        }
+    }, [filter.fromDate, filter.toDate, setFilter]);
 
     return (
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8'>
-            {/* Header + Date Range Picker */}
-            <div className='flex flex-col gap-4 mb-6'>
-                <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3'>
-                    <div className='flex items-center gap-3'>
-                        <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
-                            <MapPin className='text-white' size={20} />
-                        </div>
-                        <h1 className='text-3xl font-bold text-gray-900'>Theo dõi kiện hàng</h1>
+        <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+            {/* Header + Search */}
+            <div className='flex flex-col gap-2 mb-4 sm:flex-row sm:items-center sm:gap-6'>
+                <div className='flex items-center gap-3 shrink-0'>
+                    <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
+                        <ScanSearch className='text-white' size={20} />
                     </div>
-                    <div className='flex gap-4 items-center flex-1 justify-end'>
-                        <div className='w-72'>
-                            <SearchableSelect
-                                options={companies}
-                                value={selectedCompanyId ?? ''}
-                                onChange={handleCompanySelect}
-                                getLabel={(c: any) => c.name || c.companyName || 'N/A'}
-                                getValue={(c: any) => c.id || c.companyId || String(c.collectionCompanyId)}
-                                placeholder='Chọn công ty...'
-                            />
-                        </div>
-                        
-                        <div className='min-w-fit'>
-                            <CustomDateRangePicker
-                                fromDate={fromDate}
-                                toDate={toDate}
-                                onFromDateChange={setFromDate}
-                                onToDateChange={setToDate}
-                            />
-                        </div>
+                    <h1 className='text-3xl font-bold text-gray-900'>Theo dõi kiện hàng</h1>
+                </div>
+                <div className='flex-1 max-w-md w-full sm:ml-auto'>
+                    <SearchBox
+                        value={filter.packageId || ''}
+                        onChange={handleSearchChange}
+                        placeholder='Tìm theo mã kiện hàng...'
+                    />
+                </div>
+            </div>
+
+            {/* Date Range Picker + Selectors */}
+            <div className='mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
+                <div className='min-w-fit'>
+                    <CustomDateRangePicker
+                        fromDate={filter.fromDate || ''}
+                        toDate={filter.toDate || ''}
+                        onFromDateChange={handleFromDateChange}
+                        onToDateChange={handleToDateChange}
+                    />
+                </div>
+                <div className='flex gap-3 w-full sm:w-auto justify-end'>
+                    <div className='w-80'>
+                        <SearchableSelect
+                            options={sanitizedCompanies}
+                            value={filter.companyId ?? ''}
+                            onChange={handleCompanySelect}
+                            getLabel={(c: any) => c.name}
+                            getValue={(c: any) => String(c.id)}
+                            placeholder='Chọn công ty...'
+                        />
+                    </div>
+                    <div className='w-80'>
+                        <SearchableSelect
+                            options={warehouses}
+                            value={filter.smallCollectionPointId ?? ''}
+                            onChange={handleWarehouseSelect}
+                            getLabel={(w: any) => w.name || w.pointName || w.smallCollectionPointName || 'N/A'}
+                            getValue={getWarehouseId}
+                            placeholder={loadingWarehouses ? 'Đang tải kho...' : 'Chọn kho...'}
+                            disabled={!filter.companyId || loadingWarehouses}
+                        />
                     </div>
                 </div>
             </div>
 
             {/* Filter Section */}
-            {selectedCompanyId && (
+            {filter.companyId && (
                 <div className='mb-6'>
                     <TrackingProductFilter
-                        status={statusFilter}
+                        status={filter.status || 'Đang vận chuyển'}
+                        stats={stats}
                         onFilterChange={handleFilterChange}
                     />
                 </div>
             )}
 
-            {/* Package List */}
-            {!selectedCompanyId ? (
+            {/* Main Content */}
+            {!filter.companyId ? (
                 <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center text-gray-400'>
                     Vui lòng chọn công ty để xem danh sách kiện hàng
                 </div>
+            ) : !filter.smallCollectionPointId ? (
+                <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center text-gray-400'>
+                    Vui lòng chọn kho để xem danh sách kiện hàng
+                </div>
             ) : (
-                <>  
-                    <div className='mb-6'>
-                        <TrackingProductList
-                            packages={paginatedPackages}
-                            loading={loadingPackages}
-                            onPackageClick={handlePackageClick}
-                        />
-                    </div>
-                </>
+                <div className='mb-6'>
+                    <TrackingProductList
+                        packages={paginatedPackages}
+                        loading={loadingPackages}
+                        onPackageClick={handlePackageClick}
+                    />
+                </div>
             )}
 
+            {/* Pagination */}
+            <div className='flex justify-end'>
+                <Pagination
+                    page={filter.page || 1}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
+            </div>
 
-
-            {/* Tracking Modal */}
+            {/* Modal */}
             {showModal && selectedPackage && (
                 <TrackingModal
                     pkg={selectedPackage}

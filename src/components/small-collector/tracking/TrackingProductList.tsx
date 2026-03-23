@@ -60,9 +60,6 @@ const TrackingProductList: React.FC<TrackingProductListProps> = ({
                                             </td>
                                             <td className='py-3 px-4 text-gray-700 w-[15vw]'>
                                                 <div className='font-medium'>{pkg.packageId || 'N/A'}</div>
-                                                <div className='text-xs text-gray-500 mt-1'>
-                                                    {pkg.smallCollectionPointsName || pkg.smallCollectionPointsAddress || 'N/A'}
-                                                </div>
                                             </td>
                                             <td className='py-3 px-4 text-gray-700 w-[22vw]'>
                                                 <div className='font-medium'>{pkg.recyclerName || 'N/A'}</div>
