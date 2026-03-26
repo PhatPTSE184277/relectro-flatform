@@ -13,7 +13,7 @@ const SpeedList: React.FC<SpeedListProps> = ({ speeds, loading, onEdit }) => {
 	return (
 		<div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
 			<div className='overflow-x-auto'>
-				<div className='max-h-105 overflow-y-auto'>
+				<div className='max-h-115 overflow-y-auto'>
 					<table className='min-w-full text-sm text-gray-800 table-fixed'>
 						<thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
 							<tr>

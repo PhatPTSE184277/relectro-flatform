@@ -53,7 +53,7 @@ const SpeedPageContent: React.FC = () => {
 	};
 
 	return (
-		<div className='min-h-screen p-6'>
+		<div className='p-6 min-h-0'>
 			<div className='max-w-7xl mx-auto'>
 							{/* Header + Search */}
 							<div className='mb-6'>
