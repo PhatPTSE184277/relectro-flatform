@@ -6,6 +6,7 @@ import { useShiftContext } from '@/contexts/company/ShiftContext';
 import ShiftList from '@/components/company/shift/ShiftList';
 import ShiftDetail from '@/components/company/shift/modal/ShiftDetail';
 import ShiftFilter, { ShiftStatus } from '@/components/company/shift/ShiftFilter';
+import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
 import { CalendarClock, Download } from 'lucide-react';
@@ -17,7 +18,7 @@ import { pickExcelTemplateUrl } from '@/utils/excelTemplateConfig';
 
 const ShiftPage: React.FC = () => {
     const { user } = useAuth();
-    const { shifts, loading, fetchShifts, importShifts } = useShiftContext();
+    const { shifts, loading, fetchShifts, importShifts, page, limit, totalPages, setPage } = useShiftContext();
     const [selectedShift, setSelectedShift] = useState<any | null>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [search, setSearch] = useState('');
@@ -49,18 +50,30 @@ const ShiftPage: React.FC = () => {
 
     const companyId = user?.collectionCompanyId;
 
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage);
+    };
+
     // fromDate/toDate are initialized lazily above to avoid synchronous setState in effect
 
+    // Reset page when core filters change (not when just navigating pages)
+    useEffect(() => {
+        setPage(1);
+    }, [companyId, fromDate, toDate, setPage]);
+
+    // Fetch when page or filters change
     useEffect(() => {
         if (companyId && fromDate && toDate) {
-            fetchShifts({ 
+            fetchShifts({
+                page,
+                limit,
                 collectionCompanyId: companyId,
                 fromDate,
                 toDate,
-                status: filterStatus === 'active' ? 'Active' : 'InActive'
+                status: filterStatus,
             });
         }
-    }, [fetchShifts, companyId, fromDate, toDate, filterStatus]);
+    }, [fetchShifts, companyId, fromDate, toDate, filterStatus, page, limit]);
 
     useEffect(() => {
         const loadTemplate = async () => {
@@ -94,10 +107,12 @@ const ShiftPage: React.FC = () => {
             await importShifts(file);
 
             await fetchShifts({ 
+                page,
+                limit,
                 collectionCompanyId: companyId,
                 fromDate,
                 toDate,
-                status: filterStatus === 'active' ? 'Active' : 'InActive'
+                status: filterStatus
             });
             setToast({ open: true, type: 'success', message: 'Thêm dữ liệu hoàn tất' });
             return true;
@@ -178,7 +193,10 @@ const ShiftPage: React.FC = () => {
             {/* Filter */}
             <ShiftFilter
                 status={filterStatus}
-                onFilterChange={setFilterStatus}
+                onFilterChange={(nextStatus) => {
+                    setFilterStatus(nextStatus);
+                    setPage(1);
+                }}
             />
 
             {/* Shift List */}
@@ -186,7 +204,11 @@ const ShiftPage: React.FC = () => {
                 shifts={filteredShifts}
                 loading={loading}
                 onViewDetail={handleViewDetail}
+                page={page}
+                limit={limit}
             />
+
+            <Pagination page={page} totalPages={Number(totalPages)} onPageChange={handlePageChange} />
 
             {/* Detail Modal */}
             {showDetailModal && (

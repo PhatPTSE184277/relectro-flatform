@@ -1,7 +1,7 @@
 import React from 'react';
 import { IoFilterOutline } from 'react-icons/io5';
 
-export type ShiftStatus = 'active' | 'inactive';
+export type ShiftStatus = 'active' | 'scheduled' | 'cancelled';
 
 interface ShiftFilterProps {
     status: ShiftStatus;
@@ -23,17 +23,27 @@ const ShiftFilter: React.FC<ShiftFilterProps> = ({ status, onFilterChange }) => 
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Hoạt động
+                    Có sẵn
                 </button>
                 <button
-                    onClick={() => onFilterChange('inactive')}
+                    onClick={() => onFilterChange('scheduled')}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[110px] ${
-                        status === 'inactive'
+                        status === 'scheduled'
                             ? 'bg-primary-600 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Không hoạt động
+                    Đã lên lịch
+                </button>
+                <button
+                    onClick={() => onFilterChange('cancelled')}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[110px] ${
+                        status === 'cancelled'
+                            ? 'bg-primary-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                >
+                    Đã hủy
                 </button>
             </div>
         </div>

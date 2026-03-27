@@ -10,9 +10,26 @@ export interface ShiftFilterParams {
   status?: string;
 }
 
+export interface PagedResponse<T> {
+  data: T[];
+  totalItems: number;
+  totalPages: number;
+  page: number;
+  limit: number;
+}
+
 // Lấy danh sách ca làm việc theo filter
-export const getFilteredShifts = async (params: ShiftFilterParams): Promise<any> => {
-  const response = await axios.get('/shift/filter', { params });
+export const getFilteredShifts = async (params: ShiftFilterParams): Promise<PagedResponse<any>> => {
+  const mappedParams = { ...params };
+  if (mappedParams.status === 'active') {
+    mappedParams.status = 'Có sẵn';
+  } else if (mappedParams.status === 'scheduled') {
+    mappedParams.status = 'Đã lên lịch';
+  } else if (mappedParams.status === 'cancelled') {
+    mappedParams.status = 'Đã hủy';
+  }
+
+  const response = await axios.get<PagedResponse<any>>('/shift/filter', { params: mappedParams });
   return response.data;
 };
 

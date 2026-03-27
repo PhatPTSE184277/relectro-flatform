@@ -8,10 +8,16 @@ interface ShiftContextType {
   shifts: any[];
   selectedShift: any | null;
   error: string | null;
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
   fetchShifts: (params?: ShiftFilterParams) => Promise<void>;
   fetchShiftDetail: (id: string) => Promise<void>;
   importShifts: (file: File) => Promise<any>;
   clearShifts: () => void;
+  setPage: (page: number) => void;
+  setLimit: (limit: number) => void;
 }
 
 const ShiftContext = createContext<ShiftContextType | undefined>(undefined);
@@ -22,19 +28,36 @@ export const ShiftProvider = ({ children }: { children: ReactNode }) => {
   const [selectedShift, setSelectedShift] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
   const fetchShifts = useCallback(async (params?: ShiftFilterParams) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getFilteredShifts(params || {});
+      const mergedParams: ShiftFilterParams = {
+        page: params?.page ?? page,
+        limit: params?.limit ?? limit,
+        ...params,
+      };
+
+      const data = await getFilteredShifts(mergedParams);
       setShifts(data?.data || []);
+      setTotalItems(data?.totalItems ?? 0);
+      setTotalPages(data?.totalPages ?? 1);
+      setPage(data?.page ?? mergedParams.page ?? 1);
+      setLimit(data?.limit ?? mergedParams.limit ?? 10);
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Lỗi khi tải ca làm việc');
       setShifts([]);
+      setTotalItems(0);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, limit]);
 
   const fetchShiftDetail = useCallback(async (id: string) => {
     setLoading(true);
@@ -68,6 +91,9 @@ export const ShiftProvider = ({ children }: { children: ReactNode }) => {
     setShifts([]);
     setSelectedShift(null);
     setError(null);
+    setPage(1);
+    setTotalItems(0);
+    setTotalPages(1);
   }, []);
 
   const value: ShiftContextType = {
@@ -75,10 +101,16 @@ export const ShiftProvider = ({ children }: { children: ReactNode }) => {
     shifts,
     selectedShift,
     error,
+    page,
+    limit,
+    totalItems,
+    totalPages,
     fetchShifts,
     fetchShiftDetail,
     importShifts,
     clearShifts,
+    setPage,
+    setLimit,
   };
 
   return (

@@ -6,13 +6,18 @@ interface ShiftListProps {
     shifts: any[];
     loading: boolean;
     onViewDetail: (shift: any) => void;
+    page: number;
+    limit: number;
 }
 
 const ShiftList: React.FC<ShiftListProps> = ({
     shifts,
     loading,
-    onViewDetail
+    onViewDetail,
+    page,
+    limit
 }) => {
+    const sttOffset = (Math.max(page, 1) - 1) * Math.max(limit, 1);
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
             <div className='overflow-x-auto w-full'>
@@ -42,7 +47,7 @@ const ShiftList: React.FC<ShiftListProps> = ({
                                                 shift={shift}
                                                 onView={() => onViewDetail(shift)}
                                                 isLast={idx === shifts.length - 1}
-                                                index={idx}
+                                                index={sttOffset + idx}
                                                 showSplitTime
                                             />
                                         ))
