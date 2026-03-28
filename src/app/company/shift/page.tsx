@@ -3,12 +3,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import { useShiftContext } from '@/contexts/company/ShiftContext';
+import { useSmallCollectionContext } from '@/contexts/company/SmallCollectionContext';
 import ShiftList from '@/components/company/shift/ShiftList';
 import ShiftDetail from '@/components/company/shift/modal/ShiftDetail';
 import ShiftFilter, { ShiftStatus } from '@/components/company/shift/ShiftFilter';
 import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
+import SearchableSelect from '@/components/ui/SearchableSelect';
 import { CalendarClock, Download } from 'lucide-react';
 import ImportShiftModal from '@/components/company/shift/modal/ImportShiftModal';
 import { useAuth } from '@/hooks/useAuth';
@@ -19,11 +21,13 @@ import { pickExcelTemplateUrl } from '@/utils/excelTemplateConfig';
 const ShiftPage: React.FC = () => {
     const { user } = useAuth();
     const { shifts, loading, fetchShifts, importShifts, page, limit, totalPages, setPage } = useShiftContext();
+    const { smallCollections, loading: loadingSmallCollections, fetchSmallCollections } = useSmallCollectionContext();
     const [selectedShift, setSelectedShift] = useState<any | null>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [search, setSearch] = useState('');
     const [showImportModal, setShowImportModal] = useState(false);
     const [filterStatus, setFilterStatus] = useState<ShiftStatus>('active');
+    const [smallCollectionPointId, setSmallCollectionPointId] = useState<string>('');
     const [templateUrl, setTemplateUrl] = useState<string | null>(null);
     const [toast, setToast] = useState<{ open: boolean; type: 'success' | 'error'; message: string }>({
         open: false,
@@ -66,12 +70,40 @@ const ShiftPage: React.FC = () => {
         setToDate(nextToDate);
     };
 
+    const getWarehouseId = (warehouse: any): string => {
+        return String(
+            warehouse?.smallCollectionPointId ||
+            warehouse?.smallCollectionPointsId ||
+            warehouse?.pointId ||
+            warehouse?.smallPointId ||
+            warehouse?.id ||
+            ''
+        );
+    };
+
+    const handleWarehouseSelect = (nextSmallCollectionPointId: string) => {
+        setPage(1);
+        setSmallCollectionPointId(nextSmallCollectionPointId);
+    };
+
+    useEffect(() => {
+        if (!companyId) return;
+        void fetchSmallCollections({ companyId, page: 1, limit: 1000 });
+    }, [companyId, fetchSmallCollections]);
+
+    // derive applied warehouse id: prefer explicit selection, otherwise use first item (no extra state update)
+    const firstWarehouseId = (smallCollections && smallCollections.length > 0)
+        ? String((smallCollections[0] as any)?.smallCollectionPointId || (smallCollections[0] as any)?.id || '')
+        : '';
+
+    const appliedSmallCollectionPointId = smallCollectionPointId || firstWarehouseId;
+
     // Fetch when page or filters change.
     // Important: when core filters change, force page=1 FIRST, then fetch (avoid race fetching old page).
     useEffect(() => {
         if (!companyId || !fromDate || !toDate) return;
 
-        const coreFilterKey = `${companyId}|${fromDate}|${toDate}|${filterStatus}|${limit}`;
+        const coreFilterKey = `${companyId}|${fromDate}|${toDate}|${filterStatus}|${limit}|${appliedSmallCollectionPointId}`;
         const coreFiltersChanged = coreFilterKey !== lastCoreFilterKeyRef.current;
 
         if (coreFiltersChanged) {
@@ -86,11 +118,12 @@ const ShiftPage: React.FC = () => {
             page,
             limit,
             collectionCompanyId: companyId,
+            smallCollectionPointId: appliedSmallCollectionPointId || undefined,
             fromDate,
             toDate,
             status: filterStatus,
         });
-    }, [fetchShifts, companyId, fromDate, toDate, filterStatus, page, limit, setPage]);
+    }, [fetchShifts, companyId, fromDate, toDate, filterStatus, page, limit, appliedSmallCollectionPointId, setPage]);
 
     useEffect(() => {
         const loadTemplate = async () => {
@@ -127,6 +160,7 @@ const ShiftPage: React.FC = () => {
                 page,
                 limit,
                 collectionCompanyId: companyId,
+                smallCollectionPointId: smallCollectionPointId || undefined,
                 fromDate,
                 toDate,
                 status: filterStatus
@@ -171,13 +205,24 @@ const ShiftPage: React.FC = () => {
 
             {/* Date Range Picker + Actions */}
             <div className='mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-                <div className='min-w-fit'>
+                <div className='flex flex-col sm:flex-row sm:items-center gap-3 min-w-fit'>
                     <CustomDateRangePicker
                         fromDate={fromDate}
                         toDate={toDate}
                         onFromDateChange={handleFromDateChange}
                         onToDateChange={handleToDateChange}
                     />
+                    <div className='w-full sm:w-80'>
+                        <SearchableSelect
+                            options={smallCollections}
+                            value={appliedSmallCollectionPointId}
+                            onChange={handleWarehouseSelect}
+                            getLabel={(w: any) => w.name || w.pointName || w.smallCollectionPointName || 'N/A'}
+                            getValue={getWarehouseId}
+                            placeholder={loadingSmallCollections ? 'Đang tải kho...' : 'Chọn kho...'}
+                            disabled={loadingSmallCollections}
+                        />
+                    </div>
                 </div>
 
                 <div className='flex gap-3 w-full sm:w-auto justify-end'>

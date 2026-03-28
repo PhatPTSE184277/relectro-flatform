@@ -112,6 +112,25 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
 
     const suggestedAdditionalVehicleCount = parseSuggestedAdditionalVehicleCount();
 
+    const parseSuggestedVehiclePlates = (): string[] => {
+        const message = String(
+            preAssignResult?.criticalGapSuggestion?.message ||
+            preAssignResult?.message ||
+            ''
+        );
+
+        if (!message) return [];
+
+        // Example: "... tối ưu: 50KT-666.77, 51C-775.33, ..."
+        const matches = message.match(/\b\d{2}[A-Z]{1,2}-\d{3,5}(?:\.\d{2})?\b/gi) || [];
+        const normalized = matches
+            .map((plate) => String(plate).trim().toUpperCase())
+            .filter(Boolean);
+        return Array.from(new Set(normalized));
+    };
+
+    const suggestedVehiclePlates = parseSuggestedVehiclePlates();
+
     // Fetch vehicles on mount
     useEffect(() => {
         fetchPreviewVehicles(workDate);
@@ -269,13 +288,25 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                 .map((vehicle: any) => String(vehicle?.vehicleId || ''))
                 .filter((vehicleId: string) => vehicleId.length > 0);
 
+            const suggestedPlateSet = new Set(suggestedVehiclePlates);
+            const suggestedIds = suggestedVehiclePlates.length > 0
+                ? normalizedRemainingVehicles
+                    .filter((vehicle: any) => suggestedPlateSet.has(String(vehicle?.plate_Number || '').trim().toUpperCase()))
+                    .map((vehicle: any) => String(vehicle?.vehicleId || ''))
+                    .filter((vehicleId: string) => vehicleId.length > 0)
+                : [];
+
             const shouldAutoSelectAllRemaining =
                 suggestedAdditionalVehicleCount > 0 &&
                 remainingIds.length > 0 &&
                 remainingIds.length < suggestedAdditionalVehicleCount;
 
             setRemainingVehicles(normalizedRemainingVehicles);
-            setSelectedAdditionalVehicleIds(shouldAutoSelectAllRemaining ? remainingIds : []);
+            setSelectedAdditionalVehicleIds(
+                suggestedIds.length > 0
+                    ? suggestedIds
+                    : (shouldAutoSelectAllRemaining ? remainingIds : [])
+            );
             setShowAddVehicleModal(true);
         } catch (error) {
             console.error('Error loading remaining vehicles:', error);
@@ -559,6 +590,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                 onToggleSelectAll={handleToggleAllAdditionalVehicles}
                 loadThreshold={loadThreshold}
                 confirming={confirmingAdditionalVehicles}
+                suggestedPlateNumbers={suggestedVehiclePlates}
                 requiredSelectionCount={
                     shouldRequireExactAdditionalSelection ? suggestedAdditionalVehicleCount : undefined
                 }
@@ -575,7 +607,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                 deadlineUnassignedCount={0}
                 title='Xác nhận đóng'
                 description='Bạn có chắc chắn muốn đóng màn hình chọn xe?\nDanh sách xe đã chọn sẽ bị hủy.'
-                confirmText='Đóng màn hình'
+                confirmText='Xác nhận'
                 onConfirm={handleConfirmCloseAddVehicleModal}
                 onClose={handleCancelCloseAddVehicleModal}
             />

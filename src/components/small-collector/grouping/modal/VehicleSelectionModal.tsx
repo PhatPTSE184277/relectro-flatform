@@ -26,6 +26,7 @@ interface VehicleSelectionModalProps {
     requiredSelectionCount?: number;
     lockSelection?: boolean;
     lockSelectionMessage?: string;
+    suggestedPlateNumbers?: string[];
 }
 
 const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
@@ -41,24 +42,36 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
     confirming = false,
     requiredSelectionCount,
     lockSelection = false,
-    lockSelectionMessage
+    lockSelectionMessage,
+    suggestedPlateNumbers = []
 }) => {
     if (!open) return null;
 
     const normalizedSelectedIds = selectedVehicleIds.map((id) => String(id));
+    const normalizePlate = (plate?: string) => String(plate || '').trim().toUpperCase();
+    const suggestedPlateSet = new Set(suggestedPlateNumbers.map((p) => normalizePlate(p)).filter(Boolean));
     const allSelected =
         vehicles.length > 0 &&
         vehicles.every((v) => normalizedSelectedIds.includes(String(v.vehicleId)));
     const hasSelection = selectedVehicleIds.length > 0;
     const hasRequiredSelectionCount =
         typeof requiredSelectionCount === 'number' && requiredSelectionCount > 0;
+    // When a required selection count is provided, require exactly that many selections.
     const meetsRequiredSelection = hasRequiredSelectionCount
-        ? selectedVehicleIds.length >= requiredSelectionCount
+        ? selectedVehicleIds.length === requiredSelectionCount
         : hasSelection;
     const confirmDisabled = confirming || !meetsRequiredSelection;
 
     const handleToggleVehicle = (vehicleId: string) => {
         const normalizedVehicleId = String(vehicleId);
+
+        const isSelected = normalizedSelectedIds.includes(normalizedVehicleId);
+
+        // If not currently selected and we already reached the required selection count, block adding more.
+        if (!isSelected && hasRequiredSelectionCount && selectedVehicleIds.length >= (requiredSelectionCount || 0)) {
+            return;
+        }
+
         onToggleSelect(normalizedVehicleId);
     };
 
@@ -121,9 +134,9 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                                 type='checkbox'
                                                 checked={allSelected}
                                                 onChange={onToggleSelectAll}
-                                                disabled={lockSelection}
+                                                disabled={lockSelection || hasRequiredSelectionCount}
                                                 className={`w-4 h-4 accent-primary-600 ${
-                                                    lockSelection
+                                                    (lockSelection || hasRequiredSelectionCount)
                                                         ? 'cursor-not-allowed opacity-60'
                                                         : 'cursor-pointer'
                                                 }`}
@@ -156,6 +169,7 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                         vehicles.map((vehicle, idx) => {
                                             const normalizedVehicleId = String(vehicle.vehicleId);
                                             const isSelected = normalizedSelectedIds.includes(normalizedVehicleId);
+                                            const isSuggested = suggestedPlateSet.has(normalizePlate(vehicle.plate_Number));
                                             const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-primary-50';
                                             
                                                 return (
@@ -163,6 +177,11 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                                     key={normalizedVehicleId}
                                                     onClick={() => {
                                                         if (!lockSelection) {
+                                                            // Prevent adding more than required when clicking the row
+                                                            const isSelected = normalizedSelectedIds.includes(normalizedVehicleId);
+                                                            if (!isSelected && hasRequiredSelectionCount && selectedVehicleIds.length >= (requiredSelectionCount || 0)) {
+                                                                return;
+                                                            }
                                                             handleToggleVehicle(normalizedVehicleId);
                                                         }
                                                     }}
@@ -174,10 +193,10 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                                             type='checkbox'
                                                             checked={isSelected}
                                                             onChange={() => handleToggleVehicle(normalizedVehicleId)}
-                                                            disabled={lockSelection}
+                                                            disabled={lockSelection || (!isSelected && hasRequiredSelectionCount && selectedVehicleIds.length >= (requiredSelectionCount || 0))}
                                                             onClick={(e) => e.stopPropagation()}
                                                             className={`w-4 h-4 accent-primary-600 ${
-                                                                lockSelection
+                                                                (lockSelection || (!isSelected && hasRequiredSelectionCount && selectedVehicleIds.length >= (requiredSelectionCount || 0)))
                                                                     ? 'cursor-not-allowed opacity-60'
                                                                     : 'cursor-pointer'
                                                             }`}
@@ -189,7 +208,14 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                                                         </span>
                                                     </td>
                                                     <td className='py-3 px-4'>
-                                                        <div className='text-gray-900 font-medium'>{vehicle.plate_Number}</div>
+                                                        <div className='flex items-center gap-2'>
+                                                            <div className='text-gray-900 font-medium'>{vehicle.plate_Number}</div>
+                                                            {isSuggested && (
+                                                                <span className='text-xs px-2 py-0.5 rounded-full bg-primary-100 text-primary-700 border border-primary-200'>
+                                                                    Gợi ý
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </td>
                                                     <td className='py-3 px-4'>
                                                         <div className='text-gray-700'>{vehicle.vehicle_Type}</div>

@@ -23,10 +23,14 @@ const ConfirmCloseModal: React.FC<ConfirmCloseModalProps> = ({
 
     const modalTitle = title || 'Xác nhận đóng';
     const modalConfirmText = confirmText || 'Xác nhận';
-    const modalDescription =
+
+    const modalDescriptionRaw =
         description ||
         `Hiện tại có ${deadlineUnassignedCount} sản phẩm hạn chót chưa được phân chia.\nBạn có chắc chắn muốn đóng màn hình này không?`;
-    const [firstLine, secondLine] = modalDescription.split('\n');
+
+    // Support both actual newlines and escaped '\n' sequences coming from callers.
+    const modalDescription = String(modalDescriptionRaw).replace(/\\n/g, '\n');
+    const lines = modalDescription.split('\n');
 
     return (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-black/50 p-4">
@@ -44,9 +48,10 @@ const ConfirmCloseModal: React.FC<ConfirmCloseModalProps> = ({
                     </button>
                 </div>
 
-                <div className="p-6 flex-1 overflow-y-auto bg-gray-50 text-sm text-gray-700 space-y-2">
-                    <p>{firstLine}</p>
-                    {secondLine && <p>{secondLine}</p>}
+                    <div className="p-6 flex-1 overflow-y-auto bg-gray-50 text-sm text-gray-700 space-y-2">
+                        {lines.map((line, idx) => (
+                            <p key={idx}>{line}</p>
+                        ))}
                 </div>
 
                 <div className="flex justify-end gap-3 p-5 border-t border-gray-100 bg-gray-50">
