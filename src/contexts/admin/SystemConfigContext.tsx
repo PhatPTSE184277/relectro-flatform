@@ -12,7 +12,10 @@ import {
   getActiveSystemConfigs,
   getSystemConfigByKey,
   updateSystemConfig,
-  SystemConfig
+  SystemConfig,
+  getAutoAssignSettings,
+  updateAutoAssignSettings,
+  AutoAssignSettings
 } from '@/services/admin/SystemConfigService';
 
 interface SystemConfigContextType {
@@ -22,6 +25,10 @@ interface SystemConfigContextType {
   fetchConfigs: (groupName?: string) => Promise<void>;
   fetchConfigByKey: (key: string) => Promise<SystemConfig | null>;
   updateConfig: (id: string, value?: string | null, file?: File | null) => Promise<SystemConfig | null>;
+  autoAssignSettings: AutoAssignSettings | null;
+  autoAssignLoading: boolean;
+  fetchAutoAssignSettings: () => Promise<AutoAssignSettings | null>;
+  saveAutoAssignSettings: (payload: AutoAssignSettings) => Promise<AutoAssignSettings | null>;
   clearConfigs: () => void;
 }
 
@@ -33,6 +40,8 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
   const [configs, setConfigs] = useState<SystemConfig[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [autoAssignSettings, setAutoAssignSettings] = useState<AutoAssignSettings | null>(null);
+  const [autoAssignLoading, setAutoAssignLoading] = useState(false);
 
   const fetchConfigs = useCallback(async (groupName?: string) => {
     setLoading(true);
@@ -69,6 +78,37 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
     }
   }, [fetchConfigs]);
 
+  const fetchAutoAssignSettings = useCallback(async () => {
+    setAutoAssignLoading(true);
+    setError(null);
+    try {
+      const data = await getAutoAssignSettings();
+      setAutoAssignSettings(data);
+      return data;
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Lỗi khi tải cấu hình tự động phân xe');
+      setAutoAssignSettings(null);
+      return null;
+    } finally {
+      setAutoAssignLoading(false);
+    }
+  }, []);
+
+  const saveAutoAssignSettings = useCallback(async (payload: AutoAssignSettings) => {
+    setAutoAssignLoading(true);
+    setError(null);
+    try {
+      const updated = await updateAutoAssignSettings(payload);
+      setAutoAssignSettings(updated);
+      return updated;
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Lỗi khi cập nhật cấu hình tự động phân xe');
+      return null;
+    } finally {
+      setAutoAssignLoading(false);
+    }
+  }, []);
+
   const clearConfigs = useCallback(() => {
     setConfigs([]);
     setError(null);
@@ -85,6 +125,10 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
     fetchConfigs,
     fetchConfigByKey,
     updateConfig,
+    autoAssignSettings,
+    autoAssignLoading,
+    fetchAutoAssignSettings,
+    saveAutoAssignSettings,
     clearConfigs
   };
 

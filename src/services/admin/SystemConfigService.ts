@@ -9,6 +9,13 @@ export interface SystemConfig {
   [key: string]: any;
 }
 
+export interface AutoAssignSettings {
+  isEnabled: boolean;
+  immediateThreshold: number;
+  scheduleTime: string;
+  scheduleMinQty: number;
+}
+
 
 export const getActiveSystemConfigs = async (groupName?: string): Promise<SystemConfig[]> => {
   const response = await axios.get('/system-config/active', {
@@ -20,6 +27,19 @@ export const getActiveSystemConfigs = async (groupName?: string): Promise<System
 export const getSystemConfigByKey = async (key: string): Promise<SystemConfig> => {
   const response = await axios.get(`/system-config/${key}`);
   return response.data;
+};
+
+export const getAutoAssignSettings = async (): Promise<AutoAssignSettings> => {
+  const response = await axios.get('/system-config/auto-assign-settings');
+  // API may return either { success, data } or just the data.
+  return (response.data?.data ?? response.data) as AutoAssignSettings;
+};
+
+export const updateAutoAssignSettings = async (
+  payload: AutoAssignSettings
+): Promise<AutoAssignSettings> => {
+  const response = await axios.put('/system-config/auto-assign-settings', payload);
+  return (response.data?.data ?? response.data) as AutoAssignSettings;
 };
 
 // Cập nhật giá trị system config theo id
