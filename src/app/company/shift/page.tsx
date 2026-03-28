@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import { useShiftContext } from '@/contexts/company/ShiftContext';
 import ShiftList from '@/components/company/shift/ShiftList';
@@ -50,30 +50,47 @@ const ShiftPage: React.FC = () => {
 
     const companyId = user?.collectionCompanyId;
 
+    const lastCoreFilterKeyRef = useRef<string>('');
+
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
     };
 
-    // fromDate/toDate are initialized lazily above to avoid synchronous setState in effect
-
-    // Reset page when core filters change (not when just navigating pages)
-    useEffect(() => {
+    const handleFromDateChange = (nextFromDate: string) => {
         setPage(1);
-    }, [companyId, fromDate, toDate, setPage]);
+        setFromDate(nextFromDate);
+    };
 
-    // Fetch when page or filters change
+    const handleToDateChange = (nextToDate: string) => {
+        setPage(1);
+        setToDate(nextToDate);
+    };
+
+    // Fetch when page or filters change.
+    // Important: when core filters change, force page=1 FIRST, then fetch (avoid race fetching old page).
     useEffect(() => {
-        if (companyId && fromDate && toDate) {
-            fetchShifts({
-                page,
-                limit,
-                collectionCompanyId: companyId,
-                fromDate,
-                toDate,
-                status: filterStatus,
-            });
+        if (!companyId || !fromDate || !toDate) return;
+
+        const coreFilterKey = `${companyId}|${fromDate}|${toDate}|${filterStatus}|${limit}`;
+        const coreFiltersChanged = coreFilterKey !== lastCoreFilterKeyRef.current;
+
+        if (coreFiltersChanged) {
+            lastCoreFilterKeyRef.current = coreFilterKey;
+            if (page !== 1) {
+                setPage(1);
+                return;
+            }
         }
-    }, [fetchShifts, companyId, fromDate, toDate, filterStatus, page, limit]);
+
+        fetchShifts({
+            page,
+            limit,
+            collectionCompanyId: companyId,
+            fromDate,
+            toDate,
+            status: filterStatus,
+        });
+    }, [fetchShifts, companyId, fromDate, toDate, filterStatus, page, limit, setPage]);
 
     useEffect(() => {
         const loadTemplate = async () => {
@@ -158,8 +175,8 @@ const ShiftPage: React.FC = () => {
                     <CustomDateRangePicker
                         fromDate={fromDate}
                         toDate={toDate}
-                        onFromDateChange={setFromDate}
-                        onToDateChange={setToDate}
+                        onFromDateChange={handleFromDateChange}
+                        onToDateChange={handleToDateChange}
                     />
                 </div>
 
