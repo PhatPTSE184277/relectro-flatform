@@ -1,6 +1,6 @@
 export enum ProductStatus {
     Pending = 'Chờ thu gom',
     Collected = 'Đã thu gom',
-    Cancelled = 'Hủy bỏ',
+    Cancelled = 'Thất bại',
     Received = 'Nhập kho',
 }

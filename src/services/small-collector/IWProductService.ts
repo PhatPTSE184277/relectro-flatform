@@ -26,6 +26,15 @@ export const filterIncomingWarehouseProducts = async ({
     return response.data;
 };
 
+export const getBrandCategoryPoints = async (
+    categoryId: string,
+    brandId: string
+): Promise<number> => {
+    const response = await axios.get(`/brand-category/points/${categoryId}/${brandId}`);
+    const data: any = response.data;
+    return Number(data?.point ?? data?.data?.point ?? 0);
+};
+
 export interface ReceiveWarehouseItem {
     qrCode: string;
     point: number | null;

@@ -1,7 +1,7 @@
 import { IoFilterOutline } from 'react-icons/io5';
 import React from 'react';
 
-export type CollectionRouteStatus = 'Chưa bắt đầu' | 'Đang tiến hành' | 'Hoàn thành' | 'Hủy bỏ';
+export type CollectionRouteStatus = 'Chưa bắt đầu' | 'Đang tiến hành' | 'Hoàn thành' | 'Thất bại';
 
 interface CollectionRouteFilterProps {
     status: CollectionRouteStatus;
@@ -57,14 +57,14 @@ const CollectionRouteFilter: React.FC<CollectionRouteFilterProps> = ({
                     Hoàn thành ({stats.completed ?? 0})
                 </button>
                 <button
-                    onClick={() => onFilterChange('Hủy bỏ')}
+                    onClick={() => onFilterChange('Thất bại')}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[110px] ${
-                        status === 'Hủy bỏ'
+                        status === 'Thất bại'
                             ? 'bg-primary-600 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Hủy bỏ ({stats.cancelled ?? 0})
+                    Thất bại ({stats.cancelled ?? 0})
                 </button>
             </div>
         </div>

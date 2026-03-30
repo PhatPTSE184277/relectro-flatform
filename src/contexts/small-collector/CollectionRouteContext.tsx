@@ -49,7 +49,14 @@ function normalizeStatus(status: string = ""): string {
     if (s === "đang tiến hành" || s === "collecting" || s === "đang thu gom" || s === "in progress") return "Đang tiến hành";
     if (s === "chưa bắt đầu" || s === "not started") return "Chưa bắt đầu";
     if (s === "đã hoàn thành" || s === "completed" || s === "hoàn thành") return "Hoàn thành";
-    if (s === "hủy bỏ" || s === "cancelled" || s === "canceled") return "Hủy bỏ";
+    if (s === "hủy bỏ" || s === "thất bại" || s === "cancelled" || s === "canceled") return "Thất bại";
+    return status;
+}
+
+function mapUiStatusToApiStatus(status?: string): string | undefined {
+    if (!status) return undefined;
+    // UI label changed to "Thất bại" but API still expects "Hủy bỏ"
+    if (status === 'Thất bại') return 'Hủy bỏ';
     return status;
 }
 
@@ -88,7 +95,7 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
                 limit: 10,
                 collectionPointId: user.smallCollectionPointId,
                 pickUpDate: dateToUse,
-                status: filterStatus || undefined
+                status: mapUiStatusToApiStatus(filterStatus)
             });
 
             // Chuẩn hóa status

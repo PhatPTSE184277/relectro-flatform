@@ -27,7 +27,7 @@ const PackageList: React.FC<PackageListProps> = ({
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
             <div className='overflow-x-auto'>
-                <div className='max-h-[59vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[53vh] xl:max-h-[50vh] overflow-y-auto'>
+                <div className='max-h-[59vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[53vh] xl:max-h-[55vh] overflow-y-auto'>
                     <table className='min-w-full text-sm text-gray-800 table-fixed'>
                         <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-200'>
                             <tr>

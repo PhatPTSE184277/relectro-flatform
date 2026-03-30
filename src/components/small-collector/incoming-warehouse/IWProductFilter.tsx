@@ -53,7 +53,7 @@ const IWProductFilter: React.FC<IWProductFilterProps> = ({
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Hủy bỏ ({stats.cancelled ?? 0})
+                        Thất bại ({stats.cancelled ?? 0})
                 </button>
                 <button
                     onClick={() => onFilterChange(ProductStatus.Received)}

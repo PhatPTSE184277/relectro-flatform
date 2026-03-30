@@ -15,7 +15,8 @@ import {
     ReceiveWarehouseItem,
     getProductByQRCode,
     createIncomingWarehouseProduct,
-    getProductById
+    getProductById,
+    getBrandCategoryPoints
 } from '@/services/small-collector/IWProductService';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -38,6 +39,7 @@ interface IWProductContextType {
     receiveProduct: (items: ReceiveWarehouseItem[]) => Promise<void>;
     getProductByQRCode: (qrCode: string) => Promise<Product | null>;
     createProduct: (payload: CreateProductPayload) => Promise<void>;
+    getBrandCategoryPoints: (categoryId: string, brandId: string) => Promise<number>;
     filter: ProductFilter;
     setFilter: (filter: Partial<ProductFilter>) => void;
     totalPages: number;
@@ -128,9 +130,12 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
                             pStatus === 'collected'
                         );
                     }
-                    if (statusLower.includes('hủy')) {
+                    if (statusLower.includes('hủy') || statusLower.includes('thất bại')) {
                         return (
-                            pStatus.includes('hủy') || pStatus === 'cancelled'
+                            pStatus.includes('hủy') ||
+                            pStatus.includes('thất bại') ||
+                            pStatus === 'cancelled' ||
+                            pStatus === 'canceled'
                         );
                     }
                     if (statusLower.includes('nhập')) {
@@ -184,7 +189,9 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
                 cancelled: dateAndSearchFiltered.filter(
                     (p) =>
                         p.status?.toLowerCase().includes('hủy') ||
-                        p.status === 'cancelled'
+                        p.status?.toLowerCase().includes('thất bại') ||
+                        p.status === 'cancelled' ||
+                        p.status === 'canceled'
                 ).length,
                 received: dateAndSearchFiltered.filter(
                     (p) =>
@@ -291,6 +298,13 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
         }
     }, []);
 
+    const getBrandCategoryPointsHandler = useCallback(
+        async (categoryId: string, brandId: string) => {
+            return await getBrandCategoryPoints(categoryId, brandId);
+        },
+        []
+    );
+
     // Fetch data từ API chỉ khi fromDate/toDate thay đổi
     useEffect(() => {
         if (filter.fromDate && filter.toDate) {
@@ -342,6 +356,7 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
         receiveProduct,
         getProductByQRCode: getProductByQRCodeHandler,
         createProduct,
+        getBrandCategoryPoints: getBrandCategoryPointsHandler,
         filter,
         setFilter,
         totalPages,

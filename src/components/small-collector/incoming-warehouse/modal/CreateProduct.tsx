@@ -18,6 +18,7 @@ import SearchableSelect from '@/components/ui/SearchableSelect';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
 import type { CreateProductPayload } from '@/types/Product';
 import UserInfo from '@/components/ui/UserInfo';
+import { useIWProductContext } from '@/contexts/small-collector/IWProductContext';
 
 interface CreateProductProps {
     open: boolean;
@@ -43,9 +44,13 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     const [qrCode, setQrCode] = useState('');
     const [qrError, setQrError] = useState('');
     const [point, setPoint] = useState(0);
+    const [maxPoint, setMaxPoint] = useState<number | null>(null);
+    const [pointLoading, setPointLoading] = useState(false);
     const [searchClicked, setSearchClicked] = useState(false);
     const [loadingUser, setLoadingUser] = useState(false);
     const [showCamera, setShowCamera] = useState(false);
+
+    const { getBrandCategoryPoints } = useIWProductContext();
 
     const userInfoInputRef = useRef<HTMLInputElement>(null);
     const qrInputRef = useRef<HTMLInputElement>(null);
@@ -221,6 +226,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         setBrandId('');
         setQrCode('');
         setPoint(0);
+        setMaxPoint(null);
+        setPointLoading(false);
         setSearchClicked(false);
         onClose();
     };
@@ -255,6 +262,46 @@ const CreateProduct: React.FC<CreateProductProps> = ({
             isMounted = false;
         };
     }, [subCategoryId]);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const fetchPoint = async () => {
+            if (!open) return;
+            if (!subCategoryId || !brandId) {
+                setMaxPoint(null);
+                return;
+            }
+
+            setPointLoading(true);
+            try {
+                const p = await getBrandCategoryPoints(subCategoryId, brandId);
+                if (cancelled) return;
+                const safePoint = Number.isFinite(p) ? Math.max(0, p) : 0;
+                setMaxPoint(safePoint);
+                setPoint(safePoint);
+            } catch (err) {
+                if (cancelled) return;
+                console.error('getBrandCategoryPoints error', err);
+                setMaxPoint(null);
+            } finally {
+                if (!cancelled) setPointLoading(false);
+            }
+        };
+
+        void fetchPoint();
+        return () => {
+            cancelled = true;
+        };
+    }, [open, subCategoryId, brandId, getBrandCategoryPoints]);
+
+    const handlePointChange = (value: number) => {
+        if (maxPoint === null || maxPoint === undefined) {
+            setPoint(value);
+            return;
+        }
+        setPoint(Math.min(value, maxPoint));
+    };
 
     // Add a state to track form validity
     const [isFormValid, setIsFormValid] = useState(false);
@@ -451,7 +498,12 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     <SearchableSelect
                                         options={subCategories}
                                         value={subCategoryId}
-                                        onChange={setSubCategoryId}
+                                        onChange={(val) => {
+                                            setSubCategoryId(val);
+                                            setBrandId('');
+                                            setPoint(0);
+                                            setMaxPoint(null);
+                                        }}
                                         getLabel={(cat) => cat.name}
                                         getValue={(cat) => cat.id}
                                         placeholder='Chọn danh mục con...'
@@ -478,7 +530,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     <SearchableSelect
                                         options={brands}
                                         value={brandId}
-                                        onChange={setBrandId}
+                                        onChange={(val) => {
+                                            setBrandId(val);
+                                        }}
                                         getLabel={(brand) => brand.name}
                                         getValue={(brand) => brand.brandId}
                                         placeholder={
@@ -504,11 +558,16 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     </label>
                                     <CustomNumberInput
                                     value={point}
-                                    onChange={setPoint}
+                                    onChange={handlePointChange}
                                     placeholder='Nhập điểm...'
                                     min={0}
+                                    max={maxPoint ?? undefined}
+                                    step={1}
                                     className='flex-1 px-4 py-2 border border-primary-300 rounded-lg text-gray-900 placeholder-gray-400 placeholder-font-medium font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent'
                                     />
+                                    {pointLoading && (
+                                        <span className='text-xs text-gray-500 whitespace-nowrap'>Đang lấy điểm…</span>
+                                    )}
                                 </div>
                             </div>
                         </div>

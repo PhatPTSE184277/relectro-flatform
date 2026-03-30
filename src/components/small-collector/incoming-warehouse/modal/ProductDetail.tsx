@@ -51,7 +51,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
         if (s === 'hoàn thành' || s === 'đã hoàn thành' || s === 'completed') return 'Hoàn thành';
         if (s === 'đang tiến hành' || s === 'đang thu gom' || s === 'collecting' || s === 'in progress') return 'Đang tiến hành';
         if (s === 'chưa bắt đầu' || s === 'not started') return 'Chưa bắt đầu';
-        if (s === 'hủy bỏ' || s === 'cancelled' || s === 'canceled') return 'Hủy bỏ';
+        if (s === 'hủy bỏ' || s === 'thất bại' || s === 'cancelled' || s === 'canceled') return 'Thất bại';
         return status;
     }
 
