@@ -99,8 +99,26 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
     setError(null);
     try {
       const updated = await updateAutoAssignSettings(payload);
-      setAutoAssignSettings(updated);
-      return updated;
+
+      const looksLikeSettings = (value: any): value is AutoAssignSettings => {
+        return (
+          value &&
+          typeof value === 'object' &&
+          'isEnabled' in value &&
+          'immediateThreshold' in value &&
+          'scheduleTime' in value &&
+          'scheduleMinQty' in value
+        );
+      };
+
+      if (looksLikeSettings(updated)) {
+        setAutoAssignSettings(updated);
+        return updated;
+      }
+
+      const fresh = await getAutoAssignSettings();
+      setAutoAssignSettings(fresh);
+      return fresh;
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Lỗi khi cập nhật cấu hình tự động phân xe');
       return null;
