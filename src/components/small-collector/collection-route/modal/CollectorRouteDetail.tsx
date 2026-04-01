@@ -29,17 +29,14 @@ const CollectorRouteDetail: React.FC<CollectorRouteDetailProps> = ({
 
     function normalizeStatus(status: string = '') {
         const s = status.trim().toLowerCase();
-        if (s === 'hoàn thành' || s === 'đã hoàn thành' || s === 'completed')
+        if (s === 'hoàn thành')
             return 'Hoàn thành';
         if (
-            s === 'đang tiến hành' ||
-            s === 'đang thu gom' ||
-            s === 'collecting' ||
-            s === 'in progress'
+            s === 'đang tiến hành'
         )
             return 'Đang tiến hành';
-        if (s === 'chưa bắt đầu' || s === 'not started') return 'Chưa bắt đầu';
-        if (s === 'hủy bỏ' || s === 'thất bại' || s === 'cancelled' || s === 'canceled')
+        if (s === 'chưa bắt đầu') return 'Chưa bắt đầu';
+        if (s === 'thất bại')
             return 'Thất bại';
         return status;
     }

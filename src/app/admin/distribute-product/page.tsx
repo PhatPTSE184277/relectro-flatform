@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { getTodayString } from '@/utils/getDayString';
 import { useDistributeProductContext } from '@/contexts/admin/DistributeProductContext';
 import { useNotificationHub } from '@/hooks/useNotificationHub';
@@ -19,7 +18,6 @@ import SmallPointList from '@/components/admin/distribute-product/SmallPointList
 
 
 const DistributeProductPage: React.FC = () => {
-    const router = useRouter();
     const {
         undistributedProducts,
         allUndistributedProductIds,
@@ -349,8 +347,6 @@ const DistributeProductPage: React.FC = () => {
                 targetCompanyIds: finalCompanyIds.length > 0 ? finalCompanyIds : undefined
             });
             await fetchCompanies(dateToProcess);
-            // Navigate to admin dashboard after successful distribution
-            router.push('/admin/dashboard');
         } catch (error) {
             console.error('❌ Distribution error:', error);
             setProcessing(false);

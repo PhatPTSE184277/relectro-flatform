@@ -46,17 +46,10 @@ type Props = { children: ReactNode };
 // Chuẩn hóa status từ API
 function normalizeStatus(status: string = ""): string {
     const s = status.trim().toLowerCase();
-    if (s === "đang tiến hành" || s === "collecting" || s === "đang thu gom" || s === "in progress") return "Đang tiến hành";
-    if (s === "chưa bắt đầu" || s === "not started") return "Chưa bắt đầu";
-    if (s === "đã hoàn thành" || s === "completed" || s === "hoàn thành") return "Hoàn thành";
-    if (s === "hủy bỏ" || s === "thất bại" || s === "cancelled" || s === "canceled") return "Thất bại";
-    return status;
-}
-
-function mapUiStatusToApiStatus(status?: string): string | undefined {
-    if (!status) return undefined;
-    // UI label changed to "Thất bại" but API still expects "Hủy bỏ"
-    if (status === 'Thất bại') return 'Hủy bỏ';
+    if (s === "đang tiến hành") return "Đang tiến hành";
+    if (s === "chưa bắt đầu") return "Chưa bắt đầu";
+    if (s === "hoàn thành") return "Hoàn thành";
+    if (s === "thất bại") return "Thất bại";
     return status;
 }
 
@@ -95,7 +88,7 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
                 limit: 10,
                 collectionPointId: user.smallCollectionPointId,
                 pickUpDate: dateToUse,
-                status: mapUiStatusToApiStatus(filterStatus)
+                status: filterStatus
             });
 
             // Chuẩn hóa status
@@ -114,7 +107,7 @@ export const CollectionRouteProvider: React.FC<Props> = ({ children }) => {
                         getCollectionRoutesByDate({ page: 1, limit: 1, collectionPointId: user.smallCollectionPointId, pickUpDate: dateToUse, status: 'Chưa bắt đầu' }),
                         getCollectionRoutesByDate({ page: 1, limit: 1, collectionPointId: user.smallCollectionPointId, pickUpDate: dateToUse, status: 'Đang tiến hành' }),
                         getCollectionRoutesByDate({ page: 1, limit: 1, collectionPointId: user.smallCollectionPointId, pickUpDate: dateToUse, status: 'Hoàn thành' }),
-                        getCollectionRoutesByDate({ page: 1, limit: 1, collectionPointId: user.smallCollectionPointId, pickUpDate: dateToUse, status: 'Hủy bỏ' })
+                        getCollectionRoutesByDate({ page: 1, limit: 1, collectionPointId: user.smallCollectionPointId, pickUpDate: dateToUse, status: 'Thất bại' })
                     ]);
 
                     setAllStats({

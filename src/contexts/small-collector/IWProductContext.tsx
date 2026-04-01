@@ -120,28 +120,22 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
             if (currentFilter.status) {
                 const statusLower = currentFilter.status.toLowerCase();
                 filtered = filtered.filter((p) => {
-                    const pStatus = p.status?.toLowerCase() || '';
+                    const pStatus = (p.status || '').toLowerCase();
                     if (statusLower.includes('chờ')) {
-                        return pStatus.includes('chờ') || pStatus === 'pending';
+                        return pStatus.includes('chờ') || pStatus.includes('pending');
                     }
                     if (statusLower.includes('đã thu')) {
-                        return (
-                            pStatus.includes('đã thu') ||
-                            pStatus === 'collected'
-                        );
+                        return pStatus.includes('đã thu') || pStatus.includes('collect') || pStatus.includes('collected');
                     }
                     if (statusLower.includes('hủy') || statusLower.includes('thất bại')) {
                         return (
                             pStatus.includes('hủy') ||
                             pStatus.includes('thất bại') ||
-                            pStatus === 'cancelled' ||
-                            pStatus === 'canceled'
+                            pStatus.includes('cancel')
                         );
                     }
                     if (statusLower.includes('nhập')) {
-                        return (
-                            pStatus.includes('nhập') || pStatus === 'received'
-                        );
+                        return pStatus.includes('nhập') || pStatus.includes('received');
                     }
                     return false;
                 });
@@ -174,29 +168,29 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
                 return true;
             });
 
-            const stats = {
+                const stats = {
                 total: dateAndSearchFiltered.length,
                 pending: dateAndSearchFiltered.filter(
                     (p) =>
-                        p.status?.toLowerCase().includes('chờ') ||
-                        p.status === 'pending'
+                        (p.status || '').toLowerCase().includes('chờ') ||
+                        (p.status || '').toLowerCase().includes('pending')
                 ).length,
                 collected: dateAndSearchFiltered.filter(
                     (p) =>
-                        p.status?.toLowerCase().includes('đã thu') ||
-                        p.status === 'collected'
+                        (p.status || '').toLowerCase().includes('đã thu') ||
+                        (p.status || '').toLowerCase().includes('collect') ||
+                        (p.status || '').toLowerCase().includes('collected')
                 ).length,
                 cancelled: dateAndSearchFiltered.filter(
                     (p) =>
-                        p.status?.toLowerCase().includes('hủy') ||
-                        p.status?.toLowerCase().includes('thất bại') ||
-                        p.status === 'cancelled' ||
-                        p.status === 'canceled'
+                        (p.status || '').toLowerCase().includes('hủy') ||
+                        (p.status || '').toLowerCase().includes('thất bại') ||
+                        (p.status || '').toLowerCase().includes('cancel')
                 ).length,
                 received: dateAndSearchFiltered.filter(
                     (p) =>
-                        p.status?.toLowerCase().includes('nhập') ||
-                        p.status === 'received'
+                        (p.status || '').toLowerCase().includes('nhập') ||
+                        (p.status || '').toLowerCase().includes('received')
                 ).length
             };
 

@@ -48,10 +48,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
 
     function normalizeStatus(status: string = '') {
         const s = (status || '').trim().toLowerCase();
-        if (s === 'hoàn thành' || s === 'đã hoàn thành' || s === 'completed') return 'Hoàn thành';
-        if (s === 'đang tiến hành' || s === 'đang thu gom' || s === 'collecting' || s === 'in progress') return 'Đang tiến hành';
-        if (s === 'chưa bắt đầu' || s === 'not started') return 'Chưa bắt đầu';
-        if (s === 'hủy bỏ' || s === 'thất bại' || s === 'cancelled' || s === 'canceled') return 'Thất bại';
+        if (s === 'hoàn thành') return 'Hoàn thành';
+        if (s === 'đang tiến hành') return 'Đang tiến hành';
+        if (s === 'chưa bắt đầu') return 'Chưa bắt đầu';
+        if (s === 'thất bại') return 'Thất bại';
         return status;
     }
 
