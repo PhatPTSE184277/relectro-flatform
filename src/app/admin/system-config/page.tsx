@@ -1,14 +1,18 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useSystemConfigContext } from '@/contexts/admin/SystemConfigContext';
 import { Edit, Settings } from 'lucide-react';
 import SearchBox from '@/components/ui/SearchBox';
+import SearchableSelect from '@/components/ui/SearchableSelect';
 import SystemConfigList from '@/components/admin/system-config/SystemConfigList';
 import EditSystemConfigModal from '@/components/admin/system-config/modal/EditSystemConfigModal';
 import SystemConfigFilter from '@/components/admin/system-config/SystemConfigFilter';
-import { SystemConfig, AutoAssignSettings } from '@/services/admin/SystemConfigService';
+import { SystemConfig, AutoAssignSettings, WarehouseLoadThresholdConfig } from '@/services/admin/SystemConfigService';
 import AutoAssignSettingsModal from '@/components/admin/system-config/modal/AutoAssignSettingsModal';
+import LoadThresholdList from '@/components/admin/system-config/load-threshold/LoadThresholdList';
+import EditLoadThresholdModal from '@/components/admin/system-config/load-threshold/modal/EditLoadThresholdModal';
+import { filterCollectionCompanies, filterSmallCollectionPoints } from '@/services/admin/TrackingService';
 
 const SystemConfigPage: React.FC = () => {
     const {
@@ -20,6 +24,7 @@ const SystemConfigPage: React.FC = () => {
         autoAssignLoading,
         fetchAutoAssignSettings,
         saveAutoAssignSettings,
+        saveWarehouseLoadThreshold,
         error
     } = useSystemConfigContext();
 
@@ -28,6 +33,17 @@ const SystemConfigPage: React.FC = () => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [groupName, setGroupName] = useState<string>('');
     const [showAutoAssignModal, setShowAutoAssignModal] = useState(false);
+    const [selectedLoadThresholdConfig, setSelectedLoadThresholdConfig] = useState<WarehouseLoadThresholdConfig | null>(null);
+    const [showLoadThresholdModal, setShowLoadThresholdModal] = useState(false);
+
+    const [selectedScpName, setSelectedScpName] = useState<string>('');
+    const [selectedCompanyName, setSelectedCompanyName] = useState<string>('');
+    const [selectedLoadCompanyId, setSelectedLoadCompanyId] = useState<string>('');
+    const [selectedLoadWarehouseId, setSelectedLoadWarehouseId] = useState<string>('');
+    const [loadCompanies, setLoadCompanies] = useState<any[]>([]);
+    const [loadWarehouses, setLoadWarehouses] = useState<any[]>([]);
+    const [loadingLoadCompanies, setLoadingLoadCompanies] = useState(false);
+    const [loadingLoadWarehouses, setLoadingLoadWarehouses] = useState(false);
 
     const [autoAssignDraft, setAutoAssignDraft] = useState<AutoAssignSettings>({
         isEnabled: false,
@@ -41,8 +57,28 @@ const SystemConfigPage: React.FC = () => {
         { value: 'AUTO_ASSIGN_SETTINGS', label: 'Tự động phân xe' },
         { value: 'Excel', label: 'Mẫu Excel' },
         { value: 'PointConfig', label: 'Cấu hình điểm' },
-        { value: 'CompanyConfig', label: 'Cấu hình công ty' }
+        { value: 'CompanyConfig', label: 'Cấu hình công ty' },
+        { value: 'LoadThreshold', label: 'Ngưỡng tải kho' }
     ];
+
+    const getCompanyId = useCallback((company: any): string => {
+        return String(company?.id || company?.companyId || company?.collectionCompanyId || '');
+    }, []);
+
+    const getWarehouseId = useCallback((warehouse: any): string => {
+        return String(
+            warehouse?.smallCollectionPointId ||
+            warehouse?.smallCollectionPointsId ||
+            warehouse?.pointId ||
+            warehouse?.smallPointId ||
+            warehouse?.id ||
+            ''
+        );
+    }, []);
+
+    const getWarehouseName = useCallback((warehouse: any): string => {
+        return String(warehouse?.name || warehouse?.pointName || warehouse?.smallCollectionPointName || 'N/A');
+    }, []);
 
     // Load auto-assign settings when the tab is selected.
     useEffect(() => {
@@ -64,17 +100,156 @@ const SystemConfigPage: React.FC = () => {
         void fetchConfigs();
     }, [fetchConfigs]);
 
-    // Filter hiển thị: lọc theo groupName và search
+    useEffect(() => {
+        const fetchLoadCompanies = async () => {
+            setLoadingLoadCompanies(true);
+            try {
+                const data = await filterCollectionCompanies({ page: 1, limit: 100, status: 'Đang hoạt động' });
+                const list = Array.isArray(data) ? data : (data?.data || []);
+                setLoadCompanies(Array.isArray(list) ? list : []);
+            } catch {
+                setLoadCompanies([]);
+            } finally {
+                setLoadingLoadCompanies(false);
+            }
+        };
+
+        void fetchLoadCompanies();
+    }, []);
+
+    useEffect(() => {
+        if (groupName !== 'LoadThreshold') return;
+        if (selectedLoadCompanyId) return;
+        if (!loadCompanies.length) return;
+
+        const firstCompanyId = getCompanyId(loadCompanies[0]);
+        if (firstCompanyId) setSelectedLoadCompanyId(firstCompanyId);
+    }, [groupName, selectedLoadCompanyId, loadCompanies, getCompanyId]);
+
+    useEffect(() => {
+        const fetchLoadWarehouses = async () => {
+            if (!selectedLoadCompanyId) {
+                setLoadWarehouses([]);
+                setSelectedLoadWarehouseId('');
+                return;
+            }
+
+            setLoadingLoadWarehouses(true);
+            try {
+                const data = await filterSmallCollectionPoints({ page: 1, limit: 200, companyId: selectedLoadCompanyId });
+                const list = Array.isArray(data) ? data : (data?.data || []);
+                const normalized = Array.isArray(list) ? list : [];
+                setLoadWarehouses(normalized);
+
+                const hasValid = normalized.some((w: any) => getWarehouseId(w) === selectedLoadWarehouseId);
+                if (!hasValid) {
+                    const firstWarehouseId = getWarehouseId(normalized[0]);
+                    setSelectedLoadWarehouseId(firstWarehouseId || '');
+                }
+            } catch {
+                setLoadWarehouses([]);
+                setSelectedLoadWarehouseId('');
+            } finally {
+                setLoadingLoadWarehouses(false);
+            }
+        };
+
+        if (groupName === 'LoadThreshold') {
+            void fetchLoadWarehouses();
+        }
+    }, [groupName, selectedLoadCompanyId, selectedLoadWarehouseId, getWarehouseId]);
+
+    // Reset extra filters when switching group and auto-select first option for point/company groups.
+    useEffect(() => {
+        setSelectedScpName('');
+        setSelectedCompanyName('');
+    }, [groupName]);
+
+    const scpOptions = useMemo(() => {
+        const names = Array.from(
+            new Set(
+                configs
+                    .filter((c) => c.groupName === 'PointConfig' || c.groupName === 'LoadThreshold')
+                    .map((c) => String(c.scpName || ''))
+                    .filter((n) => n && n !== 'N/A')
+            )
+        ).sort((a, b) => a.localeCompare(b));
+
+        return names.map((n) => ({ value: n, label: n }));
+    }, [configs]);
+
+    const companyOptions = useMemo(() => {
+        const names = Array.from(
+            new Set(
+                configs
+                    .filter((c) => c.groupName === 'CompanyConfig' || c.groupName === 'LoadThreshold')
+                    .map((c) => String(c.companyName || ''))
+                    .filter((n) => n && n !== 'N/A')
+            )
+        ).sort((a, b) => a.localeCompare(b));
+
+        return names.map((n) => ({ value: n, label: n }));
+    }, [configs]);
+
+    // Auto-select first option when entering point/company groups (if available)
+    useEffect(() => {
+        if (groupName === 'PointConfig' && scpOptions.length > 0) {
+            setSelectedScpName(scpOptions[0].value);
+        }
+
+        if (groupName === 'LoadThreshold' && scpOptions.length > 0) {
+            setSelectedScpName(scpOptions[0].value);
+        }
+
+        if (groupName === 'CompanyConfig' && companyOptions.length > 0) {
+            setSelectedCompanyName(companyOptions[0].value);
+        }
+
+        if (groupName === 'LoadThreshold' && companyOptions.length > 0) {
+            setSelectedCompanyName(companyOptions[0].value);
+        }
+    }, [groupName, scpOptions, companyOptions]);
+
+    // Filter hiển thị: lọc theo groupName + filter kho/công ty + search
     const filteredConfigs = useMemo(() => {
         let arr = configs;
         if (groupName) arr = arr.filter(cfg => cfg.groupName === groupName);
+
+        if (groupName === 'PointConfig' && selectedScpName) {
+            arr = arr.filter((cfg) => String(cfg.scpName || '') === selectedScpName);
+        }
+
+        if (groupName === 'CompanyConfig' && selectedCompanyName) {
+            arr = arr.filter((cfg) => String(cfg.companyName || '') === selectedCompanyName);
+        }
+
+        if (groupName === 'LoadThreshold') {
+            const selectedCompany = loadCompanies.find((c: any) => getCompanyId(c) === selectedLoadCompanyId);
+            const selectedWarehouse = loadWarehouses.find((w: any) => getWarehouseId(w) === selectedLoadWarehouseId);
+
+            const selectedCompanyLabel = String(selectedCompany?.name || selectedCompany?.companyName || '').trim();
+            const selectedWarehouseLabel = String(getWarehouseName(selectedWarehouse)).trim();
+
+            if (selectedCompanyLabel) {
+                arr = arr.filter((cfg) => String(cfg.companyName || '').trim() === selectedCompanyLabel);
+            }
+
+            if (selectedWarehouseLabel) {
+                arr = arr.filter((cfg) => String(cfg.scpName || '').trim() === selectedWarehouseLabel);
+            }
+        }
+
+        if (groupName === 'LoadThreshold') {
+            return arr;
+        }
+
         const searchLower = search.toLowerCase();
         return arr.filter((config) =>
             config.key?.toLowerCase().includes(searchLower) ||
             config.displayName?.toLowerCase().includes(searchLower) ||
             config.groupName?.toLowerCase().includes(searchLower)
         );
-    }, [configs, groupName, search]);
+    }, [configs, groupName, search, selectedScpName, selectedCompanyName, loadCompanies, loadWarehouses, selectedLoadCompanyId, selectedLoadWarehouseId, getCompanyId, getWarehouseId, getWarehouseName]);
 
     const handleEditConfig = (config: SystemConfig) => {
         setSelectedConfig(config);
@@ -89,6 +264,26 @@ const SystemConfigPage: React.FC = () => {
 
     const handleSaveAutoAssign = async (payload: AutoAssignSettings) => {
         await saveAutoAssignSettings(payload);
+    };
+
+    const handleEditLoadThreshold = (config: WarehouseLoadThresholdConfig) => {
+        const normalize = (value: any) => String(value || '').trim().toLowerCase();
+        const matchedWarehouse = loadWarehouses.find((w: any) => normalize(getWarehouseName(w)) === normalize(config.scpName));
+        const resolvedScpId = getWarehouseId(matchedWarehouse) || selectedLoadWarehouseId;
+
+        setSelectedLoadThresholdConfig({
+            ...config,
+            smallCollectionPointId: resolvedScpId || config.smallCollectionPointId || config.scpId
+        });
+        setShowLoadThresholdModal(true);
+    };
+
+    const handleUpdateLoadThreshold = async (smallCollectionPointId: string, threshold: number) => {
+        const ok = await saveWarehouseLoadThreshold(smallCollectionPointId, threshold);
+        if (ok) {
+            setShowLoadThresholdModal(false);
+            setSelectedLoadThresholdConfig(null);
+        }
     };
 
     const openAutoAssignModal = () => {
@@ -114,12 +309,71 @@ const SystemConfigPage: React.FC = () => {
                         Cấu hình hệ thống
                     </h1>
                 </div>
-                <div className='flex-1 max-w-md'>
-                    <SearchBox
-                        value={search}
-                        onChange={setSearch}
-                        placeholder='Tìm kiếm cấu hình...'
-                    />
+                <div className='flex-1 flex items-center justify-end gap-3'>
+                    {/* Standalone select box for PointConfig / CompanyConfig (no outer white card) */}
+                    {groupName === 'PointConfig' && scpOptions.length > 0 && (
+                        <div className='w-80'>
+                            <SearchableSelect
+                                options={scpOptions}
+                                value={selectedScpName}
+                                onChange={setSelectedScpName}
+                                getLabel={(o: any) => o.label}
+                                getValue={(o: any) => o.value}
+                                placeholder='Chọn kho...'
+                            />
+                        </div>
+                    )}
+
+                    {groupName === 'CompanyConfig' && companyOptions.length > 0 && (
+                        <div className='w-80'>
+                            <SearchableSelect
+                                options={companyOptions}
+                                value={selectedCompanyName}
+                                onChange={setSelectedCompanyName}
+                                getLabel={(o: any) => o.label}
+                                getValue={(o: any) => o.value}
+                                placeholder='Chọn công ty...'
+                            />
+                        </div>
+                    )}
+
+                    {groupName === 'LoadThreshold' ? (
+                        <>
+                            <div className='w-80'>
+                                <SearchableSelect
+                                    options={loadCompanies}
+                                    value={selectedLoadCompanyId}
+                                    onChange={(id) => {
+                                        setSelectedLoadCompanyId(String(id));
+                                        setSelectedLoadWarehouseId('');
+                                    }}
+                                    getLabel={(c: any) => c.name || c.companyName || 'N/A'}
+                                    getValue={getCompanyId}
+                                    placeholder={loadingLoadCompanies ? 'Đang tải công ty...' : 'Chọn công ty...'}
+                                    disabled={loadingLoadCompanies}
+                                />
+                            </div>
+                            <div className='w-80'>
+                                <SearchableSelect
+                                    options={loadWarehouses}
+                                    value={selectedLoadWarehouseId}
+                                    onChange={(id) => setSelectedLoadWarehouseId(String(id))}
+                                    getLabel={getWarehouseName}
+                                    getValue={getWarehouseId}
+                                    placeholder={loadingLoadWarehouses ? 'Đang tải kho...' : 'Chọn kho...'}
+                                    disabled={!selectedLoadCompanyId || loadingLoadWarehouses}
+                                />
+                            </div>
+                        </>
+                    ) : (
+                        <div className='max-w-md flex-1'>
+                            <SearchBox
+                                value={search}
+                                onChange={setSearch}
+                                placeholder='Tìm kiếm cấu hình...'
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -128,6 +382,12 @@ const SystemConfigPage: React.FC = () => {
                 groupNames={groupNames}
                 groupName={groupName}
                 onFilterChange={setGroupName}
+                scpOptions={scpOptions}
+                selectedScpName={selectedScpName}
+                onScpChange={setSelectedScpName}
+                companyOptions={companyOptions}
+                selectedCompanyName={selectedCompanyName}
+                onCompanyChange={setSelectedCompanyName}
             />
 
             {groupName === 'AUTO_ASSIGN_SETTINGS' ? (
@@ -224,6 +484,26 @@ const SystemConfigPage: React.FC = () => {
                         loading={autoAssignLoading}
                     />
                 </div>
+            ) : groupName === 'LoadThreshold' ? (
+                <>
+                    <LoadThresholdList
+                        configs={filteredConfigs as WarehouseLoadThresholdConfig[]}
+                        loading={loading}
+                        onEdit={handleEditLoadThreshold}
+                    />
+
+                    <EditLoadThresholdModal
+                        key={selectedLoadThresholdConfig?.systemConfigId || 'load-threshold-modal'}
+                        open={showLoadThresholdModal}
+                        config={selectedLoadThresholdConfig}
+                        loading={loading}
+                        onClose={() => {
+                            setShowLoadThresholdModal(false);
+                            setSelectedLoadThresholdConfig(null);
+                        }}
+                        onConfirm={handleUpdateLoadThreshold}
+                    />
+                </>
             ) : (
                 <>
                     {/* Config List */}

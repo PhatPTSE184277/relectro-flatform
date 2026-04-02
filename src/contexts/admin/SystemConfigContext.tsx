@@ -15,7 +15,9 @@ import {
   SystemConfig,
   getAutoAssignSettings,
   updateAutoAssignSettings,
-  AutoAssignSettings
+  AutoAssignSettings,
+  updateWarehouseLoadThreshold,
+  WarehouseLoadThresholdConfig
 } from '@/services/admin/SystemConfigService';
 
 interface SystemConfigContextType {
@@ -29,6 +31,8 @@ interface SystemConfigContextType {
   autoAssignLoading: boolean;
   fetchAutoAssignSettings: () => Promise<AutoAssignSettings | null>;
   saveAutoAssignSettings: (payload: AutoAssignSettings) => Promise<AutoAssignSettings | null>;
+  saveWarehouseLoadThreshold: (smallCollectionPointId: string, threshold: number) => Promise<boolean>;
+  getLoadThresholdConfigs: () => WarehouseLoadThresholdConfig[];
   clearConfigs: () => void;
 }
 
@@ -132,6 +136,25 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
     setError(null);
   }, []);
 
+  const saveWarehouseLoadThreshold = useCallback(async (smallCollectionPointId: string, threshold: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await updateWarehouseLoadThreshold({ smallCollectionPointId, threshold });
+      await fetchConfigs();
+      return true;
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Lỗi khi cập nhật ngưỡng tải kho');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchConfigs]);
+
+  const getLoadThresholdConfigs = useCallback(() => {
+    return configs.filter((cfg) => cfg.groupName === 'LoadThreshold') as WarehouseLoadThresholdConfig[];
+  }, [configs]);
+
   useEffect(() => {
     void fetchConfigs();
   }, [fetchConfigs]);
@@ -147,6 +170,8 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
     autoAssignLoading,
     fetchAutoAssignSettings,
     saveAutoAssignSettings,
+    saveWarehouseLoadThreshold,
+    getLoadThresholdConfigs,
     clearConfigs
   };
 

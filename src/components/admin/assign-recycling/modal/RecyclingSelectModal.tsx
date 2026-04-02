@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { X, Phone } from 'lucide-react';
+import { X } from 'lucide-react';
+import { formatNumber } from '@/utils/formatNumber';
 import SearchBox from '@/components/ui/SearchBox';
 
 interface RecyclingSelectModalProps {
@@ -97,14 +98,16 @@ const RecyclingSelectModal: React.FC<RecyclingSelectModalProps> = ({
                                 <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-200'>
                                     <tr>
                                         <th className='py-3 px-4 text-left w-14'></th>
+                                        <th className='py-3 px-4 text-center w-16'>STT</th>
                                         <th className='py-3 px-4 text-left'>Công ty tái chế</th>
                                         <th className='py-3 px-4 text-left w-52'>Số điện thoại</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                            {filteredCompanies.map((company) => {
+                            {filteredCompanies.map((company, idx) => {
                                 const companyId = String(company.companyId || company.id || '');
                                 const isSelected = companyId === effectiveSelectedCompanyId;
+                                const stt = idx + 1;
 
                                 return (
                                     <tr
@@ -122,6 +125,11 @@ const RecyclingSelectModal: React.FC<RecyclingSelectModalProps> = ({
                                                 onClick={(e) => e.stopPropagation()}
                                             />
                                         </td>
+                                        <td className='py-3 px-4 text-center'>
+                                            <span className='inline-flex min-w-7 h-7 rounded-full bg-primary-600 text-white text-sm items-center justify-center font-semibold mx-auto px-2'>
+                                                {formatNumber(stt)}
+                                            </span>
+                                        </td>
                                         <td className='py-3 px-4'>
                                             <div className='flex items-center gap-3'>
                                                 <span className='font-medium text-gray-900'>
@@ -130,10 +138,7 @@ const RecyclingSelectModal: React.FC<RecyclingSelectModalProps> = ({
                                             </div>
                                         </td>
                                         <td className='py-3 px-4 text-gray-600'>
-                                            <span className='inline-flex items-center gap-1'>
-                                                <Phone size={14} />
-                                                {company.phone || '-'}
-                                            </span>
+                                            {company.phone || '-'}
                                         </td>
                                     </tr>
                                 );

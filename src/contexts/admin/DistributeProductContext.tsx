@@ -14,7 +14,8 @@ import {
     getCompanyMetricsByDate,
     getSCPProductsStatus,
     getCollectionCompanies,
-    getCapacityPoints
+    getCapacityPoints,
+    getCapacityPointsByDate
 } from '@/services/admin/DistributeProductService';
 import { AssignedProduct, AssignProductsRequest } from '@/types/AssignProduct';
 
@@ -37,7 +38,7 @@ interface DistributeProductContextType {
     fetchUndistributedProducts: (workDate: string, page?: number, limit?: number) => Promise<void>;
     updatePagination: (newPage: number) => void;
     fetchCompanies: (workDate: string) => Promise<void>;
-    fetchCollectionCompanies: (page?: number, limit?: number) => Promise<void>;
+    fetchCollectionCompanies: (workDate: string) => Promise<void>;
     clearUndistributedProducts: () => void;
     fetchSCPProducts: (smallPointId: string, workDate: string, page?: number, limit?: number) => Promise<void>;
     distributeProductsToDate: (data: AssignProductsRequest) => Promise<any>;
@@ -166,11 +167,63 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
         setCompanyLoading(true);
         try {
             const data = await getCompanyMetricsByDate(workDate);
-            if (Array.isArray(data)) {
-                setCompanies(data);
-            } else {
+
+            const baseCompanies = Array.isArray(data) ? data : [];
+            if (baseCompanies.length === 0) {
                 setCompanies([]);
+                return;
             }
+
+            const capacityEntries = await Promise.all(
+                baseCompanies.map(async (company: any) => {
+                    const companyId = String(company?.companyId ?? company?.id ?? '');
+                    if (!companyId) return [companyId, null] as const;
+                    try {
+                        const cap = await getCapacityPointsByDate(companyId, workDate);
+                        return [companyId, cap] as const;
+                    } catch {
+                        return [companyId, null] as const;
+                    }
+                })
+            );
+
+            const capacityMap = new Map<string, any>(capacityEntries);
+
+            const merged = baseCompanies.map((company: any) => {
+                const companyId = String(company?.companyId ?? company?.id ?? '');
+                const cap = capacityMap.get(companyId);
+                const warehouses = Array.isArray(cap?.warehouses) ? cap.warehouses : [];
+
+                const warehouseById = new Map<string, any>(warehouses.map((w: any) => [String(w?.id ?? ''), w]));
+                const warehouseByName = new Map<string, any>(
+                    warehouses.map((w: any) => [String(w?.name ?? '').trim().toLowerCase(), w])
+                );
+
+                const smallCollectionPoints = Array.isArray(company?.smallCollectionPoints)
+                    ? company.smallCollectionPoints.map((scp: any) => {
+                          const pointId = String(scp?.pointId ?? scp?.id ?? '');
+                          const pointNameKey = String(scp?.pointName ?? scp?.name ?? '').trim().toLowerCase();
+                          const matchedWarehouse = warehouseById.get(pointId) || warehouseByName.get(pointNameKey);
+
+                          return {
+                              ...scp,
+                              plannedCapacity: Number(matchedWarehouse?.plannedCapacity ?? 0),
+                              addedVolumeThisDate: Number(matchedWarehouse?.addedVolumeThisDate ?? 0)
+                          };
+                      })
+                    : [];
+
+                return {
+                    ...company,
+                    companyTotalAddedToday: Number(cap?.companyTotalAddedToday ?? 0),
+                    companyCurrentCapacity: Number(cap?.companyCurrentCapacity ?? company?.companyCurrentCapacity ?? 0),
+                    companyAvailableCapacity: Number(cap?.companyAvailableCapacity ?? company?.companyAvailableCapacity ?? 0),
+                    warehouses,
+                    smallCollectionPoints
+                };
+            });
+
+            setCompanies(merged);
         } catch (err) {
             console.log(err);
             setCompanies([]);
@@ -179,12 +232,10 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
         }
     }, []);
 
-    const fetchCollectionCompanies = useCallback(async (pageArg?: number, limitArg?: number) => {
+    const fetchCollectionCompanies = useCallback(async (workDate: string) => {
         setCollectionCompaniesLoading(true);
         try {
-            const currentPage = pageArg ?? 1;
-            const currentLimit = limitArg ?? pageSize;
-            const response = await getCollectionCompanies(currentPage, currentLimit);
+            const response = await getCollectionCompanies(workDate);
 
             const companies: any[] = response?.data
                 ? response.data
@@ -192,10 +243,9 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
                     ? response
                     : [];
 
-            // For each company shown, call /Capacity/company/{companyId} and merge capacities
             const capacityEntries = await Promise.all(
                 companies.map(async (company) => {
-                    const companyId = String(company.id ?? '');
+                    const companyId = String(company?.companyId ?? company?.id ?? '');
                     if (!companyId) return [companyId, null] as const;
                     try {
                         const cap = await getCapacityPoints(companyId);
@@ -209,19 +259,20 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
             const companyCapacityMap = new Map<string, any>(capacityEntries);
 
             const merged = companies.map((company) => {
-                const companyId = String(company.id ?? '');
+                const companyId = String(company?.companyId ?? company?.id ?? '');
                 const cap = companyCapacityMap.get(companyId);
-                if (!cap) return company;
-                const maxCapacity = cap.companyMaxCapacity;
-                const currentCapacity = cap.companyCurrentCapacity;
-                const availableCapacity = typeof maxCapacity === 'number' && typeof currentCapacity === 'number'
-                    ? Math.max(0, maxCapacity - currentCapacity)
-                    : undefined;
+
                 return {
                     ...company,
-                    maxCapacity,
-                    currentCapacity,
-                    availableCapacity
+                    id: companyId,
+                    name: company?.companyName ?? company?.name ?? 'N/A',
+                    companyId,
+                    companyName: company?.companyName ?? company?.name ?? 'N/A',
+                    companyMaxCapacity: cap?.companyMaxCapacity,
+                    companyCurrentCapacity: cap?.companyCurrentCapacity,
+                    companyAvailableCapacity: cap?.companyAvailableCapacity,
+                    companyTotalAddedToday: cap?.companyTotalAddedToday,
+                    warehouses: Array.isArray(cap?.warehouses) ? cap.warehouses : []
                 };
             });
 
@@ -232,7 +283,7 @@ export const DistributeProductProvider: React.FC<Props> = ({ children }) => {
         } finally {
             setCollectionCompaniesLoading(false);
         }
-    }, [pageSize]);
+    }, []);
 
     const fetchSCPProducts = useCallback(async (smallPointId: string, workDate: string, pageArg?: number, limitArg?: number) => {
         setScpLoading(true);

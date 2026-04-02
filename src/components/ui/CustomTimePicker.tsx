@@ -29,7 +29,7 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
     disabled = false,
     dropdownAlign = 'left'
 }) => {
-    const wrapperRef = useRef<HTMLDivElement>(null);
+    const wrapperRef = useRef<HTMLElement | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const parsed = useMemo(() => parseTime(value), [value]);
@@ -224,8 +224,9 @@ const CustomTimePicker: React.FC<CustomTimePickerProps> = ({
             : null;
 
     return (
-        <div className='relative' ref={wrapperRef}>
+        <div className='relative'>
             <button
+                ref={wrapperRef as React.RefObject<HTMLButtonElement>}
                 type='button'
                 disabled={disabled}
                 onClick={() => {

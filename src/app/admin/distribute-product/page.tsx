@@ -80,10 +80,11 @@ const DistributeProductPage: React.FC = () => {
         const normalizeText = (v: any) => String(v ?? '').trim().toLowerCase();
         const locked = (collectionCompanies || []).find((c: any) => {
             const email = normalizeText(c?.companyEmail);
-            const name = normalizeText(c?.name);
+            const name = normalizeText(c?.name || c?.companyName);
             return email === 'contact@ewise.vn' || name === 'ewise express';
         });
-        return locked?.id ? String(locked.id) : undefined;
+        const id = locked?.companyId ?? locked?.id;
+        return id ? String(id) : undefined;
     }, [collectionCompanies]);
 
     // Handle sessionStorage params from notification (no URL params)
@@ -231,7 +232,7 @@ const DistributeProductPage: React.FC = () => {
 
     const handleShowDistributeModal = () => {
         setUndistributedCount(selectedProductIds.length);
-        fetchCollectionCompanies();
+        fetchCollectionCompanies(selectedDate);
         setShowDistributeModal(true);
     };
 
@@ -269,7 +270,7 @@ const DistributeProductPage: React.FC = () => {
     };
 
     const handleToggleSelectAllCompanies = () => {
-        const allIds = (collectionCompanies || []).map((c: any) => String(c.id));
+        const allIds = (collectionCompanies || []).map((c: any) => String(c.companyId ?? c.id)).filter(Boolean);
         const allSelected = allIds.length > 0 && allIds.every((id) => selectedCompanyIds.includes(id));
 
         if (allSelected) {
@@ -285,7 +286,7 @@ const DistributeProductPage: React.FC = () => {
     // Auto-select all companies when modal opens
     React.useEffect(() => {
         if (showDistributeModal && collectionCompanies.length > 0) {
-            const allIds = (collectionCompanies || []).map((c: any) => String(c.id));
+            const allIds = (collectionCompanies || []).map((c: any) => String(c.companyId ?? c.id)).filter(Boolean);
             setSelectedCompanyIds(
                 lockedCompanyId ? Array.from(new Set([...allIds, lockedCompanyId])) : allIds
             );

@@ -31,24 +31,35 @@ const SelectCompanyModal: React.FC<SelectCompanyModalProps> = ({
     productCount,
     distributing = false
 }) => {
+    const [expandedCompanyIds, setExpandedCompanyIds] = React.useState<string[]>([]);
     if (!open) return null;
 
     const normalizeText = (v: any) => String(v ?? '').trim().toLowerCase();
     const isLockedCompany = (company: any) => {
         const email = normalizeText(company?.companyEmail);
-        const name = normalizeText(company?.name);
+        const name = normalizeText(company?.name || company?.companyName);
         return email === 'contact@ewise.vn' || name === 'ewise express';
     };
 
-    const lockedCompanyId = companies.find((c) => isLockedCompany(c))?.id;
+    const lockedCompanyRaw = companies.find((c) => isLockedCompany(c));
+    const lockedCompanyId = lockedCompanyRaw ? String(lockedCompanyRaw?.companyId ?? lockedCompanyRaw?.id ?? '') : '';
     const effectiveSelectedCompanyIds = lockedCompanyId
         ? Array.from(new Set([...(selectedCompanyIds || []), String(lockedCompanyId)]))
         : selectedCompanyIds;
 
     const allSelected =
         companies.length > 0 &&
-        companies.every((c) => isLockedCompany(c) || effectiveSelectedCompanyIds.includes(String(c.id)));
+        companies.every((c) => {
+            const companyId = String(c?.companyId ?? c?.id ?? '');
+            return isLockedCompany(c) || effectiveSelectedCompanyIds.includes(companyId);
+        });
     const hasSelection = effectiveSelectedCompanyIds.length > 0;
+
+    const handleToggleExpand = (companyId: string) => {
+        setExpandedCompanyIds((prev) =>
+            prev.includes(companyId) ? prev.filter((id) => id !== companyId) : [...prev, companyId]
+        );
+    };
 
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
@@ -59,7 +70,7 @@ const SelectCompanyModal: React.FC<SelectCompanyModalProps> = ({
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div className='flex items-center gap-3'>
                         <h2 className='text-xl font-bold text-gray-900'>
-                            Chọn công ty thu gom
+                            Chọn kho thu gom
                         </h2>
                     </div>
                     <button
@@ -108,11 +119,8 @@ const SelectCompanyModal: React.FC<SelectCompanyModalProps> = ({
                                                         />
                                                     </th>
                                                     <th className='py-3 px-4 text-center w-[5vw]'>STT</th>
-                                                    <th className='py-3 px-4 text-left w-[18vw]'>Công ty</th>
-                                                    <th className='py-3 px-4 text-left w-[14vw]'>Địa chỉ</th>
-                                                    <th className='py-3 px-4 text-right w-[12vw]'>Còn trống (m³)</th>
-                                                    {/* <th className='py-3 px-4 text-right w-[12vw]'>Đang chứa (m³)</th> */}
-                                                    <th className='py-3 px-4 text-right w-[12vw]'>Sức chứa tối đa (m³)</th>
+                                                    <th className='py-3 px-4 text-left w-[22vw]'>Công ty</th>
+                                                    <th className='py-3 px-4 text-left w-[34vw]'>Ngưỡng tải mỗi kho</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -127,22 +135,16 @@ const SelectCompanyModal: React.FC<SelectCompanyModalProps> = ({
                                                             </td>
                                                             <td className='py-3 px-4'>
                                                                 <div className='h-4 bg-gray-200 rounded w-48 animate-pulse mb-2' />
-                                                                <div className='h-3 bg-gray-200 rounded w-32 animate-pulse' />
+                                                                <div className='h-3 bg-gray-200 rounded w-64 animate-pulse' />
                                                             </td>
                                                             <td className='py-3 px-4'>
-                                                                <div className='h-4 bg-gray-200 rounded w-32 animate-pulse' />
-                                                            </td>
-                                                            <td className='py-3 px-4'>
-                                                                <div className='h-4 bg-gray-200 rounded w-20 animate-pulse ml-auto' />
-                                                            </td>
-                                                            <td className='py-3 px-4'>
-                                                                <div className='h-4 bg-gray-200 rounded w-20 animate-pulse ml-auto' />
+                                                                <div className='h-4 bg-gray-200 rounded w-64 animate-pulse' />
                                                             </td>
                                                         </tr>
                                                     ))
                                                 ) : companies.length > 0 ? (
                                                     companies.map((company, idx) => {
-                                                        const companyId = String(company.id);
+                                                        const companyId = String(company.companyId ?? company.id);
 
                                                         return (
                                                             <CompanySelectList
@@ -157,12 +159,14 @@ const SelectCompanyModal: React.FC<SelectCompanyModalProps> = ({
                                                                 disabled={isLockedCompany(company)}
                                                                 onToggleSelect={() => onToggleSelect(companyId)}
                                                                 isLast={idx === companies.length - 1}
+                                                                isExpanded={expandedCompanyIds.includes(companyId)}
+                                                                onToggleExpand={() => handleToggleExpand(companyId)}
                                                             />
                                                         );
                                                     })
                                                 ) : (
                                                     <tr>
-                                                        <td colSpan={7} className='text-center py-8 text-gray-400'>
+                                                        <td colSpan={4} className='text-center py-8 text-gray-400'>
                                                             Không có công ty nào.
                                                         </td>
                                                     </tr>

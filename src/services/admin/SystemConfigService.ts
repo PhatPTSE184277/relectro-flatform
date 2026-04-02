@@ -16,6 +16,19 @@ export interface AutoAssignSettings {
   scheduleMinQty: number;
 }
 
+export interface WarehouseLoadThresholdConfig extends SystemConfig {
+  companyName?: string;
+  scpName?: string;
+  status?: string;
+  smallCollectionPointId?: string;
+  scpId?: string;
+}
+
+export interface UpdateWarehouseLoadThresholdPayload {
+  smallCollectionPointId: string;
+  threshold: number;
+}
+
 
 export const getActiveSystemConfigs = async (groupName?: string): Promise<SystemConfig[]> => {
   const response = await axios.get('/system-config/active', {
@@ -23,9 +36,15 @@ export const getActiveSystemConfigs = async (groupName?: string): Promise<System
   });
   return response.data;
 };
-    
 export const getSystemConfigByKey = async (key: string): Promise<SystemConfig> => {
   const response = await axios.get(`/system-config/${key}`);
+  return response.data;
+};
+
+export const updateWarehouseLoadThreshold = async (
+  payload: UpdateWarehouseLoadThresholdPayload
+): Promise<any> => {
+  const response = await axios.put('/system-config/warehouse-load-threshold', payload);
   return response.data;
 };
 

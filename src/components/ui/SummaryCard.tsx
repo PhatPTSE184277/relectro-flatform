@@ -56,17 +56,16 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ items, singleRow = false, lab
                             <span className='text-xs font-semibold uppercase text-gray-700 mr-2' style={{minWidth: 110, textAlign: 'left', whiteSpace: 'nowrap', flexShrink: 0}}>
                                 {item.label}{singleRow ? ':' : ''}
                             </span>
-                            <span
-                                className='text-sm font-medium text-gray-900 wrap-break-word'
+                            <div
+                                className='text-sm font-medium text-gray-900 wrap-break-word flex-1 min-w-0'
                                 style={{
-                                    minWidth: 0,
                                     wordBreak: 'break-word',
                                     overflowWrap: 'break-word',
                                     whiteSpace: 'normal'
                                 }}
                             >
                                 {formatValue(item.value, item.label)}
-                            </span>
+                            </div>
                         </div>
                     </div>
                 ))}

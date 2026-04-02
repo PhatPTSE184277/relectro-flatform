@@ -144,6 +144,7 @@ const EditSystemConfigModal: React.FC<EditSystemConfigModalProps> = ({
                                             value={timeValue}
                                             onChange={setTimeValue}
                                             placeholder='Chọn giờ'
+                                            dropdownAlign='right'
                                         />
                                     )
                                 }

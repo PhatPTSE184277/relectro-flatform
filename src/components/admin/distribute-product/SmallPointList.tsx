@@ -32,6 +32,7 @@ const SmallPointList: React.FC<SmallPointListProps> = ({
                                         <th className='py-3 px-4 text-center w-[6vw]'>STT</th>
                                         <th className='py-3 px-4 text-left w-[18vw]'>Điểm thu gom</th>
                                         <th className='py-3 pr-4 text-right w-auto'>Tổng sản phẩm</th>
+                                        <th className='py-3 px-4 text-right w-[12vw]'>Sức chứa dự kiến (m3)</th>
                                         <th className='py-3 px-4 text-center w-[10vw]'>Hành động</th>
                                     </tr>
                                 </thead>
@@ -48,6 +49,9 @@ const SmallPointList: React.FC<SmallPointListProps> = ({
                                                 <td className='py-3 pr-4 text-right'>
                                                     <div className='h-6 bg-gray-200 rounded w-10 animate-pulse ml-auto' />
                                                 </td>
+                                                <td className='py-3 px-4 text-right'>
+                                                    <div className='h-6 bg-gray-200 rounded w-20 animate-pulse ml-auto' />
+                                                </td>
                                                 <td className='py-3 px-4 text-center'>
                                                     <div className='h-8 w-8 bg-gray-200 rounded-full animate-pulse mx-auto' />
                                                 </td>
@@ -57,6 +61,19 @@ const SmallPointList: React.FC<SmallPointListProps> = ({
                                         points.map((point, idx) => {
                                             const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-primary-50';
                                             const isIncreased = increasedSCPIds.has(point.pointId);
+                                            const plannedRaw = Number(
+                                                (point as any)?.addedVolumeThisDate ??
+                                                (point as any)?.plannedCapacity ??
+                                                (point as any)?.totalAddedToday ??
+                                                0
+                                            );
+                                            const plannedValue = Number.isFinite(plannedRaw) ? plannedRaw : 0;
+                                            const plannedLabel = Number.isInteger(plannedValue)
+                                                ? plannedValue.toString()
+                                                : plannedValue
+                                                      .toFixed(2)
+                                                      .replace(/\.00$/, '')
+                                                      .replace(/(\.\d)0$/, '$1');
                                             return (
                                             <tr
                                                 key={point.pointId}
@@ -84,6 +101,9 @@ const SmallPointList: React.FC<SmallPointListProps> = ({
                                                         <span className='text-gray-900 font-medium'>{point.totalOrders ?? 0}</span>
                                                     </div>
                                                 </td>
+                                                <td className='py-3 px-4 text-right w-[12vw]'>
+                                                    <span className='text-gray-900 font-medium'>{plannedLabel}</span>
+                                                </td>
                                                 <td className='py-3 px-4 w-[10vw]'>
                                                     <div className='flex items-center justify-center'>
                                                         <button
@@ -104,7 +124,7 @@ const SmallPointList: React.FC<SmallPointListProps> = ({
                                         })
                                     ) : (
                                         <tr>
-                                            <td colSpan={4} className='text-center py-8 text-gray-400'>
+                                            <td colSpan={5} className='text-center py-8 text-gray-400'>
                                                 Không có điểm thu gom nào.
                                             </td>
                                         </tr>

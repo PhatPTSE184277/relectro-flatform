@@ -20,6 +20,20 @@ const CompanyShow: React.FC<CompanyShowProps> = ({
     const rowBg = (index ?? 0) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
     const total = company.totalProducts ?? company.totalOrders ?? 0;
     const isCustomer = !!company.isCustomer || /ute/i.test(company.companyName ?? '');
+    const warehouses = Array.isArray(company?.warehouses) ? company.warehouses : [];
+    const plannedRaw = Number(
+        company?.companyTotalAddedToday ??
+            company?.plannedCapacity ??
+            warehouses.reduce(
+                (sum: number, w: any) =>
+                    sum + Number(w?.addedVolumeThisDate ?? w?.plannedCapacity ?? 0),
+                0
+            )
+    );
+    const plannedValue = Number.isFinite(plannedRaw) ? plannedRaw : 0;
+    const plannedLabel = Number.isInteger(plannedValue)
+        ? plannedValue.toString()
+        : plannedValue.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
 
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}>
@@ -52,6 +66,9 @@ const CompanyShow: React.FC<CompanyShowProps> = ({
                         {total}
                     </span>
                 </div>
+            </td>
+            <td className='py-3 px-4 text-right w-[12vw]'>
+                <span className='text-gray-900 font-medium'>{plannedLabel}</span>
             </td>
             <td className='py-3 px-4 w-[10vw]'>
                 <div className='flex items-center justify-center'>

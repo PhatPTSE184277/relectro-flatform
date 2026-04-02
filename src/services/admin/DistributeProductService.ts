@@ -7,14 +7,9 @@ export const getUndistributedProducts = async (workDate: string, page: number = 
 	return response.data;
 };
 
-export const getCollectionCompanies = async (page: number = 1, limit: number = 10): Promise<any> => {
-  const response = await axios.get('/collection-company/filter', {
-    params: {
-      page,
-      limit,
-      type: 'Công ty thu gom',
-      status: 'Đang hoạt động',
-    },
+export const getCollectionCompanies = async (workDate: string): Promise<any> => {
+  const response = await axios.get('/CollectionOffDay/available-for-assign', {
+    params: { date: workDate },
   });
   return response.data;
 };
@@ -56,16 +51,27 @@ export type CompanyCapacityResponse = {
   companyId: string;
   companyMaxCapacity: number;
   companyCurrentCapacity: number;
+  companyAvailableCapacity?: number;
+  companyTotalAddedToday?: number;
   warehouses: Array<{
     id: string;
     name: string;
     maxCapacity: number;
     currentCapacity: number;
     availableCapacity: number;
+    plannedCapacity?: number;
+    addedVolumeThisDate?: number;
   }>;
 };
 
 export const getCapacityPoints = async (companyId: string): Promise<CompanyCapacityResponse> => {
   const response = await axios.get(`/Capacity/company/${companyId}`);
+  return response.data;
+};
+
+export const getCapacityPointsByDate = async (companyId: string, date: string): Promise<CompanyCapacityResponse> => {
+  const response = await axios.get(`/Capacity/company/Date/${companyId}`, {
+    params: { date }
+  });
   return response.data;
 };

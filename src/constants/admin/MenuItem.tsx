@@ -73,6 +73,12 @@ export const adminMenuItems = [
         icon: <CalendarDays size={20} />
     },
     {
+        id: 'collection-off-day',
+        label: 'Lịch nghỉ thu gom',
+        path: '/admin/collection-off-day',
+        icon: <CalendarDays size={20} />
+    },
+    {
         id: 'report',
         label: 'Báo cáo',
         path: '/admin/report',
