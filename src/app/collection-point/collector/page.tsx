@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import { useCollectorContext } from '@/contexts/collection-point/CollectorContext';
-import CollectorList from '@/components/company/collector/CollectorList';
-import CollectorDetail from '@/components/company/collector/modal/CollectorDetail';
+import CollectorList from '@/components/collection-point/collector/CollectorList';
+import CollectorDetail from '@/components/collection-point/collector/modal/CollectorDetail';
 import SearchBox from '@/components/ui/SearchBox';
 import { Users, Download } from 'lucide-react';
-import ImportCollectorModal from '@/components/company/collector/modal/ImportCollectorModal';
+import ImportCollectorModal from '@/components/collection-point/collector/modal/ImportCollectorModal';
 import { useAuth } from '@/hooks/useAuth';
 import Pagination from '@/components/ui/Pagination';
 import Toast from '@/components/ui/Toast';
@@ -16,7 +16,7 @@ import { pickExcelTemplateUrl } from '@/utils/excelTemplateConfig';
 
 const CollectorPage: React.FC = () => {
     const { user } = useAuth();
-    const { collectors, loading, fetchCollectors, importCollectors, page, limit, total, setPage } = useCollectorContext();
+    const { collectors, loading, fetchCollectors, importCollectors } = useCollectorContext();
     const [selectedCollector, setSelectedCollector] = useState<any | null>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [search, setSearch] = useState('');
@@ -28,13 +28,21 @@ const CollectorPage: React.FC = () => {
         message: ''
     });
 
-    const companyId = user?.collectionCompanyId;
+    // Use smallCollectionPointId for new API endpoint `/collectors/collectionUnit/{id}`
+    const smallCollectionPointId = user?.smallCollectionPointId;
+
+    // Client-side pagination: fetch full list (use large limit) and paginate locally
+    const ITEMS_PER_PAGE = 10;
+    const [localPage, setLocalPage] = useState<number>(1);
 
     useEffect(() => {
-        if (companyId) {
-            fetchCollectors(companyId, page, limit);
+        if (smallCollectionPointId) {
+            // Request a large limit so we get all collectors for client-side pagination
+            void fetchCollectors(String(smallCollectionPointId), 1, 1000);
         }
-    }, [fetchCollectors, companyId, page, limit]);
+    }, [fetchCollectors, smallCollectionPointId]);
+
+    // Keep local page within bounds when collectors change (avoid synchronous setState)
 
     useEffect(() => {
         const loadTemplate = async () => {
@@ -60,14 +68,15 @@ const CollectorPage: React.FC = () => {
     };
 
     const handleImportExcel = async (file: File): Promise<boolean> => {
-        if (!companyId) {
+        if (!smallCollectionPointId) {
             setToast({ open: true, type: 'error', message: 'Thêm dữ liệu thất bại' });
             return false;
         }
         try {
             await importCollectors(file);
 
-            await fetchCollectors(companyId, page, limit);
+            // Refresh full list after import
+            await fetchCollectors(String(smallCollectionPointId), 1, 1000);
             setToast({ open: true, type: 'success', message: 'Thêm dữ liệu hoàn tất' });
             return true;
         } catch {
@@ -76,9 +85,7 @@ const CollectorPage: React.FC = () => {
         }
     };
 
-    const handlePageChange = (newPage: number) => {
-        setPage(newPage);
-    };
+    // local pagination handled by `setLocalPage` below
 
     const filteredCollectors = collectors.filter((collector) => {
         const searchLower = search.toLowerCase();
@@ -90,7 +97,19 @@ const CollectorPage: React.FC = () => {
         );
     });
 
-    const totalPages = Math.ceil(total / limit);
+    const totalPages = Math.ceil((collectors?.length || 0) / ITEMS_PER_PAGE) || 1;
+
+    const paginatedCollectors = collectors.slice((localPage - 1) * ITEMS_PER_PAGE, localPage * ITEMS_PER_PAGE);
+
+    // If current local page is out of range after collectors change, reset to 1
+    // Schedule the state update asynchronously to avoid synchronous setState in effect
+    useEffect(() => {
+        if (localPage > totalPages) {
+            const id = window.setTimeout(() => setLocalPage(1), 0);
+            return () => clearTimeout(id);
+        }
+        return undefined;
+    }, [localPage, totalPages]);
 
     return (
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
@@ -140,18 +159,18 @@ const CollectorPage: React.FC = () => {
 
             {/* Collector List */}
             <CollectorList
-                collectors={filteredCollectors}
+                collectors={filteredCollectors.filter(c => paginatedCollectors.includes(c))}
                 loading={loading}
                 onViewDetail={handleViewDetail}
-                page={page}
-                limit={limit}
+                page={localPage}
+                limit={ITEMS_PER_PAGE}
             />
 
             {/* Pagination */}
             <Pagination
-                page={page}
+                page={localPage}
                 totalPages={totalPages}
-                onPageChange={handlePageChange}
+                onPageChange={(p) => { setLocalPage(p); }}
             />
 
             {/* Detail Modal */}

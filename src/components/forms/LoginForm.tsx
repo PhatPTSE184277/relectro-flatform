@@ -35,7 +35,7 @@ const LoginForm = () => {
             // Route based on user role (backend enum)
             switch (user.role) {
                 case 'AdminWarehouse':
-                    router.push('/small-collector/dashboard');
+                    router.push('/collection-point/dashboard');
                     break;
                 case 'Admin':
                     router.push('/admin/dashboard');
@@ -78,7 +78,7 @@ const LoginForm = () => {
         if (user) {
             switch (user.role) {
                 case 'AdminWarehouse':
-                    router.push('/small-collector/dashboard');
+                    router.push('/collection-point/dashboard');
                     break;
                 case 'Admin':
                     router.push('/admin/dashboard');

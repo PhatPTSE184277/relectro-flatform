@@ -1,7 +1,11 @@
-'use client';
+ 'use client';
 
-import React from 'react';
-import { NotificationProvider } from '@/contexts/NotificationContext';
+import React, { useState, useEffect } from 'react';
+import Header from '@/components/ui/Header';
+import Sidebar from '@/components/ui/Sidebar';
+import Toast from '@/components/ui/Toast';
+import { collectorMenuItems } from '@/constants/collection-point/MenuItems';
+import { NotificationProvider, useNotifications } from '@/contexts/NotificationContext';
 import { UserProvider } from '@/contexts/UserContext';
 import { CollectorProvider } from '@/contexts/collection-point/CollectorContext';
 import { SmallCollectionProvider } from '@/contexts/company/SmallCollectionContext';
@@ -19,7 +23,58 @@ import { ShiftProvider } from '@/contexts/collection-point/ShiftContext';
 import { SettingGroupProvider } from '@/contexts/collection-point/SettingGroupContext';
 import { CapacityProvider } from '@/contexts/collection-point/CapacityContext';
 
+function CollectionPointLayoutContent({ children, sidebarOpen, setSidebarOpen }: { children: React.ReactNode; sidebarOpen: boolean; setSidebarOpen: (open: boolean) => void }) {
+    const { toast, hideToast } = useNotifications();
+
+    return (
+        <>
+            <div className='h-screen flex flex-col bg-gray-50'>
+                <Header
+                    title='Ewise'
+                    href='/collection-point/dashboard'
+                    profileHref='/collection-point/profile'
+                    onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+                />
+                <div className='flex flex-1 overflow-hidden'>
+                    <div className={`h-full ${sidebarOpen ? 'block' : 'hidden'} xl:block`}>
+                        <Sidebar
+                            menuItems={collectorMenuItems}
+                            isOpen={sidebarOpen}
+                            onClose={() => setSidebarOpen(false)}
+                        />
+                    </div>
+                    <main className='flex-1 overflow-y-auto'>
+                        {children}
+                    </main>
+                </div>
+            </div>
+            <Toast
+                open={!!toast}
+                type={toast?.type}
+                message={toast?.message || ''}
+                onClose={hideToast}
+            />
+        </>
+    );
+}
+
 export default function CollectionPointLayout({ children }: { children: React.ReactNode }) {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 1280) {
+                setSidebarOpen(true);
+            } else {
+                setSidebarOpen(false);
+            }
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     return (
         <NotificationProvider>
             <UserProvider>
@@ -38,7 +93,9 @@ export default function CollectionPointLayout({ children }: { children: React.Re
                                                                 <ShiftProvider>
                                                                     <SettingGroupProvider>
                                                                         <CapacityProvider>
-                                                                            {children}
+                                                                            <CollectionPointLayoutContent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}>
+                                                                                {children}
+                                                                            </CollectionPointLayoutContent>
                                                                         </CapacityProvider>
                                                                     </SettingGroupProvider>
                                                                 </ShiftProvider>

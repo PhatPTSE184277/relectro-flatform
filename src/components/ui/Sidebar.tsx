@@ -56,11 +56,15 @@ const Sidebar = ({ menuItems, isOpen = true, onClose }: SidebarProps) => {
                 <nav className="flex-1 p-3 sm:p-4 space-y-1.5 sm:space-y-2">
                     {menuItems.map((item) => {
                         const isActive = pathname === item.path;
+                        const wordCount = item.label?.trim().split(/\s+/).length || 0;
+                        const showTitle = wordCount > 4;
                         return (
                             <Link
                                 key={item.label}
                                 href={item.path}
                                 onClick={() => onClose && onClose()}
+                                title={showTitle ? item.label : undefined}
+                                aria-label={item.label}
                                 className={`flex items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base font-medium transition-all duration-400 group
                                     ${isActive
                                         ? "bg-primary-50 text-primary-700 shadow-lg"

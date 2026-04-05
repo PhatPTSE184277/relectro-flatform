@@ -5,7 +5,7 @@ export const getCollectorsByCompany = async (
     page: number = 1,
     limit: number = 10
 ): Promise<any[]> => {
-    const response = await axios.get(`/collectors/company/${companyId}`, {
+    const response = await axios.get(`/collectors/collectionUnit/${companyId}`, {
         params: { page, limit }
     });
     return response.data;

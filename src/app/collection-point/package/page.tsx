@@ -102,9 +102,9 @@ const PackagePage: React.FC = () => {
         }
     }, [filter.fromDate, filter.toDate, setFilter]);
 
-    // Ensure default status is 'Đang đóng gói' when first entering the page
+    // Ensure default status is 'Đang đóng gói' only when status is not set yet
     useEffect(() => {
-        if (!filter.status || filter.status !== 'Đang đóng gói') {
+        if (!filter.status) {
             setFilter({ status: 'Đang đóng gói', page: 1 });
         }
     }, [filter.status, setFilter]);

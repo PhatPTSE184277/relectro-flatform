@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ReduxProvider from "@/components/providers/ReduxProvider";
 import AuthInitializer from "@/components/auth/AuthInitializer";
+import NotificationDisplay from "@/components/common/NotificationDisplay";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 
 const geistSans = Geist({
@@ -37,6 +38,7 @@ export default function RootLayout({
         <ReduxProvider>
           <NotificationProvider>
             <AuthInitializer />
+            <NotificationDisplay />
             {children}
           </NotificationProvider>
         </ReduxProvider>

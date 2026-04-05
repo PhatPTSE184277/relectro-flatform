@@ -193,7 +193,7 @@ const GroupingPage: React.FC = () => {
                         </div>
                     )}
                     <button
-                        onClick={() => router.push('/small-collector/grouping/list')}
+                        onClick={() => router.push('/collection-point/grouping/list')}
                         className='px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors cursor-pointer'
                     >
                         Xem danh sách phân chia

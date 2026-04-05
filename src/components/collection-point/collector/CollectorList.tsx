@@ -30,7 +30,6 @@ const CollectorList: React.FC<CollectorListProps> = ({
                                         <th className='py-3 px-4 text-left w-[14vw] min-w-48'>Nhân viên</th>
                                         <th className='py-3 px-4 text-left w-[14vw] min-w-48'>Email</th>
                                         <th className='py-3 px-4 text-left w-[12vw] min-w-36'>Số điện thoại</th>
-                                        <th className='py-3 px-4 text-left w-[12vw] min-w-36'>Điểm thu gom</th>
                                         <th className='py-3 px-4 text-center w-[7vw] min-w-24'>Hành động</th>
                                     </tr>
                                 </thead>
@@ -54,7 +53,7 @@ const CollectorList: React.FC<CollectorListProps> = ({
                                         })
                                     ) : (
                                         <tr>
-                                            <td colSpan={6} className='text-center py-8 text-gray-400'>
+                                            <td colSpan={5} className='text-center py-8 text-gray-400'>
                                                 Không có nhân viên thu gom nào.
                                             </td>
                                         </tr>

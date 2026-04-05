@@ -20,7 +20,7 @@ interface HeaderProps {
     onMenuClick?: () => void;
 }
 
-const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
+const Header = ({ href, profileHref, onMenuClick }: HeaderProps) => {
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useAppDispatch();
@@ -75,8 +75,8 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
         router.push('/');
     };
 
-    // Sử dụng props truyền vào, không tự động lấy từ pathname nữa
-    const finalTitle = title;
+    // Luôn hiển thị "Ewise" làm tiêu đề, bỏ qua prop `title`
+    const finalTitle = 'Ewise';
     const finalHref = href;
     const finalProfileHref = profileHref ?? '/';
 
@@ -190,8 +190,8 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
 
         // Navigate to grouping page if it's a grouping notification
         if (isGroupingNotif && typeof window !== 'undefined') {
-            if (window.location.pathname !== '/small-collector/grouping') {
-                router.push('/small-collector/grouping');
+            if (window.location.pathname !== '/collection-point/grouping') {
+                router.push('/collection-point/grouping');
             } else {
                 // Already on the page, trigger a reload to apply new params
                 window.location.reload();
@@ -235,9 +235,11 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
     }, [user?.role]);
 
     // Build greeting text, include company name for warehouse admins
+    // Compose a more compact, non-redundant greeting.
+    // Use a middle dot between role and company, and put smallCollectionName in parentheses.
     const greetingText = user?.role
         ? (user.role === 'AdminWarehouse' && user.companyName
-            ? `${translateRole(user.role)} - Công ty ${user.companyName}`
+            ? `${translateRole(user.role)} · ${user.companyName}${user.smallCollectionName ? ` (${user.smallCollectionName})` : ''}`
             : translateRole(user.role))
         : '';
 

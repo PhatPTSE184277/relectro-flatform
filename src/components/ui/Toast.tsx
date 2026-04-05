@@ -10,10 +10,10 @@ export interface ToastProps {
 
 const Toast: React.FC<ToastProps> = ({
   open,
-  type = 'info',
+  type = 'error',
   message,
   onClose,
-  duration = 4000,
+  duration = 5000,
 }) => {
   React.useEffect(() => {
     if (open && duration && onClose) {

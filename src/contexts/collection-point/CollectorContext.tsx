@@ -41,11 +41,11 @@ export const CollectorProvider = ({ children }: { children: ReactNode }) => {
 	const [limit, setLimit] = useState(10);
 	const [total, setTotal] = useState(0);
 
-	const fetchCollectors = useCallback(async (companyId: string, pageArg?: number, limitArg?: number) => {
+	const fetchCollectors = useCallback(async (collectionUnitId: string, pageArg?: number, limitArg?: number) => {
 		setLoading(true);
 		setError(null);
 		try {
-			const res = await getCollectorsByCompany(companyId, pageArg ?? page, limitArg ?? limit);
+				const res = await getCollectorsByCompany(collectionUnitId, pageArg ?? page, limitArg ?? limit);
 			if (Array.isArray(res)) {
 				setCollectors(res);
 				setTotal(res.length);
@@ -68,12 +68,12 @@ export const CollectorProvider = ({ children }: { children: ReactNode }) => {
 		}
 	}, [page, limit]);
 
-	// Auto-fetch collectors khi có collectionCompanyId từ user
+	// Auto-fetch collectors khi có smallCollectionPointId từ user (API expects collectionUnit id)
 	useEffect(() => {
-		if (user?.collectionCompanyId) {
-			fetchCollectors(user.collectionCompanyId, page, limit);
+		if (user?.smallCollectionPointId) {
+			fetchCollectors(String(user.smallCollectionPointId), page, limit);
 		}
-	}, [user?.collectionCompanyId, page, limit, fetchCollectors]);
+	}, [user?.smallCollectionPointId, page, limit, fetchCollectors]);
 
 	const fetchCollector = useCallback(async (collectorId: string) => {
 		setLoading(true);

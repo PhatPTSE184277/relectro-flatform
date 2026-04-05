@@ -36,9 +36,7 @@ const CollectorShow: React.FC<CollectorShowProps> = ({ collector, onView, isLast
                     <span className='text-gray-400'>Chưa có</span>
                 )}
             </td>
-            <td className='py-3 px-4 text-left w-[12vw] min-w-36 text-gray-700 text-sm'>
-                {collector.smallCollectionPointName || `Điểm ${collector.smallCollectionPointId}`}
-            </td>
+                {/* Removed 'Điểm thu gom' column as requested */}
             <td className='py-3 px-4 w-[7vw] min-w-24'>
                 <div className='flex justify-center gap-2'>
                     <button

@@ -13,7 +13,7 @@ interface ProtectedRouteProps {
 const ROUTE_ROLE_MAP: Record<string, string[]> = {
     '/admin': ['Admin'],
     '/company': ['AdminCompany'],
-    '/small-collector': ['AdminWarehouse'],
+    '/collection-point': ['AdminWarehouse'],
     '/shipper': ['Collector'],
     '/recycle': ['RecyclingCompany'],
 };
@@ -121,7 +121,7 @@ function redirectToRoleDashboard(role: string, router: any) {
             router.push('/company/dashboard');
             break;
         case 'AdminWarehouse':
-            router.push('/small-collector/dashboard');
+            router.push('/collection-point/dashboard');
             break;
         case 'Collector':
             router.push('/shipper/package');

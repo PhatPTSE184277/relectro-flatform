@@ -273,7 +273,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
             
             // Calculate route and redirect
             await calculateRoute(true);
-            router.push("/small-collector/grouping/list");
+            router.push("/collection-point/grouping/list");
         } catch (error) {
             console.error('Error creating grouping:', error);
         } finally {

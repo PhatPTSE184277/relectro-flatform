@@ -19,7 +19,7 @@ export default function NotFound() {
       case 'AdminCompany':
         return '/company/small-collection';
       case 'Collector':
-        return '/small-collector/dashboard';
+        return '/collection-point/dashboard';
       case 'RecyclingCompany':
         return '/recycle/package';
       default:

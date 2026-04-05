@@ -54,7 +54,7 @@ const GroupingListPage: React.FC = () => {
     };
 
     const handleCreateNew = () => {
-        router.push('/small-collector/grouping');
+        router.push('/collection-point/grouping');
     };
 
     const handleViewDetail = async (grouping: any) => {

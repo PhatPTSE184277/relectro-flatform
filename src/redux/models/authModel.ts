@@ -20,6 +20,7 @@ export interface AuthState {
     loading: boolean;
     error: string | null;
     isFirstLogin: boolean;
+    notificationMessage?: string | null;
 }
 
 export interface LoginCredentials {
@@ -29,5 +30,6 @@ export interface LoginCredentials {
 
 export interface LoginResponse {
     accessToken: string;
+    refreshToken: string;
     isFirstLogin: boolean;
 }
