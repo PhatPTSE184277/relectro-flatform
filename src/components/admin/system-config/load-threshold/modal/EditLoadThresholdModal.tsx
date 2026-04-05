@@ -59,7 +59,7 @@ const EditLoadThresholdModal: React.FC<EditLoadThresholdModalProps> = ({
         <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-primary-50 to-primary-100'>
           <div className='flex items-center gap-2'>
             <Warehouse className='w-5 h-5 text-primary-600' />
-            <h2 className='text-2xl font-bold text-gray-900'>Cập nhật ngưỡng tải mỗi kho</h2>
+            <h2 className='text-2xl font-bold text-gray-900'>Cập nhật ngưỡng tải mỗi đơn vị thu gom</h2>
           </div>
           <button
             onClick={onClose}
@@ -76,7 +76,7 @@ const EditLoadThresholdModal: React.FC<EditLoadThresholdModalProps> = ({
             label={
               <span className='flex items-center gap-2'>
                 <Warehouse className='w-4 h-4 text-primary-500' />
-                Thông tin kho
+                Thông tin đơn vị thu gom
               </span>
             }
             singleRow

@@ -81,7 +81,7 @@ const CompanySelectList: React.FC<CompanySelectListProps> = ({
                                     onToggleExpand();
                                 }}
                                 className='mt-0.5 p-1 rounded-md hover:bg-primary-100 text-primary-600 cursor-pointer'
-                                aria-label='Xem kho chi tiết'
+                                aria-label='Xem đơn vị thu gom chi tiết'
                             >
                                 {isExpanded ? (
                                     <ChevronDown size={16} />

@@ -53,7 +53,7 @@ export const CapacityProvider: React.FC<Props> = ({ children }) => {
             const data = await getCapacityByCompany(companyId);
             setCapacity(data);
         } catch (err: any) {
-            setError(err?.response?.data?.message || 'Lỗi khi tải dữ liệu năng lực kho');
+            setError(err?.response?.data?.message || 'Lỗi khi tải dữ liệu năng lực đơn vị thu gom');
             setCapacity(null);
         } finally {
             setLoadingCapacity(false);

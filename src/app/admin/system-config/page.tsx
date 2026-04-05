@@ -58,7 +58,7 @@ const SystemConfigPage: React.FC = () => {
         { value: 'Excel', label: 'Mẫu Excel' },
         { value: 'PointConfig', label: 'Cấu hình điểm' },
         { value: 'CompanyConfig', label: 'Cấu hình công ty' },
-        { value: 'LoadThreshold', label: 'Ngưỡng tải kho' }
+        { value: 'LoadThreshold', label: 'Ngưỡng tải đơn vị thu gom' }
     ];
 
     const getCompanyId = useCallback((company: any): string => {
@@ -210,7 +210,7 @@ const SystemConfigPage: React.FC = () => {
         }
     }, [groupName, scpOptions, companyOptions]);
 
-    // Filter hiển thị: lọc theo groupName + filter kho/công ty + search
+    // Filter hiển thị: lọc theo groupName + filter đơn vị thu gom/công ty + search
     const filteredConfigs = useMemo(() => {
         let arr = configs;
         if (groupName) arr = arr.filter(cfg => cfg.groupName === groupName);
@@ -319,7 +319,7 @@ const SystemConfigPage: React.FC = () => {
                                 onChange={setSelectedScpName}
                                 getLabel={(o: any) => o.label}
                                 getValue={(o: any) => o.value}
-                                placeholder='Chọn kho...'
+                                placeholder='Chọn đơn vị thu gom...'
                             />
                         </div>
                     )}
@@ -360,7 +360,7 @@ const SystemConfigPage: React.FC = () => {
                                     onChange={(id) => setSelectedLoadWarehouseId(String(id))}
                                     getLabel={getWarehouseName}
                                     getValue={getWarehouseId}
-                                    placeholder={loadingLoadWarehouses ? 'Đang tải kho...' : 'Chọn kho...'}
+                                    placeholder={loadingLoadWarehouses ? 'Đang tải đơn vị thu gom...' : 'Chọn đơn vị thu gom...'}
                                     disabled={!selectedLoadCompanyId || loadingLoadWarehouses}
                                 />
                             </div>

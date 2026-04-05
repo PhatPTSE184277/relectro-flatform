@@ -236,7 +236,7 @@ const TrackingPage: React.FC = () => {
                             onChange={handleWarehouseSelect}
                             getLabel={(w: any) => w.name || w.pointName || w.smallCollectionPointName || 'N/A'}
                             getValue={getWarehouseId}
-                            placeholder={loadingWarehouses ? 'Đang tải kho...' : 'Chọn kho...'}
+                            placeholder={loadingWarehouses ? 'Đang tải đơn vị thu gom...' : 'Chọn đơn vị thu gom...'}
                             disabled={!filter.companyId || loadingWarehouses}
                         />
                     </div>
@@ -252,7 +252,7 @@ const TrackingPage: React.FC = () => {
                 </div>
             ) : !filter.smallCollectionPointId ? (
                 <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center text-gray-400'>
-                    Vui lòng chọn kho để xem danh sách kiện hàng
+                    Vui lòng chọn đơn vị thu gom để xem danh sách kiện hàng
                 </div>
             ) : (
                 <div className='mb-6'>

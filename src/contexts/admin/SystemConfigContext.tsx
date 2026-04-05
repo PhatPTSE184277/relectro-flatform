@@ -144,7 +144,7 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
       await fetchConfigs();
       return true;
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Lỗi khi cập nhật ngưỡng tải kho');
+      setError(err?.response?.data?.message || 'Lỗi khi cập nhật ngưỡng tải đơn vị thu gom');
       return false;
     } finally {
       setLoading(false);

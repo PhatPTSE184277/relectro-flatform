@@ -84,7 +84,7 @@ const ForgotPasswordPage: React.FC = () => {
     return (
         <>
             <Header 
-                title="Thu gom" 
+                title="Ewise" 
                 href="/" 
                 profileHref="/profile" 
             />

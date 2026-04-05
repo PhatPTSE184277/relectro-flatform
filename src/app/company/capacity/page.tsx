@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Warehouse, TrendingUp } from 'lucide-react';
-import { useCapacityContext } from '@/contexts/company/CapacityContext';
+import { useCapacityContext } from '@/contexts/collection-point/CapacityContext';
 import CapacityList from '@/components/admin/capacity/CapacityList';
 import { formatWeightKg } from '@/utils/formatNumber';
 
@@ -22,7 +22,7 @@ const CapacityPage: React.FC = () => {
                     <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
                         <Warehouse className='text-white' size={20} />
                     </div>
-                    <h1 className='text-3xl font-bold text-gray-900'>Năng lực kho</h1>
+                    <h1 className='text-3xl font-bold text-gray-900'>Năng lực đơn vị thu gom</h1>
                 </div>
             </div>
 

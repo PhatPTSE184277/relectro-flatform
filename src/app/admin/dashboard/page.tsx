@@ -99,7 +99,7 @@ const DashboardPage = () => {
                                         : 'text-gray-600 hover:text-gray-900'
                                 }`}
                             >
-                                Theo khoảng
+                                Theo đơn vị thu gom
                             </button>
                         </div>
                     </div>

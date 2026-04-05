@@ -45,7 +45,7 @@ const CapacityPage: React.FC = () => {
                         <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
                             <Warehouse className='text-white' size={20} />
                         </div>
-                        <h1 className='text-3xl font-bold text-gray-900'>Năng lực kho</h1>
+                        <h1 className='text-3xl font-bold text-gray-900'>Năng lực đơn vị thu gom</h1>
                     </div>
                     <div className='flex gap-4 items-center justify-end'>
                         <div className='w-72'>
@@ -64,7 +64,7 @@ const CapacityPage: React.FC = () => {
 
             {!selectedCompanyId ? (
                 <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center text-gray-400'>
-                    Vui lòng chọn công ty để xem năng lực kho
+                    Vui lòng chọn công ty để xem năng lực đơn vị thu gom
                 </div>
             ) : (
                 <>

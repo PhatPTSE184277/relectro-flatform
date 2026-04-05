@@ -77,7 +77,7 @@ const SelectCompanyModal: React.FC<SelectCompanyModalProps> = ({
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div className='flex items-center gap-3'>
                         <h2 className='text-xl font-bold text-gray-900'>
-                            Chọn kho thu gom
+                            Chọn đơn vị thu gom thu gom
                         </h2>
                     </div>
                     <button

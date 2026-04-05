@@ -116,7 +116,7 @@ export const adminMenuItems = [
     },
     // {
     //     id: 'capacity',
-    //     label: 'Năng lực kho',
+    //     label: 'Năng lực đơn vị thu gom',
     //     path: '/admin/capacity',
     //     icon: <Warehouse size={20} />
     // }

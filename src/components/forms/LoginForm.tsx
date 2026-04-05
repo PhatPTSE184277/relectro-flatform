@@ -207,9 +207,9 @@ const LoginForm = () => {
 
             <div className='mt-6 text-center'>
                 <p className='text-gray-400'>
-                    Chưa có tài khoản?{' '}
+                    Chưa có tài đơn vị thu gom?{' '}
                     <span className='text-gray-300'>
-                        Liên hệ quản lý để được tạo tài khoản
+                        Liên hệ quản lý để được tạo tài đơn vị thu gom
                     </span>
                 </p>
             </div>

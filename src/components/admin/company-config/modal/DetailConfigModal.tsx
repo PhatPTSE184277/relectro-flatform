@@ -31,7 +31,7 @@ const DetailConfigModal: React.FC<DetailConfigModalProps> = ({
                             Chỉnh sửa cấu hình
                         </h2>
                         <p className='text-sm text-gray-600 mt-1'>
-                            Điều chỉnh bán kính và khoảng cách tối đa
+                            Điều chỉnh bán kính và đơn vị thu gom cách tối đa
                         </p>
                     </div>
                     <button

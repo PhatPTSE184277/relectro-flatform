@@ -17,7 +17,7 @@ const CapacityList: React.FC<CapacityListProps> = ({ warehouses, loading }) => {
                         <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-200'>
                             <tr>
                                 <th className='py-3 px-4 text-center w-[5vw]'>STT</th>
-                                <th className='py-3 px-4 text-left w-[20vw]'>Tên kho</th>
+                                <th className='py-3 px-4 text-left w-[20vw]'>Tên đơn vị thu gom</th>
                                 <th className='py-3 px-4 text-right w-[14vw]'>Sức chứa tối đa (m³)</th>
                                 <th className='py-3 px-4 text-right w-[14vw]'>Đang chứa (m³)</th>
                                 <th className='py-3 px-4 text-right w-[14vw]'>Còn trống (m³)</th>
@@ -31,7 +31,7 @@ const CapacityList: React.FC<CapacityListProps> = ({ warehouses, loading }) => {
                             ) : warehouses.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className='py-8 text-center text-gray-400'>
-                                        Không có dữ liệu kho
+                                        Không có dữ liệu đơn vị thu gom
                                     </td>
                                 </tr>
                             ) : (

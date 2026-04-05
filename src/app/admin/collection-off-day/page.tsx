@@ -346,7 +346,7 @@ const AdminCollectionOffDayPage: React.FC = () => {
     }
 
     if (!data.selectedPointIds?.length || !data.selectedDates?.length) {
-      setToast({ open: true, type: 'error', message: 'Vui lòng chọn ít nhất 1 kho và 1 ngày' });
+      setToast({ open: true, type: 'error', message: 'Vui lòng chọn ít nhất 1 đơn vị thu gom và 1 ngày' });
       return;
     }
 

@@ -78,8 +78,8 @@ const CompanyShow: React.FC<CompanyShowProps> = ({
                             onSelect();
                         }}
                         className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
-                        title='Xem kho và sản phẩm'
-                        aria-label='Xem kho và sản phẩm'
+                        title='Xem đơn vị thu gom và sản phẩm'
+                        aria-label='Xem đơn vị thu gom và sản phẩm'
                     >
                         <Eye size={16} />
                     </button>

@@ -101,14 +101,14 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
             notif.message?.includes('Phân bố') ||
             notif.message?.includes('phân bố');
 
-        const isGroupingNotif = notif.title?.includes('Hàng về kho') ||
-            notif.title?.includes('hàng về kho') ||
+        const isGroupingNotif = notif.title?.includes('Hàng về đơn vị thu gom') ||
+            notif.title?.includes('hàng về đơn vị thu gom') ||
             notif.title?.includes('Gom nhóm') ||
             notif.title?.includes('gom nhóm') ||
             notif.title?.includes('Thu gom') ||
             notif.title?.includes('thu gom') ||
-            notif.message?.includes('Hàng về kho') ||
-            notif.message?.includes('hàng về kho') ||
+            notif.message?.includes('Hàng về đơn vị thu gom') ||
+            notif.message?.includes('hàng về đơn vị thu gom') ||
             notif.message?.includes('nhận được') ||
             notif.message?.includes('Gom nhóm') ||
             notif.message?.includes('gom nhóm') ||
@@ -206,7 +206,7 @@ const Header = ({ title, href, profileHref, onMenuClick }: HeaderProps) => {
             case 'Admin':
                 return 'Quản trị viên';
             case 'AdminWarehouse':
-                return 'Quản trị kho';
+                return 'Quản trị đơn vị thu gom';
             case 'AdminCompany':
                 return 'Quản trị công ty';
             case 'Collector':

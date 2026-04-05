@@ -57,7 +57,7 @@ export function RegisterOffDayStepCompanyPoints(props: {
           />
         </div>
         <div className='text-sm text-gray-600'>
-          Đã chọn <span className='font-semibold'>{selectedPointIds.length}</span> kho
+          Đã chọn <span className='font-semibold'>{selectedPointIds.length}</span> đơn vị thu gom
         </div>
       </div>
 
@@ -105,7 +105,7 @@ export function RegisterOffDayStepCompanyPoints(props: {
                     ) : points.length === 0 ? (
                       <tr>
                         <td colSpan={4} className='py-10 text-center text-gray-400'>
-                          {companyId ? 'Không có kho để chọn' : 'Vui lòng chọn công ty'}
+                          {companyId ? 'Không có đơn vị thu gom để chọn' : 'Vui lòng chọn công ty'}
                         </td>
                       </tr>
                     ) : (

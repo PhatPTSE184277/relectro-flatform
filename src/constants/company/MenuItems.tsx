@@ -14,39 +14,22 @@ export const MenuItems = [
         path: '/company/small-collection',
         icon: <MapPin size={20} />
     },
-    {
-        id: 'collector',
-        label: 'Nhân viên thu gom',
-        path: '/company/collector',
-        icon: <Users size={20} />
-    },
-    {
-        id: 'shift',
-        label: 'Ca làm việc',
-        path: '/company/shift',
-        icon: <CalendarClock size={20} />
-    },
+   
     {
         id: 'vehicle',
         label: 'Phương tiện',
         path: '/company/vehicle',
         icon: <Truck size={20} />
     },
-    {
+       {
         id: 'product-query',
         label: 'Tra cứu sản phẩm',
         path: '/company/product-query',
         icon: <Package size={20} />
     },
-        {
-        id: 'setting-group',
-        label: 'Cấu hình gom nhóm',
-        path: '/company/setting-group',
-        icon: <Settings2 size={20} />
-    },
     // {
     //     id: 'capacity',
-    //     label: 'Năng lực kho',
+    //     label: 'Năng lực đơn vị thu gom',
     //     path: '/company/capacity',
     //     icon: <Warehouse size={20} />
     // },

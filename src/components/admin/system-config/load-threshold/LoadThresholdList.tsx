@@ -60,7 +60,7 @@ const LoadThresholdList: React.FC<LoadThresholdListProps> = ({ configs, loading,
               ) : (
                 <tr>
                   <td colSpan={6} className='text-center py-8 text-gray-400'>
-                    Không có dữ liệu ngưỡng tải kho.
+                    Không có dữ liệu ngưỡng tải đơn vị thu gom.
                   </td>
                 </tr>
               )}

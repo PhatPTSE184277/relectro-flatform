@@ -289,7 +289,7 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, companyType, onC
                             <div className="flex items-center gap-2 mb-4">
                                 <MapPin className="w-4 h-4 text-primary-500" />
                                 <span className="text-sm font-bold text-primary-700 uppercase tracking-wide">
-                                    Danh sách kho liên kết
+                                    Danh sách đơn vị thu gom liên kết
                                 </span>
                             </div>
 
@@ -300,7 +300,7 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, companyType, onC
                                             <thead className="bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100">
                                                 <tr>
                                                     <th className="py-3 px-4 text-center w-16">STT</th>
-                                                    <th className="py-3 px-4 text-left w-56">Tên kho</th>
+                                                    <th className="py-3 px-4 text-left w-56">Tên đơn vị thu gom</th>
                                                     <th className="py-3 px-4 text-left">Địa chỉ</th>
                                                     <th className="py-3 px-4 text-center w-40">Giờ mở cửa</th>
                                                 </tr>
@@ -332,7 +332,7 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, companyType, onC
                                                 ) : (
                                                     <tr>
                                                         <td colSpan={4} className="text-center py-8 text-gray-400">
-                                                            Không có kho liên kết nào.
+                                                            Không có đơn vị thu gom liên kết nào.
                                                         </td>
                                                     </tr>
                                                 )}

@@ -240,7 +240,7 @@ const RegisterOffDayModal: React.FC<Props> = ({
               <CalendarDays className='text-white' size={20} />
             </span>
             <div>
-              <h2 className='text-2xl font-bold text-gray-800'>{step === 1 ? 'Chọn công ty & kho' : 'Chọn ngày & lý do'}</h2>
+              <h2 className='text-2xl font-bold text-gray-800'>{step === 1 ? 'Chọn công ty & đơn vị thu gom' : 'Chọn ngày & lý do'}</h2>
             </div>
           </div>
 

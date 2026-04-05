@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { X, MapPin, CheckCircle, Package, Clock3 } from 'lucide-react';
 import { useTrackingContext } from '@/contexts/admin/TrackingContext';
 import SummaryCard from '@/components/ui/SummaryCard';
-import ProductList from '@/components/small-collector/package/modal/ProductList';
+import ProductList from '@/components/collection-point/package/modal/ProductList';
 import Pagination from '@/components/ui/Pagination';
 import { formatTimeWithDate } from '@/utils/FormatTime';
 

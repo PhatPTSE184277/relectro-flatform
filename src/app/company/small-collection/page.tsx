@@ -53,7 +53,7 @@ const SmallCollectionPage: React.FC = () => {
             try {
                 const configs = await getActiveSystemConfigs('Excel');
                 setTemplateUrl(
-                    pickExcelTemplateUrl(configs, ['kho', 'small collection', 'diem thu gom'])
+                    pickExcelTemplateUrl(configs, ['đơn vị thu gom', 'small collection', 'diem thu gom'])
                 );
             } catch {
                 setTemplateUrl(null);
