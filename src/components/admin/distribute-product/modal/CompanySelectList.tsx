@@ -73,6 +73,7 @@ const CompanySelectList: React.FC<CompanySelectListProps> = ({
                                 {company.companyName || company.name || 'N/A'}
                             </div>
                         </div>
+                        {/* Dropdown expand button commented out as requested
                         {visibleWarehouses.length > 0 ? (
                             <button
                                 type='button'
@@ -90,6 +91,7 @@ const CompanySelectList: React.FC<CompanySelectListProps> = ({
                                 )}
                             </button>
                         ) : null}
+                        */}
                     </div>
                 </td>
                 <td className='py-3 px-4 w-[34vw]'>
