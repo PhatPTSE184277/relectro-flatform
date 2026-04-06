@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { filterVehicles, getVehicleById, approveVehicle as approveVehicleApi, blockVehicle as blockVehicleApi, VehicleItem, VehicleListPagingResponse } from '@/services/collection-point/VehicleService';
+import { filterVehicles, getVehicleById, approveVehicle as approveVehicleApi, blockVehicle as blockVehicleApi, importVehiclesExcel, VehicleItem, VehicleListPagingResponse } from '@/services/collection-point/VehicleService';
 import { useAuth } from '@/hooks/useAuth';
 
 export type VehicleStatusFilter = 'Đang hoạt động' | 'Không hoạt động';
@@ -19,6 +19,7 @@ interface VehicleContextType {
     fetchVehicleDetail: (id: string) => Promise<void>;
     approveVehicle: (vehicleId: string) => Promise<void>;
     blockVehicle: (vehicleId: string) => Promise<void>;
+    importVehicles: (file: File) => Promise<any>;
     setPage: (page: number) => void;
 }
 
@@ -123,6 +124,20 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
         }
     }, [fetchVehicles]);
 
+    const importVehicles = useCallback(async (file: File) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const result = await importVehiclesExcel(file);
+            return result;
+        } catch (err: any) {
+            setError(err?.response?.data?.message || 'Lỗi khi import phương tiện');
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     const value: VehicleContextType = {
         loading,
         actionLoading,
@@ -136,6 +151,7 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
         fetchVehicleDetail,
         approveVehicle,
         blockVehicle,
+        importVehicles,
         setPage,
     };
 

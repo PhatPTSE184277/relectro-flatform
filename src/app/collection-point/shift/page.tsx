@@ -22,7 +22,7 @@ import { pickExcelTemplateUrl } from '@/utils/excelTemplateConfig';
 const ShiftPageContent: React.FC = () => {
     const { user } = useAuth();
     const { shifts, loading, fetchShifts, importShifts, page, limit, totalPages, setPage } = useShiftContext();
-    const { smallCollections, loading: loadingSmallCollections, fetchSmallCollections } = useSmallCollectionContext();
+    const { smallCollections } = useSmallCollectionContext();
     const [selectedShift, setSelectedShift] = useState<any | null>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [search, setSearch] = useState('');
@@ -70,17 +70,6 @@ const ShiftPageContent: React.FC = () => {
     const handleToDateChange = (nextToDate: string) => {
         setPage(1);
         setToDate(nextToDate);
-    };
-
-    const getWarehouseId = (warehouse: any): string => {
-        return String(
-            warehouse?.smallCollectionPointId ||
-            warehouse?.smallCollectionPointsId ||
-            warehouse?.pointId ||
-            warehouse?.smallPointId ||
-            warehouse?.id ||
-            ''
-        );
     };
 
     // warehouse selection removed (do not auto-fetch small collections)

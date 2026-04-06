@@ -55,14 +55,9 @@ const ImportVehicleModal: React.FC<ImportVehicleModalProps> = ({ open, onClose, 
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            {/* Overlay */}
-            <div
-                className="absolute inset-0 bg-black/30 backdrop-blur-sm"
-            ></div>
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
 
-            {/* Modal container */}
             <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn">
-                {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-primary-50 to-primary-100">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-800">Nhập File Excel</h2>
@@ -71,12 +66,12 @@ const ImportVehicleModal: React.FC<ImportVehicleModalProps> = ({ open, onClose, 
                     <button
                         onClick={handleClose}
                         className="text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer transition"
+                        aria-label="Đóng"
                     >
                         <X size={28} />
                     </button>
                 </div>
 
-                {/* Body */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-white">
                     <div className="bg-white rounded-xl p-4 shadow-sm border border-primary-100 flex flex-col items-center gap-4">
                         <label className="cursor-pointer flex flex-col items-center justify-center w-40 h-40 border-2 border-dashed border-primary-300 rounded-lg hover:border-primary-400 hover:bg-primary-50 transition">
@@ -100,7 +95,6 @@ const ImportVehicleModal: React.FC<ImportVehicleModalProps> = ({ open, onClose, 
                     </div>
                 </div>
 
-                {/* Footer */}
                 <div className="flex justify-end items-center gap-3 p-5 border-t border-primary-100 bg-white">
                     <button
                         onClick={handleImport}
@@ -119,7 +113,6 @@ const ImportVehicleModal: React.FC<ImportVehicleModalProps> = ({ open, onClose, 
                 </div>
             </div>
 
-            {/* Animation */}
             <style jsx>{`
                 @keyframes fadeIn {
                     from {

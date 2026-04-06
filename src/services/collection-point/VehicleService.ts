@@ -57,3 +57,15 @@ export const blockVehicle = async (id: string): Promise<any> => {
 	const response = await axios.patch(`/management/vehicles/${id}/block`);
 	return response.data;
 };
+
+// Import phương tiện từ file Excel
+export const importVehiclesExcel = async (file: File): Promise<any> => {
+	const formData = new FormData();
+	formData.append('file', file);
+	const response = await axios.post('/vehicle/import-excel', formData, {
+		headers: {
+			'Content-Type': 'multipart/form-data',
+		},
+	});
+	return response.data;
+};

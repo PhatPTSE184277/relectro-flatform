@@ -4,31 +4,19 @@ import React, { useState, useEffect } from 'react';
 import { useVehicleContext } from '@/contexts/company/VehicleContext';
 import VehicleList from '@/components/company/vehicle/VehicleList';
 import VehicleDetail from '@/components/company/vehicle/modal/VehicleDetail';
-import ImportVehicleModal from '@/components/company/vehicle/modal/ImportVehicleModal';
 import VehicleFilter, { VehicleStatus } from '@/components/company/vehicle/VehicleFilter';
 import SearchBox from '@/components/ui/SearchBox';
-import { Truck, Download } from 'lucide-react';
-import { IoCloudUploadOutline } from 'react-icons/io5';
+import { Truck } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import Pagination from '@/components/ui/Pagination';
-import Toast from '@/components/ui/Toast';
-import { getActiveSystemConfigs } from '@/services/admin/SystemConfigService';
-import { pickExcelTemplateUrl } from '@/utils/excelTemplateConfig';
 
 const VehiclePage: React.FC = () => {
     const { user } = useAuth();
-    const { vehicles, loading, fetchVehicles, importVehicles, page, limit, total, setPage } = useVehicleContext();
+    const { vehicles, loading, fetchVehicles, page, limit, total, setPage } = useVehicleContext();
     const [selectedVehicle, setSelectedVehicle] = useState<any | null>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
-    const [showImportModal, setShowImportModal] = useState(false);
     const [search, setSearch] = useState('');
     const [filterStatus, setFilterStatus] = useState<VehicleStatus>('active');
-    const [templateUrl, setTemplateUrl] = useState<string | null>(null);
-    const [toast, setToast] = useState<{ open: boolean; type: 'success' | 'error'; message: string }>({
-        open: false,
-        type: 'error',
-        message: ''
-    });
 
     const companyId = user?.collectionCompanyId;
 
@@ -43,19 +31,6 @@ const VehiclePage: React.FC = () => {
         }
     }, [fetchVehicles, companyId, filterStatus, page, limit]);
 
-    useEffect(() => {
-        const loadTemplate = async () => {
-            try {
-                const configs = await getActiveSystemConfigs('Excel');
-                setTemplateUrl(pickExcelTemplateUrl(configs, ['phuong tien', 'vehicle']));
-            } catch {
-                setTemplateUrl(null);
-            }
-        };
-
-        void loadTemplate();
-    }, []);
-
     const handleViewDetail = (vehicle: any) => {
         setSelectedVehicle(vehicle);
         setShowDetailModal(true);
@@ -64,28 +39,6 @@ const VehiclePage: React.FC = () => {
     const handleCloseModal = () => {
         setShowDetailModal(false);
         setSelectedVehicle(null);
-    };
-
-    const handleImportExcel = async (file: File): Promise<boolean> => {
-        if (!companyId) {
-            setToast({ open: true, type: 'error', message: 'Thêm dữ liệu thất bại' });
-            return false;
-        }
-        try {
-            await importVehicles(file);
-
-            await fetchVehicles({
-                collectionCompanyId: companyId,
-                status: filterStatus,
-                page,
-                limit,
-            });
-            setToast({ open: true, type: 'success', message: 'Thêm dữ liệu hoàn tất' });
-            return true;
-        } catch {
-            setToast({ open: true, type: 'error', message: 'Thêm dữ liệu thất bại' });
-            return false;
-        }
     };
 
     const filteredVehicles = vehicles.filter((vehicle) => {
@@ -101,7 +54,7 @@ const VehiclePage: React.FC = () => {
 
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
 
-            {/* Header + Import + Search */}
+            {/* Header + Search */}
             <div className='flex justify-between items-center mb-6'>
                 <div className='flex items-center gap-3'>
                     <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center border border-primary-200'>
@@ -112,29 +65,6 @@ const VehiclePage: React.FC = () => {
                     </h1>
                 </div>
                 <div className='flex gap-4 items-center flex-1 justify-end'>
-                    <a
-                        href={templateUrl || '#'}
-                        download
-                        onClick={(e) => {
-                            if (!templateUrl) e.preventDefault();
-                        }}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition font-medium shadow-sm ${
-                            templateUrl
-                                ? 'border-primary-300 text-primary-600 hover:bg-primary-50'
-                                : 'border-gray-200 text-gray-400 cursor-not-allowed'
-                        }`}
-                    >
-                        <Download size={18} />
-                        Tải file mẫu
-                    </a>
-                    <button
-                        type='button'
-                        className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md border border-primary-200 cursor-pointer'
-                        onClick={() => setShowImportModal(true)}
-                    >
-                        <IoCloudUploadOutline size={20} />
-                        Nhập từ Excel
-                    </button>
                     <div className='flex-1 max-w-md'>
                         <SearchBox
                             value={search}
@@ -168,15 +98,6 @@ const VehiclePage: React.FC = () => {
                 onPageChange={setPage}
             />
 
-            {/* Import Excel Modal */}
-            {showImportModal && (
-                <ImportVehicleModal
-                    open={showImportModal}
-                    onClose={() => setShowImportModal(false)}
-                    onImport={handleImportExcel}
-                />
-            )}
-
             {/* Detail Modal */}
             {showDetailModal && (
                 <VehicleDetail
@@ -184,13 +105,6 @@ const VehiclePage: React.FC = () => {
                     onClose={handleCloseModal}
                 />
             )}
-
-            <Toast
-                open={toast.open}
-                type={toast.type}
-                message={toast.message}
-                onClose={() => setToast({ ...toast, open: false })}
-            />
         </div>
     );
 };

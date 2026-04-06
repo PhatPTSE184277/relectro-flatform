@@ -1,31 +1,56 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Truck } from 'lucide-react';
+import { Truck, Download } from 'lucide-react';
+import { IoCloudUploadOutline } from 'react-icons/io5';
 import { useVehicleContext, VehicleStatusFilter } from '@/contexts/collection-point/VehicleContext';
 import VehicleFilter from '@/components/collection-point/vehicle/VehicleFilter';
 import VehicleList from '@/components/collection-point/vehicle/VehicleList';
 import VehicleDetail from '@/components/collection-point/vehicle/modal/VehicleDetail';
 import VehicleApprove from '@/components/collection-point/vehicle/modal/VehicleApprove';
 import VehicleBlock from '@/components/collection-point/vehicle/modal/VehicleBlock';
+import ImportVehicleModal from '@/components/collection-point/vehicle/modal/ImportVehicleModal';
 import SearchBox from '@/components/ui/SearchBox';
 import Pagination from '@/components/ui/Pagination';
+import Toast from '@/components/ui/Toast';
 import { VehicleItem } from '@/services/collection-point/VehicleService';
+import { getActiveSystemConfigs } from '@/services/admin/SystemConfigService';
+import { pickExcelTemplateUrl } from '@/utils/excelTemplateConfig';
 
 const VehiclePage: React.FC = () => {
-    const { vehicles, loading, actionLoading, fetchVehicles, approveVehicle, blockVehicle, page, totalPages, setPage } = useVehicleContext();
+    const { vehicles, loading, actionLoading, fetchVehicles, approveVehicle, blockVehicle, importVehicles, page, totalPages, setPage } = useVehicleContext();
     const [filterStatus, setFilterStatus] = useState<VehicleStatusFilter>('Đang hoạt động');
     const [search, setSearch] = useState('');
     const [selectedVehicle, setSelectedVehicle] = useState<VehicleItem | null>(null);
     const [showDetail, setShowDetail] = useState(false);
+    const [showImportModal, setShowImportModal] = useState(false);
     const [pendingApproveId, setPendingApproveId] = useState<string | null>(null);
     const [pendingBlockId, setPendingBlockId] = useState<string | null>(null);
+    const [templateUrl, setTemplateUrl] = useState<string | null>(null);
+    const [toast, setToast] = useState<{ open: boolean; type: 'success' | 'error'; message: string }>({
+        open: false,
+        type: 'error',
+        message: ''
+    });
 
     const ITEMS_PER_PAGE = 10;
 
     useEffect(() => {
         fetchVehicles(filterStatus, page, ITEMS_PER_PAGE, search.trim());
     }, [fetchVehicles, filterStatus, page, search]);
+
+    useEffect(() => {
+        const loadTemplate = async () => {
+            try {
+                const configs = await getActiveSystemConfigs('Excel');
+                setTemplateUrl(pickExcelTemplateUrl(configs, ['phuong tien', 'vehicle']));
+            } catch {
+                setTemplateUrl(null);
+            }
+        };
+
+        void loadTemplate();
+    }, []);
 
     const handleFilterChange = (status: VehicleStatusFilter) => {
         setFilterStatus(status);
@@ -39,6 +64,18 @@ const VehiclePage: React.FC = () => {
     const handleCloseDetail = () => {
         setShowDetail(false);
         setSelectedVehicle(null);
+    };
+
+    const handleImportExcel = async (file: File): Promise<boolean> => {
+        try {
+            await importVehicles(file);
+            await fetchVehicles(filterStatus, page, ITEMS_PER_PAGE, search.trim());
+            setToast({ open: true, type: 'success', message: 'Thêm dữ liệu hoàn tất' });
+            return true;
+        } catch {
+            setToast({ open: true, type: 'error', message: 'Thêm dữ liệu thất bại' });
+            return false;
+        }
     };
 
     useEffect(() => {
@@ -55,12 +92,37 @@ const VehiclePage: React.FC = () => {
                     </div>
                     <h1 className='text-3xl font-bold text-gray-900'>Quản lý phương tiện</h1>
                 </div>
-                <div className='flex-1 max-w-md ml-6'>
-                    <SearchBox
-                        value={search}
-                        onChange={setSearch}
-                        placeholder='Tìm kiếm biển số, loại xe...'
-                    />
+                <div className='flex gap-4 items-center flex-1 justify-end'>
+                    <a
+                        href={templateUrl || '#'}
+                        download
+                        onClick={(e) => {
+                            if (!templateUrl) e.preventDefault();
+                        }}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition font-medium shadow-sm ${
+                            templateUrl
+                                ? 'border-primary-300 text-primary-600 hover:bg-primary-50'
+                                : 'border-gray-200 text-gray-400 cursor-not-allowed'
+                        }`}
+                    >
+                        <Download size={18} />
+                        Tải file mẫu
+                    </a>
+                    <button
+                        type='button'
+                        className='flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md border border-primary-200 cursor-pointer'
+                        onClick={() => setShowImportModal(true)}
+                    >
+                        <IoCloudUploadOutline size={20} />
+                        Nhập từ Excel
+                    </button>
+                    <div className='flex-1 max-w-md'>
+                        <SearchBox
+                            value={search}
+                            onChange={setSearch}
+                            placeholder='Tìm kiếm biển số, loại xe...'
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -92,6 +154,15 @@ const VehiclePage: React.FC = () => {
                 <VehicleDetail vehicle={selectedVehicle} onClose={handleCloseDetail} />
             )}
 
+            {/* Import Excel Modal */}
+            {showImportModal && (
+                <ImportVehicleModal
+                    open={showImportModal}
+                    onClose={() => setShowImportModal(false)}
+                    onImport={handleImportExcel}
+                />
+            )}
+
             {/* Confirm approve (from table row) */}
             <VehicleApprove
                 open={!!pendingApproveId}
@@ -112,6 +183,13 @@ const VehiclePage: React.FC = () => {
                     setPendingBlockId(null);
                 }}
                 loading={actionLoading}
+            />
+
+            <Toast
+                open={toast.open}
+                type={toast.type}
+                message={toast.message}
+                onClose={() => setToast({ ...toast, open: false })}
             />
         </div>
     );
