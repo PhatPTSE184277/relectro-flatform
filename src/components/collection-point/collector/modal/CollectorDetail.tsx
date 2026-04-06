@@ -88,6 +88,7 @@ const CollectorDetail: React.FC<CollectorDetailProps> = ({ collector, onClose })
                                     icon: <MapPin size={14} className="text-primary-400" />,
                                     label: 'Đơn vị thu gom',
                                     value: collector.smallCollectionPointName || 'Chưa có',
+                                    colSpan: 2,
                                 },
                             ]}
                         />

@@ -11,6 +11,11 @@ interface VehicleContextType {
     actionLoading: boolean;
     vehicles: VehicleItem[];
     totalItems: number;
+    stats: {
+        total: number;
+        active: number;
+        inactive: number;
+    };
     page: number;
     totalPages: number;
     selectedVehicle: VehicleItem | null;
@@ -31,6 +36,11 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
     const [actionLoading, setActionLoading] = useState(false);
     const [vehicles, setVehicles] = useState<VehicleItem[]>([]);
     const [totalItems, setTotalItems] = useState(0);
+    const [stats, setStats] = useState({
+        total: 0,
+        active: 0,
+        inactive: 0,
+    });
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [selectedVehicle, setSelectedVehicle] = useState<VehicleItem | null>(null);
@@ -39,6 +49,42 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
     const currentPageRef = React.useRef<number>(1);
     const currentLimitRef = React.useRef<number>(10);
     const currentPlateNumberRef = React.useRef<string>('');
+    const lastStatsKeyRef = React.useRef<string>('');
+
+    const fetchVehicleStats = useCallback(async (smallCollectionPointId: string, plateNumber: string) => {
+        try {
+            const [allRes, activeRes, inactiveRes] = await Promise.all([
+                filterVehicles({
+                    smallCollectionPointId,
+                    page: 1,
+                    limit: 1,
+                    plateNumber,
+                }),
+                filterVehicles({
+                    smallCollectionPointId,
+                    status: 'Đang hoạt động',
+                    page: 1,
+                    limit: 1,
+                    plateNumber,
+                }),
+                filterVehicles({
+                    smallCollectionPointId,
+                    status: 'Không hoạt động',
+                    page: 1,
+                    limit: 1,
+                    plateNumber,
+                }),
+            ]);
+
+            setStats({
+                total: allRes?.totalItems || 0,
+                active: activeRes?.totalItems || 0,
+                inactive: inactiveRes?.totalItems || 0,
+            });
+        } catch {
+            // Ignore stats errors to avoid blocking main list
+        }
+    }, []);
 
     const fetchVehicles = useCallback(async (
         status?: VehicleStatusFilter,
@@ -65,6 +111,13 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
             setTotalItems(data?.totalItems || 0);
             setTotalPages(data?.totalPages || 1);
             setPage(data?.page || 1);
+
+            // Fetch stats in background (avoid refetching on page-only changes)
+            const statsKey = `${user.smallCollectionPointId}::${plateNumber}`;
+            if (lastStatsKeyRef.current !== statsKey) {
+                lastStatsKeyRef.current = statsKey;
+                void fetchVehicleStats(user.smallCollectionPointId, plateNumber);
+            }
         } catch (err: any) {
             console.log(err);
             setError(err?.response?.data?.message || 'Lỗi khi tải phương tiện');
@@ -72,7 +125,7 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
         } finally {
             setLoading(false);
         }
-    }, [user?.smallCollectionPointId]);
+    }, [user?.smallCollectionPointId, fetchVehicleStats]);
 
     const fetchVehicleDetail = useCallback(async (id: string) => {
         setLoading(true);
@@ -143,6 +196,7 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
         actionLoading,
         vehicles,
         totalItems,
+        stats,
         page,
         totalPages,
         selectedVehicle,

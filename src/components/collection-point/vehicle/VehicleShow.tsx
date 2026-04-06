@@ -35,9 +35,6 @@ const VehicleShow: React.FC<VehicleShowProps> = ({ vehicle, onView, onApprove, o
             <td className='py-3 px-4 text-right text-gray-700 w-[12vw]'>
                 {vehicle.capacityKg ? `${vehicle.capacityKg}` : <span className='text-gray-400'>Chưa có</span>}
             </td>
-            <td className='py-3 px-4 text-gray-700 w-[14vw]'>
-                {vehicle.smallCollectionPointName || <span className='text-gray-400'>Chưa có</span>}
-            </td>
             <td className='py-3 px-4 w-[10vw]'>
                 <div className='flex justify-center items-center gap-2'>
                     <button

@@ -12,6 +12,7 @@ import {
 import { SmallCollectionPoint } from '@/types';
 import CollectionPointApprove from './CollectionPointApprove';
 import CollectionPointBlock from './CollectionPointBlock';
+import { getCompanyCategories, CompanyCategoryResponse } from '@/services/admin/CompanyCategoryService';
 
 interface CompanyDetailProps {
     company: any;
@@ -46,6 +47,9 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, companyType, onC
     const [actionLoading, setActionLoading] = useState(false);
     const [pendingApproveId, setPendingApproveId] = useState<string | number | null>(null);
     const [pendingBlockId, setPendingBlockId] = useState<string | number | null>(null);
+    const [activeRecycleTab, setActiveRecycleTab] = useState<'linked' | 'categories'>('linked');
+    const [companyCategories, setCompanyCategories] = useState<CompanyCategoryResponse | null>(null);
+    const [companyCategoriesLoading, setCompanyCategoriesLoading] = useState(false);
     const isRecycleCompany = String(companyType || company?.type || '').toLowerCase().includes('tái chế');
     const warehouses = Array.isArray(company?.warehouses) ? company.warehouses : [];
 
@@ -60,6 +64,13 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, companyType, onC
     useEffect(() => {
         if (!company?.id || isRecycleCompany) return;
         loadPoints(company.id);
+    }, [company?.id, isRecycleCompany]);
+
+    useEffect(() => {
+        if (!company?.id || !isRecycleCompany) return;
+
+        setActiveRecycleTab('linked');
+        setCompanyCategories(null);
     }, [company?.id, isRecycleCompany]);
 
     const handleApprove = async () => {
@@ -83,6 +94,19 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, companyType, onC
         } finally {
             setActionLoading(false);
             setPendingBlockId(null);
+        }
+    };
+
+    const loadCompanyCategories = async () => {
+        if (!company?.id) return;
+        setCompanyCategoriesLoading(true);
+        try {
+            const response = await getCompanyCategories(String(company.id));
+            setCompanyCategories(response ?? null);
+        } catch {
+            setCompanyCategories(null);
+        } finally {
+            setCompanyCategoriesLoading(false);
         }
     };
 
@@ -115,7 +139,7 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, companyType, onC
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
 
             {/* Modal container */}
-            <div className="relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]">
+            <div className="relative w-full max-w-7xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh]">
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100">
                     <div>
@@ -165,6 +189,42 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, companyType, onC
                             },
                         ]}
                     />
+
+                    {isRecycleCompany ? (
+                        <div className='mt-4'>
+                            <div className='bg-white rounded-2xl shadow border border-gray-100 px-3 py-2'>
+                                <div className='flex items-center gap-2 flex-wrap min-h-9'>
+                                    <button
+                                        type='button'
+                                        onClick={() => setActiveRecycleTab('linked')}
+                                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[200px] ${
+                                            activeRecycleTab === 'linked'
+                                                ? 'bg-primary-600 text-white'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        Đơn vị thu gom liên kết
+                                    </button>
+                                    <button
+                                        type='button'
+                                        onClick={() => {
+                                            setActiveRecycleTab('categories');
+                                            if (!companyCategories && !companyCategoriesLoading) {
+                                                void loadCompanyCategories();
+                                            }
+                                        }}
+                                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[200px] ${
+                                            activeRecycleTab === 'categories'
+                                                ? 'bg-primary-600 text-white'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        Các danh mục đã đăng ký
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ) : null}
 
                     {/* Small collection section */}
                     {!isRecycleCompany && (
@@ -284,14 +344,8 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, companyType, onC
                     )}
 
                     {/* Warehouse section for recycle company */}
-                    {isRecycleCompany && (
+                    {isRecycleCompany && activeRecycleTab === 'linked' && (
                         <div className="mt-2">
-                            <div className="flex items-center gap-2 mb-4">
-                                <MapPin className="w-4 h-4 text-primary-500" />
-                                <span className="text-sm font-bold text-primary-700 uppercase tracking-wide">
-                                    Danh sách đơn vị thu gom liên kết
-                                </span>
-                            </div>
 
                             <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
                                 <div className="overflow-x-auto">
@@ -300,7 +354,7 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, companyType, onC
                                             <thead className="bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100">
                                                 <tr>
                                                     <th className="py-3 px-4 text-center w-16">STT</th>
-                                                    <th className="py-3 px-4 text-left w-56">Tên đơn vị thu gom</th>
+                                                    <th className="py-3 px-4 text-left w-126">Tên đơn vị thu gom</th>
                                                     <th className="py-3 px-4 text-left">Địa chỉ</th>
                                                     <th className="py-3 px-4 text-center w-40">Giờ mở cửa</th>
                                                 </tr>
@@ -333,6 +387,56 @@ const CompanyDetail: React.FC<CompanyDetailProps> = ({ company, companyType, onC
                                                     <tr>
                                                         <td colSpan={4} className="text-center py-8 text-gray-400">
                                                             Không có đơn vị thu gom liên kết nào.
+                                                        </td>
+                                                    </tr>
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {isRecycleCompany && activeRecycleTab === 'categories' && (
+                        <div className='mt-2'>
+                            <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
+                                <div className='overflow-x-auto'>
+                                    <div className='max-h-64 overflow-y-auto'>
+                                        <table className='min-w-full text-sm text-gray-800 table-fixed'>
+                                            <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
+                                                <tr>
+                                                    <th className='py-3 px-4 text-center w-16'>STT</th>
+                                                    <th className='py-3 px-4 text-left'>Tên danh mục</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {companyCategoriesLoading ? (
+                                                    <tr>
+                                                        <td colSpan={2} className='text-center py-8 text-gray-400'>
+                                                            Đang tải...
+                                                        </td>
+                                                    </tr>
+                                                ) : (companyCategories?.categoryDetails?.length ?? 0) > 0 ? (
+                                                    companyCategories!.categoryDetails.map((c, idx) => (
+                                                        <tr
+                                                            key={c.categoryId}
+                                                            className={`${idx !== companyCategories!.categoryDetails.length - 1 ? 'border-b border-primary-100' : ''} ${
+                                                                idx % 2 === 0 ? 'bg-white' : 'bg-primary-50'
+                                                            }`}
+                                                        >
+                                                            <td className='py-3 px-4 text-center'>
+                                                                <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm flex items-center justify-center font-semibold mx-auto'>
+                                                                    {idx + 1}
+                                                                </span>
+                                                            </td>
+                                                            <td className='py-3 px-4 font-medium text-gray-900'>{c.name}</td>
+                                                        </tr>
+                                                    ))
+                                                ) : (
+                                                    <tr>
+                                                        <td colSpan={2} className='text-center py-8 text-gray-400'>
+                                                            Chưa đăng ký danh mục nào.
                                                         </td>
                                                     </tr>
                                                 )}

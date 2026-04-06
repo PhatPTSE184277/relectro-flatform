@@ -36,6 +36,12 @@ export const adminMenuItems = [
         path: '/admin/distribute-product',
         icon: <Package size={20} />
     },
+     {
+        id: 'company',
+        label: 'Công ty',
+        path: '/admin/company',
+        icon: <Factory size={20} />
+    },
     {
         id: 'assign-recycling',
         label: 'Phân công tái chế',
@@ -47,12 +53,6 @@ export const adminMenuItems = [
         label: 'Danh mục',
         path: '/admin/category',
         icon: <Layers size={20} />
-    },
-    {
-        id: 'company',
-        label: 'Công ty',
-        path: '/admin/company',
-        icon: <Factory size={20} />
     },
     {
         id: 'company-config',

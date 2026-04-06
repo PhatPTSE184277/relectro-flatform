@@ -98,7 +98,6 @@ const PackageDetail: React.FC<PackageDetailProps> = ({
                 label: 'Đơn vị thu gom',
                 value:
                     detail?.smallCollectionPointsName ||
-                    detail?.smallCollectionPointsAddress ||
                     'N/A'
             },
             {

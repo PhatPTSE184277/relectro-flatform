@@ -1,6 +1,5 @@
 import React from 'react';
 import { formatNumber } from '@/utils/formatNumber';
-import { ChevronDown, ChevronRight } from 'lucide-react';
 
 interface CompanySelectListProps {
     company: any;
@@ -13,16 +12,16 @@ interface CompanySelectListProps {
     disabled?: boolean;
 }
 
-const CompanySelectList: React.FC<CompanySelectListProps> = ({
-    company,
-    stt,
-    isSelected,
-    onToggleSelect,
-    isExpanded,
-    onToggleExpand,
-    isLast = false,
-    disabled = false
-}) => {
+const CompanySelectList: React.FC<CompanySelectListProps> = (props) => {
+    const {
+        company,
+        stt,
+        isSelected,
+        onToggleSelect,
+        isExpanded,
+        isLast = false,
+        disabled = false
+    } = props;
     const formatM3 = (value: any) => {
         const num = Number(value);
         if (!Number.isFinite(num)) return '0';

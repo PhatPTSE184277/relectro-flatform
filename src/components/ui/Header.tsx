@@ -284,7 +284,16 @@ const Header = ({ href, profileHref, onMenuClick }: HeaderProps) => {
                             <>
                                 {user.role && (
                                     <span className={`hidden sm:inline-flex items-center text-sm ${textColorClass} bg-primary-50 rounded-full px-3 py-1 font-medium mr-2 shadow-sm`}>
-                                        Chào mừng {greetingText}
+                                        {user.role === 'AdminWarehouse'
+                                            ? (
+                                                <>
+                                                    Chào mừng Quản trị {user.smallCollectionName ? ` ${user.smallCollectionName}` : ''}
+                                                </>
+                                              )
+                                            : (
+                                                <>Chào mừng {greetingText}</>
+                                              )
+                                        }
                                     </span>
                                 )}
                                 {/* Notification Bell: For Admin, AdminWarehouse, AdminCompany, RecyclingCompany */}

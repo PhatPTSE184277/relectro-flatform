@@ -1,7 +1,4 @@
-import {
-    Package,
-    Tag
-} from 'lucide-react';
+import { Package } from 'lucide-react';
 
 export const recyclerMenuItems = [
     {
@@ -10,10 +7,4 @@ export const recyclerMenuItems = [
         path: '/recycle/package',
         icon: <Package size={20} />
     },
-    {
-        id: 'category-registration',
-        label: 'Đăng ký danh mục',
-        path: '/recycle/category-registration',
-        icon: <Tag size={20} />
-    }
 ];

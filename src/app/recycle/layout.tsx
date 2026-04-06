@@ -8,7 +8,6 @@ import { RecyclerPackageProvider } from '@/contexts/recycle/PackageContext';
 import { QRProvider } from '@/contexts/recycle/QRContext';
 import { NotificationProvider, useNotifications } from '@/contexts/NotificationContext';
 import { UserProvider } from '@/contexts/UserContext';
-import { CategoryProvider } from '@/contexts/recycle/CategoryContext';
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
     const { toast, hideToast } = useNotifications();
@@ -48,9 +47,7 @@ export default function RecycleLayout({
             <NotificationProvider>
                 <QRProvider>
                     <RecyclerPackageProvider>
-                        <CategoryProvider>
-                            <LayoutContent>{children}</LayoutContent>
-                        </CategoryProvider>
+                        <LayoutContent>{children}</LayoutContent>
                     </RecyclerPackageProvider>
                 </QRProvider>
             </NotificationProvider>

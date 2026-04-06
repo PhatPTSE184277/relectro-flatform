@@ -37,7 +37,6 @@ const VehicleList: React.FC<VehicleListProps> = ({
                                         <th className='py-3 px-4 text-left w-[14vw]'>Biển số xe</th>
                                         <th className='py-3 px-4 text-left w-[16vw]'>Loại xe</th>
                                         <th className='py-3 px-4 text-right w-[12vw]'>Tải trọng (Kg)</th>
-                                        <th className='py-3 px-4 text-left w-[14vw]'>Điểm thu gom</th>
                                         <th className='py-3 px-4 text-center w-[10vw]'>Hành động</th>
                                     </tr>
                                 </thead>

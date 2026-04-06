@@ -4,10 +4,14 @@ import { VehicleStatusFilter } from '@/contexts/collection-point/VehicleContext'
 
 interface VehicleFilterProps {
     status: VehicleStatusFilter;
+    stats?: {
+        active?: number;
+        inactive?: number;
+    };
     onFilterChange: (status: VehicleStatusFilter) => void;
 }
 
-const VehicleFilter: React.FC<VehicleFilterProps> = ({ status, onFilterChange }) => {
+const VehicleFilter: React.FC<VehicleFilterProps> = ({ status, stats, onFilterChange }) => {
     return (
         <div className="bg-white rounded-2xl shadow border border-gray-100 px-3 py-2 mb-6">
             <div className="flex items-center gap-2 flex-wrap min-h-9">
@@ -22,7 +26,7 @@ const VehicleFilter: React.FC<VehicleFilterProps> = ({ status, onFilterChange })
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Đang hoạt động
+                    Đang hoạt động ({stats?.active ?? 0})
                 </button>
                 <button
                     onClick={() => onFilterChange('Không hoạt động')}
@@ -32,7 +36,7 @@ const VehicleFilter: React.FC<VehicleFilterProps> = ({ status, onFilterChange })
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Không hoạt động
+                    Không hoạt động ({stats?.inactive ?? 0})
                 </button>
             </div>
         </div>

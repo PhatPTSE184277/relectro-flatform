@@ -19,6 +19,8 @@ const SystemConfigShow: React.FC<SystemConfigShowProps> = ({
 }) => {
     const isUrl = config.value?.startsWith('http://') || config.value?.startsWith('https://');
     const rowBg = (index ?? 0) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+    const displayNameLower = String(config.displayName || '').toLowerCase();
+    const isRadiusConfig = displayNameLower.includes('bán kính') && displayNameLower.includes('qr');
     const handleDownload = () => {
         if (config.value) {
             const link = document.createElement('a');
@@ -53,7 +55,9 @@ const SystemConfigShow: React.FC<SystemConfigShowProps> = ({
                         <span className="underline">Tải file</span>
                     </button>
                 ) : (
-                    <span className='font-medium'>{config.value}</span>
+                    <span className='font-medium'>
+                        {config.value ? (isRadiusConfig ? `${config.value} m` : config.value) : ''}
+                    </span>
                 )}
             </td>
 

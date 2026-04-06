@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import CustomNumberInput from '@/components/ui/CustomNumberInput';
+// CustomNumberInput intentionally removed — render read-only value when disabled
 import ProductList from './ProductList';
 import VehicleSelectionModal from './modal/VehicleSelectionModal';
 import { useGroupingContext } from '@/contexts/collection-point/GroupingContext';
@@ -29,7 +29,6 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     products,
     allProductIds,
     loadThreshold,
-    setLoadThreshold,
     onGetSuggestion,
     // onReject,
     // rejectLoading = false,
@@ -124,14 +123,10 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                     Bước 1: Hệ thống sẽ tự động phân chia sản phẩm cho xe
                 </h2>
                 <div className='flex items-center gap-2'>
-                    <label className='text-sm font-medium text-gray-700 whitespace-nowrap'>Ngưỡng tải:</label>
-                    <CustomNumberInput
-                        value={loadThreshold}
-                        onChange={setLoadThreshold}
-                        min={0}
-                        max={100}
-                        className='w-16 px-2 py-1 border border-primary-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 text-primary-600 font-bold bg-white'
-                    />
+                    <label className='text-sm font-bold text-gray-700 whitespace-nowrap'>Ngưỡng tải:</label>
+                    <div className='w-16 px-2 py-1 border border-primary-200 rounded-md text-primary-600 font-bold bg-white opacity-50 cursor-not-allowed flex items-center justify-center'>
+                        {loadThreshold}
+                    </div>
                     <span className='text-primary-600 font-semibold'>%</span>
                 </div>
                 <div className='flex items-center gap-2 ml-auto'>

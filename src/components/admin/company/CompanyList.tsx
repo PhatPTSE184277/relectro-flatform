@@ -6,12 +6,14 @@ interface CompanyListProps {
     companies: any[];
     loading: boolean;
     onViewDetail: (company: any) => void;
+    onRegisterCategory: (company: any) => void;
 }
 
 const CompanyList: React.FC<CompanyListProps> = ({
     companies,
     loading,
-    onViewDetail
+    onViewDetail,
+    onRegisterCategory
 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
@@ -21,9 +23,7 @@ const CompanyList: React.FC<CompanyListProps> = ({
                         <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                             <tr>
                                 <th className='py-3 px-4 text-center w-16'>STT</th>
-                                <th className='py-3 px-4 text-left w-44'>Tên công ty</th>
-                                <th className='py-3 px-4 text-left w-52'>Email</th>
-                                <th className='py-3 px-4 text-left w-36'>Số điện thoại</th>
+                                <th className='py-3 px-4 text-left w-56'>Tên công ty</th>
                                 <th className='py-3 px-4 text-left w-52'>Địa chỉ</th>
                                 <th className='py-3 px-4 text-center w-36'>Hành động</th>
                             </tr>
@@ -39,6 +39,7 @@ const CompanyList: React.FC<CompanyListProps> = ({
                                         key={company.id}
                                         company={company}
                                         onView={() => onViewDetail(company)}
+                                        onRegisterCategory={() => onRegisterCategory(company)}
                                         isLast={idx === companies.length - 1}
                                         index={idx}
                                     />

@@ -18,7 +18,7 @@ import { getActiveSystemConfigs } from '@/services/admin/SystemConfigService';
 import { pickExcelTemplateUrl } from '@/utils/excelTemplateConfig';
 
 const VehiclePage: React.FC = () => {
-    const { vehicles, loading, actionLoading, fetchVehicles, approveVehicle, blockVehicle, importVehicles, page, totalPages, setPage } = useVehicleContext();
+    const { vehicles, loading, actionLoading, fetchVehicles, approveVehicle, blockVehicle, importVehicles, page, totalPages, setPage, stats } = useVehicleContext();
     const [filterStatus, setFilterStatus] = useState<VehicleStatusFilter>('Đang hoạt động');
     const [search, setSearch] = useState('');
     const [selectedVehicle, setSelectedVehicle] = useState<VehicleItem | null>(null);
@@ -127,7 +127,11 @@ const VehiclePage: React.FC = () => {
             </div>
 
             {/* Filter */}
-            <VehicleFilter status={filterStatus} onFilterChange={handleFilterChange} />
+            <VehicleFilter
+                status={filterStatus}
+                stats={{ active: stats.active, inactive: stats.inactive }}
+                onFilterChange={handleFilterChange}
+            />
 
             {/* List */}
             <VehicleList

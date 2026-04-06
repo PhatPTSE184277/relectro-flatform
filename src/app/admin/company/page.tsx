@@ -7,12 +7,15 @@ import { useCompanyContext } from '@/contexts/admin/CompanyContext';
 import CompanyList from '@/components/admin/company/CompanyList';
 import CompanyDetail from '@/components/admin/company/modal/CompanyDetail';
 import ImportExcelModal from '@/components/admin/company/modal/ImportComapnyModal';
+import RegisterCategory from '@/components/admin/company/modal/RegisterCategory';
 import Pagination from '@/components/ui/Pagination';
 import CompanyFilter from '@/components/admin/company/CompanyFilter';
 import { useAuth } from '@/hooks/useAuth';
 import Toast from '@/components/ui/Toast';
 import { getActiveSystemConfigs } from '@/services/admin/SystemConfigService';
 import { pickExcelTemplateUrl } from '@/utils/excelTemplateConfig';
+import { CompanyCategoryProvider } from '@/contexts/admin/CompanyCategoryContext';
+import { getCompanyCategories } from '@/services/admin/CompanyCategoryService';
 
 const CompanyPage: React.FC = () => {
     const { user } = useAuth();
@@ -33,6 +36,10 @@ const CompanyPage: React.FC = () => {
     const [selectedCompany, setSelectedCompany] = useState<any>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false);
+    const [showRegisterCategoryModal, setShowRegisterCategoryModal] = useState(false);
+    const [registerCompany, setRegisterCompany] = useState<any>(null);
+    const [registerLoading, setRegisterLoading] = useState(false);
+    const [currentCategoryIds, setCurrentCategoryIds] = useState<string[]>([]);
     const [templateUrl, setTemplateUrl] = useState<string | null>(null);
     const [toast, setToast] = useState<{ open: boolean; type: 'success' | 'error'; message: string }>({
         open: false,
@@ -89,6 +96,29 @@ const CompanyPage: React.FC = () => {
     const handleCloseModal = () => {
         setShowDetailModal(false);
         setSelectedCompany(null);
+    };
+
+    const handleOpenRegisterCategory = async (company: any) => {
+        if (!company?.id) return;
+
+        setRegisterCompany(company);
+        setRegisterLoading(true);
+        try {
+            const response = await getCompanyCategories(String(company.id));
+            setCurrentCategoryIds(response?.categoryDetails?.map((c) => c.categoryId) ?? []);
+        } catch {
+            setCurrentCategoryIds([]);
+        } finally {
+            setRegisterLoading(false);
+            setShowRegisterCategoryModal(true);
+        }
+    };
+
+    const handleCloseRegisterCategory = () => {
+        setShowRegisterCategoryModal(false);
+        setRegisterCompany(null);
+        setCurrentCategoryIds([]);
+        setRegisterLoading(false);
     };
 
     const handleImportExcel = async (file: File): Promise<boolean> => {
@@ -173,6 +203,7 @@ const CompanyPage: React.FC = () => {
                 companies={companies}
                 loading={loading}
                 onViewDetail={handleViewDetail}
+                onRegisterCategory={handleOpenRegisterCategory}
             />
 
             {/* Phân trang */}
@@ -190,6 +221,30 @@ const CompanyPage: React.FC = () => {
                     onClose={handleCloseModal}
                 />
             )}
+
+            {showRegisterCategoryModal && registerCompany && (
+                <CompanyCategoryProvider>
+                    <RegisterCategory
+                        open={showRegisterCategoryModal}
+                        onClose={handleCloseRegisterCategory}
+                        onSuccess={async () => {
+                            handleCloseRegisterCategory();
+                            await fetchCompanies(page, undefined, type, status);
+                        }}
+                        companyId={String(registerCompany.id)}
+                        currentCategoryIds={currentCategoryIds}
+                    />
+                </CompanyCategoryProvider>
+            )}
+
+            {registerLoading ? (
+                <div className='fixed inset-0 z-50 flex items-center justify-center p-4'>
+                    <div className='absolute inset-0 bg-black/40 backdrop-blur-sm' />
+                    <div className='relative bg-white rounded-2xl px-6 py-4 shadow-2xl border border-gray-100 z-10 text-gray-700 font-medium'>
+                        Đang tải danh mục...
+                    </div>
+                </div>
+            ) : null}
 
             {/* Import Excel Modal */}
             {showImportModal && (

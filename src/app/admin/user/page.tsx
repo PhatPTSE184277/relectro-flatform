@@ -33,22 +33,37 @@ const UserPage = () => {
   });
 
   useEffect(() => {
-    const params: any = {};
-    if (search) params.email = search;
-    if (filterStatus !== 'all') params.status = filterStatus;
-    setFilterParams(params);
+    setFilterParams((prev: any) => {
+      const next = { ...prev };
+
+      if (search) next.email = search;
+      else delete next.email;
+
+      if (filterStatus !== 'all') next.status = filterStatus;
+      else delete next.status;
+
+      if (fromDate) next.FromDate = fromDate;
+      else delete next.FromDate;
+
+      if (toDate) next.ToDate = toDate;
+      else delete next.ToDate;
+
+      // ensure legacy keys are not present
+      delete next.fromDate;
+      delete next.toDate;
+
+      return next;
+    });
     setPage(1);
-  }, [search, filterStatus, setFilterParams, setPage]);
+  }, [search, filterStatus, fromDate, toDate, setFilterParams, setPage]);
 
   const handleFromDateChange = (date: string) => {
     setFromDate(date);
-    setFilterParams({ fromDate: date ? { year: parseInt(date.split('-')[0]), month: parseInt(date.split('-')[1]), dayOfMonth: parseInt(date.split('-')[2]) } : undefined });
     setPage(1);
   };
 
   const handleToDateChange = (date: string) => {
     setToDate(date);
-    setFilterParams({ toDate: date ? { year: parseInt(date.split('-')[0]), month: parseInt(date.split('-')[1]), dayOfMonth: parseInt(date.split('-')[2]) } : undefined });
     setPage(1);
   };
 
