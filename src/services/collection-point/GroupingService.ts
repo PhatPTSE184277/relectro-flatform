@@ -63,7 +63,7 @@ export const getPendingGroupingProducts = async (
     if (page !== undefined) params.page = page;
     if (limit !== undefined) params.limit = limit;
     const response = await axios.get(
-        `/product-query/small-point/${smallPointId}`,
+        `/product-query/collectionUnit/${smallPointId}`,
         { params }
     );
     return response.data;

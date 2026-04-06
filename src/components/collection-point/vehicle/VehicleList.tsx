@@ -10,9 +10,20 @@ interface VehicleListProps {
     onApprove: (vehicleId: string) => void;
     onBlock: (vehicleId: string) => void;
     actionLoading: boolean;
+    page?: number;
+    limit?: number;
 }
 
-const VehicleList: React.FC<VehicleListProps> = ({ vehicles, loading, onViewDetail, onApprove, onBlock, actionLoading }) => {
+const VehicleList: React.FC<VehicleListProps> = ({
+    vehicles,
+    loading,
+    onViewDetail,
+    onApprove,
+    onBlock,
+    actionLoading,
+    page = 1,
+    limit = 10,
+}) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
             <div className='overflow-x-auto w-full'>
@@ -45,7 +56,7 @@ const VehicleList: React.FC<VehicleListProps> = ({ vehicles, loading, onViewDeta
                                                 onBlock={onBlock}
                                                 actionLoading={actionLoading}
                                                 isLast={idx === vehicles.length - 1}
-                                                index={idx}
+                                                index={(page - 1) * limit + idx}
                                             />
                                         ))
                                     ) : (

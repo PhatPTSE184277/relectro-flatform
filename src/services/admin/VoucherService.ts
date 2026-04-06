@@ -32,7 +32,7 @@ export const createVoucher = async (payload: any): Promise<any> => {
 
 export const importVouchersFromExcel = async (file: File): Promise<any> => {
 	const formData = new FormData();
-	formData.append('file', file);
+	formData.append('request', file);
 	const res = await axios.post('/voucher/import-excel', formData, {
 		headers: {
 			'Content-Type': 'multipart/form-data'

@@ -15,7 +15,7 @@ interface VehicleContextType {
     totalPages: number;
     selectedVehicle: VehicleItem | null;
     error: string | null;
-    fetchVehicles: (status?: VehicleStatusFilter, pageNum?: number, limit?: number) => Promise<void>;
+    fetchVehicles: (status?: VehicleStatusFilter, pageNum?: number, limit?: number, plateNumber?: string) => Promise<void>;
     fetchVehicleDetail: (id: string) => Promise<void>;
     approveVehicle: (vehicleId: string) => Promise<void>;
     blockVehicle: (vehicleId: string) => Promise<void>;
@@ -35,14 +35,21 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
     const [selectedVehicle, setSelectedVehicle] = useState<VehicleItem | null>(null);
     const [error, setError] = useState<string | null>(null);
     const currentStatusRef = React.useRef<VehicleStatusFilter | undefined>(undefined);
+    const currentPageRef = React.useRef<number>(1);
+    const currentLimitRef = React.useRef<number>(10);
+    const currentPlateNumberRef = React.useRef<string>('');
 
     const fetchVehicles = useCallback(async (
         status?: VehicleStatusFilter,
         pageNum: number = 1,
-        limit: number = 20
+        limit: number = 10,
+        plateNumber: string = ''
     ) => {
         if (!user?.smallCollectionPointId) return;
         currentStatusRef.current = status;
+        currentPageRef.current = pageNum;
+        currentLimitRef.current = limit;
+        currentPlateNumberRef.current = plateNumber;
         setLoading(true);
         setError(null);
         try {
@@ -51,6 +58,7 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
                 status,
                 page: pageNum,
                 limit,
+                plateNumber,
             });
             setVehicles(data?.data || []);
             setTotalItems(data?.totalItems || 0);
@@ -84,7 +92,12 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
         setError(null);
         try {
             await approveVehicleApi(vehicleId);
-            await fetchVehicles(currentStatusRef.current);
+            await fetchVehicles(
+                currentStatusRef.current,
+                currentPageRef.current,
+                currentLimitRef.current,
+                currentPlateNumberRef.current
+            );
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Lỗi khi duyệt phương tiện');
         } finally {
@@ -97,7 +110,12 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
         setError(null);
         try {
             await blockVehicleApi(vehicleId);
-            await fetchVehicles(currentStatusRef.current);
+            await fetchVehicles(
+                currentStatusRef.current,
+                currentPageRef.current,
+                currentLimitRef.current,
+                currentPlateNumberRef.current
+            );
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Lỗi khi khóa phương tiện');
         } finally {

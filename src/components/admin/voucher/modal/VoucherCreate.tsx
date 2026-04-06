@@ -158,7 +158,7 @@ const VoucherCreate: React.FC<VoucherCreateProps> = ({
 
     return (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
-            <div className='absolute inset-0 bg-black/30 backdrop-blur-sm' onClick={handleClose}></div>
+            <div className='absolute inset-0 bg-black/30 backdrop-blur-sm'></div>
 
             <div className='relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
                 <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-primary-50 to-primary-100'>
@@ -341,14 +341,6 @@ const VoucherCreate: React.FC<VoucherCreateProps> = ({
 
                 <div className='flex justify-end items-center gap-3 p-5 border-t border-primary-100 bg-white'>
                     <div className='flex gap-3'>
-                        <button
-                            type='button'
-                            onClick={handleClose}
-                            className='px-5 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition font-medium cursor-pointer'
-                            disabled={creating || uploadingImage}
-                        >
-                            Hủy
-                        </button>
                         <button
                             type='button'
                             onClick={handleSubmit}

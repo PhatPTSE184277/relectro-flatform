@@ -92,7 +92,7 @@ const TrackingModal: React.FC<TrackingModalProps> = ({ pkg, onClose }) => {
             },
             {
                 icon: <MapPin size={14} className='text-primary-400' />,
-                label: 'Điểm thu gom',
+                label: 'Đơn vị thu gom',
                 value: detail?.smallCollectionPointsName || detail?.smallCollectionPointsAddress || 'N/A'
             },
             {

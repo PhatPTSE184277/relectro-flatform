@@ -78,7 +78,8 @@ export const CompanyProvider: React.FC<Props> = ({ children }) => {
         try {
             const currentPage = customPage ?? pageRef.current;
             const currentLimit = customLimit ?? limitRef.current;
-            const currentType = customType ?? typeRef.current;
+            // Force API to always receive 'Công ty tái chế' as requested
+            const currentType = 'Công ty tái chế';
             const currentStatus = customStatus ?? statusRef.current;
             const currentUser = userRef.current;
             const data: PaginatedCompany = await getCompaniesFilter(currentPage, currentLimit, currentType || undefined, currentStatus || undefined);

@@ -9,10 +9,11 @@ import VehicleDetail from '@/components/collection-point/vehicle/modal/VehicleDe
 import VehicleApprove from '@/components/collection-point/vehicle/modal/VehicleApprove';
 import VehicleBlock from '@/components/collection-point/vehicle/modal/VehicleBlock';
 import SearchBox from '@/components/ui/SearchBox';
+import Pagination from '@/components/ui/Pagination';
 import { VehicleItem } from '@/services/collection-point/VehicleService';
 
 const VehiclePage: React.FC = () => {
-    const { vehicles, loading, actionLoading, fetchVehicles, approveVehicle, blockVehicle } = useVehicleContext();
+    const { vehicles, loading, actionLoading, fetchVehicles, approveVehicle, blockVehicle, page, totalPages, setPage } = useVehicleContext();
     const [filterStatus, setFilterStatus] = useState<VehicleStatusFilter>('Đang hoạt động');
     const [search, setSearch] = useState('');
     const [selectedVehicle, setSelectedVehicle] = useState<VehicleItem | null>(null);
@@ -20,9 +21,11 @@ const VehiclePage: React.FC = () => {
     const [pendingApproveId, setPendingApproveId] = useState<string | null>(null);
     const [pendingBlockId, setPendingBlockId] = useState<string | null>(null);
 
+    const ITEMS_PER_PAGE = 10;
+
     useEffect(() => {
-        fetchVehicles(filterStatus);
-    }, [fetchVehicles, filterStatus]);
+        fetchVehicles(filterStatus, page, ITEMS_PER_PAGE, search.trim());
+    }, [fetchVehicles, filterStatus, page, search]);
 
     const handleFilterChange = (status: VehicleStatusFilter) => {
         setFilterStatus(status);
@@ -38,13 +41,9 @@ const VehiclePage: React.FC = () => {
         setSelectedVehicle(null);
     };
 
-    const filteredVehicles = vehicles.filter((v) => {
-        const q = search.toLowerCase();
-        return (
-            v.plateNumber?.toLowerCase().includes(q) ||
-            v.vehicleType?.toLowerCase().includes(q)
-        );
-    });
+    useEffect(() => {
+        setPage(1);
+    }, [filterStatus, search, setPage]);
 
     return (
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
@@ -70,13 +69,23 @@ const VehiclePage: React.FC = () => {
 
             {/* List */}
             <VehicleList
-                vehicles={filteredVehicles}
+                vehicles={vehicles}
                 loading={loading}
                 onViewDetail={handleViewDetail}
                 onApprove={(id) => setPendingApproveId(id)}
                 onBlock={(id) => setPendingBlockId(id)}
                 actionLoading={actionLoading}
+                page={page}
+                limit={ITEMS_PER_PAGE}
             />
+
+            <div className="mt-4">
+                <Pagination
+                    page={page}
+                    totalPages={Math.max(1, totalPages)}
+                    onPageChange={setPage}
+                />
+            </div>
 
             {/* Detail modal */}
             {showDetail && (

@@ -79,16 +79,7 @@ export const SmallCollectionProvider = ({
         }
     }, []);
 
-    // Auto-fetch small collections khi có collectionCompanyId từ user
-    useEffect(() => {
-        if (user?.collectionCompanyId) {
-            fetchSmallCollections({ 
-                companyId: user.collectionCompanyId, 
-                page: 1,
-                limit: 10
-            });
-        }
-    }, [user?.collectionCompanyId, fetchSmallCollections]);
+    // Auto-fetch removed: fetchSmallCollections should be called on demand
 
     const fetchSmallCollectionById = useCallback(async (id: number | string) => {
         setDetailLoading(true);

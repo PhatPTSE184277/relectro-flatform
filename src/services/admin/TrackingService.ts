@@ -53,7 +53,7 @@ export interface SmallCollectionFilterParams {
 }
 
 export const filterCollectionCompanies = async (params: CollectionCompanyFilterParams) => {
-	const res = await axios.get('/collection-company/filter', {
+	const res = await axios.get('/company/filter', {
 		params,
 	});
 	return res.data;

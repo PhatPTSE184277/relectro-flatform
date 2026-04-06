@@ -26,7 +26,6 @@ const CompanyPage: React.FC = () => {
         fetchCompanies,
         fetchCompanyById,
         type,
-        setType,
         status,
         setStatus
     } = useCompanyContext();
@@ -44,10 +43,9 @@ const CompanyPage: React.FC = () => {
 
     // Khi vào trang, mặc định filter là 'Đang hoạt động'
     React.useEffect(() => {
-        setType('Công ty thu gom');
         setStatus('Đang hoạt động');
         setPage(1);
-        fetchCompanies(1, undefined, 'Công ty thu gom', 'Đang hoạt động');
+        fetchCompanies(1, undefined, 'Công ty tái chế', 'Đang hoạt động');
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -68,13 +66,6 @@ const CompanyPage: React.FC = () => {
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
         fetchCompanies(newPage, undefined, type, status);
-    };
-
-    // Xử lý filter type
-    const handleTypeChange = (newType: string) => {
-        setType(newType);
-        setPage(1);
-        fetchCompanies(1, undefined, newType, status);
     };
 
     // Xử lý filter status
@@ -173,9 +164,7 @@ const CompanyPage: React.FC = () => {
             {/* Filter trạng thái */}
             <CompanyFilter
                 status={status}
-                type={type}
                 onStatusChange={handleStatusChange}
-                onTypeChange={handleTypeChange}
             />
 
 

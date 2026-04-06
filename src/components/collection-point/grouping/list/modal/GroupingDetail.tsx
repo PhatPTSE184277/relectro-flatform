@@ -133,7 +133,7 @@ const GroupingDetail: React.FC<GroupingDetailProps> = ({
             icon: <User size={14} className='text-primary-400' />,
         },
         {
-            label: 'Điểm thu gom',
+            label: 'Đơn vị thu gom',
             value: grouping.collectionPoint ? formatAddress(grouping.collectionPoint) : '',
             icon: <MapPin size={14} className='text-primary-400' />,
         },

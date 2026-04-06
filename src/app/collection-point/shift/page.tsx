@@ -11,7 +11,7 @@ import ShiftFilter, { ShiftStatus } from '@/components/collection-point/shift/Sh
 import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
-import SearchableSelect from '@/components/ui/SearchableSelect';
+// SearchableSelect removed — use first warehouse by default
 import { CalendarClock, Download } from 'lucide-react';
 import ImportShiftModal from '@/components/collection-point/shift/modal/ImportShiftModal';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,7 +28,7 @@ const ShiftPageContent: React.FC = () => {
     const [search, setSearch] = useState('');
     const [showImportModal, setShowImportModal] = useState(false);
     const [filterStatus, setFilterStatus] = useState<ShiftStatus>('active');
-    const [smallCollectionPointId, setSmallCollectionPointId] = useState<string>('');
+    // smallCollectionPointId selection removed; using firstWarehouseId by default
     const [templateUrl, setTemplateUrl] = useState<string | null>(null);
     const [toast, setToast] = useState<{ open: boolean; type: 'success' | 'error'; message: string }>({
         open: false,
@@ -54,6 +54,7 @@ const ShiftPageContent: React.FC = () => {
     });
 
     const companyId = user?.collectionCompanyId;
+    const smallCollectionPointId = user?.smallCollectionPointId;
 
     const lastCoreFilterKeyRef = useRef<string>('');
 
@@ -82,17 +83,9 @@ const ShiftPageContent: React.FC = () => {
         );
     };
 
-    const handleWarehouseSelect = (nextSmallCollectionPointId: string) => {
-        setPage(1);
-        setSmallCollectionPointId(nextSmallCollectionPointId);
-    };
+    // warehouse selection removed (do not auto-fetch small collections)
 
-    useEffect(() => {
-        if (!companyId) return;
-        void fetchSmallCollections({ companyId, page: 1, limit: 1000 });
-    }, [companyId, fetchSmallCollections]);
-
-    // derive applied warehouse id: prefer explicit selection, otherwise use first item (no extra state update)
+    // derive applied warehouse id from auth first, fallback to first loaded warehouse
     const firstWarehouseId = (smallCollections && smallCollections.length > 0)
         ? String((smallCollections[0] as any)?.smallCollectionPointId || (smallCollections[0] as any)?.id || '')
         : '';
@@ -161,7 +154,7 @@ const ShiftPageContent: React.FC = () => {
                 page,
                 limit,
                 collectionCompanyId: companyId,
-                smallCollectionPointId: smallCollectionPointId || undefined,
+                smallCollectionPointId: appliedSmallCollectionPointId || undefined,
                 fromDate,
                 toDate,
                 status: filterStatus
@@ -214,17 +207,7 @@ const ShiftPageContent: React.FC = () => {
                         onFromDateChange={handleFromDateChange}
                         onToDateChange={handleToDateChange}
                     />
-                    <div className='w-full sm:w-80'>
-                        <SearchableSelect
-                            options={smallCollections}
-                            value={appliedSmallCollectionPointId}
-                            onChange={handleWarehouseSelect}
-                            getLabel={(w: any) => w.name || w.pointName || w.smallCollectionPointName || 'N/A'}
-                            getValue={getWarehouseId}
-                            placeholder={loadingSmallCollections ? 'Đang tải đơn vị thu gom...' : 'Chọn đơn vị thu gom...'}
-                            disabled={loadingSmallCollections}
-                        />
-                    </div>
+                    {/* Warehouse selector removed — using first available unit by default */}
                 </div>
 
                 <div className='flex gap-3 w-full sm:w-auto justify-end'>

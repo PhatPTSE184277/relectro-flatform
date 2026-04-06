@@ -29,6 +29,11 @@ export const getFilteredShifts = async (params: ShiftFilterParams): Promise<Page
     mappedParams.status = 'Đã hủy';
   }
 
+  // Do not send collectionCompanyId when it's the default/global company (1)
+  if (mappedParams.collectionCompanyId && String(mappedParams.collectionCompanyId) === '1') {
+    delete (mappedParams as any).collectionCompanyId;
+  }
+
   const response = await axios.get<PagedResponse<any>>('/shift/filter', { params: mappedParams });
   return response.data;
 };

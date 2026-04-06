@@ -36,7 +36,7 @@ export type PaginatedCompany = {
 
 // API lấy tất cả công ty (không phân trang) - dùng cho dropdown/select
 export const getCompanies = async (): Promise<Company[]> => {
-	const response = await axios.get('/collection-company');
+	const response = await axios.get('/company');
 	if (response.data.data && Array.isArray(response.data.data)) {
 		return response.data.data;
 	}
@@ -53,19 +53,19 @@ export const getCompaniesFilter = async (
 	const params: any = { page, limit };
 	if (type) params.type = type;
 	if (status) params.status = status;
-	const response = await axios.get('/collection-company/filter', { params });
+	const response = await axios.get('/company/filter', { params });
 	return response.data;
 };
 
 export const getCompanyById = async (companyId: string): Promise<Company> => {
-	const response = await axios.get(`/collection-company/${companyId}`);
+	const response = await axios.get(`/company/${companyId}`);
 	return response.data;
 };
 
 export const importCompaniesFromExcel = async (file: File): Promise<any> => {
 	const formData = new FormData();
 	formData.append('file', file);
-	const response = await axios.post('/collection-company/import-excel', formData, {
+	const response = await axios.post('/company/import-excel', formData, {
 		headers: {
 			'Content-Type': 'multipart/form-data',
 		},
