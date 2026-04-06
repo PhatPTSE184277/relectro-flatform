@@ -129,7 +129,7 @@ const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
                         page={currentPage}
                         itemsPerPage={10}
                         showCheckbox={false}
-                        maxHeight={50}
+                        maxHeight={45}
                     />
                 </div>
 

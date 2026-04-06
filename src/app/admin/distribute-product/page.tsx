@@ -137,21 +137,6 @@ const DistributeProductPage: React.FC = () => {
             console.log('localStorage cleared');
         }
         
-        const { success, failed, totalRequested } = data?.data || {};
-        console.log('Stats:', { success, failed, totalRequested });
-        
-        if (failed === 0) {
-            setNotification({
-                type: 'success',
-                message: `Chia thành công ${success}/${totalRequested} sản phẩm!`
-            });
-        } else {
-            setNotification({
-                type: 'error',
-                message: `Chia hoàn tất: ${success} thành công, ${failed} thất bại`
-            });
-        }
-        
         // Refresh data
         if (activeFilter === 'undistributed') {
             fetchUndistributedProducts(selectedDate, page, pageSize);
