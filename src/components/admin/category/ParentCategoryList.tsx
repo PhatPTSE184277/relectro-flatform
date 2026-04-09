@@ -28,7 +28,7 @@ const ParentCategoryList: React.FC<ParentCategoryListProps> = ({
             <div className='overflow-x-auto w-full'>
                 <div className='inline-block min-w-full align-middle'>
                     <div className='overflow-hidden'>
-                        <div className='max-h-[70vh] overflow-y-auto w-full'>
+                        <div className='max-h-[56vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[48vh] xl:max-h-[56vh] overflow-y-auto w-full'>
                             <table className='w-full text-sm text-gray-800 table-fixed'>
                                             <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                                                 <tr>
