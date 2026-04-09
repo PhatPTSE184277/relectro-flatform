@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Percent, Loader2 } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 import CompanyRatioList from './CompanyRatioList';
 
 interface RatioConfigModalProps {
@@ -38,7 +38,6 @@ const RatioConfigModal: React.FC<RatioConfigModalProps> = ({
                     <div className='flex items-center gap-6'>
                         <div>
                             <h2 className='text-2xl font-bold text-gray-900 flex items-center gap-2'>
-                                <Percent size={24} className='text-primary-600' />
                                 Cập nhật cấu hình công ty
                             </h2>
                             <p className='text-sm text-gray-600 mt-1'>
@@ -72,9 +71,6 @@ const RatioConfigModal: React.FC<RatioConfigModalProps> = ({
                 <div className='flex-1 min-h-0 overflow-hidden p-6 bg-gray-50'>
                     <div className='flex items-center justify-between mb-4'>
                         <h3 className='text-lg font-semibold text-gray-900 flex items-center gap-2'>
-                            <span className='w-10 h-10 flex items-center justify-center rounded-full bg-primary-50 border border-primary-200'>
-                                <Percent size={18} className='text-primary-600' />
-                            </span>
                             Phân bổ tỷ lệ công ty
                         </h3>
                         <span className='text-base text-gray-500 font-medium'>

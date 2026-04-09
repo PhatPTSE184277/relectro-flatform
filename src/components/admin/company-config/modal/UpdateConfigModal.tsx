@@ -141,6 +141,7 @@ const UpdateConfigModal: React.FC<UpdateConfigModalProps> = ({
             <DetailConfigModal
                 open={activeTab === 'detail' && !!currentCompany}
                 onClose={handleClose}
+                onBack={() => setActiveTab('ratio')}
                 company={currentCompany}
                 onUpdateRadius={handleUpdateRadius}
                 onUpdateMaxDistance={handleUpdateMaxDistance}
