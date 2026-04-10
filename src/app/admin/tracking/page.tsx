@@ -32,6 +32,7 @@ const TrackingPage: React.FC = () => {
 
     const getWarehouseId = useCallback((warehouse: any): string => {
         return String(
+            warehouse?.collectionUnitId ||
             warehouse?.smallCollectionPointId ||
             warehouse?.smallCollectionPointsId ||
             warehouse?.pointId ||
@@ -234,7 +235,7 @@ const TrackingPage: React.FC = () => {
                             options={warehouses}
                             value={filter.smallCollectionPointId ?? ''}
                             onChange={handleWarehouseSelect}
-                            getLabel={(w: any) => w.name || w.pointName || w.smallCollectionPointName || 'N/A'}
+                            getLabel={(w: any) => w.collectionUnitName || w.name || w.pointName || w.smallCollectionPointName || 'N/A'}
                             getValue={getWarehouseId}
                             placeholder={loadingWarehouses ? 'Đang tải đơn vị thu gom...' : 'Chọn đơn vị thu gom...'}
                             disabled={!filter.companyId || loadingWarehouses}

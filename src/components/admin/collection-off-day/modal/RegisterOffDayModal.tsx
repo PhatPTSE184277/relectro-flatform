@@ -35,6 +35,7 @@ const getCompanyLabel = (company: any): string => {
 
 const getPointId = (point: any): string => {
   return String(
+    point?.collectionUnitId ||
     point?.smallCollectionPointId ||
       point?.smallCollectionPointsId ||
       point?.pointId ||
@@ -45,7 +46,13 @@ const getPointId = (point: any): string => {
 };
 
 const getPointLabel = (point: any): string => {
-  return String(point?.name || point?.pointName || point?.smallCollectionPointName || 'N/A');
+  return String(
+    point?.collectionUnitName ||
+      point?.name ||
+      point?.pointName ||
+      point?.smallCollectionPointName ||
+      'N/A'
+  );
 };
 
 const getPointAddress = (point: any): string => {

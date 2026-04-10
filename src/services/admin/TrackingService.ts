@@ -60,8 +60,14 @@ export const filterCollectionCompanies = async (params: CollectionCompanyFilterP
 };
 
 export const filterSmallCollectionPoints = async (params: SmallCollectionFilterParams) => {
-	const res = await axios.get('/small-collection/filter', {
-		params,
+	const query: Record<string, any> = {};
+	if (params?.page !== undefined) query.Page = params.page;
+	if (params?.limit !== undefined) query.Limit = params.limit;
+	if (params?.companyId) query.CompanyId = params.companyId;
+	if (params?.status) query.Status = params.status;
+
+	const res = await axios.get('/collectionUnit/filter', {
+		params: query,
 	});
 	return res.data;
 };

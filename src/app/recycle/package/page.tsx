@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRecyclerPackageContext } from '@/contexts/recycle/PackageContext';
 import { useQRContext } from '@/contexts/recycle/QRContext';
 import { PackageType } from '@/types/Package';
@@ -36,6 +36,28 @@ const RecyclePackagePage: React.FC = () => {
     const [showScanModal, setShowScanModal] = useState(false);
     const [showCheckProductsModal, setShowCheckProductsModal] = useState(false);
     const [showQRModal, setShowQRModal] = useState(false);
+
+    // Handle sessionStorage params from notification (no URL params)
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const navStatus = sessionStorage.getItem('recycle_package_nav_status');
+        const navTrigger = sessionStorage.getItem('recycle_package_nav_trigger');
+
+        if (navTrigger === 'notification') {
+            sessionStorage.removeItem('recycle_package_nav_trigger');
+
+            const allowedStatuses = Object.values(PackageStatus);
+            if (navStatus && allowedStatuses.includes(navStatus as PackageStatus)) {
+                setFilter({ status: navStatus, page: 1 });
+            } else {
+                setFilter({ page: 1 });
+            }
+
+            sessionStorage.removeItem('recycle_package_nav_status');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const filteredPackages = packages.filter((pkg) => {
         const matchSearch =

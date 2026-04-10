@@ -67,6 +67,7 @@ const SystemConfigPage: React.FC = () => {
 
     const getWarehouseId = useCallback((warehouse: any): string => {
         return String(
+            warehouse?.collectionUnitId ||
             warehouse?.smallCollectionPointId ||
             warehouse?.smallCollectionPointsId ||
             warehouse?.pointId ||
@@ -77,7 +78,13 @@ const SystemConfigPage: React.FC = () => {
     }, []);
 
     const getWarehouseName = useCallback((warehouse: any): string => {
-        return String(warehouse?.name || warehouse?.pointName || warehouse?.smallCollectionPointName || 'N/A');
+        return String(
+            warehouse?.collectionUnitName ||
+            warehouse?.name ||
+            warehouse?.pointName ||
+            warehouse?.smallCollectionPointName ||
+            'N/A'
+        );
     }, []);
 
     // Load auto-assign settings when the tab is selected.

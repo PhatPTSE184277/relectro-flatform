@@ -12,6 +12,7 @@ import { logout } from '@/redux/reducers/authReducer';
 import { useAuth } from '@/hooks/useAuth';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { formatTimeWithDate } from '@/utils/FormatTime';
+import { PackageStatus } from '@/enums/PackageStatus';
 
 interface HeaderProps {
     title?: string;
@@ -91,6 +92,28 @@ const Header = ({ href, profileHref, onMenuClick }: HeaderProps) => {
     const handleNotificationClick = (notif: any) => {
         if (!notif.isRead) {
             markAsRead(notif.notificationId);
+        }
+
+        const action = notif?.data?.action || notif?.action;
+        const notifText = `${notif?.title ?? ''} ${notif?.message ?? ''}`.toLowerCase();
+
+        const inferRecycleStatus = (): string | undefined => {
+            if (action === 'PACKAGES_IN_TRANSIT' || notifText.includes('vận chuyển') || notifText.includes('giao cho bên vận chuyển')) {
+                return PackageStatus.Shipping;
+            }
+            if (action === 'PACKAGE_CLOSED' || action === 'PACKAGES_CLOSED' || notifText.includes('đóng thùng') || notifText.includes('khóa')) {
+                return PackageStatus.Closed;
+            }
+            if (notifText.includes('tái chế')) {
+                return PackageStatus.Recycling;
+            }
+            return undefined;
+        };
+
+        const recycleStatus = inferRecycleStatus();
+        if (recycleStatus && user?.role === 'RecyclingCompany') {
+            sessionStorage.setItem('recycle_package_nav_status', recycleStatus);
+            sessionStorage.setItem('recycle_package_nav_trigger', 'notification');
         }
 
         const isDistributionNotif = notif.title?.includes('Phân bố') ||
@@ -197,6 +220,15 @@ const Header = ({ href, profileHref, onMenuClick }: HeaderProps) => {
                 window.location.reload();
             }
         }
+
+        // Navigate to recycle package page for recycler package notifications
+        if (recycleStatus && user?.role === 'RecyclingCompany' && typeof window !== 'undefined') {
+            if (window.location.pathname !== '/recycle/package') {
+                router.push('/recycle/package');
+            } else {
+                window.location.reload();
+            }
+        }
     };
 
     // Translate role to Vietnamese for greeting
@@ -297,7 +329,7 @@ const Header = ({ href, profileHref, onMenuClick }: HeaderProps) => {
                                     </span>
                                 )}
                                 {/* Notification Bell: For Admin, AdminWarehouse, AdminCompany, RecyclingCompany */}
-                                {['Admin', 'AdminWarehouse'].includes(user.role) && (
+                                {['Admin', 'AdminWarehouse', 'AdminCompany', 'RecyclingCompany'].includes(user.role) && (
                                     <div className='relative' ref={notifDropdownRef}>
 
                                         <button
@@ -383,6 +415,32 @@ const Header = ({ href, profileHref, onMenuClick }: HeaderProps) => {
                                                                     <Link
                                                                         key={notif.notificationId}
                                                                         href='/admin/distribute-product'
+                                                                        onClick={() => handleNotificationClick(notif)}
+                                                                        className={`block p-4 border-b border-primary-50 cursor-pointer transition ${
+                                                                            notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-primary-50/50 hover:bg-primary-50'
+                                                                        }`}
+                                                                    >
+                                                                        {content}
+                                                                    </Link>
+                                                                );
+                                                            }
+
+                                                            const action = notif?.data?.action || notif?.action;
+                                                            const notifText = `${notif?.title ?? ''} ${notif?.message ?? ''}`.toLowerCase();
+                                                            const isRecyclePackageNotif =
+                                                                action === 'PACKAGES_IN_TRANSIT' ||
+                                                                action === 'PACKAGE_CLOSED' ||
+                                                                action === 'PACKAGES_CLOSED' ||
+                                                                action === 'PACKAGE_DELIVERED' ||
+                                                                action === 'PACKAGES_DELIVERED' ||
+                                                                notifText.includes('kiện hàng') ||
+                                                                notifText.includes('đơn hàng');
+
+                                                            if (isRecyclePackageNotif && user?.role === 'RecyclingCompany') {
+                                                                return (
+                                                                    <Link
+                                                                        key={notif.notificationId}
+                                                                        href='/recycle/package'
                                                                         onClick={() => handleNotificationClick(notif)}
                                                                         className={`block p-4 border-b border-primary-50 cursor-pointer transition ${
                                                                             notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-primary-50/50 hover:bg-primary-50'

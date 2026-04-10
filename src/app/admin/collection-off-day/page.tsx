@@ -17,7 +17,6 @@ import RegisterOffDayModal from '@/components/admin/collection-off-day/modal/Reg
 type FilterState = {
   page: number;
   limit: number;
-  companyId?: string;
   smallCollectionPointId?: string;
   date?: string;
 };
@@ -32,6 +31,7 @@ const getCompanyLabel = (company: any): string => {
 
 const getPointId = (point: any): string => {
   return String(
+    point?.collectionUnitId ||
     point?.smallCollectionPointId ||
     point?.smallCollectionPointsId ||
     point?.pointId ||
@@ -42,7 +42,13 @@ const getPointId = (point: any): string => {
 };
 
 const getPointLabel = (point: any): string => {
-  return String(point?.name || point?.pointName || point?.smallCollectionPointName || 'N/A');
+  return String(
+    point?.collectionUnitName ||
+      point?.name ||
+      point?.pointName ||
+      point?.smallCollectionPointName ||
+      'N/A'
+  );
 };
 
 const toYmd = (raw?: string): string => {
@@ -82,7 +88,6 @@ const AdminCollectionOffDayPage: React.FC = () => {
   const [filter, setFilterState] = useState<FilterState>({
     page: 1,
     limit: 10,
-    companyId: undefined,
     smallCollectionPointId: undefined,
     date: getTodayString()
   });
@@ -117,14 +122,10 @@ const AdminCollectionOffDayPage: React.FC = () => {
     }
   }, []);
 
-  const fetchPoints = useCallback(async (companyId?: string) => {
-    if (!companyId) {
-      setPoints([]);
-      return;
-    }
+  const fetchPoints = useCallback(async () => {
     setLoadingPoints(true);
     try {
-      const data = await filterSmallCollectionPoints({ page: 1, limit: 200, companyId });
+      const data = await filterSmallCollectionPoints({ page: 1, limit: 200 });
       const list = Array.isArray(data) ? data : (data?.data || []);
       setPoints(Array.isArray(list) ? list : []);
     } catch {
@@ -138,23 +139,14 @@ const AdminCollectionOffDayPage: React.FC = () => {
     void fetchCompanies();
   }, [fetchCompanies]);
 
-  // Auto-select first company when loaded
+  // Load all points (no company required)
   useEffect(() => {
-    if (companies.length === 0 || filter.companyId) return;
-    const firstCompanyId = getCompanyId(companies[0]);
-    if (firstCompanyId) {
-      setFilter({ companyId: firstCompanyId, page: 1, smallCollectionPointId: undefined });
-    }
-  }, [companies, filter.companyId, setFilter]);
-
-  // Load points when company changes
-  useEffect(() => {
-    void fetchPoints(filter.companyId);
-  }, [fetchPoints, filter.companyId]);
+    void fetchPoints();
+  }, [fetchPoints]);
 
   // Auto-select first point when points loaded
   useEffect(() => {
-    if (!filter.companyId || loadingPoints || points.length === 0) return;
+    if (loadingPoints || points.length === 0) return;
 
     const currentPointId = String(filter.smallCollectionPointId || '');
     const hasValid = points.some((p) => getPointId(p) === currentPointId);
@@ -165,7 +157,7 @@ const AdminCollectionOffDayPage: React.FC = () => {
         setFilter({ smallCollectionPointId: firstPointId, page: 1 });
       }
     }
-  }, [filter.companyId, filter.smallCollectionPointId, loadingPoints, points, setFilter]);
+  }, [filter.smallCollectionPointId, loadingPoints, points, setFilter]);
 
   const normalizedCompanies = useMemo(() => {
     return companies.map((c) => ({
@@ -177,7 +169,7 @@ const AdminCollectionOffDayPage: React.FC = () => {
   }, [companies]);
 
   const normalizeOffDayItem = useCallback((raw: any, stt: number): CollectionOffDayItem => {
-    const companyId = String(raw?.companyId || raw?.collectionCompanyId || raw?.id || filter.companyId || '');
+    const companyId = String(raw?.companyId || raw?.collectionCompanyId || raw?.id || '');
     const pointId = String(
       raw?.smallCollectionPointId || raw?.smallCollectionPointsId || raw?.pointId || raw?.smallPointId || ''
     );
@@ -210,10 +202,10 @@ const AdminCollectionOffDayPage: React.FC = () => {
       date: date,
       reason
     };
-  }, [filter.companyId, normalizedCompanies, points]);
+  }, [normalizedCompanies, points]);
 
   const fetchOffDays = useCallback(async (snapshot: FilterState) => {
-    if (!snapshot.companyId || !snapshot.smallCollectionPointId) {
+    if (!snapshot.smallCollectionPointId) {
       setItems([]);
       setTotalPages(1);
       return;
@@ -221,11 +213,10 @@ const AdminCollectionOffDayPage: React.FC = () => {
 
     setLoadingOffDays(true);
 
-    const requestKey = `${snapshot.companyId}|${snapshot.smallCollectionPointId}|${snapshot.date || ''}|${snapshot.page}|${snapshot.limit}`;
+    const requestKey = `${snapshot.smallCollectionPointId}|${snapshot.date || ''}|${snapshot.page}|${snapshot.limit}`;
 
     try {
       const payload = await getAllCollectionOffDays({
-        companyId: snapshot.companyId,
         smallCollectionPointId: snapshot.smallCollectionPointId,
         date: snapshot.date ? toYmd(snapshot.date) : undefined,
         page: snapshot.page,
@@ -236,7 +227,7 @@ const AdminCollectionOffDayPage: React.FC = () => {
       const pages = Array.isArray(payload) ? 1 : (payload?.totalPages || 1);
 
       // Guard against stale response
-      const currentKey = `${filter.companyId}|${filter.smallCollectionPointId}|${filter.date || ''}|${filter.page}|${filter.limit}`;
+      const currentKey = `${filter.smallCollectionPointId}|${filter.date || ''}|${filter.page}|${filter.limit}`;
       if (requestKey !== currentKey) return;
 
       const baseIndex = (snapshot.page - 1) * snapshot.limit;
@@ -250,12 +241,12 @@ const AdminCollectionOffDayPage: React.FC = () => {
       setItems([]);
       setTotalPages(1);
     } finally {
-      const currentKey = `${filter.companyId}|${filter.smallCollectionPointId}|${filter.date || ''}|${filter.page}|${filter.limit}`;
+      const currentKey = `${filter.smallCollectionPointId}|${filter.date || ''}|${filter.page}|${filter.limit}`;
       if (requestKey === currentKey) {
         setLoadingOffDays(false);
       }
     }
-  }, [filter.companyId, filter.smallCollectionPointId, filter.date, filter.page, filter.limit, normalizeOffDayItem]);
+  }, [filter.smallCollectionPointId, filter.date, filter.page, filter.limit, normalizeOffDayItem]);
 
   useEffect(() => {
     void fetchOffDays(filter);
@@ -270,10 +261,6 @@ const AdminCollectionOffDayPage: React.FC = () => {
       return hay.includes(keyword);
     });
   }, [items, searchKeyword]);
-
-  const handleCompanyChange = useCallback((companyId: string) => {
-    setFilter({ companyId, smallCollectionPointId: undefined, page: 1 });
-  }, [setFilter]);
 
   const handlePointChange = useCallback((smallCollectionPointId: string) => {
     setFilter({ smallCollectionPointId, page: 1 });
@@ -301,18 +288,17 @@ const AdminCollectionOffDayPage: React.FC = () => {
   const handleConfirmCancel = useCallback(async () => {
     if (!selectedCancelItem) return;
 
-    const companyId = selectedCancelItem.companyId || filter.companyId;
     const pointId = selectedCancelItem.pointId || filter.smallCollectionPointId;
     const date = toYmd(selectedCancelItem.date);
 
-    if (!companyId || !pointId || !date) {
+    if (!pointId || !date) {
       setToast({ open: true, type: 'error', message: 'Thiếu thông tin để hủy lịch nghỉ' });
       return;
     }
 
     setCanceling(true);
     try {
-      await cancelCollectionOffDay({ companyId, pointId, date });
+      await cancelCollectionOffDay({ companyId: selectedCancelItem.companyId, pointId, date });
       setToast({ open: true, type: 'success', message: 'Đã hủy lịch nghỉ thành công' });
       setCancelOpen(false);
       setSelectedCancelItem(null);
@@ -375,7 +361,6 @@ const AdminCollectionOffDayPage: React.FC = () => {
     }
   }, [fetchOffDays, filter, setFilter]);
 
-  const hasCompany = Boolean(filter.companyId);
   const hasPoint = Boolean(filter.smallCollectionPointId);
 
   return (
@@ -424,34 +409,19 @@ const AdminCollectionOffDayPage: React.FC = () => {
         <div className='flex gap-3 w-full sm:w-auto justify-end'>
           <div className='w-80'>
             <SearchableSelect
-              options={normalizedCompanies}
-              value={filter.companyId ?? ''}
-              onChange={handleCompanyChange}
-              getLabel={(c: any) => c.name}
-              getValue={(c: any) => String(c.id)}
-              placeholder={loadingCompanies ? 'Đang tải công ty...' : 'Chọn công ty...'}
-              disabled={loadingCompanies}
-            />
-          </div>
-          <div className='w-80'>
-            <SearchableSelect
               options={points}
               value={filter.smallCollectionPointId ?? ''}
               onChange={handlePointChange}
               getLabel={getPointLabel}
               getValue={getPointId}
               placeholder={loadingPoints ? 'Đang tải điểm...' : 'Chọn điểm thu gom...'}
-              disabled={!filter.companyId || loadingPoints}
+              disabled={loadingPoints}
             />
           </div>
         </div>
       </div>
 
-      {!hasCompany ? (
-        <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center text-gray-400'>
-          Vui lòng chọn công ty để xem lịch nghỉ
-        </div>
-      ) : !hasPoint ? (
+      {!hasPoint ? (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center text-gray-400'>
           Vui lòng chọn điểm thu gom để xem lịch nghỉ
         </div>
@@ -481,7 +451,7 @@ const AdminCollectionOffDayPage: React.FC = () => {
         open={registerOpen}
         loading={registering}
         companies={normalizedCompanies}
-        defaultCompanyId={filter.companyId ? String(filter.companyId) : undefined}
+        defaultCompanyId={undefined}
         onClose={handleCloseRegister}
         onConfirm={handleConfirmRegister}
       />
