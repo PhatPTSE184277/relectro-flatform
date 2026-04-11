@@ -361,7 +361,7 @@ const Header = ({ href, profileHref, onMenuClick }: HeaderProps) => {
                                                 </div>
 
                                                 {/* Notification List */}
-                                                <div className='overflow-y-auto flex-1'>
+                                                <div className='overflow-y-auto flex-1 min-h-0'>
                                                     {notifications.length === 0 ? (
                                                         <div className='p-8 text-center text-gray-400'>
                                                             <IoNotificationsOutline className='mx-auto mb-2' size={48} />
@@ -399,7 +399,7 @@ const Header = ({ href, profileHref, onMenuClick }: HeaderProps) => {
                                                                         }`}>
                                                                             {notif.title}
                                                                         </h4>
-                                                                        <p className='text-sm text-gray-600 line-clamp-2'>
+                                                                        <p className='text-sm text-gray-600 whitespace-normal wrap-break-word'>
                                                                             {notif.message}
                                                                         </p>
                                                                         <p className='text-xs text-gray-400 mt-1'>

@@ -5,7 +5,7 @@ export const getProductsBySmallPoint = async (
   workDate: string
 ): Promise<any> => {
   const response = await axios.get(
-    `/product-query/small-point/${smallPointId}`,
+    `/product-query/smallCollectionPoint/${smallPointId}`,
     { params: { workDate } }
   );
   return response.data;

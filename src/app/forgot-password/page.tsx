@@ -88,13 +88,9 @@ const ForgotPasswordPage: React.FC = () => {
                 href="/" 
                 profileHref="/profile" 
             />
-            <div className='min-h-screen bg-linear-to-br from-gray-50 via-blue-50 to-purple-50 flex items-center justify-center py-20 relative overflow-hidden'>
-                <div className='absolute inset-0 pointer-events-none'>
-                    <div className='absolute -top-20 -left-20 w-96 h-96 bg-linear-to-br from-purple-400 to-pink-400 rounded-full opacity-20 blur-3xl'></div>
-                    <div className='absolute -top-10 -right-10 w-80 h-80 bg-linear-to-br from-blue-400 to-cyan-400 rounded-full opacity-25 blur-3xl'></div>
-                </div>
+            <div className='h-[calc(100dvh-3.5rem)] sm:h-[calc(100dvh-4rem)] bg-gray-50 flex items-center justify-center px-4 overflow-hidden'>
 
-                <div className='max-w-md w-full relative z-10'>
+                <div className='max-w-md w-full space-y-8'>
                     <div className='bg-white rounded-2xl shadow-xl p-8 border border-gray-100'>
                         {/* Header */}
                         <div className='mb-6'>

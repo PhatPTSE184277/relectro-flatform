@@ -8,8 +8,9 @@ import {
 } from 'react-icons/io5';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { login, clearError } from '@/redux/reducers/authReducer';
+import Toast from '@/components/ui/Toast';
 import FirstLoginChangePasswordModal from './FirstLoginChangePasswordModal';
-import { changePasswordFirstLogin } from '@/services/AuthService';
+import { resetForgotPassword } from '@/services/AuthService';
 
 const LoginForm = () => {
     const [formData, setFormData] = useState({ username: '', password: '' });
@@ -17,18 +18,17 @@ const LoginForm = () => {
     const [showFirstLoginChangePassword, setShowFirstLoginChangePassword] = useState(false);
     const router = useRouter();
     const dispatch = useAppDispatch();
-    const { loading, error, isAuthenticated, user } = useAppSelector((state) => state.auth);
+    const { loading, error, isAuthenticated, user, isFirstLogin } = useAppSelector((state) => state.auth);
 
-    useEffect(() => {
-        if (error) {
-            dispatch(clearError());
-        }
-    }, [error, dispatch]);
+    // Derive toast open/message directly from Redux error to avoid
+    // calling setState synchronously inside an effect (cascading renders).
+    const toastOpen = !!error;
+    const toastMessage = (error as string) || '';
 
     useEffect(() => {
         if (isAuthenticated && user) {
             // Check if first login
-            if (user.isFirstLogin) {
+            if (isFirstLogin || user.isFirstLogin) {
                 setTimeout(() => setShowFirstLoginChangePassword(true), 0);
                 return;
             }
@@ -50,7 +50,7 @@ const LoginForm = () => {
                     router.push('/admin/dashboard');
             }
         }
-    }, [isAuthenticated, user, router]);
+    }, [isAuthenticated, user, isFirstLogin, router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -70,8 +70,10 @@ const LoginForm = () => {
         dispatch(login({ username: formData.username, password: formData.password }));
     };
 
-    const handleChangePasswordFirstLogin = async (oldPassword: string, newPassword: string, confirmPassword: string) => {
-        await changePasswordFirstLogin(oldPassword, newPassword, confirmPassword);
+    const handleChangePasswordFirstLogin = async (newPassword: string, confirmPassword: string) => {
+        if (!user?.email) return;
+
+        await resetForgotPassword(user.email, newPassword, confirmPassword);
         setShowFirstLoginChangePassword(false);
         
         // Redirect based on role after password change
@@ -100,7 +102,12 @@ const LoginForm = () => {
 
     return (
         <div className='bg-white rounded-2xl shadow-xl p-8 animate-slide-in-right border border-gray-100'>
-
+            <Toast
+                open={toastOpen}
+                type="error"
+                message={toastMessage}
+                onClose={() => dispatch(clearError())}
+            />
             <form onSubmit={handleSubmit} className='space-y-6'>
                 <div>
                     <label

@@ -4,20 +4,18 @@ import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 
 interface FirstLoginChangePasswordModalProps {
     open: boolean;
-    onConfirm: (oldPassword: string, newPassword: string, confirmPassword: string) => Promise<void>;
+    onConfirm: (newPassword: string, confirmPassword: string) => Promise<void>;
 }
 
 const FirstLoginChangePasswordModal: React.FC<FirstLoginChangePasswordModalProps> = ({ open, onConfirm }) => {
-    const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleSubmit = async () => {
-        if (!oldPassword || !newPassword || !confirmPassword) {
+        if (!newPassword || !confirmPassword) {
             return;
         }
 
@@ -29,14 +27,9 @@ const FirstLoginChangePasswordModal: React.FC<FirstLoginChangePasswordModalProps
             return;
         }
 
-        if (oldPassword === newPassword) {
-            return;
-        }
-
         setLoading(true);
         try {
-            await onConfirm(oldPassword, newPassword, confirmPassword);
-            setOldPassword('');
+            await onConfirm(newPassword, confirmPassword);
             setNewPassword('');
             setConfirmPassword('');
         } finally {
@@ -47,7 +40,7 @@ const FirstLoginChangePasswordModal: React.FC<FirstLoginChangePasswordModalProps
     if (!open) return null;
 
     return (
-        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4'>
+        <div className='fixed inset-0 bg-gray-100/75 backdrop-blur-sm flex items-center justify-center z-50 p-4'>
             <div 
                 className='bg-white rounded-2xl shadow-2xl max-w-md w-full'
                 onClick={(e) => e.stopPropagation()}
@@ -62,30 +55,6 @@ const FirstLoginChangePasswordModal: React.FC<FirstLoginChangePasswordModalProps
 
                 {/* Body */}
                 <div className='p-6 space-y-4'>
-                    <div>
-                        <label htmlFor='oldPassword' className='block text-sm font-medium text-gray-700 mb-2'>
-                            Mật khẩu hiện tại
-                        </label>
-                        <div className='relative'>
-                            <Lock className='absolute top-1/2 left-3 transform -translate-y-1/2 text-primary-400' size={18} />
-                            <input
-                                id='oldPassword'
-                                type={showOldPassword ? 'text' : 'password'}
-                                value={oldPassword}
-                                onChange={(e) => setOldPassword(e.target.value)}
-                                placeholder='Nhập mật khẩu hiện tại'
-                                className='w-full pl-10 pr-10 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400'
-                            />
-                            <button
-                                type='button'
-                                onClick={() => setShowOldPassword(!showOldPassword)}
-                                className='absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 hover:text-primary-500 transition cursor-pointer'
-                            >
-                                {showOldPassword ? <IoEyeOffOutline /> : <IoEyeOutline />}
-                            </button>
-                        </div>
-                    </div>
-
                     <div>
                         <label htmlFor='newPassword' className='block text-sm font-medium text-gray-700 mb-2'>
                             Mật khẩu mới

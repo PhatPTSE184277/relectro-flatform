@@ -47,7 +47,8 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
     const [error, setError] = useState<string | null>(null);
     const currentStatusRef = React.useRef<VehicleStatusFilter | undefined>(undefined);
     const currentPageRef = React.useRef<number>(1);
-    const currentLimitRef = React.useRef<number>(10);
+    const DEFAULT_LIMIT = 10;
+    const currentLimitRef = React.useRef<number>(DEFAULT_LIMIT);
     const currentPlateNumberRef = React.useRef<string>('');
     const lastStatsKeyRef = React.useRef<string>('');
 
@@ -89,7 +90,7 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
     const fetchVehicles = useCallback(async (
         status?: VehicleStatusFilter,
         pageNum: number = 1,
-        limit: number = 10,
+        limit: number = DEFAULT_LIMIT,
         plateNumber: string = ''
     ) => {
         if (!user?.smallCollectionPointId) return;
@@ -107,10 +108,40 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
                 limit,
                 plateNumber,
             });
-            setVehicles(data?.data || []);
-            setTotalItems(data?.totalItems || 0);
-            setTotalPages(data?.totalPages || 1);
-            setPage(data?.page || 1);
+
+            const responseAny = data as any;
+            const nextVehicles: VehicleItem[] =
+                (data?.data as VehicleItem[] | undefined) ??
+                (responseAny?.items as VehicleItem[] | undefined) ??
+                [];
+
+            const nextTotalItems: number =
+                (data?.totalItems as number | undefined) ??
+                (responseAny?.totalItems as number | undefined) ??
+                (responseAny?.total as number | undefined) ??
+                (responseAny?.totalItem as number | undefined) ??
+                0;
+
+            const nextLimit: number =
+                (data?.limit as number | undefined) ??
+                (responseAny?.limit as number | undefined) ??
+                limit;
+
+            const nextPage: number =
+                (data?.page as number | undefined) ??
+                (responseAny?.page as number | undefined) ??
+                pageNum;
+
+            const nextTotalPages: number =
+                (data?.totalPages as number | undefined) ??
+                (responseAny?.totalPages as number | undefined) ??
+                (responseAny?.totalPage as number | undefined) ??
+                Math.max(1, Math.ceil(nextTotalItems / Math.max(1, nextLimit)));
+
+            setVehicles(nextVehicles);
+            setTotalItems(nextTotalItems);
+            setTotalPages(nextTotalPages);
+            setPage(nextPage);
 
             // Fetch stats in background (avoid refetching on page-only changes)
             const statsKey = `${user.smallCollectionPointId}::${plateNumber}`;
@@ -122,6 +153,8 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
             console.log(err);
             setError(err?.response?.data?.message || 'Lỗi khi tải phương tiện');
             setVehicles([]);
+            setTotalItems(0);
+            setTotalPages(1);
         } finally {
             setLoading(false);
         }
