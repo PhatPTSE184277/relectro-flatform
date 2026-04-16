@@ -198,6 +198,45 @@ const SystemConfigPage: React.FC = () => {
         return names.map((n) => ({ value: n, label: n }));
     }, [configs]);
 
+    const autoAssignDisplayNameByKey = useMemo(() => {
+        return configs.reduce<Record<string, string>>((acc, cfg) => {
+            const key = String(cfg.key || '').trim();
+            const displayName = String(cfg.displayName || '').trim();
+
+            if (key && displayName && key.startsWith('AUTO_ASSIGN_')) {
+                acc[key] = displayName;
+            }
+
+            return acc;
+        }, {});
+    }, [configs]);
+
+    const autoAssignRows = useMemo(
+        () => [
+            {
+                key: 'AUTO_ASSIGN_ENABLED',
+                label: autoAssignDisplayNameByKey.AUTO_ASSIGN_ENABLED || 'Kích hoạt tự động',
+                value: autoAssignSettings?.isEnabled ? 'Bật' : 'Tắt'
+            },
+            {
+                key: 'AUTO_ASSIGN_IMMEDIATE_THRESHOLD',
+                label: autoAssignDisplayNameByKey.AUTO_ASSIGN_IMMEDIATE_THRESHOLD || 'Số lượng đạt để xử lý ngay',
+                value: String(autoAssignSettings?.immediateThreshold ?? '-')
+            },
+            {
+                key: 'AUTO_ASSIGN_SCHEDULE_TIME',
+                label: autoAssignDisplayNameByKey.AUTO_ASSIGN_SCHEDULE_TIME || 'Giờ xử lý cuối ngày',
+                value: String(autoAssignSettings?.scheduleTime ?? '-')
+            },
+            {
+                key: 'AUTO_ASSIGN_SCHEDULE_MIN_QTY',
+                label: autoAssignDisplayNameByKey.AUTO_ASSIGN_SCHEDULE_MIN_QTY || 'Số lượng tối thiểu để xử lý cuối ngày',
+                value: String(autoAssignSettings?.scheduleMinQty ?? '-')
+            }
+        ],
+        [autoAssignDisplayNameByKey, autoAssignSettings]
+    );
+
     // Auto-select first option when entering point/company groups (if available)
     useEffect(() => {
         if (groupName === 'PointConfig' && scpOptions.length > 0) {
@@ -402,7 +441,7 @@ const SystemConfigPage: React.FC = () => {
                     <div className='flex items-center justify-between gap-2 px-6 py-4 border-b border-gray-100 bg-primary-50'>
                         <div>
                             <h2 className='text-lg font-bold text-gray-900'>Tự động phân xe</h2>
-                            <p className='text-sm text-gray-500'>Danh sách cấu hình auto-assign.</p>
+                             <p className='text-sm text-gray-500'>Danh sách cấu hình phân xe tự động.</p>
                         </div>
                         <div>
                             <button
@@ -448,26 +487,9 @@ const SystemConfigPage: React.FC = () => {
                                             </tr>
                                         ))
                                     ) : (
-                                        [
-                                            {
-                                                label: 'Kích hoạt',
-                                                value: autoAssignSettings?.isEnabled ? 'Bật' : 'Tắt'
-                                            },
-                                            {
-                                                label: 'Immediate Threshold',
-                                                value: String(autoAssignSettings?.immediateThreshold ?? '-')
-                                            },
-                                            {
-                                                label: 'Schedule Time',
-                                                value: String(autoAssignSettings?.scheduleTime ?? '-')
-                                            },
-                                            {
-                                                label: 'Schedule Min Qty',
-                                                value: String(autoAssignSettings?.scheduleMinQty ?? '-')
-                                            }
-                                        ].map((row, idx, arr) => (
+                                        autoAssignRows.map((row, idx, arr) => (
                                             <tr
-                                                key={row.label}
+                                                key={row.key}
                                                 className={`${idx !== arr.length - 1 ? 'border-b border-primary-100' : ''} ${
                                                     idx % 2 === 0 ? 'bg-white' : 'bg-primary-50'
                                                 }`}
