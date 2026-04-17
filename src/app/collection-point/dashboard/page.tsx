@@ -87,7 +87,7 @@ const DashboardPage = () => {
                     </div>
                     <div className="flex gap-4 items-center flex-1 justify-end">
                         {viewMode === 'day' ? (
-                            <div className="w-full max-w-xs">
+                            <div className="min-w-fit">
                                 <CustomDatePicker
                                     value={selectedDate}
                                     onChange={setSelectedDate}
@@ -118,7 +118,7 @@ const DashboardPage = () => {
                                 >
                                     Theo ngày
                                 </button>
-                                <button
+                                    <button
                                     onClick={() => setViewMode('range')}
                                     className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
                                         viewMode === 'range'
@@ -126,7 +126,7 @@ const DashboardPage = () => {
                                             : 'text-gray-600 hover:text-gray-900'
                                     }`}
                                 >
-                                    Theo đơn vị thu gomảng
+                                    Theo khoảng
                                 </button>
                             </div>
                         )}

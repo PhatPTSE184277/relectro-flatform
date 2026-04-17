@@ -8,7 +8,6 @@ import {
     Wrench,
     Layers,
     Zap,
-    Recycle,
     Bell,
     TicketPercent,
     ScanSearch,
@@ -107,11 +106,5 @@ export const adminMenuItems = [
         label: 'Gửi thông báo',
         path: '/admin/send-notification',
         icon: <Bell size={20} />
-    },
-    // {
-    //     id: 'capacity',
-    //     label: 'Năng lực đơn vị thu gom',
-    //     path: '/admin/capacity',
-    //     icon: <Warehouse size={20} />
-    // }
+    }
 ];
