@@ -43,12 +43,6 @@ export const adminMenuItems = [
         icon: <Factory size={20} />
     },
     {
-        id: 'assign-recycling',
-        label: 'Phân công tái chế',
-        path: '/admin/assign-recycling',
-        icon: <Recycle size={20} />
-    },
-    {
         id: 'category',
         label: 'Danh mục',
         path: '/admin/category',
