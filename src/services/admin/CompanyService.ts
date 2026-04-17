@@ -73,6 +73,17 @@ export const importCompaniesFromExcel = async (file: File): Promise<any> => {
 	return response.data;
 };
 
+export const importCollectionPointsFromExcel = async (file: File): Promise<any> => {
+	const formData = new FormData();
+	formData.append('file', file);
+	const response = await axios.post('/small-collection/import-excel', formData, {
+		headers: {
+			'Content-Type': 'multipart/form-data',
+		},
+	});
+	return response.data;
+};
+
 export interface SmallCollectionFilterParams {
 	page?: number;
 	limit?: number;

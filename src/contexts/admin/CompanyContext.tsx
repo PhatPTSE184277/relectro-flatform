@@ -12,6 +12,7 @@ import {
     getCompaniesFilter,
     getCompanyById,
     importCompaniesFromExcel,
+    importCollectionPointsFromExcel,
     Company,
     PaginatedCompany
 } from '@/services/admin/CompanyService';
@@ -31,6 +32,7 @@ interface CompanyContextType {
     fetchCompanies: (page?: number, limit?: number, type?: string, status?: string) => Promise<void>;
     fetchCompanyById: (id: string | number) => Promise<Company | null>;
     importFromExcel: (file: File) => Promise<any>;
+    importCollectionPointFromExcel: (file: File) => Promise<any>;
     clearCompanies: () => void;
     setPage: (page: number) => void;
     setLimit: (limit: number) => void;
@@ -147,6 +149,20 @@ export const CompanyProvider: React.FC<Props> = ({ children }) => {
         [fetchCompanies]
     );
 
+    const importCollectionPointFromExcel = useCallback(async (file: File) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await importCollectionPointsFromExcel(file);
+            return res;
+        } catch (err: any) {
+            setError(err?.response?.data?.message || 'Lỗi khi import file đơn vị thu gom');
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     const clearCompanies = useCallback(() => {
         setCompanies([]);
         setError(null);
@@ -166,6 +182,7 @@ export const CompanyProvider: React.FC<Props> = ({ children }) => {
         fetchCompanies,
         fetchCompanyById,
         importFromExcel,
+        importCollectionPointFromExcel,
         clearCompanies,
         setPage,
         setLimit,
