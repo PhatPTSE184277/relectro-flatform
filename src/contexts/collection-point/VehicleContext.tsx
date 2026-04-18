@@ -20,7 +20,13 @@ interface VehicleContextType {
     totalPages: number;
     selectedVehicle: VehicleItem | null;
     error: string | null;
-    fetchVehicles: (status?: VehicleStatusFilter, pageNum?: number, limit?: number, plateNumber?: string) => Promise<void>;
+    fetchVehicles: (
+        status?: VehicleStatusFilter,
+        pageNum?: number,
+        limit?: number,
+        plateNumber?: string,
+        refreshStats?: boolean
+    ) => Promise<void>;
     fetchVehicleDetail: (id: string) => Promise<void>;
     approveVehicle: (vehicleId: string) => Promise<void>;
     blockVehicle: (vehicleId: string) => Promise<void>;
@@ -91,7 +97,8 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
         status?: VehicleStatusFilter,
         pageNum: number = 1,
         limit: number = DEFAULT_LIMIT,
-        plateNumber: string = ''
+        plateNumber: string = '',
+        refreshStats: boolean = false
     ) => {
         if (!user?.smallCollectionPointId) return;
         currentStatusRef.current = status;
@@ -145,7 +152,7 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
 
             // Fetch stats in background (avoid refetching on page-only changes)
             const statsKey = `${user.smallCollectionPointId}::${plateNumber}`;
-            if (lastStatsKeyRef.current !== statsKey) {
+            if (refreshStats || lastStatsKeyRef.current !== statsKey) {
                 lastStatsKeyRef.current = statsKey;
                 void fetchVehicleStats(user.smallCollectionPointId, plateNumber);
             }
@@ -183,7 +190,8 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
                 currentStatusRef.current,
                 currentPageRef.current,
                 currentLimitRef.current,
-                currentPlateNumberRef.current
+                currentPlateNumberRef.current,
+                true
             );
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Lỗi khi duyệt phương tiện');
@@ -201,7 +209,8 @@ export const VehicleProvider: React.FC<{ children: ReactNode }> = ({ children })
                 currentStatusRef.current,
                 currentPageRef.current,
                 currentLimitRef.current,
-                currentPlateNumberRef.current
+                currentPlateNumberRef.current,
+                true
             );
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Lỗi khi khóa phương tiện');
