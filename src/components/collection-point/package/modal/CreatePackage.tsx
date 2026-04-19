@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { X, ScanLine, Plus } from 'lucide-react';
+import { isValidSystemQRCode } from '@/utils/qr';
 import { getProductByQRCode } from '@/services/collection-point/IWProductService';
 import ProductList from './ProductList';
 import Toast from '@/components/ui/Toast';
@@ -162,14 +163,30 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     };
 
     const handleSubmit = () => {
-        if (!packageId.trim()) {
+        const pid = (packageId || '').trim();
+        if (!pid) {
+            showToast('Vui lòng nhập mã kiện hàng', 'error');
             return;
         }
+
+        // Validate 13-digit system QR and allowed time range (detailed messages)
+        if (!/^[0-9]{13}$/.test(pid)) {
+            setPackageId('');
+            showToast('Mã QR phải là số gồm 13 ký tự (mã hệ thống tạo ra)!', 'error');
+            return;
+        } else if (!isValidSystemQRCode(pid)) {
+            setPackageId('');
+            showToast('Chỉ được sử dụng mã QR do hệ thống tạo ra trong hôm qua hoặc hôm nay!', 'error');
+            return;
+        }
+
         if (scannedProducts.length === 0) {
+            showToast('Vui lòng thêm sản phẩm vào kiện hàng', 'error');
             return;
         }
+
         onConfirm({
-            packageId: packageId.trim(),
+            packageId: pid,
             productsQrCode: scannedProducts.map((p) => p.qrCode)
         });
         handleClose();
