@@ -54,7 +54,7 @@ const SystemConfigPage: React.FC = () => {
 
     const groupNames = [
         { value: 'WORKFLOW_CONFIG', label: 'Luồng xử lý' },
-        { value: 'AUTO_ASSIGN_SETTINGS', label: 'Tự động phân xe' },
+        { value: 'AUTO_ASSIGN_SETTINGS', label: 'Tự động phân phổi sản phẩm' },
         { value: 'Excel', label: 'Mẫu Excel' },
         { value: 'PointConfig', label: 'Cấu hình điểm' },
         { value: 'CompanyConfig', label: 'Cấu hình công ty' },
