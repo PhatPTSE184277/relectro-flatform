@@ -43,8 +43,8 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     const [confirming, setConfirming] = useState(false);
 
     useEffect(() => {
-        fetchAvailableVehicles();
-    }, [fetchAvailableVehicles]);
+        fetchAvailableVehicles(workDate);
+    }, [fetchAvailableVehicles, workDate]);
 
     useEffect(() => {
         // Auto select all vehicles when loaded

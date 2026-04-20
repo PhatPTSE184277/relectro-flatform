@@ -198,7 +198,7 @@ export function GroupingProvider({ children }: Props) {
         }
     }, [user, pendingProductsPage, pendingProductsLimit]);
 
-    const fetchAvailableVehicles = useCallback(async () => {
+    const fetchAvailableVehicles = useCallback(async (workDate?: string) => {
         if (!user?.smallCollectionPointId) {
             console.warn('No smallCollectionPointId found in user profile:', user);
             return;
@@ -206,7 +206,8 @@ export function GroupingProvider({ children }: Props) {
         
         setVehiclesLoading(true);
         try {
-            const data = await getVehiclesBySmallCollectionPoint(user.smallCollectionPointId);
+            const resolvedWorkDate = workDate || getTodayString();
+            const data = await getVehiclesBySmallCollectionPoint(user.smallCollectionPointId, resolvedWorkDate);
             console.log('Available vehicles received:', data);
             setAvailableVehicles(data || []);
         } catch (err) {

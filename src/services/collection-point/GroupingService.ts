@@ -85,9 +85,17 @@ export const getVehicles = async (smallCollectionPointId: string, workDate?: str
     return response.data;
 };
 
-// Lấy danh sách xe theo SmallCollectionPointId (endpoint: /grouping/vehicles/{SmallCollectionPointId})
-export const getVehiclesBySmallCollectionPoint = async (smallCollectionPointId: string): Promise<Vehicle[]> => {
-    const response = await axios.get(`/grouping/vehicles/${smallCollectionPointId}`);
+// Lấy danh sách xe theo SmallCollectionPointId và ngày làm việc
+export const getVehiclesBySmallCollectionPoint = async (
+    smallCollectionPointId: string,
+    workDate?: string
+): Promise<Vehicle[]> => {
+    const params: Record<string, string> = {};
+    if (workDate) params.workDate = workDate;
+
+    const response = await axios.get(`/grouping/vehicles/${smallCollectionPointId}`, {
+        params
+    });
     return response.data;
 };
 
