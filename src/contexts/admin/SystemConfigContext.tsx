@@ -90,7 +90,7 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
       setAutoAssignSettings(data);
       return data;
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Lỗi khi tải cấu hình tự động phân xe');
+      setError(err?.response?.data?.message || 'Lỗi khi tải cấu hình tự động phân phối sản phẩm');
       setAutoAssignSettings(null);
       return null;
     } finally {
@@ -124,7 +124,7 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
       setAutoAssignSettings(fresh);
       return fresh;
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Lỗi khi cập nhật cấu hình tự động phân xe');
+      setError(err?.response?.data?.message || 'Lỗi khi cập nhật cấu hình tự động phân phối sản phẩm');
       return null;
     } finally {
       setAutoAssignLoading(false);

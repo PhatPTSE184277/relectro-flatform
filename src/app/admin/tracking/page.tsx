@@ -22,6 +22,7 @@ const TrackingPage: React.FC = () => {
         stats,
         filter,
         setFilter,
+        fetchPackages,
         loadingWarehouses,
         clearPackageDetail
     } = useTrackingContext();
@@ -175,6 +176,12 @@ const TrackingPage: React.FC = () => {
             setFilter({ packageId: '' });
         }
     }, [filter.packageId, setFilter]);
+
+    useEffect(() => {
+        setFilter({ status: 'Đã giao', page: 1, packageId: '' });
+        void fetchPackages({ status: 'Đã giao', page: 1, packageId: '' });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>

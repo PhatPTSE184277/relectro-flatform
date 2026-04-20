@@ -8,6 +8,8 @@ interface IWProductFilterProps {
         total?: number;
         pending?: number;
         collected?: number;
+        closed?: number;
+        delivered?: number;
         cancelled?: number;
         received?: number;
     };
@@ -64,6 +66,26 @@ const IWProductFilter: React.FC<IWProductFilterProps> = ({
                     }`}
                 >
                     Nhập đơn vị thu gom ({stats.received ?? 0})
+                </button>
+                <button
+                    onClick={() => onFilterChange(ProductStatus.Closed)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[110px] ${
+                        status === ProductStatus.Closed
+                            ? 'bg-primary-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                >
+                    Đã đóng thùng ({stats.closed ?? 0})
+                </button>
+                <button
+                    onClick={() => onFilterChange(ProductStatus.Delivered)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[110px] ${
+                        status === ProductStatus.Delivered
+                            ? 'bg-primary-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                >
+                    Đã giao ({stats.delivered ?? 0})
                 </button>
             </div>
         </div>

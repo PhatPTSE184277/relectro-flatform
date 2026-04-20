@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useIWProductContext } from '@/contexts/collection-point/IWProductContext';
 import IWProductFilter from '@/components/collection-point/incoming-warehouse/IWProductFilter';
 import IWProductList from '@/components/collection-point/incoming-warehouse/IWProductList';
@@ -48,6 +48,12 @@ const IncomingWarehousePage: React.FC = () => {
         const day = String(today.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     });
+
+    useEffect(() => {
+        setFilter({ status: 'Chờ thu gom', page: 1 });
+        void fetchProducts(fromDate, toDate);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleFilterChange = (status: string) => {
         if (status !== filter.status) {

@@ -23,6 +23,7 @@ const CollectionRoutePage: React.FC = () => {
         currentPage,
         setCurrentPage,
         allStats,
+        fetchRoutes,
         routeDetail,
         fetchRouteDetail,
         clearRouteDetail
@@ -40,7 +41,14 @@ const CollectionRoutePage: React.FC = () => {
         const month = String(today.getMonth() + 1).padStart(2, '0');
         const day = String(today.getDate()).padStart(2, '0');
         setSelectedDate(`${year}-${month}-${day}`);
-    }, [setSelectedDate]);
+        setContextFilterStatus('Chưa bắt đầu');
+        setCurrentPage(1);
+    }, [setSelectedDate, setContextFilterStatus, setCurrentPage]);
+
+    useEffect(() => {
+        void fetchRoutes();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const filteredRoutes = routes.filter((route) => {
         const matchSearch =

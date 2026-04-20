@@ -41,7 +41,7 @@ const AutoAssignSettingsModal: React.FC<AutoAssignSettingsModalProps> = ({
 
             <div className='relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 max-h-[90vh] animate-fadeIn'>
                 <div className='flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-primary-50 to-primary-100'>
-                    <h2 className='text-2xl font-bold text-gray-800'>Chỉnh sửa: Tự động phân xe</h2>
+                    <h2 className='text-2xl font-bold text-gray-800'>Chỉnh sửa: Tự động phân phối sản phẩm</h2>
                     <button
                         onClick={onClose}
                         className='text-gray-400 hover:text-red-500 text-3xl font-light cursor-pointer'

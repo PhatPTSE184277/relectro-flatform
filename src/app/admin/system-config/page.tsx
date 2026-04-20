@@ -440,8 +440,8 @@ const SystemConfigPage: React.FC = () => {
                 <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
                     <div className='flex items-center justify-between gap-2 px-6 py-4 border-b border-gray-100 bg-primary-50'>
                         <div>
-                            <h2 className='text-lg font-bold text-gray-900'>Tự động phân xe</h2>
-                             <p className='text-sm text-gray-500'>Danh sách cấu hình phân xe tự động.</p>
+                            <h2 className='text-lg font-bold text-gray-900'>Tự động phân phối sản phẩm</h2>
+                             <p className='text-sm text-gray-500'>Danh sách cấu hình phân phối sản phẩm tự động.</p>
                         </div>
                         <div>
                             <button

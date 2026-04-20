@@ -115,6 +115,12 @@ const PackagePage: React.FC = () => {
         }
     }, [filter.packageId, setFilter]);
 
+    useEffect(() => {
+        setFilter({ status: 'Đang đóng gói', page: 1, packageId: '' });
+        void fetchPackages({ status: 'Đang đóng gói', page: 1, packageId: '' });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const handleCreatePackage = async (packageData: {
         packageId: string;
         // packageName: string; // Removed, not in PackageType

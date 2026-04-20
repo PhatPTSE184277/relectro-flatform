@@ -20,6 +20,29 @@ import {
 } from '@/services/collection-point/IWProductService';
 import { useAuth } from '@/hooks/useAuth';
 
+const normalizeStatus = (status: string = ''): string => {
+    const s = (status || '').trim().toLowerCase();
+
+    if (
+        s.includes('đang vận chuyển') ||
+        s.includes('shipping') ||
+        s.includes('tái chế') ||
+        s.includes('recycled') ||
+        s.includes('recycle')
+    ) {
+        return 'đã giao';
+    }
+
+    if (s.includes('đã giao') || s.includes('delivered')) return 'đã giao';
+    if (s.includes('đã đóng thùng') || s.includes('closed')) return 'đã đóng thùng';
+    if (s.includes('chờ') || s.includes('pending')) return 'chờ thu gom';
+    if (s.includes('đã thu') || s.includes('collect') || s.includes('collected')) return 'đã thu gom';
+    if (s.includes('hủy') || s.includes('thất bại') || s.includes('cancel')) return 'thất bại';
+    if (s.includes('nhập') || s.includes('received')) return 'nhập đơn vị thu gom';
+
+    return s;
+};
+
 interface ProductFilter {
     page: number;
     limit: number;
@@ -48,6 +71,8 @@ interface IWProductContextType {
         total: number;
         pending: number;
         collected: number;
+        closed: number;
+        delivered: number;
         cancelled: number;
         received: number;
     };
@@ -73,6 +98,8 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
         total: 0,
         pending: 0,
         collected: 0,
+        closed: 0,
+        delivered: 0,
         cancelled: 0,
         received: 0
     });
@@ -118,26 +145,9 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
             let filtered: Product[] = allData;
 
             if (currentFilter.status) {
-                const statusLower = currentFilter.status.toLowerCase();
+                const normalizedFilterStatus = normalizeStatus(currentFilter.status);
                 filtered = filtered.filter((p) => {
-                    const pStatus = (p.status || '').toLowerCase();
-                    if (statusLower.includes('chờ')) {
-                        return pStatus.includes('chờ') || pStatus.includes('pending');
-                    }
-                    if (statusLower.includes('đã thu')) {
-                        return pStatus.includes('đã thu') || pStatus.includes('collect') || pStatus.includes('collected');
-                    }
-                    if (statusLower.includes('hủy') || statusLower.includes('thất bại')) {
-                        return (
-                            pStatus.includes('hủy') ||
-                            pStatus.includes('thất bại') ||
-                            pStatus.includes('cancel')
-                        );
-                    }
-                    if (statusLower.includes('nhập')) {
-                        return pStatus.includes('nhập') || pStatus.includes('received');
-                    }
-                    return false;
+                    return normalizeStatus(p.status || '') === normalizedFilterStatus;
                 });
             }
 
@@ -171,26 +181,22 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
                 const stats = {
                 total: dateAndSearchFiltered.length,
                 pending: dateAndSearchFiltered.filter(
-                    (p) =>
-                        (p.status || '').toLowerCase().includes('chờ') ||
-                        (p.status || '').toLowerCase().includes('pending')
+                    (p) => normalizeStatus(p.status || '') === 'chờ thu gom'
                 ).length,
                 collected: dateAndSearchFiltered.filter(
-                    (p) =>
-                        (p.status || '').toLowerCase().includes('đã thu') ||
-                        (p.status || '').toLowerCase().includes('collect') ||
-                        (p.status || '').toLowerCase().includes('collected')
+                    (p) => normalizeStatus(p.status || '') === 'đã thu gom'
+                ).length,
+                closed: dateAndSearchFiltered.filter(
+                    (p) => normalizeStatus(p.status || '') === 'đã đóng thùng'
+                ).length,
+                delivered: dateAndSearchFiltered.filter(
+                    (p) => normalizeStatus(p.status || '') === 'đã giao'
                 ).length,
                 cancelled: dateAndSearchFiltered.filter(
-                    (p) =>
-                        (p.status || '').toLowerCase().includes('hủy') ||
-                        (p.status || '').toLowerCase().includes('thất bại') ||
-                        (p.status || '').toLowerCase().includes('cancel')
+                    (p) => normalizeStatus(p.status || '') === 'thất bại'
                 ).length,
                 received: dateAndSearchFiltered.filter(
-                    (p) =>
-                        (p.status || '').toLowerCase().includes('nhập') ||
-                        (p.status || '').toLowerCase().includes('received')
+                    (p) => normalizeStatus(p.status || '') === 'nhập đơn vị thu gom'
                 ).length
             };
 
@@ -325,6 +331,8 @@ export const IWProductProvider: React.FC<Props> = ({ children }) => {
                 total: 0,
                 pending: 0,
                 collected: 0,
+                closed: 0,
+                delivered: 0,
                 cancelled: 0,
                 received: 0
             });

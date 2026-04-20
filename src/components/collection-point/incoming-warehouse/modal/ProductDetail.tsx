@@ -52,6 +52,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onClose }) => {
         if (s === 'đang tiến hành') return 'Đang tiến hành';
         if (s === 'chưa bắt đầu') return 'Chưa bắt đầu';
         if (s === 'thất bại') return 'Thất bại';
+        if (s === 'đã đóng thùng') return 'Đã đóng thùng';
+        if (s === 'đang vận chuyển' || s === 'tái chế' || s === 'đã giao') return 'Đã giao';
+        if (s === 'nhập kho' || s === 'nhập đơn vị thu gom' || s === 'received') return 'Nhập đơn vị thu gom';
         return status;
     }
 
