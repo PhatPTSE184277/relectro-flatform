@@ -257,10 +257,8 @@ const Header = ({ href, profileHref, onMenuClick }: HeaderProps) => {
         switch (role) {
             case 'AdminWarehouse':
                 return 'text-blue-600';
-            case 'AdminCompany':
-                return 'text-green-600';
             case 'RecyclingCompany':
-                return 'text-blue-600';
+                return 'text-green-600';
             default:
                 return 'text-primary-600';
         }
