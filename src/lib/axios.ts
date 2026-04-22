@@ -24,7 +24,7 @@ api.interceptors.request.use(
 let isRefreshing = false;
 let failedQueue: Array<{ resolve: (token: string) => void; reject: (error: unknown) => void }> = [];
 
-const publicEndpoints = ['/auth/login', '/auth/refresh-token', '/forgot-password'];
+const publicEndpoints = ['/auth/login', '/auth/refresh-token', '/auth/logout', '/forgot-password'];
 
 const getStoredAccessToken = () =>
   typeof window !== 'undefined'
@@ -49,6 +49,10 @@ const clearTokens = () => {
   localStorage.removeItem('ewise_refresh_token');
   sessionStorage.removeItem('ewise_refresh_token');
   localStorage.removeItem('ewise_processing_time');
+};
+
+const isManualLogoutInProgress = () => {
+  return typeof window !== 'undefined' && sessionStorage.getItem('ewise_manual_logout') === '1';
 };
 
 const dispatchLogout = () => {
@@ -155,6 +159,13 @@ api.interceptors.response.use(
       // Case 2: Has message = device conflict/account already logged in elsewhere
       else {
         if (typeof window !== 'undefined') {
+          // If user is manually logging out, don't show device-conflict toast.
+          if (isManualLogoutInProgress()) {
+            clearTokens();
+            dispatchLogout();
+            return Promise.reject(error);
+          }
+
           clearTokens();
           dispatchLogoutWithMessage(errorMessage);
           
@@ -169,6 +180,13 @@ api.interceptors.response.use(
     // Handle 403 Forbidden
     else if (error.response?.status === 403) {
       if (typeof window !== 'undefined') {
+        // If user is manually logging out, don't show any extra auth handling.
+        if (isManualLogoutInProgress()) {
+          clearTokens();
+          dispatchLogout();
+          return Promise.reject(error);
+        }
+
         clearTokens();
         dispatchLogout();
         

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { login as loginService } from '@/services/AuthService';
+import { login as loginService, logout as logoutService } from '@/services/AuthService';
 import { getUserProfile } from '@/services/UserService';
 import type { AuthState, UserProfile, LoginCredentials } from '../models/authModel';
 
@@ -13,11 +13,19 @@ const initialState: AuthState = {
     notificationMessage: null,
 };
 
+const clearAuthStorage = () => {
+    localStorage.removeItem('ewise_token');
+    localStorage.removeItem('ewise_refresh_token');
+    sessionStorage.removeItem('ewise_token');
+    sessionStorage.removeItem('ewise_refresh_token');
+};
+
 // Async thunk for login
 export const login = createAsyncThunk(
     'auth/login',
     async ({ username, password }: LoginCredentials, { rejectWithValue }) => {
         try {
+            sessionStorage.removeItem('ewise_manual_logout');
             const response = await loginService(username, password);
             const { accessToken, refreshToken, isFirstLogin } = response;
             
@@ -42,6 +50,7 @@ export const loadUserFromToken = createAsyncThunk(
     'auth/loadUserFromToken',
     async (_, { rejectWithValue }) => {
         try {
+            sessionStorage.removeItem('ewise_manual_logout');
             const token = localStorage.getItem('ewise_token');
             
             if (!token) {
@@ -62,11 +71,25 @@ export const loadUserFromToken = createAsyncThunk(
 );
 
 // Async thunk for logout
-export const logout = createAsyncThunk('auth/logout', async () => {
-    localStorage.removeItem('ewise_token');
-    localStorage.removeItem('ewise_refresh_token');
-    sessionStorage.removeItem('ewise_token');
-    sessionStorage.removeItem('ewise_refresh_token');
+export const logout = createAsyncThunk('auth/logout', async (_, { getState }) => {
+    sessionStorage.setItem('ewise_manual_logout', '1');
+    const state = getState() as { auth: AuthState };
+    const userId = state.auth.user?.userId || '';
+    const storedRefreshToken =
+        localStorage.getItem('ewise_refresh_token') ||
+        sessionStorage.getItem('ewise_refresh_token') ||
+        '';
+    const logoutIdentifier = userId || storedRefreshToken;
+
+    try {
+        if (logoutIdentifier) {
+            await logoutService(logoutIdentifier);
+        }
+    } catch (error) {
+        console.warn('Logout API failed:', error);
+    }
+
+    clearAuthStorage();
     return null;
 });
 

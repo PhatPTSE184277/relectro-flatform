@@ -38,6 +38,12 @@ export const changePasswordFirstLogin = async (oldPassword: string, newPassword:
     return response.data;
 };
 
+// Logout
+export const logout = async (userId: string) => {
+    const response = await api.post('/auth/logout', JSON.stringify(userId));
+    return response.data;
+};
+
 // Refresh token
 export interface RefreshTokenRequest {
     accessToken: string;
