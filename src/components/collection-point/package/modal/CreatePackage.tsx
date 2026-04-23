@@ -40,6 +40,8 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     const [toastOpen, setToastOpen] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'error'>('error');
+    const [packageIdError, setPackageIdError] = useState('');
+    const [packageIdTouched, setPackageIdTouched] = useState(false);
     const [showClearAllConfirm, setShowClearAllConfirm] = useState(false);
     const [qrToRemove, setQrToRemove] = useState<string | null>(null);
     const packageIdInputRef = useRef<HTMLInputElement>(null);
@@ -71,10 +73,38 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
         }
     };
 
+    const validatePackageId = (value: string) => {
+        const pid = value.trim();
+        if (!pid) {
+            return 'Vui lòng nhập mã kiện hàng';
+        }
+        if (!/^[0-9]{13}$/.test(pid)) {
+            return 'Mã QR phải là số gồm 13 ký tự (mã hệ thống tạo ra)!';
+        }
+        if (!isValidSystemQRCode(pid)) {
+            return 'Chỉ được sử dụng mã QR do hệ thống tạo ra trong hôm qua hoặc hôm nay!';
+        }
+        return '';
+    };
+
+    const handlePackageIdChange = (value: string) => {
+        setPackageId(value);
+        if (packageIdTouched) {
+            setPackageIdError(validatePackageId(value));
+        }
+    };
+
+    const handlePackageIdBlur = () => {
+        setPackageIdTouched(true);
+        setPackageIdError(validatePackageId(packageId));
+    };
+
     useEffect(() => {
         if (open) {
             // Reset form when modal opens
             setPackageId('');
+            setPackageIdError('');
+            setPackageIdTouched(false);
             setQrCodeInput('');
             setScannedProducts([]);
             setShowClearAllConfirm(false);
@@ -174,17 +204,11 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
 
     const handleSubmit = () => {
         const pid = (packageId || '').trim();
-        if (!pid) {
-            showToast('Vui lòng nhập mã kiện hàng', 'error', 'package');
-            return;
-        }
-
-        // Validate 13-digit system QR and allowed time range (detailed messages)
-        if (!/^[0-9]{13}$/.test(pid)) {
-            showToast('Mã QR phải là số gồm 13 ký tự (mã hệ thống tạo ra)!', 'error', 'package');
-            return;
-        } else if (!isValidSystemQRCode(pid)) {
-            showToast('Chỉ được sử dụng mã QR do hệ thống tạo ra trong hôm qua hoặc hôm nay!', 'error', 'package');
+        const validationError = validatePackageId(pid);
+        if (validationError) {
+            setPackageIdTouched(true);
+            setPackageIdError(validationError);
+            focusInput('package');
             return;
         }
 
@@ -214,6 +238,8 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
 
     const handleClose = () => {
         setPackageId('');
+        setPackageIdError('');
+        setPackageIdTouched(false);
         setQrCodeInput('');
         setScannedProducts([]);
         setShowClearAllConfirm(false);
@@ -228,6 +254,8 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
             handleClose();
         }
     };
+
+    const isPackageIdValid = !validatePackageId(packageId);
 
     if (!open) return null;
 
@@ -269,7 +297,8 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                     ref={packageIdInputRef}
                                     type='text'
                                     value={packageId}
-                                    onChange={(e) => setPackageId(e.target.value)}
+                                    onChange={(e) => handlePackageIdChange(e.target.value)}
+                                    onBlur={handlePackageIdBlur}
                                     placeholder='Quét hoặc nhập mã kiện hàng...'
                                     disabled={loading}
                                     className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
@@ -338,16 +367,21 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
 
                 {/* Footer */}
                 <div className='flex justify-between items-center gap-3 p-5 border-t border-gray-100 bg-white'>
-                    <div className='text-sm text-gray-600 flex items-center'>
-                        <span className='font-semibold'>
-                            {scannedProducts.length}
-                        </span>
-                        <span className='ml-1'>sản phẩm đã thêm</span>
+                    <div className='text-sm text-gray-600 flex flex-col items-start gap-1'>
+                        <div className='flex items-center'>
+                            <span className='font-semibold'>
+                                {scannedProducts.length}
+                            </span>
+                            <span className='ml-1'>sản phẩm đã thêm</span>
+                        </div>
+                        {packageIdTouched && packageIdError && (
+                            <div className='text-xs text-red-600'>{packageIdError}</div>
+                        )}
                     </div>
                     <div className='flex gap-3'>
                         <button
                             onClick={handleSubmit}
-                            disabled={scannedProducts.length === 0}
+                            disabled={scannedProducts.length === 0 || !isPackageIdValid}
                             className='px-5 py-2 rounded-lg font-medium text-white cursor-pointer shadow-md transition-all duration-200 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center gap-2 border border-primary-200'
                         >
                             Tạo kiện hàng   
