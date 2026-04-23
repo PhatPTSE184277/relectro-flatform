@@ -19,6 +19,7 @@ import CustomNumberInput from '@/components/ui/CustomNumberInput';
 import type { CreateProductPayload } from '@/types/Product';
 import UserInfo from '@/components/ui/UserInfo';
 import { useIWProductContext } from '@/contexts/collection-point/IWProductContext';
+import { checkProductQRCodeExists } from '@/services/collection-point/IWProductService';
 
 interface CreateProductProps {
     open: boolean;
@@ -43,6 +44,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     const [brandLoading, setBrandLoading] = useState(false);
     const [qrCode, setQrCode] = useState('');
     const [qrError, setQrError] = useState('');
+    const [qrExists, setQrExists] = useState(false);
+    const [checkingQrExists, setCheckingQrExists] = useState(false);
     const [point, setPoint] = useState(0);
     const [maxPoint, setMaxPoint] = useState<number | null>(null);
     const [pointLoading, setPointLoading] = useState(false);
@@ -111,6 +114,32 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         await searchUserByInformation(userInfoInput);
     };
 
+    const handleQrBlur = async () => {
+        const qr = qrCode.trim();
+        if (!qr || !/^[0-9]{13}$/.test(qr) || !isValidSystemQRCode(qr)) {
+            setQrExists(false);
+            setCheckingQrExists(false);
+            return;
+        }
+
+        setCheckingQrExists(true);
+        try {
+            const exists = await validateQrNotUsed(qr);
+            setQrExists(exists);
+        } finally {
+            setCheckingQrExists(false);
+        }
+    };
+
+    const validateQrNotUsed = async (qr: string): Promise<boolean> => {
+        try {
+            return await checkProductQRCodeExists(qr);
+        } catch (error) {
+            console.error('checkProductQRCodeExists error', error);
+            return false;
+        }
+    };
+
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files) return;
@@ -173,6 +202,13 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         }
         if (!isValidSystemQRCode(qr)) {
             setQrError('Chỉ được sử dụng mã QR do hệ thống tạo ra!');
+            return;
+        }
+
+        const exists = await validateQrNotUsed(qr);
+        if (exists) {
+            setQrError('Mã QR này đã có sản phẩm sử dụng!');
+            setQrExists(true);
             return;
         }
 
@@ -240,6 +276,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         setSubCategoryId('');
         setBrandId('');
         setQrCode('');
+        setQrError('');
+        setQrExists(false);
+        setCheckingQrExists(false);
         setPoint(0);
         setMaxPoint(null);
         setPointLoading(false);
@@ -330,6 +369,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                 error = 'Mã QR phải là số gồm 13 ký tự (mã hệ thống tạo ra)!';
             } else if (!isValidSystemQRCode(qr)) {
                 error = 'Chỉ được sử dụng mã QR do hệ thống tạo ra trong hôm qua hoặc hôm nay!';
+            } else if (qrExists) {
+                error = 'Mã QR này đã có sản phẩm sử dụng!';
             }
         }
         setQrError(error);
@@ -338,6 +379,8 @@ const CreateProduct: React.FC<CreateProductProps> = ({
             qr &&
             /^[0-9]{13}$/.test(qr) &&
             isValidSystemQRCode(qr) &&
+            !qrExists &&
+            !checkingQrExists &&
             parentCategoryId.trim() &&
             subCategoryId.trim() &&
             brandId.trim() &&
@@ -346,7 +389,17 @@ const CreateProduct: React.FC<CreateProductProps> = ({
             imageFiles.length <= 5
         );
         setIsFormValid(isValid);
-    }, [user, qrCode, parentCategoryId, subCategoryId, brandId, description, imageFiles]);
+    }, [
+        user,
+        qrCode,
+        qrExists,
+        checkingQrExists,
+        parentCategoryId,
+        subCategoryId,
+        brandId,
+        description,
+        imageFiles
+    ]);
 
     if (!open) return null;
 
@@ -462,7 +515,13 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                         ref={qrInputRef}
                                         type='text'
                                         value={qrCode}
-                                        onChange={(e) => setQrCode(e.target.value)}
+                                        onChange={(e) => {
+                                            setQrCode(e.target.value);
+                                            setQrExists(false);
+                                        }}
+                                        onBlur={() => {
+                                            void handleQrBlur();
+                                        }}
                                         placeholder='Quét hoặc nhập mã QR sản phẩm...'
                                         className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100 ${qrError ? 'border-red-500' : 'border-primary-300'}`}
                                         autoComplete='off'
@@ -474,6 +533,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                 </div>
                                 {qrError && (
                                     <div className='mt-2 text-xs text-red-600'>{qrError}</div>
+                                )}
+                                {!qrError && checkingQrExists && (
+                                    <div className='mt-2 text-xs text-gray-500'>Đang kiểm tra QR đã tồn tại...</div>
                                 )}
                             </div>
                         </div>

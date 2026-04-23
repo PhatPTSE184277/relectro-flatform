@@ -53,6 +53,12 @@ export const getProductByQRCode = async (qrCode: string): Promise<any> => {
     return response.data;
 };
 
+export const checkProductQRCodeExists = async (qrCode: string): Promise<boolean> => {
+    const response = await axios.get(`/products/check/${qrCode}`);
+    const data: any = response.data;
+    return Boolean(data?.exists ?? data?.data?.exists ?? false);
+};
+
 export const createIncomingWarehouseProduct = async (
     payload: CreateProductPayload
 ): Promise<any> => {
