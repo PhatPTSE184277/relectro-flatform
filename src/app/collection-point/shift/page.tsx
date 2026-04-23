@@ -182,6 +182,8 @@ const ShiftPageContent: React.FC = () => {
         );
     });
 
+    const scrollResetKey = `${page}|${filterStatus}|${fromDate}|${toDate}`;
+
     return (
         <ShiftProvider>
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
@@ -263,6 +265,7 @@ const ShiftPageContent: React.FC = () => {
                 actionLoading={actionLoading}
                 page={page}
                 limit={limit}
+                scrollResetKey={scrollResetKey}
             />
 
             <Pagination page={page} totalPages={Number(totalPages)} onPageChange={handlePageChange} />

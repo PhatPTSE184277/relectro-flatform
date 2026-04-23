@@ -42,20 +42,30 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     const [toastType, setToastType] = useState<'success' | 'error'>('error');
     const [showClearAllConfirm, setShowClearAllConfirm] = useState(false);
     const [qrToRemove, setQrToRemove] = useState<string | null>(null);
+    const packageIdInputRef = useRef<HTMLInputElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     // const packageNameRef = useRef<HTMLInputElement>(null);
     const lastProductRef = useRef<HTMLTableRowElement>(null);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
     // Helper to show toast and immediately focus input
-    const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    const focusInput = (target: 'package' | 'qr' = 'qr') => {
+        const ref = target === 'package' ? packageIdInputRef : inputRef;
+        ref.current?.focus();
+        requestAnimationFrame(() => ref.current?.focus());
+        setTimeout(() => ref.current?.focus(), 50);
+    };
+
+    const showToast = (
+        message: string,
+        type: 'success' | 'error' = 'error',
+        focusTarget: 'package' | 'qr' = 'qr'
+    ) => {
         setToastMessage(message);
         setToastType(type);
         setToastOpen(true);
         try {
-            inputRef.current?.focus();
-            requestAnimationFrame(() => inputRef.current?.focus());
-            setTimeout(() => inputRef.current?.focus(), 50);
+            focusInput(focusTarget);
         } catch (e) {
             console.log(e);
         }
@@ -165,18 +175,16 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     const handleSubmit = () => {
         const pid = (packageId || '').trim();
         if (!pid) {
-            showToast('Vui lòng nhập mã kiện hàng', 'error');
+            showToast('Vui lòng nhập mã kiện hàng', 'error', 'package');
             return;
         }
 
         // Validate 13-digit system QR and allowed time range (detailed messages)
         if (!/^[0-9]{13}$/.test(pid)) {
-            setPackageId('');
-            showToast('Mã QR phải là số gồm 13 ký tự (mã hệ thống tạo ra)!', 'error');
+            showToast('Mã QR phải là số gồm 13 ký tự (mã hệ thống tạo ra)!', 'error', 'package');
             return;
         } else if (!isValidSystemQRCode(pid)) {
-            setPackageId('');
-            showToast('Chỉ được sử dụng mã QR do hệ thống tạo ra trong hôm qua hoặc hôm nay!', 'error');
+            showToast('Chỉ được sử dụng mã QR do hệ thống tạo ra trong hôm qua hoặc hôm nay!', 'error', 'package');
             return;
         }
 
@@ -258,6 +266,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                             </label>
                             <div className='relative'>
                                 <input
+                                    ref={packageIdInputRef}
                                     type='text'
                                     value={packageId}
                                     onChange={(e) => setPackageId(e.target.value)}

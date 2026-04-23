@@ -84,16 +84,31 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         }
     }, [user]);
 
-    const handleSearchUser = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const info = userInfoInput.trim();
-        if (!info) {
+    const searchUserByInformation = async (information: string) => {
+        const info = information.trim();
+        if (!info || loadingUser) {
+            if (!info) {
+                setUser(null);
+                setSearchClicked(false);
+            }
             return;
         }
+
         setSearchClicked(true);
         setLoadingUser(true);
         await fetchUserByInformation(info);
         setLoadingUser(false);
+    };
+
+    const handleUserInfoChange = (value: string) => {
+        setUserInfoInput(value);
+        setUser(null);
+        setSearchClicked(false);
+    };
+
+    const handleSearchUser = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await searchUserByInformation(userInfoInput);
     };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -378,7 +393,10 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     ref={userInfoInputRef}
                                     type='text'
                                     value={userInfoInput}
-                                    onChange={(e) => setUserInfoInput(e.target.value)}
+                                    onChange={(e) => handleUserInfoChange(e.target.value)}
+                                    onBlur={() => {
+                                        void searchUserByInformation(userInfoInput);
+                                    }}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
                                             handleSearchUser(e);

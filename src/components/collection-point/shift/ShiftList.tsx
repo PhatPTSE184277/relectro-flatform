@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import ShiftShow from './ShiftShow';
 import ShiftTableSkeleton from './ShiftTableSkeleton';
 
@@ -11,6 +11,7 @@ interface ShiftListProps {
     actionLoading?: boolean;
     page: number;
     limit: number;
+    scrollResetKey?: string;
 }
 
 const ShiftList: React.FC<ShiftListProps> = ({
@@ -21,15 +22,22 @@ const ShiftList: React.FC<ShiftListProps> = ({
     onActivate,
     actionLoading,
     page,
-    limit
+    limit,
+    scrollResetKey
 }) => {
     const sttOffset = (Math.max(page, 1) - 1) * Math.max(limit, 1);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [scrollResetKey]);
+
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
             <div className='overflow-x-auto w-full'>
                 <div className='inline-block min-w-full align-middle'>
                     <div className='overflow-hidden'>
-                        <div className='overflow-x-auto max-h-[44vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[45vh] xl:max-h-[44vh] overflow-y-auto w-full'>
+                        <div ref={scrollContainerRef} className='overflow-x-auto max-h-[44vh] sm:max-h-[70vh] md:max-h-[60vh] lg:max-h-[45vh] xl:max-h-[44vh] overflow-y-auto w-full'>
                             <table className='min-w-full text-sm text-gray-800 table-fixed'>
                                 <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
                                     <tr>
