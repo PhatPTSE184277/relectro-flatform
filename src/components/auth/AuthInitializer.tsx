@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/redux/hooks';
 import { loadUserFromToken, logout, setNotificationMessage } from '@/redux/reducers/authReducer';
 
 export default function AuthInitializer() {
     const dispatch = useAppDispatch();
+    const router = useRouter();
 
     useEffect(() => {
         // Load user from token when app starts
@@ -13,7 +15,9 @@ export default function AuthInitializer() {
 
         // Listen for logout event from axios interceptor
         const handleLogout = () => {
-            dispatch(logout());
+            void dispatch(logout()).finally(() => {
+                router.replace('/');
+            });
         };
 
         // Listen for logout with message event (device conflict)
@@ -32,7 +36,9 @@ export default function AuthInitializer() {
                     window.clearTimeout(logoutTimer);
                 }
                 logoutTimer = window.setTimeout(() => {
-                    dispatch(logout());
+                    void dispatch(logout()).finally(() => {
+                        router.replace('/');
+                    });
                 }, TOAST_DURATION);
             }
         };
@@ -51,7 +57,7 @@ export default function AuthInitializer() {
                 }
             }
         };
-    }, [dispatch]);
+    }, [dispatch, router]);
 
     return null;
 }

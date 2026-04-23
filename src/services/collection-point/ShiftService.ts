@@ -55,3 +55,15 @@ export const importShiftsExcel = async (file: File): Promise<any> => {
   });
   return response.data;
 };
+
+// Activate (lock) shift
+export const activateShift = async (shiftId: string): Promise<any> => {
+  const response = await axios.patch(`/shift/active/${shiftId}`);
+  return response.data;
+};
+
+// Deactivate (unlock) shift
+export const deactivateShift = async (shiftId: string): Promise<any> => {
+  const response = await axios.patch(`/shift/un-active/${shiftId}`);
+  return response.data;
+};

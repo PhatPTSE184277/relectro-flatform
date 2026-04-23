@@ -22,7 +22,7 @@ const ParentCategoryList: React.FC<ParentCategoryListProps> = ({
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden'>
             <div className='flex items-center gap-2 p-4 border-b border-primary-100 bg-linear-to-r from-primary-50 to-primary-100'>
                 <Folder size={18} className='text-primary-600' />
-                <h2 className='font-bold text-gray-800'>Danh mục cha</h2>
+                <h2 className='font-bold text-gray-800'>Danh mục lớn</h2>
             </div>
 
             <div className='overflow-x-auto w-full'>
@@ -71,8 +71,8 @@ const ParentCategoryList: React.FC<ParentCategoryListProps> = ({
                                                             <button
                                                                 onClick={() => onSelect(cat)}
                                                                 className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
-                                                                title='Mở danh mục con'
-                                                                aria-label='Mở danh mục con'
+                                                                title='Mở Danh mục nhỏ'
+                                                                aria-label='Mở Danh mục nhỏ'
                                                             >
                                                                 <Eye size={16} />
                                                             </button>

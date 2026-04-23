@@ -6,9 +6,15 @@ interface VoucherListProps {
     vouchers: any[];
     loading: boolean;
     onViewDetail: (voucher: any) => void;
+    onApprove: (voucher: any) => void;
+    onBlock: (voucher: any) => void;
+    actionLoading: boolean;
+    status?: string;
+    page?: number;
+    limit?: number;
 }
 
-const VoucherList: React.FC<VoucherListProps> = ({ vouchers, loading, onViewDetail }) => {
+const VoucherList: React.FC<VoucherListProps> = ({ vouchers, loading, onViewDetail, onApprove, onBlock, actionLoading, status, page = 1, limit = 10 }) => {
     return (
         <div className='bg-white rounded-2xl shadow-lg border border-gray-100 mb-6'>
             <div className='overflow-x-auto'>
@@ -33,8 +39,12 @@ const VoucherList: React.FC<VoucherListProps> = ({ vouchers, loading, onViewDeta
                                         key={voucher?.id || `${voucher?.code}-${idx}`}
                                         voucher={voucher}
                                         onView={() => onViewDetail(voucher)}
+                                        onApprove={() => onApprove(voucher)}
+                                        onBlock={() => onBlock(voucher)}
+                                        actionLoading={actionLoading}
+                                        filterStatus={status}
                                         isLast={idx === vouchers.length - 1}
-                                        index={idx}
+                                        index={(page - 1) * limit + idx}
                                     />
                                 ))
                             ) : (

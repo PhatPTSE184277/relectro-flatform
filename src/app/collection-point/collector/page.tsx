@@ -2,47 +2,50 @@
 
 import React, { useState, useEffect } from 'react';
 import { IoCloudUploadOutline } from 'react-icons/io5';
-import { useCollectorContext } from '@/contexts/collection-point/CollectorContext';
-import CollectorList from '@/components/collection-point/collector/CollectorList';
-import CollectorDetail from '@/components/collection-point/collector/modal/CollectorDetail';
-import SearchBox from '@/components/ui/SearchBox';
 import { Users, Download } from 'lucide-react';
+import { useCollectorContext, type CollectorStatusFilter } from '@/contexts/collection-point/CollectorContext';
+import CollectorList from '@/components/collection-point/collector/CollectorList';
+import CollectorFilter from '@/components/collection-point/collector/CollectorFilter';
+import CollectorBlock from '@/components/collection-point/collector/modal/CollectorBlock';
+import CollectorApprove from '@/components/collection-point/collector/modal/CollectorApprove';
+import SearchBox from '@/components/ui/SearchBox';
 import ImportCollectorModal from '@/components/collection-point/collector/modal/ImportCollectorModal';
-import { useAuth } from '@/hooks/useAuth';
 import Pagination from '@/components/ui/Pagination';
 import Toast from '@/components/ui/Toast';
 import { getActiveSystemConfigs } from '@/services/admin/SystemConfigService';
 import { pickExcelTemplateUrl } from '@/utils/excelTemplateConfig';
 
 const CollectorPage: React.FC = () => {
-    const { user } = useAuth();
-    const { collectors, loading, fetchCollectors, importCollectors } = useCollectorContext();
-    const [selectedCollector, setSelectedCollector] = useState<any | null>(null);
-    const [showDetailModal, setShowDetailModal] = useState(false);
+    const {
+        collectors,
+        loading,
+        actionLoading,
+        fetchCollectors,
+        importCollectors,
+        activateCollector,
+        deactivateCollector,
+        page,
+        totalPages,
+        setPage,
+        stats,
+    } = useCollectorContext();
     const [search, setSearch] = useState('');
     const [showImportModal, setShowImportModal] = useState(false);
     const [templateUrl, setTemplateUrl] = useState<string | null>(null);
+    const [filterStatus, setFilterStatus] = useState<CollectorStatusFilter>('Đang hoạt động');
+    const [pendingBlockId, setPendingBlockId] = useState<string | null>(null);
+    const [pendingActivateId, setPendingActivateId] = useState<string | null>(null);
     const [toast, setToast] = useState<{ open: boolean; type: 'success' | 'error'; message: string }>({
         open: false,
         type: 'error',
         message: ''
     });
 
-    // Use smallCollectionPointId for new API endpoint `/collectors/collectionUnit/{id}`
-    const smallCollectionPointId = user?.smallCollectionPointId;
-
-    // Client-side pagination: fetch full list (use large limit) and paginate locally
     const ITEMS_PER_PAGE = 10;
-    const [localPage, setLocalPage] = useState<number>(1);
 
     useEffect(() => {
-        if (smallCollectionPointId) {
-            // Request a large limit so we get all collectors for client-side pagination
-            void fetchCollectors(String(smallCollectionPointId), 1, 1000);
-        }
-    }, [fetchCollectors, smallCollectionPointId]);
-
-    // Keep local page within bounds when collectors change (avoid synchronous setState)
+        void fetchCollectors(filterStatus, page, ITEMS_PER_PAGE, true);
+    }, [fetchCollectors, filterStatus, page]);
 
     useEffect(() => {
         const loadTemplate = async () => {
@@ -57,26 +60,18 @@ const CollectorPage: React.FC = () => {
         void loadTemplate();
     }, []);
 
-    const handleViewDetail = (collector: any) => {
-        setSelectedCollector(collector);
-        setShowDetailModal(true);
-    };
+    useEffect(() => {
+        setPage(1);
+    }, [filterStatus, search, setPage]);
 
-    const handleCloseModal = () => {
-        setShowDetailModal(false);
-        setSelectedCollector(null);
+    const handleFilterChange = (status: CollectorStatusFilter) => {
+        setFilterStatus(status);
     };
 
     const handleImportExcel = async (file: File): Promise<boolean> => {
-        if (!smallCollectionPointId) {
-            setToast({ open: true, type: 'error', message: 'Thêm dữ liệu thất bại' });
-            return false;
-        }
         try {
             await importCollectors(file);
-
-            // Refresh full list after import
-            await fetchCollectors(String(smallCollectionPointId), 1, 1000);
+            void fetchCollectors(filterStatus, page, ITEMS_PER_PAGE, true);
             setToast({ open: true, type: 'success', message: 'Thêm dữ liệu hoàn tất' });
             return true;
         } catch {
@@ -84,8 +79,6 @@ const CollectorPage: React.FC = () => {
             return false;
         }
     };
-
-    // local pagination handled by `setLocalPage` below
 
     const filteredCollectors = collectors.filter((collector) => {
         const searchLower = search.toLowerCase();
@@ -97,23 +90,25 @@ const CollectorPage: React.FC = () => {
         );
     });
 
-    const totalPages = Math.ceil((collectors?.length || 0) / ITEMS_PER_PAGE) || 1;
-
-    const paginatedCollectors = collectors.slice((localPage - 1) * ITEMS_PER_PAGE, localPage * ITEMS_PER_PAGE);
-
-    // If current local page is out of range after collectors change, reset to 1
-    // Schedule the state update asynchronously to avoid synchronous setState in effect
-    useEffect(() => {
-        if (localPage > totalPages) {
-            const id = window.setTimeout(() => setLocalPage(1), 0);
-            return () => clearTimeout(id);
+    const handleToggleCollector = async (collectorId: string, isActive: boolean) => {
+        try {
+            if (isActive) {
+                await deactivateCollector(collectorId);
+                setToast({ open: true, type: 'success', message: 'Khóa nhân viên thu gom thành công' });
+            } else {
+                await activateCollector(collectorId);
+                setToast({ open: true, type: 'success', message: 'Mở khóa nhân viên thu gom thành công' });
+            }
+        } catch {
+            setToast({ open: true, type: 'error', message: 'Thao tác thất bại' });
+        } finally {
+            setPendingBlockId(null);
+            setPendingActivateId(null);
         }
-        return undefined;
-    }, [localPage, totalPages]);
+    };
 
     return (
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-            {/* Header */}
             <div className='flex justify-between items-center mb-6'>
                 <div className='flex items-center gap-3'>
                     <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center border border-primary-200'>
@@ -157,31 +152,29 @@ const CollectorPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Collector List */}
+            <CollectorFilter
+                status={filterStatus}
+                stats={{ active: stats.active, inactive: stats.inactive }}
+                onFilterChange={handleFilterChange}
+            />
+
             <CollectorList
-                collectors={filteredCollectors.filter(c => paginatedCollectors.includes(c))}
+                collectors={filteredCollectors}
                 loading={loading}
-                onViewDetail={handleViewDetail}
-                page={localPage}
+                filterStatus={filterStatus}
+                onBlock={(collector) => setPendingBlockId(collector.collectorId || null)}
+                onActivate={(collector) => setPendingActivateId(collector.collectorId || null)}
+                actionLoading={actionLoading}
+                page={page}
                 limit={ITEMS_PER_PAGE}
             />
 
-            {/* Pagination */}
             <Pagination
-                page={localPage}
-                totalPages={totalPages}
-                onPageChange={(p) => { setLocalPage(p); }}
+                page={page}
+                totalPages={Math.max(1, totalPages)}
+                onPageChange={setPage}
             />
 
-            {/* Detail Modal */}
-            {showDetailModal && (
-                <CollectorDetail
-                    collector={selectedCollector}
-                    onClose={handleCloseModal}
-                />
-            )}
-
-            {/* Import Excel Modal */}
             {showImportModal && (
                 <ImportCollectorModal
                     open={showImportModal}
@@ -189,6 +182,28 @@ const CollectorPage: React.FC = () => {
                     onImport={handleImportExcel}
                 />
             )}
+
+            <CollectorBlock
+                open={!!pendingBlockId}
+                loading={actionLoading}
+                onClose={() => setPendingBlockId(null)}
+                onConfirm={async () => {
+                    if (pendingBlockId) {
+                        await handleToggleCollector(pendingBlockId, true);
+                    }
+                }}
+            />
+
+            <CollectorApprove
+                open={!!pendingActivateId}
+                loading={actionLoading}
+                onClose={() => setPendingActivateId(null)}
+                onConfirm={async () => {
+                    if (pendingActivateId) {
+                        await handleToggleCollector(pendingActivateId, false);
+                    }
+                }}
+            />
 
             <Toast
                 open={toast.open}

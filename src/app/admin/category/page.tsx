@@ -107,8 +107,8 @@ const AdminCategoryPage: React.FC = () => {
 							<div className='text-sm text-primary-600 truncate'>
 								<Breadcrumb
 									items={[
-										{ label: 'Danh sách danh mục cha', onClick: clearSelectedParent },
-										{ label: parentName || 'Danh mục con' }
+										{ label: 'Danh sách Danh mục lớn', onClick: clearSelectedParent },
+										{ label: parentName || 'Danh mục nhỏ' }
 									]}
 								/>
 							</div>

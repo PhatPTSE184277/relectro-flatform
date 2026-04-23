@@ -12,6 +12,8 @@ import {
     getVouchersPaged,
     getVoucherById,
     createVoucher,
+    activateVoucher as activateVoucherApi,
+    deactivateVoucher as deactivateVoucherApi,
     VoucherPagedParams,
     PagedResponse
 } from '@/services/admin/VoucherService';
@@ -19,6 +21,7 @@ import {
 interface VoucherContextType {
     vouchers: any[];
     loading: boolean;
+    actionLoading: boolean;
     creating: boolean;
     error: string | null;
     page: number;
@@ -26,10 +29,17 @@ interface VoucherContextType {
     totalItems: number;
     totalPages: number;
     status: string;
+    stats: {
+        total: number;
+        active: number;
+        inactive: number;
+    };
     fetchVouchers: (page?: number, limit?: number, status?: string) => Promise<void>;
     fetchVoucherById: (id: string | number) => Promise<any | null>;
     createVoucherItem: (payload: any) => Promise<any | null>;
     importFromExcel: (file: File) => Promise<any>;
+    activateVoucher: (voucherId: string) => Promise<void>;
+    deactivateVoucher: (voucherId: string) => Promise<void>;
     clearVouchers: () => void;
     setPage: (page: number) => void;
     setLimit: (limit: number) => void;
@@ -43,6 +53,7 @@ type Props = { children: ReactNode };
 export const VoucherProvider: React.FC<Props> = ({ children }) => {
     const [vouchers, setVouchers] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
     const [creating, setCreating] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState<number>(1);
@@ -50,6 +61,7 @@ export const VoucherProvider: React.FC<Props> = ({ children }) => {
     const [totalItems, setTotalItems] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [status, setStatus] = useState<string>('Hoạt động');
+    const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0 });
 
     const pageRef = useRef(page);
     const limitRef = useRef(limit);
@@ -58,6 +70,24 @@ export const VoucherProvider: React.FC<Props> = ({ children }) => {
     pageRef.current = page;
     limitRef.current = limit;
     statusRef.current = status;
+
+    const fetchVoucherStats = useCallback(async () => {
+        try {
+            const [allRes, activeRes, inactiveRes] = await Promise.all([
+                getVouchersPaged({ page: 1, limit: 1 }),
+                getVouchersPaged({ page: 1, limit: 1, status: 'Hoạt động' }),
+                getVouchersPaged({ page: 1, limit: 1, status: 'Không hoạt động' }),
+            ]);
+
+            setStats({
+                total: allRes?.totalItems ?? 0,
+                active: activeRes?.totalItems ?? 0,
+                inactive: inactiveRes?.totalItems ?? 0,
+            });
+        } catch {
+            // ignore stats errors
+        }
+    }, []);
 
     const fetchVouchers = useCallback(async (customPage?: number, customLimit?: number, customStatus?: string) => {
         setLoading(true);
@@ -80,6 +110,10 @@ export const VoucherProvider: React.FC<Props> = ({ children }) => {
             setPage(data?.page ?? currentPage);
             setLimit(data?.limit ?? currentLimit);
             if (customStatus !== undefined) setStatus(customStatus);
+
+            if (currentPage === 1 || customStatus !== undefined) {
+                void fetchVoucherStats();
+            }
         } catch (err: any) {
             setError(err?.response?.data?.message || 'Lỗi khi tải danh sách voucher');
             setVouchers([]);
@@ -88,7 +122,7 @@ export const VoucherProvider: React.FC<Props> = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [fetchVoucherStats]);
 
     const fetchVoucherById = useCallback(async (id: string | number) => {
         setError(null);
@@ -130,14 +164,46 @@ export const VoucherProvider: React.FC<Props> = ({ children }) => {
         }
     }, [fetchVouchers]);
 
+    const activateVoucher = useCallback(async (voucherId: string) => {
+        setActionLoading(true);
+        setError(null);
+        try {
+            await activateVoucherApi(voucherId);
+            await fetchVouchers(pageRef.current, limitRef.current, statusRef.current);
+            void fetchVoucherStats();
+        } catch (err: any) {
+            setError(err?.response?.data?.message || 'Lỗi khi mở khóa voucher');
+            throw err;
+        } finally {
+            setActionLoading(false);
+        }
+    }, [fetchVouchers, fetchVoucherStats]);
+
+    const deactivateVoucher = useCallback(async (voucherId: string) => {
+        setActionLoading(true);
+        setError(null);
+        try {
+            await deactivateVoucherApi(voucherId);
+            await fetchVouchers(pageRef.current, limitRef.current, statusRef.current);
+            void fetchVoucherStats();
+        } catch (err: any) {
+            setError(err?.response?.data?.message || 'Lỗi khi khóa voucher');
+            throw err;
+        } finally {
+            setActionLoading(false);
+        }
+    }, [fetchVouchers, fetchVoucherStats]);
+
     const clearVouchers = useCallback(() => {
         setVouchers([]);
         setError(null);
+        setStats({ total: 0, active: 0, inactive: 0 });
     }, []);
 
     const value: VoucherContextType = {
         vouchers,
         loading,
+        actionLoading,
         creating,
         error,
         page,
@@ -145,10 +211,13 @@ export const VoucherProvider: React.FC<Props> = ({ children }) => {
         totalItems,
         totalPages,
         status,
+        stats,
         fetchVouchers,
         fetchVoucherById,
         createVoucherItem,
         importFromExcel,
+        activateVoucher,
+        deactivateVoucher,
         clearVouchers,
         setPage,
         setLimit,

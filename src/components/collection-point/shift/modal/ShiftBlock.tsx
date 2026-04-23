@@ -1,14 +1,14 @@
 import React from 'react';
-import { CheckCircle, Loader2 } from 'lucide-react';
+import { Ban, Loader2 } from 'lucide-react';
 
-interface VehicleApproveProps {
+interface ShiftBlockProps {
     open: boolean;
     onClose: () => void;
     onConfirm: () => void;
     loading?: boolean;
 }
 
-const VehicleApprove: React.FC<VehicleApproveProps> = ({ open, onClose, onConfirm, loading }) => {
+const ShiftBlock: React.FC<ShiftBlockProps> = ({ open, onClose, onConfirm, loading }) => {
     if (!open) return null;
 
     return (
@@ -17,10 +17,10 @@ const VehicleApprove: React.FC<VehicleApproveProps> = ({ open, onClose, onConfir
 
             <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-fadeIn">
                 {/* Header */}
-                <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-green-50 to-primary-100">
+                <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-red-50 to-primary-100">
                     <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                        <CheckCircle size={22} className="text-green-500" />
-                        Xác nhận mở khóa phương tiện
+                        <Ban size={22} className="text-red-500" />
+                        Xác nhận khóa ca làm việc
                     </h2>
                     <button
                         onClick={onClose}
@@ -34,7 +34,7 @@ const VehicleApprove: React.FC<VehicleApproveProps> = ({ open, onClose, onConfir
                 {/* Body */}
                 <div className="p-6 bg-gray-50">
                     <p className="text-gray-700 text-base">
-                        Bạn có chắc chắn muốn <span className="font-semibold text-green-600">mở khóa</span> phương tiện này không?
+                        Bạn có chắc chắn muốn <span className="font-semibold text-red-600">khóa</span> ca làm việc này không?
                     </p>
                 </div>
 
@@ -61,4 +61,4 @@ const VehicleApprove: React.FC<VehicleApproveProps> = ({ open, onClose, onConfir
     );
 };
 
-export default VehicleApprove;
+export default ShiftBlock;

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/ui/Header';
 import Sidebar from '@/components/ui/Sidebar';
 import Toast from '@/components/ui/Toast';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { adminMenuItems } from '@/constants/admin/MenuItem';
 import { UserProvider } from '@/contexts/admin/UserContext';
 import { CollectionCompanyProvider } from '@/contexts/admin/CompanyContext';
@@ -26,32 +27,34 @@ function AdminLayoutContent({ children, sidebarOpen, setSidebarOpen }: { childre
 
     return (
         <>
-            <div className='h-screen flex flex-col bg-gray-50'>
-                <Header
-                    title='Bảng điều khiển quản trị'
-                    href='/admin/dashboard'
-                    profileHref='/admin/profile'
-                    onMenuClick={() => setSidebarOpen(!sidebarOpen)}
-                />
-                <div className='flex flex-1 overflow-hidden'>
-                    <div className={`h-full ${sidebarOpen ? 'block' : 'hidden'} xl:block`}>
-                        <Sidebar
-                            menuItems={adminMenuItems}
-                            isOpen={sidebarOpen}
-                            onClose={() => setSidebarOpen(false)}
-                        />
+            <ProtectedRoute>
+                <div className='h-screen flex flex-col bg-gray-50'>
+                    <Header
+                        title='Bảng điều khiển quản trị'
+                        href='/admin/dashboard'
+                        profileHref='/admin/profile'
+                        onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+                    />
+                    <div className='flex flex-1 overflow-hidden'>
+                        <div className={`h-full ${sidebarOpen ? 'block' : 'hidden'} xl:block`}>
+                            <Sidebar
+                                menuItems={adminMenuItems}
+                                isOpen={sidebarOpen}
+                                onClose={() => setSidebarOpen(false)}
+                            />
+                        </div>
+                        <main className='flex-1 overflow-y-auto'>
+                            {children}
+                        </main>
                     </div>
-                    <main className='flex-1 overflow-y-auto'>
-                        {children}
-                    </main>
                 </div>
-            </div>
-            <Toast 
-                open={!!toast} 
-                type={toast?.type} 
-                message={toast?.message || ''} 
-                onClose={hideToast}
-            />
+                <Toast 
+                    open={!!toast} 
+                    type={toast?.type} 
+                    message={toast?.message || ''} 
+                    onClose={hideToast}
+                />
+            </ProtectedRoute>
         </>
     );
 }

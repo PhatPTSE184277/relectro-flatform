@@ -12,9 +12,7 @@ interface ProtectedRouteProps {
 // Map route prefix với role được phép
 const ROUTE_ROLE_MAP: Record<string, string[]> = {
     '/admin': ['Admin'],
-    '/company': ['AdminCompany'],
     '/collection-point': ['AdminWarehouse'],
-    '/shipper': ['Collector'],
     '/recycle': ['RecyclingCompany'],
 };
 
@@ -23,60 +21,40 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
     const router = useRouter();
     const pathname = usePathname();
 
+    const routePrefix = Object.keys(ROUTE_ROLE_MAP).find((prefix) => pathname.startsWith(prefix));
+    const routeAllowedRoles = allowedRoles && allowedRoles.length > 0
+        ? allowedRoles
+        : routePrefix
+            ? ROUTE_ROLE_MAP[routePrefix]
+            : undefined;
+
+    const hasToken = typeof window === 'undefined'
+        ? true
+        : Boolean(localStorage.getItem('ewise_token') || sessionStorage.getItem('ewise_token'));
+
     useEffect(() => {
-        // Kiểm tra token thực tế trong localStorage/sessionStorage
-        const checkToken = () => {
-            if (typeof window !== 'undefined') {
-                const token = localStorage.getItem('ewise_token') || sessionStorage.getItem('ewise_token');
-                if (!token) {
-                    // Không có token, redirect ngay
-                    router.push('/');
-                    return false;
-                }
-            }
-            return true;
-        };
+        if (typeof window === 'undefined') return;
 
-        // Kiểm tra token trước
-        if (!checkToken()) return;
-
-        // Nếu chưa load xong thì chờ
-        if (loading) return;
-
-        // Nếu chưa đăng nhập thì redirect về login
-        if (!isAuthenticated || !user) {
-            router.push('/');
+        if (!hasToken) {
+            router.replace('/');
             return;
         }
 
-        // Kiểm tra role nếu có allowedRoles được truyền vào
-        if (allowedRoles && allowedRoles.length > 0) {
-            if (!allowedRoles.includes(user.role)) {
-                // Không có quyền truy cập, redirect về dashboard tương ứng
-                redirectToRoleDashboard(user.role, router);
-                return;
-            }
-        } else {
-            // Nếu không có allowedRoles, tự động check theo pathname
-            const routePrefix = Object.keys(ROUTE_ROLE_MAP).find(prefix => pathname.startsWith(prefix));
-            
-            if (routePrefix) {
-                const allowedRolesForRoute = ROUTE_ROLE_MAP[routePrefix];
-                if (!allowedRolesForRoute.includes(user.role)) {
-                    // Không có quyền, redirect về dashboard đúng role
-                    redirectToRoleDashboard(user.role, router);
-                    return;
-                }
-            }
+        if (loading) return;
+
+        if (!isAuthenticated || !user) {
+            router.replace('/');
+            return;
         }
-    }, [isAuthenticated, loading, user, router, pathname, allowedRoles]);
+
+        if (routeAllowedRoles && !routeAllowedRoles.includes(user.role)) {
+            redirectToRoleDashboard(user.role, router);
+        }
+    }, [hasToken, isAuthenticated, loading, routeAllowedRoles, router, user]);
 
     // Kiểm tra token thực tế
-    if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('ewise_token') || sessionStorage.getItem('ewise_token');
-        if (!token) {
-            return null;
-        }
+    if (!hasToken) {
+        return null;
     }
 
     // Loading state
@@ -94,18 +72,8 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
     }
 
     // Kiểm tra role
-    if (allowedRoles && allowedRoles.length > 0) {
-        if (!allowedRoles.includes(user.role)) {
-            return null;
-        }
-    } else {
-        const routePrefix = Object.keys(ROUTE_ROLE_MAP).find(prefix => pathname.startsWith(prefix));
-        if (routePrefix) {
-            const allowedRolesForRoute = ROUTE_ROLE_MAP[routePrefix];
-            if (!allowedRolesForRoute.includes(user.role)) {
-                return null;
-            }
-        }
+    if (routeAllowedRoles && !routeAllowedRoles.includes(user.role)) {
+        return null;
     }
 
     return <>{children}</>;
@@ -118,13 +86,11 @@ function redirectToRoleDashboard(role: string, router: any) {
             router.push('/admin/dashboard');
             break;
         case 'AdminCompany':
-            router.push('/company/dashboard');
+            router.push('/company/small-collection');
             break;
         case 'AdminWarehouse':
-            router.push('/collection-point/dashboard');
-            break;
         case 'Collector':
-            router.push('/shipper/package');
+            router.push('/collection-point/dashboard');
             break;
         case 'RecyclingCompany':
             router.push('/recycle/package');

@@ -464,11 +464,11 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                     {/* Category & Brand Info */}
                     <div className='space-y-3'>
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
-                            {/* Danh Mục Cha */}
+                            {/* Danh mục lớn */}
                             <div className='bg-white rounded-lg p-3 shadow-sm border border-primary-100'>
                                 <div className='flex items-center gap-3'>
                                     <label className='text-sm font-medium text-gray-700 whitespace-nowrap min-w-[120px]'>
-                                        Danh Mục Cha{' '}
+                                        Danh mục lớn{' '}
                                         <span className='text-red-500'>*</span>
                                     </label>
                                     <CustomSelect
@@ -480,18 +480,18 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     }}
                                     getLabel={(cat) => cat.name}
                                     getValue={(cat) => cat.id}
-                                    placeholder='Chọn danh mục cha...'
+                                    placeholder='Chọn Danh mục lớn...'
                                     disabled={categoryLoading}
                                     className='w-full' // Đảm bảo chiều rộng bằng với các ô khác
                                     />
                                 </div>
                             </div>
 
-                            {/* Danh Mục Con */}
+                            {/* Danh mục nhỏ */}
                             <div className='bg-white rounded-lg p-3 shadow-sm border border-primary-100'>
                                 <div className='flex items-center gap-3'>
                                     <label className='text-sm font-medium text-gray-700 whitespace-nowrap min-w-[120px]'>
-                                        Danh Mục Con{' '}
+                                        Danh mục nhỏ{' '}
                                         <span className='text-red-500'>*</span>
                                     </label>
                                     {parentCategoryId ? (
@@ -506,13 +506,13 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                         }}
                                         getLabel={(cat) => cat.name}
                                         getValue={(cat) => cat.id}
-                                        placeholder='Chọn danh mục con...'
+                                        placeholder='Chọn Danh mục nhỏ...'
                                         disabled={categoryLoading}
                                         className='w-full' // Đảm bảo chiều rộng bằng các ô khác
                                     />
                                     ) : (
                                         <div className='px-4 py-2 text-gray-400 bg-gray-50 rounded-lg border border-gray-200 flex-1'>
-                                            Chọn danh mục cha trước
+                                            Chọn Danh mục lớn trước
                                         </div>
                                     )}
                                 </div>
@@ -545,7 +545,7 @@ const CreateProduct: React.FC<CreateProductProps> = ({
                                     />
                                     ) : (
                                         <div className='px-4 py-2 text-gray-400 bg-gray-50 rounded-lg border border-gray-200 flex-1'>
-                                            Chọn danh mục con trước
+                                            Chọn Danh mục nhỏ trước
                                         </div>
                                     )}
                                 </div>

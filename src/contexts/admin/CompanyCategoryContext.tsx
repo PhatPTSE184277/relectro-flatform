@@ -60,7 +60,7 @@ export const CompanyCategoryProvider: React.FC<Props> = ({ children }) => {
             const data = await getParentCategories();
             setParentCategories(data);
         } catch (err: any) {
-            setError(err?.response?.data?.message || 'Lỗi khi tải danh mục cha');
+            setError(err?.response?.data?.message || 'Lỗi khi tải Danh mục lớn');
             setParentCategories([]);
         } finally {
             setLoadingParents(false);
@@ -74,7 +74,7 @@ export const CompanyCategoryProvider: React.FC<Props> = ({ children }) => {
             const data = await getSubcategories(parentId);
             setSubcategories(data);
         } catch (err: any) {
-            setError(err?.response?.data?.message || 'Lỗi khi tải danh mục con');
+            setError(err?.response?.data?.message || 'Lỗi khi tải Danh mục nhỏ');
             setSubcategories([]);
         } finally {
             setLoadingSubcategories(false);

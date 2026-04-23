@@ -40,3 +40,13 @@ export const importVouchersFromExcel = async (file: File): Promise<any> => {
 	});
 	return res.data;
 };
+
+export const activateVoucher = async (voucherId: string): Promise<any> => {
+	const res = await axios.patch(`/voucher/active/${voucherId}`);
+	return res.data;
+};
+
+export const deactivateVoucher = async (voucherId: string): Promise<any> => {
+	const res = await axios.patch(`/voucher/un-active/${voucherId}`);
+	return res.data;
+};

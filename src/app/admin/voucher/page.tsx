@@ -8,6 +8,8 @@ import VoucherList from '@/components/admin/voucher/VoucherList';
 import VoucherDetail from '@/components/admin/voucher/modal/VoucherDetail';
 import VoucherCreate from '@/components/admin/voucher/modal/VoucherCreate';
 import ImportVoucherModal from '@/components/admin/voucher/modal/ImportVoucherModal';
+import VoucherBlock from '@/components/admin/voucher/modal/VoucherBlock';
+import VoucherApprove from '@/components/admin/voucher/modal/VoucherApprove';
 import Toast from '@/components/ui/Toast';
 import { useVoucherContext } from '@/contexts/admin/VoucherContext';
 import { getActiveSystemConfigs } from '@/services/admin/SystemConfigService';
@@ -17,16 +19,21 @@ const VoucherPage: React.FC = () => {
     const {
         vouchers,
         loading,
+        actionLoading,
         creating,
         page,
+        limit,
         totalPages,
         setPage,
         fetchVouchers,
         fetchVoucherById,
         createVoucherItem,
         importFromExcel,
+        activateVoucher,
+        deactivateVoucher,
         status,
         setStatus,
+        stats,
     } = useVoucherContext();
 
     const [selectedVoucher, setSelectedVoucher] = useState<any>(null);
@@ -34,6 +41,8 @@ const VoucherPage: React.FC = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false);
     const [templateUrl, setTemplateUrl] = useState<string | null>(null);
+    const [pendingBlockId, setPendingBlockId] = useState<string | null>(null);
+    const [pendingApproveId, setPendingApproveId] = useState<string | null>(null);
     const [toast, setToast] = useState<{ open: boolean; type: 'success' | 'error'; message: string }>({
         open: false,
         type: 'error',
@@ -69,6 +78,28 @@ const VoucherPage: React.FC = () => {
         setStatus(newStatus);
         setPage(1);
         fetchVouchers(1, undefined, newStatus);
+    };
+
+    const getVoucherId = (voucher: any): string | null => {
+        const id = voucher?.id ?? voucher?.voucherId;
+        return id ? String(id) : null;
+    };
+
+    const handleToggleVoucher = async (voucherId: string, isActive: boolean) => {
+        try {
+            if (isActive) {
+                await deactivateVoucher(voucherId);
+                setToast({ open: true, type: 'success', message: 'Khóa voucher thành công' });
+            } else {
+                await activateVoucher(voucherId);
+                setToast({ open: true, type: 'success', message: 'Mở khóa voucher thành công' });
+            }
+        } catch {
+            setToast({ open: true, type: 'error', message: 'Thao tác thất bại' });
+        } finally {
+            setPendingBlockId(null);
+            setPendingApproveId(null);
+        }
     };
 
     const handleViewDetail = async (voucher: any) => {
@@ -165,22 +196,58 @@ const VoucherPage: React.FC = () => {
                         <Upload size={20} />
                         Nhập từ Excel
                     </button>
-                    <button
+                    {/* <button
                         type='button'
                         className='flex items-center gap-2 px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium shadow-md border border-primary-200 cursor-pointer'
                         onClick={() => setShowCreateModal(true)}
                     >
                         <Plus size={20} />
                         Tạo voucher
-                    </button>
+                    </button> */}
                 </div>
             </div>
 
-            <VoucherFilter status={status} onStatusChange={handleStatusChange} />
+            <VoucherFilter
+                status={status}
+                stats={{ active: stats.active, inactive: stats.inactive }}
+                onStatusChange={handleStatusChange}
+            />
 
-            <VoucherList vouchers={vouchers} loading={loading} onViewDetail={handleViewDetail} />
+            <VoucherList
+                vouchers={vouchers}
+                loading={loading}
+                onViewDetail={handleViewDetail}
+                onBlock={(voucher) => setPendingBlockId(getVoucherId(voucher))}
+                onApprove={(voucher) => setPendingApproveId(getVoucherId(voucher))}
+                actionLoading={actionLoading}
+                status={status}
+                page={page}
+                limit={limit}
+            />
 
             <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
+
+            <VoucherBlock
+                open={!!pendingBlockId}
+                loading={actionLoading}
+                onClose={() => setPendingBlockId(null)}
+                onConfirm={async () => {
+                    if (pendingBlockId) {
+                        await handleToggleVoucher(pendingBlockId, true);
+                    }
+                }}
+            />
+
+            <VoucherApprove
+                open={!!pendingApproveId}
+                loading={actionLoading}
+                onClose={() => setPendingApproveId(null)}
+                onConfirm={async () => {
+                    if (pendingApproveId) {
+                        await handleToggleVoucher(pendingApproveId, false);
+                    }
+                }}
+            />
 
             {showDetailModal && selectedVoucher && (
                 <VoucherDetail voucher={selectedVoucher} onClose={handleCloseModal} />

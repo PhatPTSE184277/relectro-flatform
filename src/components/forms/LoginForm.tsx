@@ -47,7 +47,7 @@ const LoginForm = () => {
                     router.push('/recycle/package');
                     break;
                 default:
-                    router.push('/admin/dashboard');
+                    router.push('/');
             }
         }
     }, [isAuthenticated, user, isFirstLogin, router]);

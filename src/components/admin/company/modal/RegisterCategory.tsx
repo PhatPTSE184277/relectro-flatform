@@ -169,8 +169,8 @@ const RegisterCategory: React.FC<RegisterCategoryProps> = ({
                                   type='button'
                                   onClick={() => void handleToggleSubcategories(parent.id)}
                                   className='mt-0.5 p-1 rounded-md hover:bg-primary-100 text-primary-600 cursor-pointer'
-                                  aria-label='Xem danh mục con'
-                                  title='Xem danh mục con'
+                                  aria-label='Xem Danh mục nhỏ'
+                                  title='Xem Danh mục nhỏ'
                                 >
                                   {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                                 </button>
@@ -191,7 +191,7 @@ const RegisterCategory: React.FC<RegisterCategoryProps> = ({
                                       <thead className='bg-primary-50 text-primary-700 text-xs uppercase'>
                                         <tr>
                                           <th className='py-2 px-3 text-center w-16'>STT</th>
-                                          <th className='py-2 px-3 text-left'>Tên danh mục con</th>
+                                          <th className='py-2 px-3 text-left'>Tên Danh mục nhỏ</th>
                                         </tr>
                                       </thead>
                                       <tbody>
@@ -216,7 +216,7 @@ const RegisterCategory: React.FC<RegisterCategoryProps> = ({
                                       </tbody>
                                     </table>
                                   ) : (
-                                    <div className='text-center py-8 text-gray-500'>Không có danh mục con nào</div>
+                                    <div className='text-center py-8 text-gray-500'>Không có Danh mục nhỏ nào</div>
                                   )}
                                 </div>
                               </td>

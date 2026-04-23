@@ -3,10 +3,17 @@ import { IoFilterOutline } from 'react-icons/io5';
 
 interface VoucherFilterProps {
     status: string;
+    stats?: {
+        active: number;
+        inactive: number;
+    };
     onStatusChange: (status: string) => void;
 }
 
-const VoucherFilter: React.FC<VoucherFilterProps> = ({ status, onStatusChange }) => {
+const VoucherFilter: React.FC<VoucherFilterProps> = ({ status, stats, onStatusChange }) => {
+    const activeCount = stats?.active ?? 0;
+    const inactiveCount = stats?.inactive ?? 0;
+
     return (
         <div className='bg-white rounded-2xl shadow border border-gray-100 px-3 py-2 mb-6'>
             <div className='flex items-center gap-2 flex-wrap min-h-9'>
@@ -21,7 +28,7 @@ const VoucherFilter: React.FC<VoucherFilterProps> = ({ status, onStatusChange })
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Hoạt động
+                    Hoạt động ({activeCount})
                 </button>
                 <button
                     onClick={() => onStatusChange('Không hoạt động')}
@@ -31,7 +38,7 @@ const VoucherFilter: React.FC<VoucherFilterProps> = ({ status, onStatusChange })
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Không hoạt động
+                    Không hoạt động ({inactiveCount})
                 </button>
             </div>
         </div>

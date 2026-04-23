@@ -1,16 +1,30 @@
 import React from 'react';
-import { Eye } from 'lucide-react';
+import { Ban, CheckCircle } from 'lucide-react';
+import type { CollectorStatusFilter } from '@/contexts/collection-point/CollectorContext';
 
 interface CollectorShowProps {
     collector: any;
-    onView: () => void;
+    filterStatus?: CollectorStatusFilter;
+    onBlock: () => void;
+    onActivate: () => void;
+    actionLoading: boolean;
     isLast?: boolean;
     index?: number;
 }
 
-const CollectorShow: React.FC<CollectorShowProps> = ({ collector, onView, isLast = false, index }) => {
+const CollectorShow: React.FC<CollectorShowProps> = ({ collector, filterStatus, onBlock, onActivate, actionLoading, isLast = false, index }) => {
     const stt = (index ?? 0) + 1;
     const rowBg = (stt - 1) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+    const statusText = String(collector.status || '').trim().toLowerCase();
+    const isActiveByFilter = filterStatus === 'Đang hoạt động' ? true : filterStatus === 'Không hoạt động' ? false : undefined;
+    const isActiveByData =
+        collector.isActive === true ||
+        collector.active === true ||
+        collector.isActivated === true ||
+        collector.status === true ||
+        statusText.includes('đang hoạt động') ||
+        statusText === 'active';
+    const isActive = isActiveByFilter ?? isActiveByData;
 
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg} transition-colors`}>
@@ -36,16 +50,27 @@ const CollectorShow: React.FC<CollectorShowProps> = ({ collector, onView, isLast
                     <span className='text-gray-400'>Chưa có</span>
                 )}
             </td>
-                {/* Removed 'Điểm thu gom' column as requested */}
-            <td className='py-3 px-4 w-[7vw] min-w-24'>
+            <td className='py-3 px-4 w-[10vw] min-w-28'>
                 <div className='flex justify-center gap-2'>
-                    <button
-                        onClick={onView}
-                        className='text-primary-600 hover:text-primary-800 flex items-center gap-1 font-medium transition cursor-pointer'
-                        title='Xem chi tiết'
-                    >
-                        <Eye size={16} />
-                    </button>
+                    {isActive ? (
+                        <button
+                            onClick={onBlock}
+                            disabled={actionLoading}
+                            className='text-red-500 hover:text-red-700 disabled:opacity-40 transition cursor-pointer'
+                            title='Khóa'
+                        >
+                            <Ban size={16} />
+                        </button>
+                    ) : (
+                        <button
+                            onClick={onActivate}
+                            disabled={actionLoading}
+                            className='text-green-500 hover:text-green-700 disabled:opacity-40 transition cursor-pointer'
+                            title='Mở khóa'
+                        >
+                            <CheckCircle size={16} />
+                        </button>
+                    )}
                 </div>
             </td>
         </tr>

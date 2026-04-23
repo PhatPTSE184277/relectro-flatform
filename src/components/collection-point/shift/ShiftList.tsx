@@ -6,6 +6,9 @@ interface ShiftListProps {
     shifts: any[];
     loading: boolean;
     onViewDetail: (shift: any) => void;
+    onBlock?: (shift: any) => void;
+    onActivate?: (shift: any) => void;
+    actionLoading?: boolean;
     page: number;
     limit: number;
 }
@@ -14,6 +17,9 @@ const ShiftList: React.FC<ShiftListProps> = ({
     shifts,
     loading,
     onViewDetail,
+    onBlock,
+    onActivate,
+    actionLoading,
     page,
     limit
 }) => {
@@ -46,6 +52,9 @@ const ShiftList: React.FC<ShiftListProps> = ({
                                                 key={shift.shiftId}
                                                 shift={shift}
                                                 onView={() => onViewDetail(shift)}
+                                                onBlock={() => onBlock?.(shift)}
+                                                onActivate={() => onActivate?.(shift)}
+                                                actionLoading={actionLoading}
                                                 isLast={idx === shifts.length - 1}
                                                 index={sttOffset + idx}
                                                 showSplitTime

@@ -23,7 +23,7 @@ const ChildCategoryList: React.FC<ChildCategoryListProps> = ({
             <div className='flex items-center justify-between gap-2 p-4 border-b border-primary-100 bg-linear-to-r from-primary-50 to-primary-100'>
                 <div className='flex items-center gap-2'>
                     <Layers size={18} className='text-primary-600' />
-                    <h2 className='font-bold text-gray-800'>Danh mục con</h2>
+                    <h2 className='font-bold text-gray-800'>Danh mục nhỏ</h2>
                     {parentName ? <span className='text-sm text-gray-500 truncate'>({parentName})</span> : null}
                 </div>
             </div>
@@ -48,7 +48,7 @@ const ChildCategoryList: React.FC<ChildCategoryListProps> = ({
                                     ) : categories.length === 0 ? (
                                         <tr>
                                             <td colSpan={3} className='py-8 text-center text-gray-400'>
-                                                Không có danh mục con
+                                                Không có Danh mục nhỏ
                                             </td>
                                         </tr>
                                     ) : (

@@ -1,19 +1,19 @@
+'use client';
+
 import React from 'react';
 import { IoFilterOutline } from 'react-icons/io5';
+import type { CollectorStatusFilter } from '@/contexts/collection-point/CollectorContext';
 
-export type ShiftStatus = 'active' | 'scheduled' | 'cancelled';
-
-interface ShiftFilterProps {
-    status: ShiftStatus;
+interface CollectorFilterProps {
+    status: CollectorStatusFilter;
     stats?: {
         active?: number;
-        scheduled?: number;
-        cancelled?: number;
+        inactive?: number;
     };
-    onFilterChange: (status: ShiftStatus) => void;
+    onFilterChange: (status: CollectorStatusFilter) => void;
 }
 
-const ShiftFilter: React.FC<ShiftFilterProps> = ({ status, stats = {}, onFilterChange }) => {
+const CollectorFilter: React.FC<CollectorFilterProps> = ({ status, stats, onFilterChange }) => {
     return (
         <div className="bg-white rounded-2xl shadow border border-gray-100 px-3 py-2 mb-6">
             <div className="flex items-center gap-2 flex-wrap min-h-9">
@@ -21,38 +21,28 @@ const ShiftFilter: React.FC<ShiftFilterProps> = ({ status, stats = {}, onFilterC
                     <IoFilterOutline className="text-primary-600" size={16} />
                 </span>
                 <button
-                    onClick={() => onFilterChange('active')}
+                    onClick={() => onFilterChange('Đang hoạt động')}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[130px] ${
-                        status === 'active'
+                        status === 'Đang hoạt động'
                             ? 'bg-primary-600 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Có sẵn ({stats.active ?? 0})
+                    Đang hoạt động ({stats?.active ?? 0})
                 </button>
                 <button
-                    onClick={() => onFilterChange('scheduled')}
+                    onClick={() => onFilterChange('Không hoạt động')}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[130px] ${
-                        status === 'scheduled'
+                        status === 'Không hoạt động'
                             ? 'bg-primary-600 text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
-                    Đã lên lịch ({stats.scheduled ?? 0})
-                </button>
-                <button
-                    onClick={() => onFilterChange('cancelled')}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer min-w-[130px] ${
-                        status === 'cancelled'
-                            ? 'bg-primary-600 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                >
-                    Đã hủy ({stats.cancelled ?? 0})
+                    Không hoạt động ({stats?.inactive ?? 0})
                 </button>
             </div>
         </div>
     );
 };
 
-export default ShiftFilter;
+export default CollectorFilter;

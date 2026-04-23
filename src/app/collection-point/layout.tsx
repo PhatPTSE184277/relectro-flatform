@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Header from '@/components/ui/Header';
 import Sidebar from '@/components/ui/Sidebar';
 import Toast from '@/components/ui/Toast';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { collectorMenuItems } from '@/constants/collection-point/MenuItems';
 import { NotificationProvider, useNotifications } from '@/contexts/NotificationContext';
 import { UserProvider } from '@/contexts/UserContext';
@@ -28,32 +29,34 @@ function CollectionPointLayoutContent({ children, sidebarOpen, setSidebarOpen }:
 
     return (
         <>
-            <div className='h-screen flex flex-col bg-gray-50'>
-                <Header
-                    title='Ewise'
-                    href='/collection-point/dashboard'
-                    profileHref='/collection-point/profile'
-                    onMenuClick={() => setSidebarOpen(!sidebarOpen)}
-                />
-                <div className='flex flex-1 overflow-hidden'>
-                    <div className={`h-full ${sidebarOpen ? 'block' : 'hidden'} xl:block`}>
-                        <Sidebar
-                            menuItems={collectorMenuItems}
-                            isOpen={sidebarOpen}
-                            onClose={() => setSidebarOpen(false)}
-                        />
+            <ProtectedRoute>
+                <div className='h-screen flex flex-col bg-gray-50'>
+                    <Header
+                        title='Ewise'
+                        href='/collection-point/dashboard'
+                        profileHref='/collection-point/profile'
+                        onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+                    />
+                    <div className='flex flex-1 overflow-hidden'>
+                        <div className={`h-full ${sidebarOpen ? 'block' : 'hidden'} xl:block`}>
+                            <Sidebar
+                                menuItems={collectorMenuItems}
+                                isOpen={sidebarOpen}
+                                onClose={() => setSidebarOpen(false)}
+                            />
+                        </div>
+                        <main className='flex-1 overflow-y-auto'>
+                            {children}
+                        </main>
                     </div>
-                    <main className='flex-1 overflow-y-auto'>
-                        {children}
-                    </main>
                 </div>
-            </div>
-            <Toast
-                open={!!toast}
-                type={toast?.type}
-                message={toast?.message || ''}
-                onClose={hideToast}
-            />
+                <Toast
+                    open={!!toast}
+                    type={toast?.type}
+                    message={toast?.message || ''}
+                    onClose={hideToast}
+                />
+            </ProtectedRoute>
         </>
     );
 }

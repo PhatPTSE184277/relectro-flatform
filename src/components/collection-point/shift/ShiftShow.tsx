@@ -1,19 +1,25 @@
 import React from 'react';
-import { Eye } from 'lucide-react';
+import { Eye, Ban, CheckCircle } from 'lucide-react';
 import { formatTimeWithDate } from '@/utils/FormatTime';
 import RenderTimeCell from '@/utils/RenderTimeCell';
 
 interface ShiftShowProps {
     shift: any;
     onView: () => void;
+    onBlock?: () => void;
+    onActivate?: () => void;
+    actionLoading?: boolean;
     isLast?: boolean;
     index?: number;
     showSplitTime?: boolean;
 }
 
-const ShiftShow: React.FC<ShiftShowProps> = ({ shift, onView, isLast = false, index, showSplitTime = false }) => {
+const ShiftShow: React.FC<ShiftShowProps> = ({ shift, onView, onBlock, onActivate, actionLoading, isLast = false, index, showSplitTime = false }) => {
     const stt = (index ?? 0) + 1;
     const rowBg = (stt - 1) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+    const statusText = String(shift.status || '').trim().toLowerCase();
+    const isActive = shift.isActive === true || statusText === 'có sẵn' || statusText === 'active';
+    const isCancelled = statusText === 'đã hủy';
 
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}>
@@ -61,6 +67,25 @@ const ShiftShow: React.FC<ShiftShowProps> = ({ shift, onView, isLast = false, in
                     >
                         <Eye size={16} />
                     </button>
+                    {isActive ? (
+                        <button
+                            onClick={onBlock}
+                            disabled={actionLoading}
+                            className='text-red-500 hover:text-red-700 disabled:opacity-40 transition cursor-pointer'
+                            title='Khóa'
+                        >
+                            <Ban size={16} />
+                        </button>
+                    ) : isCancelled ? (
+                        <button
+                            onClick={onActivate}
+                            disabled={actionLoading}
+                            className='text-green-500 hover:text-green-700 disabled:opacity-40 transition cursor-pointer'
+                            title='Mở khóa'
+                        >
+                            <CheckCircle size={16} />
+                        </button>
+                    ) : null}
                 </div>
             </td>
         </tr>

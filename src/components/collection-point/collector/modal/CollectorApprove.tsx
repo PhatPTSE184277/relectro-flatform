@@ -1,14 +1,14 @@
 import React from 'react';
 import { CheckCircle, Loader2 } from 'lucide-react';
 
-interface VehicleApproveProps {
+interface CollectorApproveProps {
     open: boolean;
     onClose: () => void;
     onConfirm: () => void;
     loading?: boolean;
 }
 
-const VehicleApprove: React.FC<VehicleApproveProps> = ({ open, onClose, onConfirm, loading }) => {
+const CollectorApprove: React.FC<CollectorApproveProps> = ({ open, onClose, onConfirm, loading }) => {
     if (!open) return null;
 
     return (
@@ -16,11 +16,10 @@ const VehicleApprove: React.FC<VehicleApproveProps> = ({ open, onClose, onConfir
             <div className="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
 
             <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-10 animate-fadeIn">
-                {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-linear-to-r from-green-50 to-primary-100">
                     <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                         <CheckCircle size={22} className="text-green-500" />
-                        Xác nhận mở khóa phương tiện
+                        Xác nhận mở khóa nhân viên thu gom
                     </h2>
                     <button
                         onClick={onClose}
@@ -31,14 +30,12 @@ const VehicleApprove: React.FC<VehicleApproveProps> = ({ open, onClose, onConfir
                     </button>
                 </div>
 
-                {/* Body */}
                 <div className="p-6 bg-gray-50">
                     <p className="text-gray-700 text-base">
-                        Bạn có chắc chắn muốn <span className="font-semibold text-green-600">mở khóa</span> phương tiện này không?
+                        Bạn có chắc chắn muốn <span className="font-semibold text-green-600">mở khóa</span> nhân viên thu gom này không?
                     </p>
                 </div>
 
-                {/* Footer */}
                 <div className="flex justify-end gap-3 p-5 border-t border-gray-100 bg-gray-50">
                     <button
                         onClick={onConfirm}
@@ -61,4 +58,4 @@ const VehicleApprove: React.FC<VehicleApproveProps> = ({ open, onClose, onConfir
     );
 };
 
-export default VehicleApprove;
+export default CollectorApprove;

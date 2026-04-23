@@ -8,6 +8,8 @@ import { useSmallCollectionContext } from '@/contexts/company/SmallCollectionCon
 import ShiftList from '@/components/collection-point/shift/ShiftList';
 import ShiftDetail from '@/components/collection-point/shift/modal/ShiftDetail';
 import ShiftFilter, { ShiftStatus } from '@/components/collection-point/shift/ShiftFilter';
+import ShiftBlock from '@/components/collection-point/shift/modal/ShiftBlock';
+import ShiftApprove from '@/components/collection-point/shift/modal/ShiftApprove';
 import Pagination from '@/components/ui/Pagination';
 import SearchBox from '@/components/ui/SearchBox';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
@@ -21,13 +23,15 @@ import { pickExcelTemplateUrl } from '@/utils/excelTemplateConfig';
 
 const ShiftPageContent: React.FC = () => {
     const { user } = useAuth();
-    const { shifts, loading, fetchShifts, importShifts, page, limit, totalPages, setPage } = useShiftContext();
+    const { shifts, loading, actionLoading, fetchShifts, importShifts, activateShift, deactivateShift, page, limit, totalPages, setPage, stats } = useShiftContext();
     const { smallCollections } = useSmallCollectionContext();
     const [selectedShift, setSelectedShift] = useState<any | null>(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [search, setSearch] = useState('');
     const [showImportModal, setShowImportModal] = useState(false);
     const [filterStatus, setFilterStatus] = useState<ShiftStatus>('active');
+    const [pendingBlockId, setPendingBlockId] = useState<string | null>(null);
+    const [pendingActivateId, setPendingActivateId] = useState<string | null>(null);
     // smallCollectionPointId selection removed; using firstWarehouseId by default
     const [templateUrl, setTemplateUrl] = useState<string | null>(null);
     const [toast, setToast] = useState<{ open: boolean; type: 'success' | 'error'; message: string }>({
@@ -156,6 +160,19 @@ const ShiftPageContent: React.FC = () => {
         }
     };
 
+    const handleToggleShift = async (shiftId: string, isActive: boolean) => {
+        try {
+            if (isActive) await deactivateShift(shiftId);
+            else await activateShift(shiftId);
+            setToast({ open: true, type: 'success', message: isActive ? 'Khóa thành công' : 'Mở khóa thành công' });
+        } catch {
+            setToast({ open: true, type: 'error', message: 'Thao tác thất bại' });
+        } finally {
+            setPendingBlockId(null);
+            setPendingActivateId(null);
+        }
+    };
+
     const filteredShifts = shifts.filter((shift) => {
         const searchLower = search.toLowerCase();
         return (
@@ -229,6 +246,7 @@ const ShiftPageContent: React.FC = () => {
             {/* Filter */}
             <ShiftFilter
                 status={filterStatus}
+                stats={{ active: stats.active, scheduled: stats.scheduled, cancelled: stats.cancelled }}
                 onFilterChange={(nextStatus) => {
                     setFilterStatus(nextStatus);
                     setPage(1);
@@ -240,6 +258,9 @@ const ShiftPageContent: React.FC = () => {
                 shifts={filteredShifts}
                 loading={loading}
                 onViewDetail={handleViewDetail}
+                onBlock={(shift) => setPendingBlockId(shift.shiftId || null)}
+                onActivate={(shift) => setPendingActivateId(shift.shiftId || null)}
+                actionLoading={actionLoading}
                 page={page}
                 limit={limit}
             />
@@ -262,6 +283,30 @@ const ShiftPageContent: React.FC = () => {
                     onImport={handleImportExcel}
                 />
             )}
+
+            {/* Block Shift Modal */}
+            <ShiftBlock
+                open={Boolean(pendingBlockId)}
+                onClose={() => setPendingBlockId(null)}
+                onConfirm={() => {
+                    if (pendingBlockId) {
+                        void handleToggleShift(pendingBlockId, true);
+                    }
+                }}
+                loading={actionLoading}
+            />
+
+            {/* Approve Shift Modal */}
+            <ShiftApprove
+                open={Boolean(pendingActivateId)}
+                onClose={() => setPendingActivateId(null)}
+                onConfirm={() => {
+                    if (pendingActivateId) {
+                        void handleToggleShift(pendingActivateId, false);
+                    }
+                }}
+                loading={actionLoading}
+            />
 
             <Toast
                 open={toast.open}
