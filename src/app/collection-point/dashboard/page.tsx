@@ -4,6 +4,11 @@ import DashboardStats from '@/components/collection-point/dashboard/DashboardSta
 import { getFirstDayOfMonthString, getTodayString } from '@/utils/getDayString';
 import ProductCategoryList from '@/components/collection-point/dashboard/ProductCategoryList';
 import PackageList from '@/components/collection-point/dashboard/PackageList';
+import BrandList from '@/components/collection-point/dashboard/BrandList';
+import TopUsersList from '@/components/collection-point/dashboard/TopUsersList';
+import TopUserDetail from '@/components/collection-point/dashboard/modal/TopUserDetail';
+import DashboardProductDetailModal from '@/components/collection-point/dashboard/modal/DashboardProductDetailModal';
+import BrandDetail from '@/components/collection-point/dashboard/modal/BrandDetail';
 import { useDashboardContext } from '@/contexts/collection-point/DashboardContext';
 import { LayoutDashboard } from 'lucide-react';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
@@ -34,22 +39,122 @@ const normalizeProductCategories = (categories: any[]) => {
     }));
 };
 
+// Helper to normalize brand stats
+const normalizeBrands = (brands: any[]) => {
+    if (!Array.isArray(brands)) return [];
+    return brands.map((brand: any) => ({
+        brandName: brand.brandName,
+        currentValue: typeof brand.currentValue === 'number' ? brand.currentValue : 0,
+        previousValue: typeof brand.previousValue === 'number' ? brand.previousValue : 0,
+        absoluteChange: typeof brand.absoluteChange === 'number' ? brand.absoluteChange : 0,
+        percentChange: typeof brand.percentChange === 'number' ? brand.percentChange : 0,
+        trend: brand.trend ?? 'Increase'
+    }));
+};
+
 const DashboardPage = () => {
-    const { summary, loading, fetchSummary, fetchSummaryByDay, fetchPackageStats } = useDashboardContext();
+    const {
+        summary,
+        brandSummary,
+        topUsers,
+          userProducts,
+          brandDetails,
+                selectedProductDetail,
+                productDetailLoading,
+                pointUpdateLoading,
+        loading,
+        fetchSummary,
+        fetchSummaryByDay,
+        fetchBrandSummary,
+        fetchBrandSummaryByDay,
+        fetchTopUsers,
+          fetchUserProducts,
+                fetchProductDetail,
+                clearSelectedProductDetail,
+                updateProductPoint,
+          fetchBrandDetails,
+        fetchPackageStats
+    } = useDashboardContext();
     const [viewMode, setViewMode] = useState<'day' | 'range'>('range');
     const [selectedDate, setSelectedDate] = useState(getTodayString());
     const [fromDate, setFromDate] = useState(getFirstDayOfMonthString());
     const [toDate, setToDate] = useState(getTodayString());
     const [packageStats, setPackageStats] = useState<any>(null);
-    const [statsView, setStatsView] = useState<'package' | 'product'>('package');
+    const [statsView, setStatsView] = useState<'package' | 'product' | 'brand' | 'top-users'>('package');
+    const [selectedUser, setSelectedUser] = useState<any>(null);
+    const [selectedBrandName, setSelectedBrandName] = useState<string | null>(null);
+    const [showBrandDetailModal, setShowBrandDetailModal] = useState(false);
+    const [showProductDetailModal, setShowProductDetailModal] = useState(false);
+    const [, setBrandDetailPage] = useState(1);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [showDetailModal, setShowDetailModal] = useState(false);
+
+    const getCurrentRange = () => {
+        if (viewMode === 'day') {
+            return { from: selectedDate, to: selectedDate };
+        }
+        return { from: fromDate, to: toDate };
+    };
 
     // Handler để chuyển đổi stats view
-    const handleStatsViewChange = (view: 'package' | 'product') => {
+    const handleStatsViewChange = (view: 'package' | 'product' | 'brand' | 'top-users') => {
         setStatsView(view);
         // Khi chọn package, force về range mode
         if (view === 'package') {
             setViewMode('range');
         }
+    };
+
+    // Handler để mở/đóng modal chi tiết user
+    const handleOpenUserDetail = (user: any) => {
+        setSelectedUser(user);
+        setShowDetailModal(true);
+           fetchUserProducts(user.userId);
+    };
+
+    const handleOpenProductDetail = async (productId: string) => {
+        await fetchProductDetail(productId);
+        setShowProductDetailModal(true);
+    };
+
+    const handleCloseUserDetail = () => {
+        setShowDetailModal(false);
+        setSelectedUser(null);
+    };
+
+    const handleOpenBrandDetail = async (brandName: string) => {
+        const range = getCurrentRange();
+        setSelectedBrandName(brandName);
+        setBrandDetailPage(1);
+        setShowBrandDetailModal(true);
+        await fetchBrandDetails(brandName, range.from, range.to, 1, 10);
+    };
+
+    const handleCloseBrandDetail = () => {
+        setShowBrandDetailModal(false);
+        setSelectedBrandName(null);
+        setBrandDetailPage(1);
+    };
+
+    const handleCloseProductDetail = () => {
+        setShowProductDetailModal(false);
+        clearSelectedProductDetail();
+    };
+
+    const handleConfirmProductPoint = async (productId: string, newPointValue: number, reasonForUpdate: string) => {
+        const updated = await updateProductPoint(productId, newPointValue, reasonForUpdate);
+        if (updated) {
+            await fetchProductDetail(productId);
+            setShowProductDetailModal(false);
+            clearSelectedProductDetail();
+        }
+    };
+
+    const handleBrandDetailPageChange = async (page: number) => {
+        if (!selectedBrandName) return;
+        const range = getCurrentRange();
+        setBrandDetailPage(page);
+        await fetchBrandDetails(selectedBrandName, range.from, range.to, page, 10);
     };
 
     useEffect(() => {
@@ -61,6 +166,18 @@ const DashboardPage = () => {
                 } else {
                         await fetchSummary(fromDate, toDate);
                 }
+            }
+
+            if (statsView === 'brand') {
+                if (viewMode === 'day') {
+                    await fetchBrandSummaryByDay(selectedDate);
+                } else {
+                    await fetchBrandSummary(fromDate, toDate);
+                }
+            }
+
+            if (statsView === 'top-users') {
+                await fetchTopUsers(fromDate, toDate, 20);
             }
 
             // Fetch package stats chỉ theo range
@@ -87,7 +204,7 @@ const DashboardPage = () => {
                     </div>
                     <div className="flex gap-4 items-center flex-1 justify-end">
                         {viewMode === 'day' ? (
-                            <div className="min-w-fit">
+                            <div className="max-w-xs">
                                 <CustomDatePicker
                                     value={selectedDate}
                                     onChange={setSelectedDate}
@@ -105,8 +222,8 @@ const DashboardPage = () => {
                             </div>
                         )}
 
-                        {/* Chỉ hiển thị day/range toggle khi ở product view */}
-                        {statsView === 'product' && (
+                        {/* Chỉ hiển thị day/range toggle khi ở product hoặc brand view */}
+                        {statsView !== 'package' && statsView !== 'top-users' && (
                             <div className="flex items-center bg-gray-100 rounded-lg">
                                 <button
                                     onClick={() => setViewMode('day')}
@@ -118,7 +235,7 @@ const DashboardPage = () => {
                                 >
                                     Theo ngày
                                 </button>
-                                    <button
+                                <button
                                     onClick={() => setViewMode('range')}
                                     className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
                                         viewMode === 'range'
@@ -153,6 +270,26 @@ const DashboardPage = () => {
                             >
                                 Sản phẩm
                             </button>
+                            <button
+                                onClick={() => handleStatsViewChange('brand')}
+                                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                    statsView === 'brand'
+                                        ? 'bg-primary-600 text-white shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                            >
+                                Thương hiệu
+                            </button>
+                            <button
+                                onClick={() => handleStatsViewChange('top-users')}
+                                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                    statsView === 'top-users'
+                                        ? 'bg-primary-600 text-white shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                            >
+                                Top người dùng
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -161,8 +298,17 @@ const DashboardPage = () => {
             {/* Card thống kê */}
             <DashboardStats
                 totalPackages={normalizeStatDetail(packageStats?.totalPackages || 0)}
-                totalProducts={normalizeStatDetail(summary?.totalProducts)}
+                totalProducts={normalizeStatDetail(
+                    statsView === 'brand' ? brandSummary?.totalProducts : summary?.totalProducts
+                )}
                 loading={loading}
+                viewMode={
+                    statsView === 'package'
+                        ? 'package'
+                        : statsView === 'product'
+                        ? 'product'
+                        : 'all'
+                }
             />
 
             {/* Conditional Stats Display */}
@@ -172,6 +318,19 @@ const DashboardPage = () => {
                         dailyStats={packageStats?.dailyStats || []}
                         loading={loading}
                     />
+                ) : statsView === 'brand' ? (
+                    <BrandList
+                        data={normalizeBrands(brandSummary?.brands || [])}
+                        total={normalizeStatDetail(brandSummary?.totalProducts).currentValue}
+                        loading={loading}
+                        onViewDetail={handleOpenBrandDetail}
+                    />
+                ) : statsView === 'top-users' ? (
+                    <TopUsersList
+                        data={topUsers?.topUsers || []}
+                        loading={loading}
+                        onUserClick={handleOpenUserDetail}
+                    />
                 ) : (
                     <ProductCategoryList
                         data={normalizeProductCategories(summary?.productCategories || [])}
@@ -180,6 +339,34 @@ const DashboardPage = () => {
                     />
                 )}
             </div>
+
+            {/* Top User Detail Modal */}
+            <TopUserDetail
+                user={selectedUser}
+                onClose={handleCloseUserDetail}
+                products={userProducts}
+                loading={loading}
+                startIndex={0}
+                onViewProductDetail={handleOpenProductDetail}
+            />
+
+            <DashboardProductDetailModal
+                open={showProductDetailModal}
+                product={selectedProductDetail}
+                loading={productDetailLoading}
+                submitting={pointUpdateLoading}
+                onClose={handleCloseProductDetail}
+                onConfirm={handleConfirmProductPoint}
+            />
+
+            <BrandDetail
+                open={showBrandDetailModal}
+                brandName={selectedBrandName || ''}
+                detail={brandDetails}
+                loading={loading}
+                onClose={handleCloseBrandDetail}
+                onPageChange={handleBrandDetailPageChange}
+            />
         </div>
     );
 };

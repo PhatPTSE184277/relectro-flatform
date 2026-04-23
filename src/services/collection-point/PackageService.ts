@@ -126,3 +126,13 @@ export const sendPackageToRecycler = async (packageId: string): Promise<any> => 
     const response = await axios.put(`/packages/${packageId}/recycler`);
     return response.data;
 };
+
+export const checkPackageIdExists = async (packageId: string): Promise<boolean> => {
+    try {
+        const response = await axios.get<{ exists: boolean }>(`/packages/check/${packageId}`);
+        return response.data.exists;
+    } catch (error) {
+        console.error('checkPackageIdExists error', error);
+        return false;
+    }
+};

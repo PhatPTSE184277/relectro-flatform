@@ -13,17 +13,57 @@ interface DashboardStatsProps {
   totalPackages: StatDetail;
   totalProducts: StatDetail;
   loading: boolean;
+  viewMode?: 'all' | 'package' | 'product';
 }
 
 const DashboardStats: React.FC<DashboardStatsProps> = ({
   totalPackages,
   totalProducts,
-  loading
+  loading,
+  viewMode = 'all'
 }) => {
+  const overviewDetail = {
+    currentValue: totalPackages.currentValue + totalProducts.currentValue,
+    previousValue: totalPackages.previousValue + totalProducts.previousValue,
+    absoluteChange: totalPackages.absoluteChange + totalProducts.absoluteChange,
+    percentChange:
+      totalPackages.previousValue + totalProducts.previousValue === 0
+        ? 100
+        : Math.round(
+            ((totalPackages.currentValue + totalProducts.currentValue - (totalPackages.previousValue + totalProducts.previousValue)) /
+              (totalPackages.previousValue + totalProducts.previousValue)) * 100
+          ),
+    trend:
+      totalPackages.currentValue + totalProducts.currentValue > totalPackages.previousValue + totalProducts.previousValue
+        ? 'Increase'
+        : totalPackages.currentValue + totalProducts.currentValue < totalPackages.previousValue + totalProducts.previousValue
+        ? 'Decrease'
+        : 'NoChange',
+  };
+
+  const stats =
+    viewMode === 'package'
+      ? [
+          { title: 'Kiện hàng', detail: totalPackages, icon: Package },
+          { title: 'Tổng quan', icon: TrendingUp, detail: overviewDetail },
+        ]
+      : viewMode === 'product'
+      ? [
+          { title: 'Sản phẩm', detail: totalProducts, icon: Box },
+          { title: 'Tổng quan', icon: TrendingUp, detail: overviewDetail },
+        ]
+      : [
+          { title: 'Kiện hàng', detail: totalPackages, icon: Package },
+          { title: 'Sản phẩm', detail: totalProducts, icon: Box },
+          { title: 'Tổng quan', icon: TrendingUp, detail: overviewDetail },
+        ];
+
+  const gridClass = stats.length === 2 ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : 'grid grid-cols-1 md:grid-cols-3 gap-6';
+
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[1, 2, 3].map((i) => (
+      <div className={gridClass}>
+        {Array.from({ length: stats.length }).map((_, i) => (
           <div key={i} className="bg-gray-200 p-6 rounded-xl animate-pulse">
             <div className="h-4 bg-gray-300 rounded w-20 mb-4"></div>
             <div className="h-8 bg-gray-300 rounded w-16"></div>
@@ -33,35 +73,8 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
     );
   }
 
-  const stats = [
-    { title: 'Kiện hàng', detail: totalPackages, icon: Package },
-    { title: 'Sản phẩm', detail: totalProducts, icon: Box },
-    {
-      title: 'Tổng quan',
-      icon: TrendingUp,
-      detail: {
-        currentValue: totalPackages.currentValue + totalProducts.currentValue,
-        previousValue: totalPackages.previousValue + totalProducts.previousValue,
-        absoluteChange: totalPackages.absoluteChange + totalProducts.absoluteChange,
-        percentChange:
-          totalPackages.previousValue + totalProducts.previousValue === 0
-            ? 100
-            : Math.round(
-                ((totalPackages.currentValue + totalProducts.currentValue - (totalPackages.previousValue + totalProducts.previousValue)) /
-                  (totalPackages.previousValue + totalProducts.previousValue)) * 100
-              ),
-        trend:
-          totalPackages.currentValue + totalProducts.currentValue > totalPackages.previousValue + totalProducts.previousValue
-            ? 'Increase'
-            : totalPackages.currentValue + totalProducts.currentValue < totalPackages.previousValue + totalProducts.previousValue
-            ? 'Decrease'
-            : 'NoChange',
-      },
-    },
-  ];
-
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className={gridClass}>
       {stats.map((stat, idx) => {
         const isPrimary = idx % 2 === 1;
         const Icon = stat.icon;

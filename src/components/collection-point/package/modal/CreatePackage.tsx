@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { X, ScanLine, Plus } from 'lucide-react';
 import { isValidSystemQRCode } from '@/utils/qr';
 import { getProductByQRCode } from '@/services/collection-point/IWProductService';
+import { checkPackageIdExists } from '@/services/collection-point/PackageService';
 import ProductList from './ProductList';
 import Toast from '@/components/ui/Toast';
 import ConfirmDeleteModal from '../../incoming-warehouse/modal/ConfirmDeleteModal';
@@ -42,6 +43,8 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     const [toastType, setToastType] = useState<'success' | 'error'>('error');
     const [packageIdError, setPackageIdError] = useState('');
     const [packageIdTouched, setPackageIdTouched] = useState(false);
+    const [packageIdExists, setPackageIdExists] = useState(false);
+    const [checkingPackageIdExists, setCheckingPackageIdExists] = useState(false);
     const [showClearAllConfirm, setShowClearAllConfirm] = useState(false);
     const [qrToRemove, setQrToRemove] = useState<string | null>(null);
     const packageIdInputRef = useRef<HTMLInputElement>(null);
@@ -84,18 +87,50 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
         if (!isValidSystemQRCode(pid)) {
             return 'Chỉ được sử dụng mã QR do hệ thống tạo ra trong hôm qua hoặc hôm nay!';
         }
+        if (packageIdExists) {
+            return 'Mã kiện hàng này đã tồn tại trong hệ thống!';
+        }
         return '';
+    };
+
+    const validatePackageIdNotUsed = async (pid: string): Promise<boolean> => {
+        try {
+            return await checkPackageIdExists(pid);
+        } catch (error) {
+            console.error('checkPackageIdExists error', error);
+            return false;
+        }
     };
 
     const handlePackageIdChange = (value: string) => {
         setPackageId(value);
+        setPackageIdExists(false);
         if (packageIdTouched) {
             setPackageIdError(validatePackageId(value));
         }
     };
 
-    const handlePackageIdBlur = () => {
+    const handlePackageIdBlur = async () => {
         setPackageIdTouched(true);
+        const pid = packageId.trim();
+        
+        // First check basic validation
+        if (!pid || !/^[0-9]{13}$/.test(pid) || !isValidSystemQRCode(pid)) {
+            setPackageIdExists(false);
+            setCheckingPackageIdExists(false);
+            setPackageIdError(validatePackageId(packageId));
+            return;
+        }
+
+        // Then check if package exists
+        setCheckingPackageIdExists(true);
+        try {
+            const exists = await validatePackageIdNotUsed(pid);
+            setPackageIdExists(exists);
+        } finally {
+            setCheckingPackageIdExists(false);
+        }
+        
         setPackageIdError(validatePackageId(packageId));
     };
 
@@ -105,6 +140,8 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
             setPackageId('');
             setPackageIdError('');
             setPackageIdTouched(false);
+            setPackageIdExists(false);
+            setCheckingPackageIdExists(false);
             setQrCodeInput('');
             setScannedProducts([]);
             setShowClearAllConfirm(false);
@@ -212,6 +249,12 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
             return;
         }
 
+        if (packageIdExists) {
+            setPackageIdError('Mã kiện hàng này đã tồn tại trong hệ thống!');
+            focusInput('package');
+            return;
+        }
+
         if (scannedProducts.length === 0) {
             showToast('Vui lòng thêm sản phẩm vào kiện hàng', 'error');
             return;
@@ -240,6 +283,8 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
         setPackageId('');
         setPackageIdError('');
         setPackageIdTouched(false);
+        setPackageIdExists(false);
+        setCheckingPackageIdExists(false);
         setQrCodeInput('');
         setScannedProducts([]);
         setShowClearAllConfirm(false);
@@ -255,7 +300,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
         }
     };
 
-    const isPackageIdValid = !validatePackageId(packageId);
+    const isPackageIdValid = !validatePackageId(packageId) && !packageIdExists && !checkingPackageIdExists;
 
     if (!open) return null;
 
