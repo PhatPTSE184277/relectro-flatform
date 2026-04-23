@@ -96,8 +96,14 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
     const validatePackageIdNotUsed = async (pid: string): Promise<boolean> => {
         try {
             return await checkPackageIdExists(pid);
-        } catch (error) {
+        } catch (error: any) {
             console.error('checkPackageIdExists error', error);
+            const message =
+                error?.response?.data?.message ||
+                error?.response?.data?.error ||
+                error?.message ||
+                'Không thể kiểm tra mã kiện hàng';
+            setPackageIdError(message);
             return false;
         }
     };
@@ -127,11 +133,18 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
         try {
             const exists = await validatePackageIdNotUsed(pid);
             setPackageIdExists(exists);
+            if (exists) {
+                setPackageIdError('Mã kiện hàng này đã tồn tại trong hệ thống!');
+            } else {
+                setPackageIdError('');
+            }
         } finally {
             setCheckingPackageIdExists(false);
         }
         
-        setPackageIdError(validatePackageId(packageId));
+        if (!packageIdExists) {
+            setPackageIdError(validatePackageId(packageId));
+        }
     };
 
     useEffect(() => {
@@ -187,6 +200,7 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                 !normalizedStatus.includes('nhập') &&
                 normalizedStatus !== 'received'
             ) {
+                showToast('Sản phẩm chưa được nhập đơn vị thu gom', 'error');
                 setQrCodeInput('');
                 inputRef.current?.focus();
                 return;
@@ -213,8 +227,9 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
             inputRef.current?.focus();
         } catch (err: any) {
             console.error('Scan QR error', err);
+            showToast(err?.response?.data?.message || err?.message || 'Lỗi khi quét mã', 'error');
             setQrCodeInput('');
-            showToast(err?.message || 'Lỗi khi quét mã', 'error');
+            inputRef.current?.focus();
         } finally {
             setLoading(false);
         }
@@ -251,6 +266,11 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
 
         if (packageIdExists) {
             setPackageIdError('Mã kiện hàng này đã tồn tại trong hệ thống!');
+            focusInput('package');
+            return;
+        }
+
+        if (packageIdError) {
             focusInput('package');
             return;
         }
@@ -343,7 +363,9 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                     type='text'
                                     value={packageId}
                                     onChange={(e) => handlePackageIdChange(e.target.value)}
-                                    onBlur={handlePackageIdBlur}
+                                    onBlur={() => {
+                                        void handlePackageIdBlur();
+                                    }}
                                     placeholder='Quét hoặc nhập mã kiện hàng...'
                                     disabled={loading}
                                     className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
@@ -354,6 +376,11 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                     size={18}
                                 />
                             </div>
+                            {packageIdTouched && packageIdError && (
+                                <div className='mt-2 text-xs text-red-600'>
+                                    {packageIdError}
+                                </div>
+                            )}
                         </div>
                         {/* QR Scanner */}
                         <div className='bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex-1'>
@@ -366,7 +393,9 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                                         ref={inputRef}
                                         type='text'
                                         value={qrCodeInput}
-                                        onChange={(e) => setQrCodeInput(e.target.value)}
+                                        onChange={(e) => {
+                                            setQrCodeInput(e.target.value);
+                                        }}
                                         placeholder='Quét hoặc nhập mã QR...'
                                         disabled={loading}
                                         className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-400 disabled:bg-gray-100'
@@ -419,9 +448,6 @@ const CreatePackage: React.FC<CreatePackageProps> = ({
                             </span>
                             <span className='ml-1'>sản phẩm đã thêm</span>
                         </div>
-                        {packageIdTouched && packageIdError && (
-                            <div className='text-xs text-red-600'>{packageIdError}</div>
-                        )}
                     </div>
                     <div className='flex gap-3'>
                         <button

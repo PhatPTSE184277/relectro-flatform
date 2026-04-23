@@ -161,7 +161,7 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
             inputRef.current?.focus();
         } catch (err: any) {
             console.error('Scan QR error', err);
-            showToast(err?.message || 'Lỗi khi quét mã', 'error');
+            showToast(err?.response?.data?.message || err?.message || 'Lỗi khi quét mã', 'error');
             setQrCodeInput('');
         } finally {
             setLoading(false);
@@ -273,7 +273,9 @@ const UpdatePackage: React.FC<UpdatePackageProps> = ({
                                     ref={inputRef}
                                     type='text'
                                     value={qrCodeInput}
-                                    onChange={(e) => setQrCodeInput(e.target.value)}
+                                    onChange={(e) => {
+                                        setQrCodeInput(e.target.value);
+                                    }}
                                     placeholder='Quét hoặc nhập mã QR...'
                                     className='w-full pl-10 pr-4 py-2 border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900'
                                     disabled={loading}

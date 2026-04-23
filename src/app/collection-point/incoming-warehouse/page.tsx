@@ -153,7 +153,7 @@ const IncomingWarehousePage: React.FC = () => {
                         className='px-4 py-2 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition font-medium flex items-center gap-2 cursor-pointer whitespace-nowrap border border-primary-200'
                     >
                         <ScanLine size={18} />
-                        Nhận hàng từ shipper
+                        Nhận hàng từ nhân viên thu gom
                     </button>
                     <button
                         onClick={() => setShowCreateModal(true)}

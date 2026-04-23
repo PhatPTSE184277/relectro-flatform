@@ -4,6 +4,7 @@ import { isValidSystemQRCode } from '@/utils/qr';
 
 import React, { useState, useRef, useEffect } from 'react';
 import CameraModal from '@/components/ui/CameraModal';
+import Toast from '@/components/ui/Toast';
 import {
     getBrandsBySubCategory,
     Brand
@@ -52,6 +53,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     const [searchClicked, setSearchClicked] = useState(false);
     const [loadingUser, setLoadingUser] = useState(false);
     const [showCamera, setShowCamera] = useState(false);
+    const [toastOpen, setToastOpen] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState<'success' | 'error'>('error');
 
     const { getBrandCategoryPoints } = useIWProductContext();
 
@@ -114,6 +118,14 @@ const CreateProduct: React.FC<CreateProductProps> = ({
         await searchUserByInformation(userInfoInput);
     };
 
+    const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+        setToastMessage(message);
+        setToastType(type);
+        setToastOpen(true);
+        qrInputRef.current?.focus();
+        requestAnimationFrame(() => qrInputRef.current?.focus());
+    };
+
     const handleQrBlur = async () => {
         const qr = qrCode.trim();
         if (!qr || !/^[0-9]{13}$/.test(qr) || !isValidSystemQRCode(qr)) {
@@ -134,8 +146,9 @@ const CreateProduct: React.FC<CreateProductProps> = ({
     const validateQrNotUsed = async (qr: string): Promise<boolean> => {
         try {
             return await checkProductQRCodeExists(qr);
-        } catch (error) {
+        } catch (error: any) {
             console.error('checkProductQRCodeExists error', error);
+            showToast(error?.response?.data?.message || error?.message || 'Lỗi khi kiểm tra mã QR', 'error');
             return false;
         }
     };
@@ -197,17 +210,17 @@ const CreateProduct: React.FC<CreateProductProps> = ({
 
         const qr = (qrCode || '').trim();
         if (!qr) {
-            setQrError('Vui lòng nhập mã QR sản phẩm!');
+            showToast('Vui lòng nhập mã QR sản phẩm!', 'error');
             return;
         }
         if (!isValidSystemQRCode(qr)) {
-            setQrError('Chỉ được sử dụng mã QR do hệ thống tạo ra!');
+            showToast('Chỉ được sử dụng mã QR do hệ thống tạo ra!', 'error');
             return;
         }
 
         const exists = await validateQrNotUsed(qr);
         if (exists) {
-            setQrError('Mã QR này đã có sản phẩm sử dụng!');
+            showToast('Mã QR này đã có sản phẩm sử dụng!', 'error');
             setQrExists(true);
             return;
         }
