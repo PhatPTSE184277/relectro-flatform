@@ -92,3 +92,18 @@ export const updatePointsTransaction = async (
     const response = await axios.put(`/points-transaction/${productId}`, body);
     return response.data;
 };
+
+export interface UpdateProductInfoPayload {
+    categoryId: string;
+    brandId: string;
+    image: string[];
+    description?: string;
+}
+
+export const updateProductInfo = async (
+    productId: string,
+    payload: UpdateProductInfoPayload
+): Promise<any> => {
+    const response = await axios.put(`/products/update-info/${productId}`, payload);
+    return response.data;
+};

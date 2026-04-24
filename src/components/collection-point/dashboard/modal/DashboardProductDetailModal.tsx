@@ -1,13 +1,20 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { Product } from '@/types/Product';
-import { X, Package, FileText, UserCheck, Loader2 } from 'lucide-react';
+import { X, Package, FileText, UserCheck, Loader2, Edit3, Plus, Trash2 } from 'lucide-react';
 import SummaryCard, { SummaryCardItem } from '@/components/ui/SummaryCard';
 import UserInfo from '@/components/ui/UserInfo';
 import CustomNumberInput from '@/components/ui/CustomNumberInput';
 import CustomTextarea from '@/components/ui/CustomTextarea';
+import Toast from '@/components/ui/Toast';
+import EditProductModal from './EditProductModal';
+import CategoryContext from '@/contexts/collection-point/CategoryContext';
+import { getBrandsBySubCategory, type Brand } from '@/services/collection-point/BrandService';
+import { updateProductInfo } from '@/services/collection-point/IWProductService';
+import { uploadToCloudinary } from '@/utils/Cloudinary';
+import SearchableSelect from '@/components/ui/SearchableSelect';
 
 interface DashboardProductDetailModalProps {
     open: boolean;
@@ -16,6 +23,7 @@ interface DashboardProductDetailModalProps {
     submitting: boolean;
     onClose: () => void;
     onConfirm: (productId: string, newPointValue: number, reasonForUpdate: string) => Promise<void>;
+    onRefreshProduct?: (productId: string) => Promise<void>;
 }
 
 interface DashboardProductDetailModalContentProps {
@@ -24,6 +32,7 @@ interface DashboardProductDetailModalContentProps {
     submitting: boolean;
     onClose: () => void;
     onConfirm: (productId: string, newPointValue: number, reasonForUpdate: string) => Promise<void>;
+    onRefreshProduct?: (productId: string) => Promise<void>;
 }
 
 const REASON_TAGS = [
@@ -38,16 +47,70 @@ const DashboardProductDetailModalContent: React.FC<DashboardProductDetailModalCo
     loading,
     submitting,
     onClose,
-    onConfirm
+    onConfirm,
+    onRefreshProduct
 }) => {
+    const [showEditModal, setShowEditModal] = useState(false);
     const [selectedImg, setSelectedImg] = useState(0);
     const [zoomImg, setZoomImg] = useState<string | null>(null);
     const [point, setPoint] = useState(product?.realPoints ?? product?.estimatePoint ?? 0);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [customReason, setCustomReason] = useState('');
+    const [editing, setEditing] = useState(false);
+    const [editImages, setEditImages] = useState<string[]>(product?.productImages ?? []);
+    const [editImageFiles, setEditImageFiles] = useState<File[]>([]);
+    const [editSubCategoryId, setEditSubCategoryId] = useState(product?.categoryId || '');
+    const [editBrandId, setEditBrandId] = useState(product?.brandId || '');
+    const [brands, setBrands] = useState<Brand[]>([]);
+    const [brandLoading, setBrandLoading] = useState(false);
+    const [savingEdit, setSavingEdit] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [toastOpen, setToastOpen] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState<'success' | 'error'>('error');
+
+    const categoryCtx = useContext(CategoryContext);
+    const parentCategories = categoryCtx?.parentCategories ?? [];
+    const subCategories = categoryCtx?.subCategories ?? [];
+    const categoryLoading = categoryCtx?.loading ?? false;
+    const setSelectedParentId = categoryCtx?.setSelectedParentId;
 
     const originalPoint = product?.realPoints ?? product?.estimatePoint ?? 0;
     const isPointChanged = point !== originalPoint;
+
+    useEffect(() => {
+        setPoint(product?.realPoints ?? product?.estimatePoint ?? 0);
+        setSelectedTags([]);
+        setCustomReason('');
+        setSelectedImg(0);
+        setZoomImg(null);
+        setEditing(false);
+        setEditImages(product?.productImages ?? []);
+        setEditImageFiles([]);
+        setEditSubCategoryId(product?.categoryId || '');
+        setEditBrandId(product?.brandId || '');
+        setSelectedParentId?.(product?.categoryId || null);
+        setShowEditModal(false);
+    }, [product, setSelectedParentId]);
+
+    useEffect(() => {
+        let mounted = true;
+        const run = async () => {
+            if (!editSubCategoryId) {
+                setBrands([]);
+                return;
+            }
+            setBrandLoading(true);
+            try {
+                const data = await getBrandsBySubCategory(editSubCategoryId);
+                if (mounted) setBrands(data || []);
+            } finally {
+                if (mounted) setBrandLoading(false);
+            }
+        };
+        void run();
+        return () => { mounted = false; };
+    }, [editSubCategoryId]);
 
     const normalizeStatus = (status: string = '') => {
         const s = (status || '').trim().toLowerCase();
@@ -68,6 +131,65 @@ const DashboardProductDetailModalContent: React.FC<DashboardProductDetailModalCo
         isPointChanged &&
         selectedTags.length > 0 &&
         !(selectedTags.includes('Khác') && selectedTags.length === 1 && !customReason.trim());
+
+    const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+        setToastMessage(message);
+        setToastType(type);
+        setToastOpen(true);
+    };
+
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+        const validFiles = files.filter((file) => file.size <= 10 * 1024 * 1024);
+        if (editImages.length + validFiles.length > 5) {
+            showToast('Tối đa 5 ảnh', 'error');
+            return;
+        }
+        const previews: string[] = [];
+        const nextFiles: File[] = [];
+        validFiles.forEach((file) => {
+            nextFiles.push(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                previews.push(reader.result as string);
+                if (previews.length === nextFiles.length) {
+                    setEditImages((prev) => [...prev, ...previews]);
+                    setEditImageFiles((prev) => [...prev, ...nextFiles]);
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    };
+
+    const removeEditImage = (index: number) => {
+        setEditImages((prev) => prev.filter((_, i) => i !== index));
+        setEditImageFiles((prev) => prev.filter((_, i) => i !== index));
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const handleSaveEdit = async () => {
+        if (!product || !editSubCategoryId || !editBrandId) return;
+        setSavingEdit(true);
+        try {
+            const uploaded = editImageFiles.length ? await Promise.all(editImageFiles.map((file) => uploadToCloudinary(file))) : [];
+            const retained = editImages.filter((img) => !img.startsWith('data:'));
+            await updateProductInfo(product.productId, {
+                categoryId: editSubCategoryId,
+                brandId: editBrandId,
+                image: [...retained, ...uploaded]
+            });
+            showToast('Cập nhật thông tin sản phẩm thành công', 'success');
+            setEditing(false);
+            if (onRefreshProduct) await onRefreshProduct(product.productId);
+        } catch (error: any) {
+            showToast(error?.response?.data?.message || error?.message || 'Lỗi khi cập nhật sản phẩm', 'error');
+        } finally {
+            setSavingEdit(false);
+        }
+    };
+
+
 
     const handleConfirm = async () => {
         if (!product || !canSubmit || submitting) return;
@@ -109,31 +231,76 @@ const DashboardProductDetailModalContent: React.FC<DashboardProductDetailModalCo
                     </div>
                 ) : (
                     <>
+                        <div className='flex justify-end px-6 pt-4'>
+                            <button
+                                type='button'
+                                onClick={() => setShowEditModal(true)}
+                                className='px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition flex items-center gap-2'
+                            >
+                                <Edit3 size={16} />
+                                Chỉnh sửa thông tin
+                            </button>
+                        </div>
                         <div className='flex flex-col md:flex-row flex-1 overflow-hidden'>
                             <div className='md:w-1/3 bg-gray-50 flex flex-col items-center p-6 border-r border-primary-100 overflow-y-auto'>
-                                <div className='relative w-full flex flex-col items-center gap-4'>
-                                    <img
-                                        src={product.productImages?.[selectedImg] || '/placeholder.png'}
-                                        alt='Ảnh sản phẩm'
-                                        className='w-full max-w-[180px] h-40 object-contain rounded-xl border border-primary-200 bg-white cursor-zoom-in shadow-sm'
-                                        onClick={() => setZoomImg(product.productImages?.[selectedImg] || null)}
-                                    />
-                                    <div className='flex gap-2 flex-wrap justify-center'>
-                                        {(product.productImages ?? []).map((img: string, idx: number) => (
-                                            <img
-                                                key={idx}
-                                                src={img}
-                                                alt={`Ảnh ${idx + 1}`}
-                                                className={`w-14 h-14 object-cover rounded-lg border cursor-pointer transition-all ${
-                                                    selectedImg === idx
-                                                        ? 'border-primary-500 ring-2 ring-primary-200 scale-105'
-                                                        : 'border-primary-100 hover:border-primary-200'
-                                                }`}
-                                                onClick={() => setSelectedImg(idx)}
+                                {editing ? (
+                                    <div className='w-full space-y-4'>
+                                        <label className='cursor-pointer flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-primary-300 rounded-xl hover:border-primary-400 hover:bg-primary-50 transition'>
+                                            <Plus className='text-primary-400' size={32} />
+                                            <span className='text-xs text-gray-500 mt-2'>Thêm ảnh</span>
+                                            <input
+                                                ref={fileInputRef}
+                                                type='file'
+                                                accept='image/*'
+                                                multiple
+                                                onChange={handleImageUpload}
+                                                className='hidden'
                                             />
-                                        ))}
+                                        </label>
+                                        <div className='flex gap-2 flex-wrap justify-center'>
+                                            {editImages.map((img, idx) => (
+                                                <div key={idx} className='relative'>
+                                                    <img
+                                                        src={img}
+                                                        alt={`Ảnh ${idx + 1}`}
+                                                        className='w-14 h-14 object-cover rounded-lg border border-primary-100'
+                                                    />
+                                                    <button
+                                                        type='button'
+                                                        onClick={() => removeEditImage(idx)}
+                                                        className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1'
+                                                    >
+                                                        <Trash2 size={10} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
+                                ) : (
+                                    <div className='relative w-full flex flex-col items-center gap-4'>
+                                        <img
+                                            src={product.productImages?.[selectedImg] || '/placeholder.png'}
+                                            alt='Ảnh sản phẩm'
+                                            className='w-full max-w-[180px] h-40 object-contain rounded-xl border border-primary-200 bg-white cursor-zoom-in shadow-sm'
+                                            onClick={() => setZoomImg(product.productImages?.[selectedImg] || null)}
+                                        />
+                                        <div className='flex gap-2 flex-wrap justify-center'>
+                                            {(product.productImages ?? []).map((img: string, idx: number) => (
+                                                <img
+                                                    key={idx}
+                                                    src={img}
+                                                    alt={`Ảnh ${idx + 1}`}
+                                                    className={`w-14 h-14 object-cover rounded-lg border cursor-pointer transition-all ${
+                                                        selectedImg === idx
+                                                            ? 'border-primary-500 ring-2 ring-primary-200 scale-105'
+                                                            : 'border-primary-100 hover:border-primary-200'
+                                                    }`}
+                                                    onClick={() => setSelectedImg(idx)}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div className='md:w-2/3 p-6 space-y-5 overflow-y-auto'>
@@ -145,7 +312,43 @@ const DashboardProductDetailModalContent: React.FC<DashboardProductDetailModalCo
                                         </span>
                                     }
                                     singleRow={false}
-                                    items={[
+                                    items={editing ? [
+                                        {
+                                            icon: <Package className='w-4 h-4 text-primary-500' />,
+                                            label: 'Danh mục nhỏ',
+                                            value: (
+                                                <SearchableSelect
+                                                    options={subCategories}
+                                                    value={editSubCategoryId}
+                                                    onChange={(val) => {
+                                                        setEditSubCategoryId(val);
+                                                        setEditBrandId('');
+                                                    }}
+                                                    getLabel={(cat) => cat.name}
+                                                    getValue={(cat) => cat.id}
+                                                    placeholder='Chọn danh mục nhỏ...'
+                                                    disabled={categoryLoading}
+                                                    className='w-full'
+                                                />
+                                            )
+                                        },
+                                        {
+                                            icon: <Package className='w-4 h-4 text-primary-500' />,
+                                            label: 'Thương hiệu',
+                                            value: editSubCategoryId ? (
+                                                <SearchableSelect
+                                                    options={brands}
+                                                    value={editBrandId}
+                                                    onChange={setEditBrandId}
+                                                    getLabel={(brand) => brand.name}
+                                                    getValue={(brand) => brand.brandId}
+                                                    placeholder={brandLoading ? 'Đang tải...' : 'Chọn thương hiệu...'}
+                                                    disabled={brandLoading}
+                                                    className='w-full'
+                                                />
+                                            ) : 'Chọn danh mục nhỏ trước'
+                                        }
+                                    ] as SummaryCardItem[] : [
                                         {
                                             icon: <Package className='w-4 h-4 text-primary-500' />,
                                             label: 'Thương hiệu',
@@ -160,11 +363,6 @@ const DashboardProductDetailModalContent: React.FC<DashboardProductDetailModalCo
                                             icon: <Package className='w-4 h-4 text-primary-500' />,
                                             label: 'Mã QR',
                                             value: product.qrCode || '-'
-                                        },
-                                        {
-                                            icon: <Package className='w-4 h-4 text-primary-500' />,
-                                            label: 'Kích thước',
-                                            value: product.sizeTierName || '-'
                                         },
                                         {
                                             icon: <FileText className='w-4 h-4 text-primary-500' />,
@@ -216,6 +414,26 @@ const DashboardProductDetailModalContent: React.FC<DashboardProductDetailModalCo
                                             </span>
                                         }
                                     />
+                                )}
+
+                                {editing && (
+                                    <div className='flex justify-end gap-3'>
+                                        <button
+                                            type='button'
+                                            onClick={() => setEditing(false)}
+                                            className='px-4 py-2 rounded-lg border border-gray-200 text-gray-700'
+                                        >
+                                            Hủy
+                                        </button>
+                                        <button
+                                            type='button'
+                                            onClick={() => void handleSaveEdit()}
+                                            disabled={savingEdit || !editSubCategoryId || !editBrandId}
+                                            className='px-4 py-2 rounded-lg bg-primary-600 text-white disabled:bg-gray-300'
+                                        >
+                                            {savingEdit ? 'Đang lưu...' : 'Lưu thay đổi'}
+                                        </button>
+                                    </div>
                                 )}
 
                                 {isPointChanged && (
@@ -319,6 +537,25 @@ const DashboardProductDetailModalContent: React.FC<DashboardProductDetailModalCo
                     />
                 </div>
             )}
+
+            <Toast
+                open={toastOpen}
+                type={toastType}
+                message={toastMessage}
+                onClose={() => setToastOpen(false)}
+            />
+
+            <EditProductModal
+                open={showEditModal}
+                product={product}
+                loading={loading}
+                onClose={() => setShowEditModal(false)}
+                onSaved={async (productId: string) => {
+                    if (onRefreshProduct) {
+                        await onRefreshProduct(productId);
+                    }
+                }}
+            />
         </div>
     );
 };
@@ -329,7 +566,8 @@ const DashboardProductDetailModal: React.FC<DashboardProductDetailModalProps> = 
     loading,
     submitting,
     onClose,
-    onConfirm
+    onConfirm,
+    onRefreshProduct
 }) => {
     if (!open) return null;
 
@@ -341,6 +579,7 @@ const DashboardProductDetailModal: React.FC<DashboardProductDetailModalProps> = 
             submitting={submitting}
             onClose={onClose}
             onConfirm={onConfirm}
+            onRefreshProduct={onRefreshProduct}
         />
     );
 };

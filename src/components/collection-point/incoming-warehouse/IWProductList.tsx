@@ -1,7 +1,7 @@
 import IWProductShow from './IWProductShow';
 import IWProductTableSkeleton from './IWProductTableSkeleton';
 
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 interface IWProductListProps {
     products: any[];
     loading: boolean;
@@ -33,12 +33,11 @@ const IWProductList = forwardRef<HTMLDivElement, IWProductListProps>(
                                 <th className='py-3 px-4 text-center w-[5vw] min-w-10'>
                                     STT
                                 </th>
-                                <th className='py-3 px-4 text-left w-[14vw] min-w-20'>
-                                    Loại sản phẩm
+                                <th className='py-3 px-4 text-left w-[18vw] min-w-24'>
+                                    Loại sản phẩm - Thương hiệu
                                 </th>
-                                {/* QR column removed */}
-                                <th className='py-3 px-4 text-left w-[12vw] min-w-20'>
-                                    Thương hiệu
+                                <th className='py-3 px-4 text-left w-[14vw] min-w-20'>
+                                    Tên người dùng
                                 </th>
                                 <th className='py-3 px-4 text-left w-[18vw] min-w-30'>
                                     Mô tả

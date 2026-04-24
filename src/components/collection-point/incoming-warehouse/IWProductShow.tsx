@@ -18,14 +18,15 @@ const IWProductShow: React.FC<IWProductShowProps & { isLast?: boolean; stt?: num
                     {formatNumber(stt)}
                 </span>
             </td>
-            <td className='py-3 px-4 font-medium w-[14vw] min-w-20'>
+            <td className='py-3 px-4 font-medium w-[18vw] min-w-24'>
                 <div className='text-gray-700 font-normal'>
-                    {product.categoryName || 'Không rõ'}
+                    {product.categoryName || 'Không rõ'} - {product.brandName || 'Không rõ'}
                 </div>
             </td>
-            {/* QR column removed per request */}
-            <td className='py-3 px-4 text-gray-700 w-[12vw] min-w-[70px]'>
-                {product.brandName || 'Không rõ'}
+            <td className='py-3 px-4 text-gray-700 w-[14vw] min-w-[120px]'>
+                {product.userName || (
+                    <span className='text-gray-400'>Không rõ</span>
+                )}
             </td>
             <td className='py-3 px-4 text-gray-700 w-[18vw] min-w-[120px]'>
                 {product.description || (

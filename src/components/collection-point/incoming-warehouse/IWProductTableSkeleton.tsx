@@ -11,6 +11,9 @@ const IWProductTableSkeleton: React.FC = () => (
         <td className='py-3 px-4 text-gray-700 w-[12vw] min-w-[70px]'>
             <div className='h-4 bg-gray-200 rounded w-24 animate-pulse' />
         </td>
+        <td className='py-3 px-4 text-gray-700 w-[14vw] min-w-20'>
+            <div className='h-4 bg-gray-200 rounded w-32 animate-pulse' />
+        </td>
         <td className='py-3 px-4 text-gray-700 w-[18vw] min-w-[120px]'>
             <div className='h-4 bg-gray-200 rounded w-48 animate-pulse' />
         </td>

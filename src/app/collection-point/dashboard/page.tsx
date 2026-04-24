@@ -357,6 +357,7 @@ const DashboardPage = () => {
                 submitting={pointUpdateLoading}
                 onClose={handleCloseProductDetail}
                 onConfirm={handleConfirmProductPoint}
+                onRefreshProduct={fetchProductDetail}
             />
 
             <BrandDetail
