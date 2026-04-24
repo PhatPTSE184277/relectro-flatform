@@ -231,7 +231,7 @@ const DashboardProductDetailModalContent: React.FC<DashboardProductDetailModalCo
                     </div>
                 ) : (
                     <>
-                        <div className='flex justify-end px-6 pt-4'>
+                        {/* <div className='flex justify-end px-6 pt-4'>
                             <button
                                 type='button'
                                 onClick={() => setShowEditModal(true)}
@@ -240,7 +240,7 @@ const DashboardProductDetailModalContent: React.FC<DashboardProductDetailModalCo
                                 <Edit3 size={16} />
                                 Chỉnh sửa thông tin
                             </button>
-                        </div>
+                        </div> */}
                         <div className='flex flex-col md:flex-row flex-1 overflow-hidden'>
                             <div className='md:w-1/3 bg-gray-50 flex flex-col items-center p-6 border-r border-primary-100 overflow-y-auto'>
                                 {editing ? (
