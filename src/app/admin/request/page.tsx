@@ -12,6 +12,7 @@ import { useRequestContext } from '@/contexts/admin/RequestContext';
 import { PostStatus } from '@/enums/PostStatus';
 import { ClipboardList, CheckCircle, XCircle } from 'lucide-react';
 import { filterRequests } from '@/services/admin/RequestService';
+import { useSearchParams } from 'next/navigation';
 
 type Stats = {
     total: number;
@@ -21,6 +22,7 @@ type Stats = {
 };
 
 const RequestPage: React.FC = () => {
+    const searchParams = useSearchParams();
     const {
         requests,
         loading,
@@ -48,6 +50,24 @@ const RequestPage: React.FC = () => {
     const [selectedRequestIds, setSelectedRequestIds] = useState<string[]>([]);
     const [isBulkRejectModalOpen, setIsBulkRejectModalOpen] = useState(false);
     const tableScrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const statusFromQuery = searchParams.get('status');
+        if (!statusFromQuery) return;
+
+        const normalized = statusFromQuery.trim().toLowerCase();
+        const queryStatus =
+            normalized === PostStatus.Approved.toLowerCase()
+                ? PostStatus.Approved
+                : normalized === PostStatus.Rejected.toLowerCase()
+                ? PostStatus.Rejected
+                : PostStatus.Pending;
+
+        setFilterStatus(queryStatus);
+        const order = queryStatus === PostStatus.Pending ? 'asc' : '';
+        fetchRequests({ status: queryStatus, page: 1, search, order });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
 
   useEffect(() => {
     const loadStats = async () => {

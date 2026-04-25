@@ -138,6 +138,16 @@ const Header = ({ href, profileHref, onMenuClick }: HeaderProps) => {
             notif.message?.includes('Thu gom') ||
             notif.message?.includes('thu gom');
 
+        const isRequestNotif =
+            notif.title?.includes('Yêu cầu mới') ||
+            notif.title?.includes('yêu cầu mới') ||
+            notif.title?.includes('Yêu cầu đăng bài') ||
+            notif.message?.includes('chờ được duyệt') ||
+            notif.message?.includes('chờ duyệt') ||
+            notifText.includes('request') ||
+            action === 'POST_REQUEST_CREATED' ||
+            action === 'NEW_POST_REQUEST';
+
         if (isDistributionNotif) {
             // Extract date from message or use createdAt
             let distributionDate = '';
@@ -200,6 +210,17 @@ const Header = ({ href, profileHref, onMenuClick }: HeaderProps) => {
         }
 
         setNotifDropdownOpen(false);
+
+        if (isRequestNotif && user?.role === 'Admin' && typeof window !== 'undefined') {
+            const requestPath = `/admin/request?status=${encodeURIComponent('Chờ Duyệt')}`;
+            if (window.location.pathname !== '/admin/request') {
+                router.push(requestPath);
+            } else {
+                router.replace(requestPath);
+                window.location.reload();
+            }
+            return;
+        }
 
         // Navigate to distribute product page if it's a distribution notification
         if (isDistributionNotif && typeof window !== 'undefined') {
@@ -439,6 +460,31 @@ const Header = ({ href, profileHref, onMenuClick }: HeaderProps) => {
                                                                     <Link
                                                                         key={notif.notificationId}
                                                                         href='/recycle/package'
+                                                                        onClick={() => handleNotificationClick(notif)}
+                                                                        className={`block p-4 border-b border-primary-50 cursor-pointer transition ${
+                                                                            notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-primary-50/50 hover:bg-primary-50'
+                                                                        }`}
+                                                                    >
+                                                                        {content}
+                                                                    </Link>
+                                                                );
+                                                            }
+
+                                                            const isRequestNotif =
+                                                                notif.title?.includes('Yêu cầu mới') ||
+                                                                notif.title?.includes('yêu cầu mới') ||
+                                                                notif.title?.includes('Yêu cầu đăng bài') ||
+                                                                notif.message?.includes('chờ được duyệt') ||
+                                                                notif.message?.includes('chờ duyệt') ||
+                                                                notifText.includes('request') ||
+                                                                action === 'POST_REQUEST_CREATED' ||
+                                                                action === 'NEW_POST_REQUEST';
+
+                                                            if (isRequestNotif && user?.role === 'Admin') {
+                                                                return (
+                                                                    <Link
+                                                                        key={notif.notificationId}
+                                                                        href={`/admin/request?status=${encodeURIComponent('Chờ Duyệt')}`}
                                                                         onClick={() => handleNotificationClick(notif)}
                                                                         className={`block p-4 border-b border-primary-50 cursor-pointer transition ${
                                                                             notif.isRead ? 'bg-white hover:bg-gray-50' : 'bg-primary-50/50 hover:bg-primary-50'
