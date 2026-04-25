@@ -16,7 +16,7 @@ interface PreAssignStepProps {
     allProductIds?: string[]; // All product IDs from API
     loadThreshold: number;
     setLoadThreshold: (value: number) => void;
-    onGetSuggestion: (workDate: string, vehicleIds: string[], selectedProductIds?: string[]) => void;
+    onGetSuggestion: (workDate: string, vehicleIds: string[], selectedProductIds: string[]) => void;
     onReject?: () => void;
     rejectLoading?: boolean;
     onSkip?: () => void;
@@ -70,19 +70,6 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
         setSelectedVehicleIds(availableVehicles.map((v: Vehicle) => v.vehicleId));
     }, [availableVehicles, preAssignResult, products.length]);
 
-    useEffect(() => {
-        if (products.length === 0 || availableVehicles.length === 0 || preAssignResult) return;
-
-        getPreAssignSuggestion(
-            workDate,
-            availableVehicles.map((vehicle: Vehicle) => vehicle.vehicleId),
-            loadThreshold,
-            selectedProductIds.length > 0 ? selectedProductIds : undefined
-        ).catch((error: unknown) => {
-            console.error('Error auto fetching preassign suggestion:', error);
-        });
-    }, [availableVehicles, getPreAssignSuggestion, loadThreshold, preAssignResult, products.length, selectedProductIds, workDate]);
-
     const handleToggleSelect = (productId: string) => {
         setSelectedProductIds(prev => 
             prev.includes(productId) 
@@ -115,7 +102,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 workDate,
                 availableVehicles.map((vehicle: Vehicle) => vehicle.vehicleId),
                 loadThreshold,
-                selectedProductIds.length > 0 ? selectedProductIds : undefined
+                selectedProductIds
             );
             setShowVehicleModal(true);
         } catch (error) {
@@ -146,7 +133,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
             await onGetSuggestion(
                 workDate,
                 vehicleIds,
-                selectedProductIds.length > 0 ? selectedProductIds : undefined
+                selectedProductIds
             );
             setShowVehicleModal(false);
         } catch (error) {

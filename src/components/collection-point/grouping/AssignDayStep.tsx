@@ -259,12 +259,21 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
             // Fetch all products for each vehicle to get productIds
             const assignmentsPromises = previewVehicles.map(async (vehicleData: any) => {
                 const vehicleId = vehicleData.vehicleId?.toString() || vehicleData.id?.toString();
+                if (!vehicleId) {
+                    return {
+                        workDate,
+                        vehicleId: '',
+                        productIds: []
+                    };
+                }
                 
                 // Fetch all products for this vehicle (using large pageSize to get all at once)
                 const totalProduct = vehicleData.totalProduct || 0;
                 if (totalProduct > 0) {
-                    const response = fetchPreviewProducts(vehicleId, workDate, 1, totalProduct);
-                    const productIds = response?.products?.map((p: any) => p.productId) || [];
+                    const response = await fetchPreviewProducts(vehicleId, workDate, 1, totalProduct);
+                    const productIds = Array.isArray(response?.products)
+                        ? response.products.map((p: any) => p.productId).filter(Boolean)
+                        : [];
                     
                     return {
                         workDate: workDate,
@@ -281,11 +290,14 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
             });
             
             const assignments = await Promise.all(assignmentsPromises);
+            const validAssignments = assignments.filter(
+                (assignment) => String(assignment.vehicleId || '').length > 0
+            );
             
-            console.log(`Đang tạo nhóm cho ${assignments.length} xe cùng lúc`, assignments);
+            console.log(`Đang tạo nhóm cho ${validAssignments.length} xe cùng lúc`, validAssignments);
             
             // Call API to create grouping
-            onCreateGrouping(assignments);
+            await onCreateGrouping(validAssignments);
             
             // Calculate route and redirect
             await calculateRoute(true);

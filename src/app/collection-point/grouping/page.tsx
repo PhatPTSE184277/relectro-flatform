@@ -39,7 +39,7 @@ const GroupingPage: React.FC = () => {
     const [selectedDate, setSelectedDate] = useState<string>(getTodayString);
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [rejectLoading, setRejectLoading] = useState(false);
-    const [selectedProductIdsForAssign, setSelectedProductIdsForAssign] = useState<string[] | undefined>(undefined);
+    const [selectedProductIdsForAssign, setSelectedProductIdsForAssign] = useState<string[]>([]);
     const [toast, setToast] = useState<{ open: boolean; type: 'success' | 'error'; message: string }>({ 
         open: false, 
         type: 'success', 
@@ -103,7 +103,7 @@ const GroupingPage: React.FC = () => {
         }
     }, [selectedDate, pendingProductsData?.totalItems, fetchAllProductIds]);
 
-    const handleGetSuggestion = async (workDate: string, vehicleIds: string[], selectedProductIds?: string[]) => {
+    const handleGetSuggestion = async (workDate: string, vehicleIds: string[], selectedProductIds: string[]) => {
         setSelectedProductIdsForAssign(selectedProductIds);
         await getPreAssignSuggestion(workDate, vehicleIds, loadThreshold, selectedProductIds);
         setActiveStep(2);
@@ -127,9 +127,7 @@ const GroupingPage: React.FC = () => {
             selectedDate,
             vehicleIds,
             loadThreshold,
-            selectedProductIdsForAssign && selectedProductIdsForAssign.length > 0
-                ? selectedProductIdsForAssign
-                : undefined
+            selectedProductIdsForAssign
         );
         setActiveStep(2);
     };
