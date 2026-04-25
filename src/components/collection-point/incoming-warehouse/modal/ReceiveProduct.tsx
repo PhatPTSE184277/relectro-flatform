@@ -123,9 +123,17 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
     };
 
     const getBasePoint = (product: any) => {
-        const real = product?.realPoints ?? product?.realPoint;
-        const estimate = product?.estimatePoint;
-        return Number(real ?? estimate ?? 0);
+        const estimate = Number(product?.estimatePoint);
+        if (Number.isFinite(estimate)) {
+            return Math.max(0, estimate);
+        }
+
+        const real = Number(product?.realPoints ?? product?.realPoint);
+        if (Number.isFinite(real)) {
+            return Math.max(0, real);
+        }
+
+        return 0;
     };
 
     const handleScanQR = async (e: React.FormEvent) => {
@@ -203,10 +211,14 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
             );
 
             setSelectedProduct(merged);
-            setPoint(merged.pendingPoint ?? merged.originalPoint);
+            const maxEditablePoint = Math.max(0, Number(merged.estimatePoint ?? merged.originalPoint ?? 0));
+            const nextPoint = Number(merged.pendingPoint ?? merged.originalPoint ?? 0);
+            setPoint(Math.min(Math.max(0, nextPoint), maxEditablePoint));
         } catch {
             setSelectedProduct(product);
-            setPoint(product.pendingPoint ?? product.originalPoint);
+            const maxEditablePoint = Math.max(0, Number(product.estimatePoint ?? product.originalPoint ?? 0));
+            const nextPoint = Number(product.pendingPoint ?? product.originalPoint ?? 0);
+            setPoint(Math.min(Math.max(0, nextPoint), maxEditablePoint));
         } finally {
             setLoadingTabId(null);
         }
@@ -541,8 +553,15 @@ const ReceiveProduct: React.FC<ReceiveProductProps> = ({
                                                 <span className='text-sm text-gray-500 w-28 block'>Điểm</span>
                                                 <CustomNumberInput
                                                     value={point}
-                                                    onChange={setPoint}
+                                                onChange={(value) => {
+                                                    const maxEditablePoint = Math.max(
+                                                        0,
+                                                        Number(selectedProduct.estimatePoint ?? selectedProduct.originalPoint ?? 0)
+                                                    );
+                                                    setPoint(Math.min(Math.max(0, value), maxEditablePoint));
+                                                }}
                                                     min={0}
+                                                max={Math.max(0, Number(selectedProduct.estimatePoint ?? selectedProduct.originalPoint ?? 0))}
                                                     className='w-28 px-2 py-1 border border-primary-300 rounded-lg text-primary-700 font-semibold focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent'
                                                 />
                                             </div>
