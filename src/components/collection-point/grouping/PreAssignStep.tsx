@@ -4,9 +4,11 @@ import React, { useState, useEffect } from 'react';
 // CustomNumberInput intentionally removed — render read-only value when disabled
 import ProductList from './ProductList';
 import VehicleSelectionModal from './modal/VehicleSelectionModal';
+import DeadlineProductUpdateModal from './modal/DeadlineProductUpdateModal';
 import { useGroupingContext } from '@/contexts/collection-point/GroupingContext';
 import { Vehicle } from '@/services/collection-point/GroupingService';
 import { Loader2 } from 'lucide-react';
+import Toast from '@/components/ui/Toast';
 
 interface PreAssignStepProps {
     loading: boolean;
@@ -23,6 +25,7 @@ interface PreAssignStepProps {
     page?: number;
     itemsPerPage?: number;
     workDate: string;
+    onRefreshData?: () => Promise<void>;
 }
 
 const PreAssignStep: React.FC<PreAssignStepProps> = ({
@@ -36,13 +39,36 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     // rejectLoading = false,
     page = 1,
     itemsPerPage = 10,
-    workDate
+    workDate,
+    onRefreshData
 }) => {
-    const { availableVehicles, vehiclesLoading, fetchAvailableVehicles, preAssignResult, getPreAssignSuggestion } = useGroupingContext();
+    const {
+        availableVehicles,
+        vehiclesLoading,
+        fetchAvailableVehicles,
+        preAssignResult,
+        getPreAssignSuggestion,
+        forceReceiveOverdue
+    } = useGroupingContext();
     const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
     const [showVehicleModal, setShowVehicleModal] = useState(false);
     const [selectedVehicleIds, setSelectedVehicleIds] = useState<string[]>([]);
     const [confirming, setConfirming] = useState(false);
+    const [selectedDeadlineProduct, setSelectedDeadlineProduct] = useState<any | null>(null);
+    const [showDeadlineEditModal, setShowDeadlineEditModal] = useState(false);
+    const [confirmingDeadlineEdit, setConfirmingDeadlineEdit] = useState(false);
+    const [editingDeadlineProductId, setEditingDeadlineProductId] = useState<string | null>(null);
+    const [toast, setToast] = useState<{
+        open: boolean;
+        type: 'success' | 'error';
+        message: string;
+    }>({
+        open: false,
+        type: 'success',
+        message: ''
+    });
+
+    const hasNoVehicle = !vehiclesLoading && availableVehicles.length === 0;
 
     useEffect(() => {
         setSelectedProductIds([]);
@@ -95,7 +121,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     };
 
     const handleShowModal = async () => {
-        if (selectedProductIds.length === 0) return;
+        if (selectedProductIds.length === 0 || hasNoVehicle) return;
 
         try {
             await getPreAssignSuggestion(
@@ -143,6 +169,51 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
         }
     };
 
+    const handleOpenDeadlineEditModal = (product: any) => {
+        const productId = String(product?.productId || product?.id || '');
+        setEditingDeadlineProductId(productId || null);
+        setSelectedDeadlineProduct(product);
+        setShowDeadlineEditModal(true);
+    };
+
+    const handleCloseDeadlineEditModal = () => {
+        setShowDeadlineEditModal(false);
+        setSelectedDeadlineProduct(null);
+        setEditingDeadlineProductId(null);
+    };
+
+    const handleConfirmDeadlineEdit = async (payload: {
+        productId: string;
+        qrCode: string;
+        description: string;
+    }) => {
+        setConfirmingDeadlineEdit(true);
+        try {
+            await forceReceiveOverdue(payload);
+            if (onRefreshData) {
+                await onRefreshData();
+            }
+            setToast({
+                open: true,
+                type: 'success',
+                message: 'Cập nhật sản phẩm thành công.'
+            });
+            handleCloseDeadlineEditModal();
+        } catch (error: any) {
+            console.error('Error force receiving overdue product from pre-assign step:', error);
+            setToast({
+                open: true,
+                type: 'error',
+                message:
+                    error?.response?.data?.message ||
+                    error?.message ||
+                    'Không thể cập nhật sản phẩm. Vui lòng thử lại.'
+            });
+        } finally {
+            setConfirmingDeadlineEdit(false);
+        }
+    };
+
     return (
         <div className='space-y-4'>
             {/* Top controls: label, threshold, button all in one row */}
@@ -170,13 +241,19 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                     )} */}
                     <button
                         onClick={handleShowModal}
-                        disabled={loading || selectedProductIds.length === 0}
+                        disabled={loading || selectedProductIds.length === 0 || hasNoVehicle}
                         className='py-2 px-4 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap'
                     >
                         {suggestionLoading ? <Loader2 size={16} className="animate-spin" /> : `Phân chia${selectedProductIds.length > 0 ? ` (${selectedProductIds.length})` : ''}`}
                     </button>
                 </div>
             </div>
+
+            {hasNoVehicle && (
+                <div className='text-sm text-primary-700 bg-primary-50 border border-primary-200 rounded-lg px-3 py-2'>
+                    Ngày này hiện chưa có xe hoạt động. Bạn có thể dùng icon chỉnh sửa để cập nhật QR và mô tả cho sản phẩm.
+                </div>
+            )}
 
             {/* Pending Products List */}
             <ProductList 
@@ -190,6 +267,9 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 onToggleSelect={handleToggleSelect}
                 onToggleAll={handleToggleAll}
                 maxHeight={54}
+                showAction={hasNoVehicle}
+                actionLoadingProductId={editingDeadlineProductId}
+                onAction={handleOpenDeadlineEditModal}
             />
 
             {/* Vehicle Selection Modal */}
@@ -207,6 +287,29 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 suggestedPlateNumbers={(preAssignResult?.days || [])
                     .map((day: any) => day?.suggestedVehicle?.plate_Number)
                     .filter(Boolean)}
+                suggestionMessage={
+                    (preAssignResult?.days || []).length > 0
+                        ? `Gợi ý: Hệ thống đề xuất ${(preAssignResult?.days || []).length} xe dựa trên số sản phẩm`
+                        : undefined
+                }
+            />
+
+            {showDeadlineEditModal && selectedDeadlineProduct && (
+                <DeadlineProductUpdateModal
+                    key={String(selectedDeadlineProduct?.productId || selectedDeadlineProduct?.id || 'deadline-edit')}
+                    open={showDeadlineEditModal}
+                    product={selectedDeadlineProduct}
+                    loading={confirmingDeadlineEdit}
+                    onClose={handleCloseDeadlineEditModal}
+                    onConfirm={handleConfirmDeadlineEdit}
+                />
+            )}
+
+            <Toast
+                open={toast.open}
+                type={toast.type}
+                message={toast.message}
+                onClose={() => setToast((prev) => ({ ...prev, open: false }))}
             />
         </div>
     );

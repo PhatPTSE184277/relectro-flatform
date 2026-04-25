@@ -692,6 +692,11 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                         ? `Hệ thống tự chọn tất cả ${remainingVehicles.length} xe còn lại vì thấp hơn mức gợi ý ${suggestedAdditionalVehicleCount} xe.`
                         : undefined
                 }
+                suggestionMessage={
+                    suggestedAdditionalVehicleCount > 0 && !shouldAutoSelectAllRemainingVehicles
+                        ? `Gợi ý: Hệ thống đề xuất ${suggestedAdditionalVehicleCount} xe để phân chia hàng`
+                        : undefined
+                }
             />
 
             <ConfirmCloseModal

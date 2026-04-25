@@ -164,6 +164,11 @@ const GroupingPage: React.FC = () => {
         setPendingProductsPage(1);
     };
 
+    const handleRefreshPreAssignData = async () => {
+        await fetchPendingProducts(selectedDate, pendingProductsPage);
+        await fetchAllProductIds(selectedDate);
+    };
+
     // const steps = [
     //     { id: 1, name: 'Gợi ý gom nhóm', icon: <Users size={20} /> },
     //     { id: 2, name: 'Tạo nhóm thu gom', icon: <Calendar size={20} /> }
@@ -217,6 +222,7 @@ const GroupingPage: React.FC = () => {
                         page={pendingProductsPage}
                         itemsPerPage={10}
                         workDate={selectedDate}
+                        onRefreshData={handleRefreshPreAssignData}
                     />
                     {pendingProductsTotalPages > 1 && (
                         <Pagination

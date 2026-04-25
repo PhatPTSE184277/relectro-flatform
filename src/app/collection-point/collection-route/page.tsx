@@ -97,9 +97,6 @@ const CollectionRoutePage: React.FC = () => {
                         <h1 className='text-3xl font-bold text-gray-900'>
                             Tuyến thu gom
                         </h1>
-                        <p className='text-sm text-gray-500 mt-1'>
-                            Danh sách tuyến thu gom và chi tiết được đồng bộ theo cùng giao diện
-                        </p>
                     </div>
                 </div>
                 <div className='flex gap-3 items-center flex-1 justify-end'>

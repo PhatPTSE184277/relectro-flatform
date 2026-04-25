@@ -2,9 +2,10 @@ import React from 'react';
 
 interface ProductSkeletonProps {
     showCheckbox?: boolean;
+    showAction?: boolean;
 }
 
-const ProductSkeleton: React.FC<ProductSkeletonProps> = ({ showCheckbox = false }) => (
+const ProductSkeleton: React.FC<ProductSkeletonProps> = ({ showCheckbox = false, showAction = false }) => (
     <tr className='border-b border-primary-100'>
         {showCheckbox && (
             <td className='py-3 px-4 text-center w-[5vw]'>
@@ -27,6 +28,11 @@ const ProductSkeleton: React.FC<ProductSkeletonProps> = ({ showCheckbox = false 
         <td className='py-3 px-4 text-right w-[18vw]'>
             <div className='h-4 w-20 bg-gray-200 rounded ml-auto animate-pulse' />
         </td>
+        {showAction && (
+            <td className='py-3 px-4 text-center w-[10vw]'>
+                <div className='h-8 w-8 bg-gray-200 rounded-full mx-auto animate-pulse' />
+            </td>
+        )}
     </tr>
 );
 

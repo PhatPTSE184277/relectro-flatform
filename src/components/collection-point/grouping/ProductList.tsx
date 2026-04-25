@@ -15,9 +15,27 @@ export interface ProductListProps {
     onToggleProduct?: (productId: string) => void;
     onToggleAll?: () => void;
     maxHeight?: number;
+    showAction?: boolean;
+    actionLoadingProductId?: string | null;
+    onAction?: (product: any) => void;
 }
 
-const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, itemsPerPage = 10, showCheckbox, selectedProductIds = [], allProductIds, onToggleSelect, onToggleProduct, onToggleAll, maxHeight }) => {
+const ProductList: React.FC<ProductListProps> = ({
+    products,
+    loading,
+    page = 1,
+    itemsPerPage = 10,
+    showCheckbox,
+    selectedProductIds = [],
+    allProductIds,
+    onToggleSelect,
+    onToggleProduct,
+    onToggleAll,
+    maxHeight,
+    showAction = false,
+    actionLoadingProductId,
+    onAction
+}) => {
     // Check if all products (from allProductIds or current page) are selected
     const targetIds = allProductIds && allProductIds.length > 0 
         ? allProductIds 
@@ -58,16 +76,19 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                                         <th className='py-3 px-4 text-left w-[14vw]'>Sản phẩm</th>
                                         <th className='py-3 px-4 text-left w-[22vw]'>Địa chỉ</th>
                                         <th className='py-3 px-4 text-right w-[18vw]'>Khối lượng / Kích thước (kg, cm)</th>
+                                        {showAction && (
+                                            <th className='py-3 px-4 text-center w-[10vw]'>Thao tác</th>
+                                        )}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {loading ? (
                                         Array.from({ length: 5 }).map((_, idx) => (
-                                            <ProductSkeleton key={idx} showCheckbox={showCheckbox} />
+                                            <ProductSkeleton key={idx} showCheckbox={showCheckbox} showAction={showAction} />
                                         ))
                                     ) : products?.length === 0 ? (
                                         <tr>
-                                            <td colSpan={showCheckbox ? 5 : 4} className='text-center py-8 text-gray-400'>
+                                            <td colSpan={(showCheckbox ? 5 : 4) + (showAction ? 1 : 0)} className='text-center py-8 text-gray-400'>
                                                 Không có sản phẩm nào chưa gom nhóm.
                                             </td>
                                         </tr>
@@ -81,6 +102,9 @@ const ProductList: React.FC<ProductListProps> = ({ products, loading, page = 1, 
                                                 showCheckbox={showCheckbox}
                                                 isSelected={selectedProductIds.includes(product.productId)}
                                                 onToggleSelect={() => (onToggleProduct ? onToggleProduct(product.productId) : onToggleSelect?.(product.productId))}
+                                                showAction={showAction}
+                                                actionLoading={actionLoadingProductId === String(product.productId || product.id || '')}
+                                                onAction={() => onAction?.(product)}
                                             />
                                         ))
                                     )}

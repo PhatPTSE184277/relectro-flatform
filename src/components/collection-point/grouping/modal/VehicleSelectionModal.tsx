@@ -27,6 +27,7 @@ interface VehicleSelectionModalProps {
     lockSelection?: boolean;
     lockSelectionMessage?: string;
     suggestedPlateNumbers?: string[];
+    suggestionMessage?: string;
 }
 
 const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
@@ -43,7 +44,8 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
     requiredSelectionCount,
     lockSelection = false,
     lockSelectionMessage,
-    suggestedPlateNumbers = []
+    suggestedPlateNumbers = [],
+    suggestionMessage
 }) => {
     if (!open) return null;
 
@@ -114,6 +116,11 @@ const VehicleSelectionModal: React.FC<VehicleSelectionModalProps> = ({
                             <div className='flex items-center gap-2'>
                                 <span className='text-sm text-gray-600'>Cần chọn:</span>
                                 <span className='text-lg font-bold text-primary-600'>{requiredSelectionCount} xe</span>
+                            </div>
+                        )}
+                        {suggestionMessage && (
+                            <div className='flex items-center gap-2'>
+                                <span className='text-sm text-primary-600'>{suggestionMessage}</span>
                             </div>
                         )}
                     </div>

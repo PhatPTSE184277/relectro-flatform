@@ -1,5 +1,6 @@
 import { formatDimensionText } from '@/utils/formatNumber';
 import { formatAddress } from '@/utils/FormatAddress';
+import { Loader2, Pencil } from 'lucide-react';
 
 interface ProductShowProps {
     product: any;
@@ -7,6 +8,9 @@ interface ProductShowProps {
     showCheckbox?: boolean;
     isSelected?: boolean;
     onToggleSelect?: () => void;
+    showAction?: boolean;
+    actionLoading?: boolean;
+    onAction?: () => void;
 }
 
 const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({
@@ -15,7 +19,10 @@ const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({
     stt,
     showCheckbox,
     isSelected,
-    onToggleSelect
+    onToggleSelect,
+    showAction,
+    actionLoading,
+    onAction
 }) => {
 
     const sttIndex = stt ?? 1;
@@ -72,6 +79,19 @@ const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({
                     </span>
                 </div>
             </td>
+            {showAction && (
+                <td className='py-3 px-4 text-center w-[10vw]'>
+                    <button
+                        type='button'
+                        onClick={onAction}
+                        disabled={actionLoading}
+                        className='text-primary-600 hover:text-primary-800 flex items-center justify-center font-medium transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed w-full'
+                        title='Cập nhật QR và mô tả'
+                    >
+                        {actionLoading ? <Loader2 size={16} className='animate-spin' /> : <Pencil size={18} />}
+                    </button>
+                </td>
+            )}
         </tr>
     );
 };
