@@ -17,11 +17,17 @@ import {
     getBrandDetails,
     getDashboardProductById,
     updateDashboardProductPoints,
+    getOverdueSummaries,
+    getOverdueDetails,
+    forceReceiveOverdueProduct,
     DashboardSummaryResponse,
     AdminBrandSummaryResponse,
     TopUsersResponse,
     UserProduct,
-    BrandDetailsResponse
+    BrandDetailsResponse,
+    OverdueSummaryItem,
+    OverdueDetailsResponse,
+    ForceReceiveOverduePayload
 } from '@/services/admin/DashboardService';
 import type { Product } from '@/types/Product';
 
@@ -32,9 +38,14 @@ interface DashboardContextType {
     userProducts: UserProduct[];
     brandDetails: BrandDetailsResponse | null;
     selectedProductDetail: Product | null;
+    overdueSummaries: OverdueSummaryItem[];
+    overdueDetails: OverdueDetailsResponse | null;
     loading: boolean;
     productDetailLoading: boolean;
     pointUpdateLoading: boolean;
+    overdueLoading: boolean;
+    overdueDetailLoading: boolean;
+    forceReceiveLoading: boolean;
     fetchSummary: (fromDate: string, toDate: string) => Promise<void>;
     fetchSummaryByDay: (date: string) => Promise<void>;
     fetchBrandSummary: (fromDate: string, toDate: string) => Promise<void>;
@@ -45,6 +56,9 @@ interface DashboardContextType {
     fetchProductDetail: (productId: string) => Promise<void>;
     clearSelectedProductDetail: () => void;
     updateProductPoint: (productId: string, newPointValue: number, reasonForUpdate: string) => Promise<boolean>;
+    fetchOverdueSummaries: () => Promise<void>;
+    fetchOverdueDetails: (scpId: string, page?: number, limit?: number) => Promise<void>;
+    forceReceiveOverdue: (payload: ForceReceiveOverduePayload) => Promise<boolean>;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(
@@ -62,9 +76,14 @@ export const DashboardProvider: React.FC<Props> = ({ children }) => {
     const [userProducts, setUserProducts] = useState<UserProduct[]>([]);
     const [brandDetails, setBrandDetails] = useState<BrandDetailsResponse | null>(null);
     const [selectedProductDetail, setSelectedProductDetail] = useState<Product | null>(null);
+    const [overdueSummaries, setOverdueSummaries] = useState<OverdueSummaryItem[]>([]);
+    const [overdueDetails, setOverdueDetails] = useState<OverdueDetailsResponse | null>(null);
     const [loading, setLoading] = useState(false);
     const [productDetailLoading, setProductDetailLoading] = useState(false);
     const [pointUpdateLoading, setPointUpdateLoading] = useState(false);
+    const [overdueLoading, setOverdueLoading] = useState(false);
+    const [overdueDetailLoading, setOverdueDetailLoading] = useState(false);
+    const [forceReceiveLoading, setForceReceiveLoading] = useState(false);
 
     const fetchSummary = useCallback(
         async (fromDate: string, toDate: string) => {
@@ -199,6 +218,45 @@ export const DashboardProvider: React.FC<Props> = ({ children }) => {
         }
     }, []);
 
+    const fetchOverdueSummaries = useCallback(async () => {
+        setOverdueLoading(true);
+        try {
+            const res = await getOverdueSummaries();
+            setOverdueSummaries(res || []);
+        } catch (err) {
+            console.log(err);
+            setOverdueSummaries([]);
+        } finally {
+            setOverdueLoading(false);
+        }
+    }, []);
+
+    const fetchOverdueDetails = useCallback(async (scpId: string, page: number = 1, limit: number = 10) => {
+        setOverdueDetailLoading(true);
+        try {
+            const res = await getOverdueDetails(scpId, page, limit);
+            setOverdueDetails(res);
+        } catch (err) {
+            console.log(err);
+            setOverdueDetails(null);
+        } finally {
+            setOverdueDetailLoading(false);
+        }
+    }, []);
+
+    const forceReceiveOverdue = useCallback(async (payload: ForceReceiveOverduePayload) => {
+        setForceReceiveLoading(true);
+        try {
+            await forceReceiveOverdueProduct(payload);
+            return true;
+        } catch (err) {
+            console.log(err);
+            return false;
+        } finally {
+            setForceReceiveLoading(false);
+        }
+    }, []);
+
     const value: DashboardContextType = {
         summary,
         brandSummary,
@@ -206,9 +264,14 @@ export const DashboardProvider: React.FC<Props> = ({ children }) => {
         userProducts,
         brandDetails,
         selectedProductDetail,
+        overdueSummaries,
+        overdueDetails,
         loading,
         productDetailLoading,
         pointUpdateLoading,
+        overdueLoading,
+        overdueDetailLoading,
+        forceReceiveLoading,
         fetchSummary,
         fetchSummaryByDay,
         fetchBrandSummary,
@@ -218,7 +281,10 @@ export const DashboardProvider: React.FC<Props> = ({ children }) => {
         fetchBrandDetails,
         fetchProductDetail,
         clearSelectedProductDetail,
-        updateProductPoint
+        updateProductPoint,
+        fetchOverdueSummaries,
+        fetchOverdueDetails,
+        forceReceiveOverdue
     };
 
     return (

@@ -114,11 +114,16 @@ const CollectorPage: React.FC = () => {
                     <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center border border-primary-200'>
                         <Users className='text-white' size={20} />
                     </div>
-                    <h1 className='text-3xl font-bold text-gray-900'>
-                        Nhân viên thu gom
-                    </h1>
+                    <div>
+                        <h1 className='text-3xl font-bold text-gray-900'>
+                            Nhân viên thu gom
+                        </h1>
+                        <p className='text-sm text-gray-500 mt-1'>
+                            Danh sách và thao tác quản lý nhân viên thu gom được đồng bộ theo cùng giao diện
+                        </p>
+                    </div>
                 </div>
-                <div className='flex gap-4 items-center flex-1 justify-end'>
+                <div className='flex gap-3 items-center flex-1 justify-end'>
                     <a
                         href={templateUrl || '#'}
                         download
@@ -158,22 +163,26 @@ const CollectorPage: React.FC = () => {
                 onFilterChange={handleFilterChange}
             />
 
-            <CollectorList
-                collectors={filteredCollectors}
-                loading={loading}
-                filterStatus={filterStatus}
-                onBlock={(collector) => setPendingBlockId(collector.collectorId || null)}
-                onActivate={(collector) => setPendingActivateId(collector.collectorId || null)}
-                actionLoading={actionLoading}
-                page={page}
-                limit={ITEMS_PER_PAGE}
-            />
+            <div className='mt-6'>
+                <CollectorList
+                    collectors={filteredCollectors}
+                    loading={loading}
+                    filterStatus={filterStatus}
+                    onBlock={(collector) => setPendingBlockId(collector.collectorId || null)}
+                    onActivate={(collector) => setPendingActivateId(collector.collectorId || null)}
+                    actionLoading={actionLoading}
+                    page={page}
+                    limit={ITEMS_PER_PAGE}
+                />
+            </div>
 
-            <Pagination
-                page={page}
-                totalPages={Math.max(1, totalPages)}
-                onPageChange={setPage}
-            />
+            <div className='mt-6'>
+                <Pagination
+                    page={page}
+                    totalPages={Math.max(1, totalPages)}
+                    onPageChange={setPage}
+                />
+            </div>
 
             {showImportModal && (
                 <ImportCollectorModal

@@ -23,6 +23,7 @@ import { VehicleProvider } from '@/contexts/collection-point/VehicleContext';
 import { ShiftProvider } from '@/contexts/collection-point/ShiftContext';
 import { SettingGroupProvider } from '@/contexts/collection-point/SettingGroupContext';
 import { CapacityProvider } from '@/contexts/collection-point/CapacityContext';
+import { AutoGroupingProvider } from '@/contexts/collection-point/AutoGroupingContext';
 
 function CollectionPointLayoutContent({ children, sidebarOpen, setSidebarOpen }: { children: React.ReactNode; sidebarOpen: boolean; setSidebarOpen: (open: boolean) => void }) {
     const { toast, hideToast } = useNotifications();
@@ -96,10 +97,12 @@ export default function CollectionPointLayout({ children }: { children: React.Re
                                                                 <ShiftProvider>
                                                                     <SettingGroupProvider>
                                                                         <CapacityProvider>
+                                                                        <AutoGroupingProvider>
                                                                             <CollectionPointLayoutContent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}>
                                                                                 {children}
                                                                             </CollectionPointLayoutContent>
-                                                                        </CapacityProvider>
+                                                                        </AutoGroupingProvider>
+                                                                    </CapacityProvider>
                                                                     </SettingGroupProvider>
                                                                 </ShiftProvider>
                                                             </VehicleProvider>

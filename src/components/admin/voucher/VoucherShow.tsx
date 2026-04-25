@@ -34,6 +34,7 @@ const VoucherShow: React.FC<VoucherShowProps> = ({ voucher, onView, onApprove, o
             </td>
             <td className='py-3 px-4 font-medium text-gray-900'>{voucher?.code || 'Không rõ'}</td>
             <td className='py-3 px-4 text-gray-700'>{voucher?.name || 'Không rõ'}</td>
+            <td className='py-3 px-4 text-right text-gray-700'>{voucher?.quantity ?? 0}</td>
             <td className='py-3 px-4 text-right text-gray-700'>{voucher?.value ?? 0}</td>
             <td className='py-3 px-4 text-right text-gray-700'>{voucher?.pointsToRedeem ?? 0}</td>
             <td className='py-3 px-4'>

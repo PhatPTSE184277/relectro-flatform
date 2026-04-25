@@ -16,7 +16,7 @@ export interface PagedResponse<T> {
 }
 
 export const getVouchersPaged = async (params?: VoucherPagedParams): Promise<PagedResponse<any>> => {
-	const res = await axios.get<PagedResponse<any>>('/voucher/paged', { params });
+	const res = await axios.get<PagedResponse<any>>('/voucher/admin/paged', { params });
 	return res.data;
 };
 

@@ -5,7 +5,6 @@ import React, {
     useContext,
     useState,
     useCallback,
-    useEffect,
     ReactNode
 } from 'react';
 import {
@@ -14,7 +13,6 @@ import {
     importSmallCollectionExcel
 } from '@/services/company/SmallCollectionService';
 import { SmallCollectionPoint } from '@/types';
-import { useAuth } from '@/hooks/useAuth';
 
 interface PageInfo {
     page: number;
@@ -44,7 +42,6 @@ export const SmallCollectionProvider = ({
 }: {
     children: ReactNode;
 }) => {
-    const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [smallCollections, setSmallCollections] = useState<
@@ -53,7 +50,7 @@ export const SmallCollectionProvider = ({
     const [selectedSmallCollection, setSelectedSmallCollection] =
         useState<SmallCollectionPoint | null>(null);
     const [pageInfo, setPageInfo] = useState<PageInfo | null>(null);
-    const [detailLoading, setDetailLoading] = useState(false);
+    const [, setDetailLoading] = useState(false);
 
     const fetchSmallCollections = useCallback(async (params?: any) => {
         setLoading(true);

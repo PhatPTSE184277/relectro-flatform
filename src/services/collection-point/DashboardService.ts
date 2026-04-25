@@ -1,6 +1,37 @@
 import axios from '@/lib/axios';
 import type { Product } from '@/types/Product';
 
+export interface OverdueSummaryItem {
+  scpId: string;
+  scpName: string;
+  totalOverdueCount: number;
+}
+
+export interface OverdueDetailItem {
+  productId: string;
+  brandName: string;
+  categoryName: string;
+  userName: string;
+  phoneNumber?: string | null;
+  deadlineDate: string;
+  daysDelayed: number;
+  status: string;
+}
+
+export interface OverdueDetailsResponse {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+  data: OverdueDetailItem[];
+}
+
+export interface ForceReceiveOverduePayload {
+  productId: string;
+  qrCode: string;
+  description: string;
+}
+
 export interface DailyStat {
   date: string;
   count: number;
@@ -184,7 +215,6 @@ export const getTopUsers = async (
     }
   );
 
-  // Handle both array response and wrapped response
   const data = response.data;
   if (Array.isArray(data)) {
     return {
@@ -273,5 +303,31 @@ export const updateDashboardProductPoints = async (
     newPointValue,
     reasonForUpdate,
   });
+  return response.data;
+};
+
+export const getOverdueSummaries = async (): Promise<OverdueSummaryItem[]> => {
+  const response = await axios.get<OverdueSummaryItem[]>('/dashboard/overdue-summaries');
+  return response.data;
+};
+
+export const getOverdueDetails = async (
+  scpId: string,
+  page: number = 1,
+  limit: number = 10
+): Promise<OverdueDetailsResponse> => {
+  const response = await axios.get<OverdueDetailsResponse>(`/dashboard/overdue-details/${scpId}`, {
+    params: {
+      page,
+      limit,
+    },
+  });
+  return response.data;
+};
+
+export const forceReceiveOverdueProduct = async (
+  payload: ForceReceiveOverduePayload
+): Promise<any> => {
+  const response = await axios.put('/products/force-receive-overdue', payload);
   return response.data;
 };

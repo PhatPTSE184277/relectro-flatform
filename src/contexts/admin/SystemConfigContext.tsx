@@ -16,6 +16,9 @@ import {
   getAutoAssignSettings,
   updateAutoAssignSettings,
   AutoAssignSettings,
+  getAutoGroupingSettings,
+  updateAutoGroupingSettings,
+  AutoGroupingSettings,
   updateWarehouseLoadThreshold,
   WarehouseLoadThresholdConfig
 } from '@/services/admin/SystemConfigService';
@@ -31,6 +34,10 @@ interface SystemConfigContextType {
   autoAssignLoading: boolean;
   fetchAutoAssignSettings: () => Promise<AutoAssignSettings | null>;
   saveAutoAssignSettings: (payload: AutoAssignSettings) => Promise<AutoAssignSettings | null>;
+  autoGroupingSettings: AutoGroupingSettings | null;
+  autoGroupingLoading: boolean;
+  fetchAutoGroupingSettings: (scpId: string) => Promise<AutoGroupingSettings | null>;
+  saveAutoGroupingSettings: (payload: AutoGroupingSettings) => Promise<AutoGroupingSettings | null>;
   saveWarehouseLoadThreshold: (smallCollectionPointId: string, threshold: number) => Promise<boolean>;
   getLoadThresholdConfigs: () => WarehouseLoadThresholdConfig[];
   clearConfigs: () => void;
@@ -46,6 +53,8 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
   const [error, setError] = useState<string | null>(null);
   const [autoAssignSettings, setAutoAssignSettings] = useState<AutoAssignSettings | null>(null);
   const [autoAssignLoading, setAutoAssignLoading] = useState(false);
+  const [autoGroupingSettings, setAutoGroupingSettings] = useState<AutoGroupingSettings | null>(null);
+  const [autoGroupingLoading, setAutoGroupingLoading] = useState(false);
 
   const fetchConfigs = useCallback(async (groupName?: string) => {
     setLoading(true);
@@ -131,6 +140,37 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
     }
   }, []);
 
+  const fetchAutoGroupingSettings = useCallback(async (scpId: string) => {
+    setAutoGroupingLoading(true);
+    setError(null);
+    try {
+      const data = await getAutoGroupingSettings(scpId);
+      setAutoGroupingSettings(data);
+      return data;
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Lỗi khi tải cấu hình tự động phân xe');
+      setAutoGroupingSettings(null);
+      return null;
+    } finally {
+      setAutoGroupingLoading(false);
+    }
+  }, []);
+
+  const saveAutoGroupingSettings = useCallback(async (payload: AutoGroupingSettings) => {
+    setAutoGroupingLoading(true);
+    setError(null);
+    try {
+      const updated = await updateAutoGroupingSettings(payload);
+      setAutoGroupingSettings(updated);
+      return updated;
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Lỗi khi cập nhật cấu hình tự động phân xe');
+      return null;
+    } finally {
+      setAutoGroupingLoading(false);
+    }
+  }, []);
+
   const clearConfigs = useCallback(() => {
     setConfigs([]);
     setError(null);
@@ -170,6 +210,10 @@ export const SystemConfigProvider: React.FC<Props> = ({ children }) => {
     autoAssignLoading,
     fetchAutoAssignSettings,
     saveAutoAssignSettings,
+    autoGroupingSettings,
+    autoGroupingLoading,
+    fetchAutoGroupingSettings,
+    saveAutoGroupingSettings,
     saveWarehouseLoadThreshold,
     getLoadThresholdConfigs,
     clearConfigs

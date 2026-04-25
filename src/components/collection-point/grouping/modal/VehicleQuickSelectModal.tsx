@@ -32,7 +32,17 @@ const VehicleQuickSelectModal: React.FC<VehicleQuickSelectModalProps> = ({
                         <X size={24} />
                     </button>
                 </div>
-                <div className='p-5 max-h-[60vh] overflow-y-auto'>
+                <div className='p-5 max-h-[60vh] overflow-y-auto space-y-4'>
+                    <button
+                        onClick={() => onSelectVehicle(-1)}
+                        className={`w-full rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors ${
+                            selectedVehicleIndex < 0
+                                ? 'border-primary-600 bg-primary-50 text-primary-700 shadow-sm'
+                                : 'border-dashed border-gray-300 bg-gray-50 text-gray-600 hover:bg-gray-100'
+                        }`}
+                    >
+                        Không chọn xe nào
+                    </button>
                     <div className='flex flex-wrap gap-2'>
                         {vehicles.map((vehicleData: any, index: number) => {
                             const plateNumber =

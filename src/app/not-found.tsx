@@ -16,8 +16,6 @@ export default function NotFound() {
         return '/admin/dashboard';
       case 'AdminWarehouse':
         return '/admin/dashboard';
-      case 'AdminCompany':
-        return '/company/small-collection';
       case 'Collector':
         return '/collection-point/dashboard';
       case 'RecyclingCompany':

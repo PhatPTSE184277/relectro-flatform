@@ -1,21 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Route } from 'lucide-react';
 import { useCollectionRouteContext } from '@/contexts/collection-point/CollectionRouteContext';
 import CollectorRouteDetail from '@/components/collection-point/collection-route/modal/CollectorRouteDetail';
 import CollectionRouteFilter from '@/components/collection-point/collection-route/CollectionRouteFilter';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
 import SearchBox from '@/components/ui/SearchBox';
-import { Route } from 'lucide-react';
 import CollectionRouteList from '@/components/collection-point/collection-route/CollectionRouteList';
-import { useRef } from 'react';
 import Pagination from '@/components/ui/Pagination';
 
 const CollectionRoutePage: React.FC = () => {
-    const { 
-        routes, 
-        loading, 
-        selectedDate, 
+    const {
+        routes,
+        loading,
+        selectedDate,
         setSelectedDate,
         filterStatus: contextFilterStatus,
         setFilterStatus: setContextFilterStatus,
@@ -59,7 +58,7 @@ const CollectionRoutePage: React.FC = () => {
 
     const handleFilterChange = (status: string) => {
         setContextFilterStatus(status);
-        setCurrentPage(1); // Reset về trang 1 khi đổi filter
+        setCurrentPage(1);
     };
 
     const handlePageChange = (page: number) => {
@@ -71,7 +70,6 @@ const CollectionRoutePage: React.FC = () => {
 
     const handleViewDetail = async (id: string) => {
         setLoadingDetail(true);
-        // Clear old data first
         clearRouteDetail();
         try {
             await fetchRouteDetail(id);
@@ -85,23 +83,26 @@ const CollectionRoutePage: React.FC = () => {
 
     const handleCloseDetail = () => {
         setShowDetail(false);
-        // Clear state when closing
         clearRouteDetail();
     };
 
     return (
         <div className='max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-            {/* Header */}
             <div className='flex justify-between items-center mb-6'>
                 <div className='flex items-center gap-3'>
-                    <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center'>
+                    <div className='w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center border border-primary-200'>
                         <Route className='text-white' size={20} />
                     </div>
-                    <h1 className='text-3xl font-bold text-gray-900'>
-                        Tuyến thu gom
-                    </h1>
+                    <div>
+                        <h1 className='text-3xl font-bold text-gray-900'>
+                            Tuyến thu gom
+                        </h1>
+                        <p className='text-sm text-gray-500 mt-1'>
+                            Danh sách tuyến thu gom và chi tiết được đồng bộ theo cùng giao diện
+                        </p>
+                    </div>
                 </div>
-                <div className='flex gap-4 items-center flex-1 justify-end'>
+                <div className='flex gap-3 items-center flex-1 justify-end'>
                     <div className='min-w-fit'>
                         <CustomDatePicker
                             value={selectedDate}
@@ -119,18 +120,13 @@ const CollectionRoutePage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Filter Section */}
-            <div className='mb-6 space-y-4'>
-                {/* Status Filter */}
-                <CollectionRouteFilter
-                    status={contextFilterStatus as any}
-                    stats={allStats}
-                    onFilterChange={handleFilterChange}
-                />
-            </div>
+            <CollectionRouteFilter
+                status={contextFilterStatus as any}
+                stats={allStats}
+                onFilterChange={handleFilterChange}
+            />
 
-            {/* Main Content: List Only */}
-            <div className='mb-6'>
+            <div className='mt-6'>
                 <CollectionRouteList
                     routes={filteredRoutes}
                     loading={loading}
@@ -140,14 +136,14 @@ const CollectionRoutePage: React.FC = () => {
                 />
             </div>
 
-            {/* Pagination */}
-            <Pagination
-                page={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-            />
+            <div className='mt-6'>
+                <Pagination
+                    page={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
+            </div>
 
-            {/* Detail Modal */}
             {showDetail && routeDetail && (
                 <CollectorRouteDetail
                     route={routeDetail}
@@ -155,7 +151,6 @@ const CollectionRoutePage: React.FC = () => {
                 />
             )}
 
-            {/* Loading Overlay */}
             {loadingDetail && (
                 <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50'>
                     <div className='bg-white rounded-lg p-6 shadow-xl'>

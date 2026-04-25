@@ -60,12 +60,13 @@ export const collectorMenuItems = [
         path: '/collection-point/vehicle',
         icon: <Truck size={20} />
     },
-    // {
-    //     id: 'setting-group',
-    //     label: 'Cấu hình gom nhóm',
-    //     path: '/collection-point/setting-group',
-    //     icon: <Settings2 size={20} />
-    // },
+    {
+        id: "auto-grouping",
+        label: "Cấu hình tự động phân xe",
+        path: "/collection-point/auto-grouping",
+        icon: <Settings2 size={20} />
+
+    },
     {
         id: 'qrcode',
         label: 'QR Code',

@@ -247,7 +247,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                 // Fetch all products for this vehicle (using large pageSize to get all at once)
                 const totalProduct = vehicleData.totalProduct || 0;
                 if (totalProduct > 0) {
-                    const response = await fetchPreviewProducts(vehicleId, workDate, 1, totalProduct);
+                    const response = fetchPreviewProducts(vehicleId, workDate, 1, totalProduct);
                     const productIds = response?.products?.map((p: any) => p.productId) || [];
                     
                     return {
@@ -269,7 +269,7 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
             console.log(`Đang tạo nhóm cho ${assignments.length} xe cùng lúc`, assignments);
             
             // Call API to create grouping
-            await onCreateGrouping(assignments);
+            onCreateGrouping(assignments);
             
             // Calculate route and redirect
             await calculateRoute(true);
@@ -302,10 +302,6 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         try {
             const vehicles = await fetchAvailableVehiclesForDraft(workDate);
             const normalizedRemainingVehicles = (vehicles || []).map(normalizeVehicleForSelection);
-            const remainingIds = normalizedRemainingVehicles
-                .map((vehicle: any) => String(vehicle?.vehicleId || ''))
-                .filter((vehicleId: string) => vehicleId.length > 0);
-
             const suggestedPlateSet = new Set(suggestedVehiclePlates);
             const suggestedIds = suggestedVehiclePlates.length > 0
                 ? normalizedRemainingVehicles
@@ -314,17 +310,10 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                     .filter((vehicleId: string) => vehicleId.length > 0)
                 : [];
 
-            const shouldAutoSelectAllRemaining =
-                suggestedAdditionalVehicleCount > 0 &&
-                remainingIds.length > 0 &&
-                remainingIds.length < suggestedAdditionalVehicleCount;
-
             setRemainingVehicles(normalizedRemainingVehicles);
-            setSelectedAdditionalVehicleIds(
-                suggestedIds.length > 0
-                    ? suggestedIds
-                    : (shouldAutoSelectAllRemaining ? remainingIds : [])
-            );
+            // Do not auto-select all remaining vehicles; start from a clean slate
+            // unless the API explicitly suggests specific vehicle IDs.
+            setSelectedAdditionalVehicleIds(suggestedIds.length > 0 ? suggestedIds : []);
             setShowAddVehicleModal(true);
         } catch (error) {
             console.error('Error loading remaining vehicles:', error);

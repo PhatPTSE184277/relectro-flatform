@@ -16,6 +16,13 @@ export interface AutoAssignSettings {
   scheduleMinQty: number;
 }
 
+export interface AutoGroupingSettings {
+  collectionUnitId: string;
+  isEnabled: boolean;
+  scheduleTime: string;
+  loadThresholdPercent: number;
+}
+
 export interface WarehouseLoadThresholdConfig extends SystemConfig {
   companyName?: string;
   scpName?: string;
@@ -59,6 +66,18 @@ export const updateAutoAssignSettings = async (
 ): Promise<AutoAssignSettings> => {
   const response = await axios.put('/system-config/auto-assign-settings', payload);
   return (response.data?.data ?? response.data) as AutoAssignSettings;
+};
+
+export const getAutoGroupingSettings = async (scpId: string): Promise<AutoGroupingSettings> => {
+  const response = await axios.get(`/system-config/auto-grouping/${scpId}`);
+  return (response.data?.data ?? response.data) as AutoGroupingSettings;
+};
+
+export const updateAutoGroupingSettings = async (
+  payload: AutoGroupingSettings
+): Promise<AutoGroupingSettings> => {
+  const response = await axios.put('/system-config/auto-grouping', payload);
+  return (response.data?.data ?? response.data) as AutoGroupingSettings;
 };
 
 // Cập nhật giá trị system config theo id

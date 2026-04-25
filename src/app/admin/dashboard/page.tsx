@@ -8,12 +8,16 @@ import TopUsersList from '@/components/admin/dashboard/TopUsersList';
 import TopUserDetail from '@/components/admin/dashboard/modal/TopUserDetail';
 import DashboardProductDetailModal from '@/components/collection-point/dashboard/modal/DashboardProductDetailModal';
 import BrandDetail from '@/components/admin/dashboard/modal/BrandDetail';
+import OverdueCollectionUnitList from '@/components/admin/dashboard/OverdueCollectionUnitList';
+import OverdueProductList from '@/components/admin/dashboard/OverdueProductList';
 import { useDashboardContext } from '@/contexts/admin/DashboardContext';
 import { LayoutDashboard } from 'lucide-react';
 import { Download } from 'lucide-react';
 import CustomDateRangePicker from '@/components/ui/CustomDateRangePicker';
 import CustomDatePicker from '@/components/ui/CustomDatePicker';
+import Breadcrumb from '@/components/ui/Breadcrumb';
 import { exportFullSystemExcel } from '@/services/admin/DashboardService';
+import type { OverdueSummaryItem } from '@/services/admin/DashboardService';
 
 // Helper to normalize stat data
 const normalizeStatDetail = (data: any) => {
@@ -62,6 +66,10 @@ const DashboardPage = () => {
         selectedProductDetail,
         productDetailLoading,
         pointUpdateLoading,
+        overdueSummaries,
+        overdueDetails,
+        overdueLoading,
+        overdueDetailLoading,
         loading,
         fetchSummary,
         fetchSummaryByDay,
@@ -72,17 +80,20 @@ const DashboardPage = () => {
         fetchBrandDetails,
         fetchProductDetail,
         clearSelectedProductDetail,
-        updateProductPoint
+        updateProductPoint,
+        fetchOverdueSummaries,
+        fetchOverdueDetails,
     } = useDashboardContext();
     const [viewMode, setViewMode] = useState<'day' | 'range'>('range');
     const [selectedDate, setSelectedDate] = useState(getTodayString());
     const [fromDate, setFromDate] = useState(getFirstDayOfMonthString());
     const [toDate, setToDate] = useState(getTodayString());
-    const [statsView, setStatsView] = useState<'product' | 'brand' | 'top-users'>('product');
+    const [statsView, setStatsView] = useState<'product' | 'brand' | 'top-users' | 'overdue'>('product');
     const [selectedUser, setSelectedUser] = useState<any>(null);
     const [selectedBrandName, setSelectedBrandName] = useState<string | null>(null);
     const [showBrandDetailModal, setShowBrandDetailModal] = useState(false);
     const [showProductDetailModal, setShowProductDetailModal] = useState(false);
+    const [selectedOverdueScp, setSelectedOverdueScp] = useState<OverdueSummaryItem | null>(null);
     const [, setBrandDetailPage] = useState(1);
     const [exportLoading, setExportLoading] = useState(false);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -105,9 +116,10 @@ const DashboardPage = () => {
         }
     };
 
-    const handleStatsViewChange = (view: 'product' | 'brand' | 'top-users') => {
+    const handleStatsViewChange = (view: 'product' | 'brand' | 'top-users' | 'overdue') => {
         setStatsView(view);
-        if (view === 'top-users') {
+        setSelectedOverdueScp(null);
+        if (view === 'top-users' || view === 'overdue') {
             setViewMode('range');
         }
     };
@@ -163,6 +175,20 @@ const DashboardPage = () => {
         await fetchBrandDetails(selectedBrandName, range.from, range.to, page, 10);
     };
 
+    const handleOpenOverdueDetail = async (item: OverdueSummaryItem) => {
+        setSelectedOverdueScp(item);
+        await fetchOverdueDetails(item.scpId, 1, 10);
+    };
+
+    const handleCloseOverdueDetail = () => {
+        setSelectedOverdueScp(null);
+    };
+
+    const handleOverduePageChange = async (page: number) => {
+        if (!selectedOverdueScp) return;
+        await fetchOverdueDetails(selectedOverdueScp.scpId, page, overdueDetails?.limit ?? 10);
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             if (statsView === 'product') {
@@ -184,6 +210,10 @@ const DashboardPage = () => {
             if (statsView === 'top-users') {
                 await fetchTopUsers(fromDate, toDate, 20);
             }
+
+            if (statsView === 'overdue') {
+                await fetchOverdueSummaries();
+            }
         };
 
         fetchData();
@@ -197,7 +227,8 @@ const DashboardPage = () => {
         fetchSummaryByDay,
         fetchBrandSummary,
         fetchBrandSummaryByDay,
-        fetchTopUsers
+        fetchTopUsers,
+        fetchOverdueSummaries
     ]);
 
     return (
@@ -209,7 +240,7 @@ const DashboardPage = () => {
                         <div className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center">
                             <LayoutDashboard className="text-white" size={20} />
                         </div>
-                        <h1 className="text-3xl font-bold text-gray-900">Thống kê</h1>
+                        {/* <h1 className="text-3xl font-bold text-gray-900">Thống kê</h1> */}
                     </div>
                     <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-row sm:gap-4 sm:items-center sm:justify-end">
                         <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-row sm:gap-4 sm:items-center">
@@ -241,7 +272,7 @@ const DashboardPage = () => {
                             <Download size={18} />
                             {exportLoading ? 'Đang tải...' : 'Tải Excel'}
                         </button>
-                        {statsView !== 'top-users' && (
+                        {statsView !== 'top-users' && statsView !== 'overdue' && (
                         <div className="flex items-center bg-gray-100 rounded-lg w-full justify-center sm:w-auto sm:justify-start">
                             <button
                                 onClick={() => setViewMode('day')}
@@ -297,43 +328,88 @@ const DashboardPage = () => {
                             >
                                 Top người dùng
                             </button>
+                            <button
+                                onClick={() => handleStatsViewChange('overdue')}
+                                className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                                    statsView === 'overdue'
+                                        ? 'bg-primary-600 text-white shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
+                                }`}
+                            >
+                                Quá hạn đơn
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Card thống kê */}
-            <DashboardStats
-                totalUsers={normalizeStatDetail(summary?.totalUsers)}
-                totalCompanies={normalizeStatDetail(summary?.totalCompanies)}
-                totalProducts={normalizeStatDetail(
-                    statsView === 'brand' ? brandSummary?.totalProducts : summary?.totalProducts
-                )}
-                loading={loading}
-            />
+            {statsView !== 'overdue' && (
+                <DashboardStats
+                    totalUsers={normalizeStatDetail(summary?.totalUsers)}
+                    totalCompanies={normalizeStatDetail(summary?.totalCompanies)}
+                    totalProducts={normalizeStatDetail(
+                        statsView === 'brand' ? brandSummary?.totalProducts : summary?.totalProducts
+                    )}
+                    loading={loading}
+                />
+            )}
 
-            <div>
-                {statsView === 'brand' ? (
-                    <BrandList
-                        data={normalizeBrands(brandSummary?.brands || [])}
-                        total={normalizeStatDetail(brandSummary?.totalProducts).currentValue}
-                        loading={loading}
-                        onViewDetail={handleOpenBrandDetail}
-                    />
-                ) : statsView === 'top-users' ? (
-                    <TopUsersList
-                        data={topUsers?.topUsers || []}
-                        loading={loading}
-                        onUserClick={handleOpenUserDetail}
-                    />
-                ) : (
-                    <ProductCategoryList
-                        data={normalizeProductCategories(summary?.productCategories || [])}
-                        total={normalizeStatDetail(summary?.totalProducts).currentValue}
-                        loading={loading}
-                    />
-                )}
-            </div>
+            {statsView !== 'overdue' && (
+                <div>
+                    {statsView === 'brand' ? (
+                        <BrandList
+                            data={normalizeBrands(brandSummary?.brands || [])}
+                            total={normalizeStatDetail(brandSummary?.totalProducts).currentValue}
+                            loading={loading}
+                            onViewDetail={handleOpenBrandDetail}
+                        />
+                    ) : statsView === 'top-users' ? (
+                        <TopUsersList
+                            data={topUsers?.topUsers || []}
+                            loading={loading}
+                            onUserClick={handleOpenUserDetail}
+                        />
+                    ) : (
+                        <ProductCategoryList
+                            data={normalizeProductCategories(summary?.productCategories || [])}
+                            total={normalizeStatDetail(summary?.totalProducts).currentValue}
+                            loading={loading}
+                        />
+                    )}
+                </div>
+            )}
+
+            {statsView === 'overdue' && (
+                <>
+                    {selectedOverdueScp && (
+                        <div className='mb-3 w-full overflow-x-auto'>
+                            <div className='min-w-max'>
+                                <Breadcrumb
+                                    items={[
+                                        { label: 'Danh sách đơn vị quá hạn', onClick: handleCloseOverdueDetail },
+                                        { label: selectedOverdueScp.scpName }
+                                    ]}
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {selectedOverdueScp && overdueDetails ? (
+                        <OverdueProductList
+                            scpName={selectedOverdueScp.scpName}
+                            detail={overdueDetails}
+                            loading={overdueDetailLoading}
+                            onPageChange={handleOverduePageChange}
+                        />
+                    ) : (
+                        <OverdueCollectionUnitList
+                            data={overdueSummaries}
+                            loading={overdueLoading}
+                            onViewDetail={handleOpenOverdueDetail}
+                        />
+                    )}
+                </>
+            )}
 
             <TopUserDetail
                 user={selectedUser}
@@ -361,6 +437,7 @@ const DashboardPage = () => {
                 onClose={handleCloseBrandDetail}
                 onPageChange={handleBrandDetailPageChange}
             />
+
         </div>
     );
 };

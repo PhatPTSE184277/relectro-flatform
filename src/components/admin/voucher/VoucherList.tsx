@@ -25,6 +25,7 @@ const VoucherList: React.FC<VoucherListProps> = ({ vouchers, loading, onViewDeta
                                 <th className='py-3 px-4 text-center w-16'>STT</th>
                                 <th className='py-3 px-4 text-left w-40'>Mã voucher</th>
                                 <th className='py-3 px-4 text-left w-48'>Tên voucher</th>
+                                <th className='py-3 px-4 text-right w-24'>Số lượng</th>
                                 <th className='py-3 px-4 text-right w-28'>Giá trị</th>
                                 <th className='py-3 px-4 text-right w-32'>Điểm đổi</th>
                                 <th className='py-3 px-4 text-center w-28'>Hành động</th>
@@ -49,7 +50,7 @@ const VoucherList: React.FC<VoucherListProps> = ({ vouchers, loading, onViewDeta
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6} className='text-center py-8 text-gray-400'>
+                                    <td colSpan={7} className='text-center py-8 text-gray-400'>
                                         Không có voucher nào.
                                     </td>
                                 </tr>
