@@ -17,7 +17,8 @@ const GroupingPage: React.FC = () => {
     const router = useRouter();
     const { user } = useAuth();
     const {
-        loading,
+        pendingProductsLoading,
+        preAssignLoading,
         pendingProducts,
         pendingProductsData,
         pendingProductsPage,
@@ -205,7 +206,8 @@ const GroupingPage: React.FC = () => {
             {activeStep === 1 && (
                 <div className='space-y-4'>
                     <PreAssignStep
-                        loading={loading}
+                        loading={pendingProductsLoading}
+                        suggestionLoading={preAssignLoading}
                         products={pendingProducts}
                         totalItems={pendingProductsData?.totalItems || 0}
                         allProductIds={allProductIds}
@@ -230,7 +232,7 @@ const GroupingPage: React.FC = () => {
 
             {activeStep === 2 && preAssignResult && (
                 <AssignDayStep
-                    loading={loading}
+                    loading={preAssignLoading}
                     workDate={selectedDate}
                     loadThreshold={loadThreshold}
                     onCreateGrouping={handleCreateGrouping}

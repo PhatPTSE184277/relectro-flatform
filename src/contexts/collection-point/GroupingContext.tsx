@@ -91,6 +91,8 @@ type Props = { children: ReactNode };
 export function GroupingProvider({ children }: Props) {
     const { user } = useAuth();
     const [loading, setLoading] = useState<boolean>(false);
+    const [pendingProductsLoading, setPendingProductsLoading] = useState<boolean>(false);
+    const [preAssignLoading, setPreAssignLoading] = useState<boolean>(false);
     const [groupDetailLoading, setGroupDetailLoading] = useState<boolean>(false);
     const [reassignLoading, setReassignLoading] = useState<boolean>(false);
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -182,7 +184,7 @@ export function GroupingProvider({ children }: Props) {
         const currentPage = page ?? pendingProductsPage;
         const currentLimit = limit ?? pendingProductsLimit;
         
-        setLoading(true);
+        setPendingProductsLoading(true);
         try {
             const today = workDate || new Date().toISOString().split('T')[0];
             console.log('Fetching products for:', { smallPointId: user.smallCollectionPointId, workDate: today, page: currentPage, limit: currentLimit });
@@ -194,7 +196,7 @@ export function GroupingProvider({ children }: Props) {
         } catch (err) {
             console.error('fetchPendingProducts error', err);
         } finally {
-            setLoading(false);
+            setPendingProductsLoading(false);
         }
     }, [user, pendingProductsPage, pendingProductsLimit]);
 
@@ -336,7 +338,7 @@ export function GroupingProvider({ children }: Props) {
             if (!user?.smallCollectionPointId) {
                 return;
             }
-            setLoading(true);
+            setPreAssignLoading(true);
             try {
                 const payload: PreAssignGroupingPayload = {
                     workDate,
@@ -353,7 +355,7 @@ export function GroupingProvider({ children }: Props) {
                 console.error('getPreAssignSuggestion error', err);
                 throw err;
             } finally {
-                setLoading(false);
+                setPreAssignLoading(false);
             }
         },
         [user?.smallCollectionPointId]
@@ -532,6 +534,8 @@ export function GroupingProvider({ children }: Props) {
 
     const value: any = {
         loading,
+        pendingProductsLoading,
+        preAssignLoading,
         groupDetailLoading,
         reassignLoading,
         vehicles,

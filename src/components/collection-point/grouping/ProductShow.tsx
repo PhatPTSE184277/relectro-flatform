@@ -1,4 +1,3 @@
-import React from 'react';
 import { formatDimensionText } from '@/utils/formatNumber';
 import { formatAddress } from '@/utils/FormatAddress';
 
@@ -10,11 +9,18 @@ interface ProductShowProps {
     onToggleSelect?: () => void;
 }
 
-const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({ product, isLast = false, stt, showCheckbox, isSelected, onToggleSelect }) => {
-    // compute alternating row background; selection no longer changes row color
+const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({
+    product,
+    isLast = false,
+    stt,
+    showCheckbox,
+    isSelected,
+    onToggleSelect
+}) => {
+
     const sttIndex = stt ?? 1;
     const rowBg = (sttIndex - 1) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
-    // Ưu tiên dùng dimensionText từ API nếu có
+
     let dimensionDisplay = '';
     if (product.dimensionText && product.dimensionText !== 'Chưa cập nhật') {
         dimensionDisplay = product.dimensionText;
@@ -30,6 +36,7 @@ const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({ produc
             dimensionDisplay = formatDimensionText(product.dimensions);
         }
     }
+
     return (
         <tr className={`${!isLast ? 'border-b border-primary-100' : ''} ${rowBg}`}>
             {showCheckbox && (
@@ -50,13 +57,13 @@ const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({ produc
                 </div>
             </td>
             <td className='py-3 px-4 text-left w-[14vw]'>
-                <div>   {product.categoryName ? product.categoryName : 'Không rõ'}{' - '}{product.brandName ? product.brandName : 'Không rõ'}</div>
+                <div>{product.categoryName ? product.categoryName : 'Không rõ'}{' - '}{product.brandName ? product.brandName : 'Không rõ'}</div>
             </td>
             <td className='py-3 px-4 text-left w-[22vw]'>
                 <div className='line-clamp-2'>{formatAddress(product.address) || product.address || 'N/A'}</div>
             </td>
             <td className='py-3 px-4 text-right w-[18vw]'>
-                <div className='flex flex-col gap-1 items-end'>
+                <div className='flex flex-col gap-2 items-end'>
                     <span className='text-xs'>
                         <span className='font-medium'>{product.weight || product.weightKg || 0}</span>
                     </span>

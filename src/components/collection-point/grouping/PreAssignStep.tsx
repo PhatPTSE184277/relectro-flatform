@@ -10,6 +10,7 @@ import { Loader2 } from 'lucide-react';
 
 interface PreAssignStepProps {
     loading: boolean;
+    suggestionLoading?: boolean;
     products: any[];
     totalItems?: number;
     allProductIds?: string[]; // All product IDs from API
@@ -26,6 +27,7 @@ interface PreAssignStepProps {
 
 const PreAssignStep: React.FC<PreAssignStepProps> = ({
     loading,
+    suggestionLoading = false,
     products,
     allProductIds,
     loadThreshold,
@@ -36,22 +38,50 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     itemsPerPage = 10,
     workDate
 }) => {
-    const { availableVehicles, vehiclesLoading, fetchAvailableVehicles } = useGroupingContext();
+    const { availableVehicles, vehiclesLoading, fetchAvailableVehicles, preAssignResult, getPreAssignSuggestion } = useGroupingContext();
     const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
     const [showVehicleModal, setShowVehicleModal] = useState(false);
     const [selectedVehicleIds, setSelectedVehicleIds] = useState<string[]>([]);
     const [confirming, setConfirming] = useState(false);
 
     useEffect(() => {
+        setSelectedProductIds([]);
+        setSelectedVehicleIds([]);
+        setShowVehicleModal(false);
+    }, [workDate]);
+
+    useEffect(() => {
         fetchAvailableVehicles(workDate);
     }, [fetchAvailableVehicles, workDate]);
 
     useEffect(() => {
-        // Auto select all vehicles when loaded
-        if (availableVehicles && availableVehicles.length > 0) {
-            setSelectedVehicleIds(availableVehicles.map((v: Vehicle) => v.vehicleId));
+        if (products.length === 0 || availableVehicles.length === 0) return;
+
+        const suggestedVehicleIds = (preAssignResult?.days || [])
+            .map((day: any) => String(day?.suggestedVehicle?.id || ''))
+            .filter(Boolean);
+
+        if (suggestedVehicleIds.length > 0) {
+            setSelectedVehicleIds(suggestedVehicleIds);
+            return;
         }
-    }, [availableVehicles]);
+
+        // Auto select all vehicles when loaded
+        setSelectedVehicleIds(availableVehicles.map((v: Vehicle) => v.vehicleId));
+    }, [availableVehicles, preAssignResult, products.length]);
+
+    useEffect(() => {
+        if (products.length === 0 || availableVehicles.length === 0 || preAssignResult) return;
+
+        getPreAssignSuggestion(
+            workDate,
+            availableVehicles.map((vehicle: Vehicle) => vehicle.vehicleId),
+            loadThreshold,
+            selectedProductIds.length > 0 ? selectedProductIds : undefined
+        ).catch((error: unknown) => {
+            console.error('Error auto fetching preassign suggestion:', error);
+        });
+    }, [availableVehicles, getPreAssignSuggestion, loadThreshold, preAssignResult, products.length, selectedProductIds, workDate]);
 
     const handleToggleSelect = (productId: string) => {
         setSelectedProductIds(prev => 
@@ -77,9 +107,20 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
         }
     };
 
-    const handleShowModal = () => {
+    const handleShowModal = async () => {
         if (selectedProductIds.length === 0) return;
-        setShowVehicleModal(true);
+
+        try {
+            await getPreAssignSuggestion(
+                workDate,
+                availableVehicles.map((vehicle: Vehicle) => vehicle.vehicleId),
+                loadThreshold,
+                selectedProductIds.length > 0 ? selectedProductIds : undefined
+            );
+            setShowVehicleModal(true);
+        } catch (error) {
+            console.error('Error getting preassign suggestion before opening modal:', error);
+        }
     };
 
     const handleToggleVehicle = (vehicleId: string) => {
@@ -102,7 +143,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     const handleConfirmVehicles = async (vehicleIds: string[]) => {
         setConfirming(true);
         try {
-            await onGetSuggestion(
+            onGetSuggestion(
                 workDate,
                 vehicleIds,
                 selectedProductIds.length > 0 ? selectedProductIds : undefined
@@ -145,7 +186,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                         disabled={loading || selectedProductIds.length === 0}
                         className='py-2 px-4 text-base bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors cursor-pointer whitespace-nowrap'
                     >
-                        {loading ? <Loader2 size={16} className="animate-spin" /> : `Phân chia${selectedProductIds.length > 0 ? ` (${selectedProductIds.length})` : ''}`}
+                        {suggestionLoading ? <Loader2 size={16} className="animate-spin" /> : `Phân chia${selectedProductIds.length > 0 ? ` (${selectedProductIds.length})` : ''}`}
                     </button>
                 </div>
             </div>
@@ -176,6 +217,9 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 onToggleSelectAll={handleToggleAllVehicles}
                 loadThreshold={loadThreshold}
                 confirming={confirming}
+                suggestedPlateNumbers={(preAssignResult?.days || [])
+                    .map((day: any) => day?.suggestedVehicle?.plate_Number)
+                    .filter(Boolean)}
             />
         </div>
     );
