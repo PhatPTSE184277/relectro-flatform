@@ -143,7 +143,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
     const handleConfirmVehicles = async (vehicleIds: string[]) => {
         setConfirming(true);
         try {
-            onGetSuggestion(
+            await onGetSuggestion(
                 workDate,
                 vehicleIds,
                 selectedProductIds.length > 0 ? selectedProductIds : undefined
