@@ -26,10 +26,12 @@ const ConfirmCloseModal: React.FC<ConfirmCloseModalProps> = ({
 
     const modalDescriptionRaw =
         description ||
-        `Hiện tại có ${deadlineUnassignedCount} sản phẩm hạn chót chưa được phân chia.\nBạn có chắc chắn muốn đóng màn hình này không?`;
+        `Hiện tại có __COUNT__ sản phẩm hạn chót chưa được phân chia.\nBạn có chắc chắn muốn đóng màn hình này không?`;
 
     // Support both actual newlines and escaped '\n' sequences coming from callers.
-    const modalDescription = String(modalDescriptionRaw).replace(/\\n/g, '\n');
+    const modalDescription = String(modalDescriptionRaw)
+        .replace('__COUNT__', `<span class='text-primary-600 font-semibold'>${deadlineUnassignedCount}</span>`)
+        .replace(/\\n/g, '\n');
     const lines = modalDescription.split('\n');
 
     return (
@@ -50,14 +52,14 @@ const ConfirmCloseModal: React.FC<ConfirmCloseModalProps> = ({
 
                     <div className="p-6 flex-1 overflow-y-auto bg-gray-50 text-sm text-gray-700 space-y-2">
                         {lines.map((line, idx) => (
-                            <p key={idx}>{line}</p>
+                            <p key={idx} dangerouslySetInnerHTML={{ __html: line }} />
                         ))}
                 </div>
 
                 <div className="flex justify-end gap-3 p-5 border-t border-gray-100 bg-gray-50">
                     <button
                         onClick={onConfirm}
-                        className="px-5 py-2 rounded-lg font-medium text-white bg-primary-700 hover:bg-primary-800 transition cursor-pointer"
+                        className="px-5 py-2 rounded-lg font-medium text-white bg-primary-600 hover:bg-primary-700 transition cursor-pointer"
                     >
                         {modalConfirmText}
                     </button>

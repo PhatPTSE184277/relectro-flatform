@@ -232,7 +232,20 @@ export interface RejectAssignmentPayload {
     productIds: string[];
 }
 
+export interface ForceReceiveOverduePayload {
+    productId: string;
+    qrCode: string;
+    description: string;
+}
+
 export const rejectAssignment = async (payload: RejectAssignmentPayload): Promise<any> => {
     const response = await axios.post('/assign/reject-assignment', payload);
+    return response.data;
+};
+
+export const forceReceiveOverdueProduct = async (
+    payload: ForceReceiveOverduePayload
+): Promise<any> => {
+    const response = await axios.put('/products/force-receive-overdue', payload);
     return response.data;
 };

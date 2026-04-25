@@ -8,6 +8,7 @@ import Pagination from '@/components/ui/Pagination';
 import UnassignedProductsModal from './modal/UnassignedProductsModal';
 import VehicleSelectionModal from './modal/VehicleSelectionModal';
 import ConfirmCloseModal from './modal/ConfirmCloseModal';
+import DeadlineProductUpdateModal from './modal/DeadlineProductUpdateModal';
 import {
     UNASSIGNED_PRODUCTS_DEFAULT_REASON,
     UNASSIGNED_PRODUCTS_REASON_OPTIONS
@@ -15,6 +16,7 @@ import {
 import VehicleQuickSelectModal from './modal/VehicleQuickSelectModal';
 import { formatDate } from '@/utils/FormatDate';
 import { AlertTriangle, Loader2 } from 'lucide-react';
+import Toast from '@/components/ui/Toast';
 
 interface AssignDayStepProps {
     loading: boolean;
@@ -52,7 +54,8 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         unassignedProductsLoading,
         fetchUnassignedProducts,
         getUnassignedProductsTotalByReason,
-        fetchAvailableVehiclesForDraft
+        fetchAvailableVehiclesForDraft,
+        forceReceiveOverdue
     } = useGroupingContext();
     
     const [selectedVehicleIndex, setSelectedVehicleIndex] = useState<number>(0);
@@ -70,6 +73,19 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
     const [selectedUnassignedReason, setSelectedUnassignedReason] = useState<string>(
         UNASSIGNED_PRODUCTS_DEFAULT_REASON
     );
+    const [selectedDeadlineProduct, setSelectedDeadlineProduct] = useState<any | null>(null);
+    const [showDeadlineEditModal, setShowDeadlineEditModal] = useState(false);
+    const [confirmingDeadlineEdit, setConfirmingDeadlineEdit] = useState(false);
+    const [editingDeadlineProductId, setEditingDeadlineProductId] = useState<string | null>(null);
+    const [toast, setToast] = useState<{
+        open: boolean;
+        type: 'success' | 'error';
+        message: string;
+    }>({
+        open: false,
+        type: 'success',
+        message: ''
+    });
     const [deadlineUnassignedCount, setDeadlineUnassignedCount] = useState(0);
     const [reasonCountMap, setReasonCountMap] = useState<Record<string, number>>({});
     const itemsPerPage = 10;
@@ -418,6 +434,50 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
         setShowCloseAddVehicleConfirm(true);
     };
 
+    const handleOpenDeadlineEditModal = (product: any) => {
+        const productId = String(product?.productId || product?.id || '');
+        setEditingDeadlineProductId(productId || null);
+        setSelectedDeadlineProduct(product);
+        setShowDeadlineEditModal(true);
+    };
+
+    const handleCloseDeadlineEditModal = () => {
+        setShowDeadlineEditModal(false);
+        setSelectedDeadlineProduct(null);
+        setEditingDeadlineProductId(null);
+    };
+
+    const handleConfirmDeadlineEdit = async (payload: {
+        productId: string;
+        qrCode: string;
+        description: string;
+    }) => {
+        setConfirmingDeadlineEdit(true);
+        try {
+            await forceReceiveOverdue(payload);
+            await fetchUnassignedProducts(workDate, unassignedPage, 10, selectedUnassignedReason);
+            await refreshReasonCounts();
+            setToast({
+                open: true,
+                type: 'success',
+                message: 'Cập nhật sản phẩm hạn chót thành công.'
+            });
+            handleCloseDeadlineEditModal();
+        } catch (error: any) {
+            console.error('Error force receiving overdue product:', error);
+            setToast({
+                open: true,
+                type: 'error',
+                message:
+                    error?.response?.data?.message ||
+                    error?.message ||
+                    'Không thể cập nhật sản phẩm hạn chót. Vui lòng thử lại.'
+            });
+        } finally {
+            setConfirmingDeadlineEdit(false);
+        }
+    };
+
     const handleCancelCloseAddVehicleModal = () => {
         setShowCloseAddVehicleConfirm(false);
     };
@@ -568,11 +628,24 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                 reasonOptions={reasonOptionsWithCount}
                 selectedReason={selectedUnassignedReason}
                 onReasonChange={handleUnassignedReasonChange}
+                onEditDeadlineProduct={handleOpenDeadlineEditModal}
+                editingDeadlineProductId={editingDeadlineProductId}
                 deadlineUnassignedCount={deadlineUnassignedCount}
                 summaryMessage={deadlineSummaryMessageForDisplay}
                 onAddRemainingVehicles={handleOpenAddVehicleModal}
                 addVehiclesLoading={loadingRemainingVehicles}
             />
+
+            {showDeadlineEditModal && selectedDeadlineProduct && (
+                <DeadlineProductUpdateModal
+                    key={String(selectedDeadlineProduct?.productId || selectedDeadlineProduct?.id || 'deadline-edit')}
+                    open={showDeadlineEditModal}
+                    product={selectedDeadlineProduct}
+                    loading={confirmingDeadlineEdit}
+                    onClose={handleCloseDeadlineEditModal}
+                    onConfirm={handleConfirmDeadlineEdit}
+                />
+            )}
 
             <VehicleQuickSelectModal
                 open={showAllVehiclesModal}
@@ -617,6 +690,13 @@ const AssignDayStep: React.FC<AssignDayStepProps> = ({
                 confirmText='Xác nhận'
                 onConfirm={handleConfirmCloseAddVehicleModal}
                 onClose={handleCancelCloseAddVehicleModal}
+            />
+
+            <Toast
+                open={toast.open}
+                type={toast.type}
+                message={toast.message}
+                onClose={() => setToast((prev) => ({ ...prev, open: false }))}
             />
         </div>
     );

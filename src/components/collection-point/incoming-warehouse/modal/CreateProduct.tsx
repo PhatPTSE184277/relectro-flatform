@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
 'use client';
 import { isValidSystemQRCode } from '@/utils/qr';
 
 import React, { useState, useRef, useEffect } from 'react';
 import CameraModal from '@/components/ui/CameraModal';
-import Toast from '@/components/ui/Toast';
 import {
     getBrandsBySubCategory,
     Brand

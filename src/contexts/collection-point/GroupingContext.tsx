@@ -29,7 +29,9 @@ import {
     previewVehicles as previewVehiclesAPI,
     getAvailableVehiclesForDraft,
     rejectAssignment,
-    RejectAssignmentPayload
+    RejectAssignmentPayload,
+    forceReceiveOverdueProduct,
+    ForceReceiveOverduePayload
 } from '@/services/collection-point/GroupingService';
 import { useAuth } from '@/hooks/useAuth';
 import { getTodayString } from '@/utils/getDayString';
@@ -532,6 +534,17 @@ export function GroupingProvider({ children }: Props) {
         [user?.smallCollectionPointId]
     );
 
+    const forceReceiveOverdue = useCallback(
+        async (payload: ForceReceiveOverduePayload) => {
+            if (!user?.smallCollectionPointId) {
+                throw new Error('Không tìm thấy thông tin điểm thu gom');
+            }
+
+            return await forceReceiveOverdueProduct(payload);
+        },
+        [user?.smallCollectionPointId]
+    );
+
     const value: any = {
         loading,
         pendingProductsLoading,
@@ -586,7 +599,8 @@ export function GroupingProvider({ children }: Props) {
         fetchPreviewProducts,
         fetchAllPreviewProductIds,
         fetchPreviewVehicles,
-        fetchAvailableVehiclesForDraft
+        fetchAvailableVehiclesForDraft,
+        forceReceiveOverdue
     };
 
     return (

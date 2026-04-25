@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { X, AlertTriangle, Plus, Loader2 } from 'lucide-react';
-import ProductList from '../ProductList';
+import { X, AlertTriangle, Plus, Loader2, Pencil } from 'lucide-react';
 import Pagination from '@/components/ui/Pagination';
-import UnassignedProductsFilter, { UnassignedProductsReasonOption } from './UnassignedProductsFilter';
+import UnassignedProductsFilter, {
+    UNASSIGNED_PRODUCTS_DEFAULT_REASON,
+    UnassignedProductsReasonOption
+} from './UnassignedProductsFilter';
 import ConfirmCloseModal from './ConfirmCloseModal';
+import { formatAddress } from '@/utils/FormatAddress';
 
 interface UnassignedProductsModalProps {
     open: boolean;
@@ -17,6 +20,8 @@ interface UnassignedProductsModalProps {
     reasonOptions: UnassignedProductsReasonOption[];
     selectedReason: string;
     onReasonChange: (reason: string) => void;
+    onEditDeadlineProduct?: (product: any) => void;
+    editingDeadlineProductId?: string | null;
     deadlineUnassignedCount?: number;
     summaryMessage?: string;
     onAddRemainingVehicles: () => void;
@@ -35,6 +40,8 @@ const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
     reasonOptions,
     selectedReason,
     onReasonChange,
+    onEditDeadlineProduct,
+    editingDeadlineProductId,
     deadlineUnassignedCount = 0,
     summaryMessage,
     onAddRemainingVehicles,
@@ -58,6 +65,19 @@ const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
 
     const handleCancelClose = () => {
         setShowCloseConfirm(false);
+    };
+
+    const shouldShowDeadlineAction = selectedReason === UNASSIGNED_PRODUCTS_DEFAULT_REASON;
+
+    const getPhoneNumber = (product: any): string => {
+        return (
+            product?.phoneNumber ||
+            product?.phone ||
+            product?.senderPhone ||
+            product?.userPhone ||
+            product?.sender?.phone ||
+            'N/A'
+        );
     };
 
     if (!open) return null;
@@ -123,14 +143,121 @@ const UnassignedProductsModal: React.FC<UnassignedProductsModalProps> = ({
 
                 {/* Product List */}
                 <div className='flex-1 overflow-hidden p-6'>
-                    <ProductList 
-                        products={products}
-                        loading={loading}
-                        page={currentPage}
-                        itemsPerPage={10}
-                        showCheckbox={false}
-                        maxHeight={45}
-                    />
+                    <div className='bg-white rounded-2xl shadow-lg border border-gray-100'>
+                        <div className='overflow-x-auto'>
+                            <div className='inline-block w-full align-middle'>
+                                <div className='overflow-hidden'>
+                                    <div className='max-h-[45vh] overflow-y-auto'>
+                                        <table className='w-full text-sm text-gray-800 table-fixed'>
+                                            <thead className='bg-primary-50 text-primary-700 uppercase text-xs font-semibold sticky top-0 z-10 border-b border-primary-100'>
+                                                <tr>
+                                                    <th className='py-3 px-4 text-center w-[6vw]'>STT</th>
+                                                    <th className='py-3 px-4 text-left w-[18vw]'>Sản phẩm</th>
+                                                    <th className='py-3 px-4 text-left w-[14vw]'>SĐT</th>
+                                                    <th className='py-3 px-4 text-left w-[22vw]'>Địa chỉ</th>
+                                                    {shouldShowDeadlineAction && (
+                                                        <th className='py-3 px-4 text-center w-[10vw]'>
+                                                            <div className='w-full flex items-center justify-center'>
+                                                               Hành động
+                                                            </div>
+                                                        </th>
+                                                    )}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {loading ? (
+                                                    Array.from({ length: 5 }).map((_, idx) => (
+                                                        <tr key={idx} className='border-b border-primary-100'>
+                                                            <td className='py-3 px-4'>
+                                                                <div className='h-4 w-8 bg-gray-200 rounded mx-auto animate-pulse' />
+                                                            </td>
+                                                            <td className='py-3 px-4'>
+                                                                <div className='h-4 w-28 bg-gray-200 rounded animate-pulse' />
+                                                            </td>
+                                                            <td className='py-3 px-4'>
+                                                                <div className='h-4 w-24 bg-gray-200 rounded animate-pulse' />
+                                                            </td>
+                                                            <td className='py-3 px-4'>
+                                                                <div className='h-4 w-36 bg-gray-200 rounded animate-pulse' />
+                                                            </td>
+                                                            <td className='py-3 px-4'>
+                                                                <div className='h-4 w-24 bg-gray-200 rounded ml-auto animate-pulse text-center' />
+                                                            </td>
+                                                            {shouldShowDeadlineAction && (
+                                                                <td className='py-3 px-4 text-center'>
+                                                                    <div className='h-8 w-8 bg-gray-200 rounded-full mx-auto animate-pulse' />
+                                                                </td>
+                                                            )}
+                                                        </tr>
+                                                    ))
+                                                ) : products?.length === 0 ? (
+                                                    <tr>
+                                                        <td
+                                                            colSpan={shouldShowDeadlineAction ? 6 : 5}
+                                                            className='text-center py-8 text-gray-400'
+                                                        >
+                                                            Không có sản phẩm chưa được phân chia.
+                                                        </td>
+                                                    </tr>
+                                                ) : (
+                                                    products.map((product, idx) => {
+                                                        const stt = (currentPage - 1) * 10 + idx + 1;
+                                                        const rowBg = (stt - 1) % 2 === 0 ? 'bg-white' : 'bg-primary-50';
+                                                        const productId = String(product?.productId || product?.id || '');
+
+                                                        return (
+                                                            <tr
+                                                                key={`${productId}-${idx}`}
+                                                                className={`${
+                                                                    idx !== products.length - 1
+                                                                        ? 'border-b border-primary-100'
+                                                                        : ''
+                                                                } ${rowBg}`}
+                                                            >
+                                                                <td className='py-3 px-4 text-center'>
+                                                                    <span className='w-7 h-7 rounded-full bg-primary-600 text-white text-sm inline-flex items-center justify-center font-semibold'>
+                                                                        {stt}
+                                                                    </span>
+                                                                </td>
+                                                                <td className='py-3 px-4 text-left'>
+                                                                    {product?.categoryName || 'Không rõ'} - {product?.brandName || 'Không rõ'}
+                                                                </td>
+                                                                <td className='py-3 px-4 text-left'>
+                                                                    {getPhoneNumber(product)}
+                                                                </td>
+                                                                <td className='py-3 px-4 text-left'>
+                                                                    <div className='line-clamp-2'>
+                                                                        {formatAddress(product?.address) || product?.address || 'N/A'}
+                                                                    </div>
+                                                                </td>
+                                                                {shouldShowDeadlineAction && (
+                                                                    <td className='py-3 px-4 text-center'>
+                                                                        <button
+                                                                            type='button'
+                                                                            onClick={() => onEditDeadlineProduct?.(product)}
+                                                                            disabled={editingDeadlineProductId === productId}
+                                                                            className='mx-auto text-primary-600 hover:text-primary-800 flex items-center justify-center font-medium transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed'
+                                                                            title='Cập nhật QR và mô tả'
+                                                                        >
+                                                                            {editingDeadlineProductId === productId ? (
+                                                                                <Loader2 size={16} className='animate-spin' />
+                                                                            ) : (
+                                                                                <Pencil size={18} />
+                                                                            )}
+                                                                        </button>
+                                                                    </td>
+                                                                )}
+                                                            </tr>
+                                                        );
+                                                    })
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Pagination */}
