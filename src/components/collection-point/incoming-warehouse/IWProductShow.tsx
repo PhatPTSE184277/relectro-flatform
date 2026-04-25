@@ -23,11 +23,11 @@ const IWProductShow: React.FC<IWProductShowProps & { isLast?: boolean; stt?: num
                     {product.categoryName || 'Không rõ'} - {product.brandName || 'Không rõ'}
                 </div>
             </td>
-            <td className='py-3 px-4 text-gray-700 w-[14vw] min-w-[120px]'>
+            {/* <td className='py-3 px-4 text-gray-700 w-[14vw] min-w-[120px]'>
                 {product.userName || (
                     <span className='text-gray-400'>Không rõ</span>
                 )}
-            </td>
+            </td> */}
             <td className='py-3 px-4 text-gray-700 w-[18vw] min-w-[120px]'>
                 {product.description || (
                     <span className='text-gray-400'>Không có mô tả</span>

@@ -36,9 +36,9 @@ const IWProductList = forwardRef<HTMLDivElement, IWProductListProps>(
                                 <th className='py-3 px-4 text-left w-[18vw] min-w-24'>
                                     Loại sản phẩm - Thương hiệu
                                 </th>
-                                <th className='py-3 px-4 text-left w-[14vw] min-w-20'>
+                                {/* <th className='py-3 px-4 text-left w-[14vw] min-w-20'>
                                     Tên người dùng
-                                </th>
+                                </th> */}
                                 <th className='py-3 px-4 text-left w-[18vw] min-w-30'>
                                     Mô tả
                                 </th>
