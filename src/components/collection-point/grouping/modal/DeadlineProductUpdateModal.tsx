@@ -9,6 +9,7 @@ interface DeadlineProductUpdateModalProps {
     loading?: boolean;
     onClose: () => void;
     onConfirm: (payload: { productId: string; qrCode: string; description: string }) => Promise<void>;
+    showPhoneNumber?: boolean;
 }
 
 const DeadlineProductUpdateModal: React.FC<DeadlineProductUpdateModalProps> = ({
@@ -16,7 +17,8 @@ const DeadlineProductUpdateModal: React.FC<DeadlineProductUpdateModalProps> = ({
     product,
     loading = false,
     onClose,
-    onConfirm
+    onConfirm,
+    showPhoneNumber = false
 }) => {
     const [qrCode, setQrCode] = useState('');
     const [description, setDescription] = useState(() => String(product?.description || '').trim());
@@ -110,9 +112,12 @@ const DeadlineProductUpdateModal: React.FC<DeadlineProductUpdateModalProps> = ({
                 <div className='flex justify-between items-center p-6 border-b bg-linear-to-r from-primary-50 to-primary-100 border-primary-100'>
                     <div>
                         <h2 className='text-xl font-bold text-gray-900'>Cập nhật sản phẩm hạn chót</h2>
-                        <p className='text-sm text-gray-600 mt-1'>
-                            {product?.categoryName || 'Không rõ'} - {product?.brandName || 'Không rõ'}
-                        </p>
+                        <div className='text-sm text-gray-600 mt-1 flex flex-wrap items-center gap-2'>
+                            <span>{product?.categoryName || 'Không rõ'} - {product?.brandName || 'Không rõ'}</span>
+                            {showPhoneNumber && (product?.phoneNumber || product?.phone) && (
+                                <span className='text-primary-700'>SĐT: {product?.phoneNumber || product?.phone}</span>
+                            )}
+                        </div>
                     </div>
                     <button
                         onClick={onClose}

@@ -264,6 +264,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 showAction={hasNoVehicle}
                 actionLoadingProductId={editingDeadlineProductId}
                 onAction={handleOpenDeadlineEditModal}
+                showPhone={hasNoVehicle}
             />
 
             {/* Vehicle Selection Modal */}
@@ -296,6 +297,7 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                     loading={confirmingDeadlineEdit}
                     onClose={handleCloseDeadlineEditModal}
                     onConfirm={handleConfirmDeadlineEdit}
+                    showPhoneNumber={true}
                 />
             )}
 

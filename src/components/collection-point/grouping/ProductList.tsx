@@ -18,6 +18,7 @@ export interface ProductListProps {
     showAction?: boolean;
     actionLoadingProductId?: string | null;
     onAction?: (product: any) => void;
+    showPhone?: boolean;
 }
 
 const ProductList: React.FC<ProductListProps> = ({
@@ -34,7 +35,8 @@ const ProductList: React.FC<ProductListProps> = ({
     maxHeight,
     showAction = false,
     actionLoadingProductId,
-    onAction
+    onAction,
+    showPhone = false
 }) => {
     // Check if all products (from allProductIds or current page) are selected
     const targetIds = allProductIds && allProductIds.length > 0 
@@ -105,6 +107,7 @@ const ProductList: React.FC<ProductListProps> = ({
                                                 showAction={showAction}
                                                 actionLoading={actionLoadingProductId === String(product.productId || product.id || '')}
                                                 onAction={() => onAction?.(product)}
+                                                showPhone={showPhone}
                                             />
                                         ))
                                     )}

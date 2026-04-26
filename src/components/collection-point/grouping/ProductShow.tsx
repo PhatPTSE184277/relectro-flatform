@@ -11,6 +11,7 @@ interface ProductShowProps {
     showAction?: boolean;
     actionLoading?: boolean;
     onAction?: () => void;
+    showPhone?: boolean;
 }
 
 const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({
@@ -22,7 +23,8 @@ const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({
     onToggleSelect,
     showAction,
     actionLoading,
-    onAction
+    onAction,
+    showPhone
 }) => {
 
     const sttIndex = stt ?? 1;
@@ -67,7 +69,14 @@ const ProductShow: React.FC<ProductShowProps & { isLast?: boolean }> = ({
                 <div>{product.categoryName ? product.categoryName : 'Không rõ'}{' - '}{product.brandName ? product.brandName : 'Không rõ'}</div>
             </td>
             <td className='py-3 px-4 text-left w-[22vw]'>
-                <div className='line-clamp-2'>{formatAddress(product.address) || product.address || 'N/A'}</div>
+                <div className='space-y-1'>
+                    <div className='line-clamp-2'>{formatAddress(product.address) || product.address || 'N/A'}</div>
+                    {showPhone && (product.phoneNumber || product.phone) && (
+                        <div className='text-xs text-primary-700 font-medium'>
+                            SĐT: {product.phoneNumber || product.phone}
+                        </div>
+                    )}
+                </div>
             </td>
             <td className='py-3 px-4 text-right w-[18vw]'>
                 <div className='flex flex-col gap-2 items-end'>
