@@ -249,12 +249,6 @@ const PreAssignStep: React.FC<PreAssignStepProps> = ({
                 </div>
             </div>
 
-            {hasNoVehicle && (
-                <div className='text-sm text-primary-700 bg-primary-50 border border-primary-200 rounded-lg px-3 py-2'>
-                    Ngày này hiện chưa có xe hoạt động. Bạn có thể dùng icon chỉnh sửa để cập nhật QR và mô tả cho sản phẩm.
-                </div>
-            )}
-
             {/* Pending Products List */}
             <ProductList 
                 products={products} 
