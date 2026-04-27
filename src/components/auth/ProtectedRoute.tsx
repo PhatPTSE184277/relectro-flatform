@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { useAppDispatch } from '@/redux/hooks';
+import { loadUserFromToken } from '@/redux/reducers/authReducer';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -18,8 +20,10 @@ const ROUTE_ROLE_MAP: Record<string, string[]> = {
 
 export default function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
     const { isAuthenticated, loading, user } = useAuth();
+    const dispatch = useAppDispatch();
     const router = useRouter();
     const pathname = usePathname();
+    const attemptedTokenLoadRef = useRef(false);
 
     const routePrefix = Object.keys(ROUTE_ROLE_MAP).find((prefix) => pathname.startsWith(prefix));
     const routeAllowedRoles = allowedRoles && allowedRoles.length > 0
@@ -42,15 +46,23 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
 
         if (loading) return;
 
+        if ((!isAuthenticated || !user) && !attemptedTokenLoadRef.current) {
+            attemptedTokenLoadRef.current = true;
+            void dispatch(loadUserFromToken());
+            return;
+        }
+
         if (!isAuthenticated || !user) {
             router.replace('/');
             return;
         }
 
+        attemptedTokenLoadRef.current = false;
+
         if (routeAllowedRoles && !routeAllowedRoles.includes(user.role)) {
             redirectToRoleDashboard(user.role, router);
         }
-    }, [hasToken, isAuthenticated, loading, routeAllowedRoles, router, user]);
+    }, [dispatch, hasToken, isAuthenticated, loading, routeAllowedRoles, router, user]);
 
     // Kiểm tra token thực tế
     if (!hasToken) {
